@@ -1,18 +1,19 @@
-=== Hyprland ===
-HYPRLAND_INSTANCE_SIGNATURE not set! (is hyprland running?)
+Hyprixe Debian — target and validation context
 
+Target OS: Debian GNU/Linux 13 (trixie)
+Reference compositor: Hyprland 0.56.2, native Lua configuration
+Installer minimum accepted version: 0.55.2 (0.56.2 accepted; no exact APT version pin)
+User-reported working version: 0.56.2
+Source/API audit: v0.56.2, efb50993780079460b0cbed1363e2166a2de1d9f
+Metadata checked: trixie-backports 0.55.2+ds-1~bpo13+1
+Qt/KDE target: Qt 6 / KDE Frameworks 6; qt6-style-kvantum
+Default profile: native
+Default keyboard: fr / latin9 (AZERTY)
+Default monitor: all outputs, preferred mode, automatic scale/position
 
-=== Debian ===
-PRETTY_NAME="Debian GNU/Linux 13 (trixie)"
-NAME="Debian GNU/Linux"
-VERSION_ID="13"
-VERSION="13 (trixie)"
-VERSION_CODENAME=trixie
-DEBIAN_VERSION_FULL=13.7
-ID=debian
-HOME_URL="https://www.debian.org/"
-SUPPORT_URL="https://www.debian.org/support"
-BUG_REPORT_URL="https://bugs.debian.org/"
+Original configuration was made in a VMware guest. The original system-info
+did not contain a usable Hyprland version (no running instance signature).
 
-=== Kernel ===
-Linux debian 6.12.113+deb13-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.113-1 (2026-10-15) x86_64 GNU/Linux
+Audit environment: Windows host, Debian 13 under WSL2, x86_64.
+No physical Hyprland session was launched or visually validated here.
+See docs/VALIDATION.md for actual commands, outcomes and skipped checks.

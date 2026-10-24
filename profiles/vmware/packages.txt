@@ -1,0 +1,3 @@
+# Optional guest integration; software rendering is configured by this profile.
+open-vm-tools-desktop
+mesa-utils

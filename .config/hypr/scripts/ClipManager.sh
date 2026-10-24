@@ -15,7 +15,6 @@ set -uo pipefail
 
 # Variables
 config_dir="${XDG_CONFIG_HOME:-$HOME/.config}"
-scripts_dir="$config_dir/hypr/scripts"
 rofi_theme="$config_dir/hypr/rofi/config-clipboard.rasi"
 msg='👀 **note**  CTRL DEL = cliphist del (entry)   or   ALT DEL - cliphist wipe (all)'
 
@@ -36,9 +35,6 @@ done
 
 # Close a previous instance of THIS menu only; never kill unrelated rofi windows
 pkill -f "$(basename "$rofi_theme")" 2>/dev/null || true
-
-# Refreshed once per invocation, not on every delete/wipe iteration below
-"$scripts_dir/RofiFocusedWallpaperLink.sh" >/dev/null 2>&1 || true
 
 # cliphist previews stored binaries as: [[ binary data 729 KiB png 1729x976 ]]
 # Restore the matching MIME type so images keep pasting correctly.

@@ -19,6 +19,8 @@
 # and only gives up once the Wayland socket itself is gone (session ending).
 
 runtime="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+exec 8>"$runtime/hyprixe-clipboard.lock"
+flock -n 8 || exit 0
 
 log() {
     printf '[ClipboardWatcher] %s\n' "$*" >&2

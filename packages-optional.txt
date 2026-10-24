@@ -1,0 +1,11 @@
+# Optional: not installed automatically.
+shellcheck
+lua5.4
+ripgrep
+btop
+swappy
+qalculate
+pamixer
+ddcutil
+hyprsunset
+# See extras/kooldots/README.md for the separate upstream example library.

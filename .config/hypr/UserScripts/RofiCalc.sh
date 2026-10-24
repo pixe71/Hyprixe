@@ -22,16 +22,9 @@ for cmd in rofi qalc wl-copy; do
     fi
 done
 
-CALC_LOCKFILE="/tmp/roficalc-${UID:-0}.pid"
-if [[ -f "$CALC_LOCKFILE" ]]; then
-    oldpid="$(cat "$CALC_LOCKFILE" 2>/dev/null || true)"
-    if [[ -n "$oldpid" ]] && kill -0 "$oldpid" 2>/dev/null; then
-        kill "$oldpid" 2>/dev/null || true
-    fi
-    rm -f "$CALC_LOCKFILE" 2>/dev/null || true
-fi
-printf '%d' "$$" > "$CALC_LOCKFILE" 2>/dev/null || true
-trap 'rm -f "$CALC_LOCKFILE" 2>/dev/null' EXIT INT TERM
+: "${XDG_RUNTIME_DIR:?Run inside a Wayland session}"
+exec 9>"$XDG_RUNTIME_DIR/hyprixe-calculator.lock"
+flock -n 9 || exit 0
 
 # main function
 calc_result=""

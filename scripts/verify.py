@@ -1,0 +1,145 @@
+"""Repository checks; missing optional validators and real-session tests say SKIPPED."""
+import argparse
+import ast
+import configparser
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import tomllib
+import xml.etree.ElementTree as ET
+from waybar_compat import has_lua_workspace_ipc
+
+ROOT = Path(__file__).resolve().parents[1]
+failed = 0
+
+
+def report(ok, message):
+    global failed
+    print(('PASS: ' if ok else 'FAIL: ') + message, flush=True)
+    if not ok:
+        failed += 1
+
+
+def run(command, message, **kwargs):
+    r = subprocess.run(command, cwd=ROOT, text=True, capture_output=True, **kwargs)
+    report(r.returncode == 0, message)
+    if r.returncode:
+        print(r.stdout + r.stderr)
+    return r
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--session', action='store_true', help='Also query an existing Hyprland session (read-only)')
+    parser.add_argument('--dependencies', action='store_true', help='Require installed runtime dependencies')
+    args = parser.parse_args()
+    files = [p for p in ROOT.rglob('*') if p.is_file() and not any(x in p.relative_to(ROOT).parts for x in ('.git', '.validation', '__pycache__'))]
+    shells = sorted(p for p in files if p.suffix == '.sh')
+    shell_results = [subprocess.run(['bash', '-n', str(p)], capture_output=True, text=True) for p in shells]
+    report(all(r.returncode == 0 for r in shell_results), f'bash -n: {len(shells)} scripts (including optional examples)')
+    for p, r in zip(shells, shell_results):
+        if r.returncode: print(p.relative_to(ROOT), r.stderr)
+    if shutil.which('shellcheck'):
+        run(['shellcheck', '-S', 'error', '-f', 'gcc', *map(str, shells)], 'ShellCheck: all scripts, severity error')
+        active = [p for p in shells if 'extras' not in p.relative_to(ROOT).parts]
+        run(['shellcheck', '-S', 'warning', '-f', 'gcc', *map(str, active)], 'ShellCheck: active scripts, severity warning')
+    else:
+        print('SKIPPED: ShellCheck unavailable')
+    luas = sorted(p for p in files if p.suffix == '.lua')
+    if shutil.which('luac'):
+        results = [subprocess.run(['luac', '-p', str(p)], capture_output=True, text=True) for p in luas]
+        report(all(r.returncode == 0 for r in results), f'luac -p: {len(luas)} Lua files')
+        for p, r in zip(luas, results):
+            if r.returncode: print(p.relative_to(ROOT), r.stderr)
+        env = dict(os.environ, XDG_CONFIG_HOME=str(ROOT / '.config'))
+        run(['lua', 'tests/check_lua.lua', str(ROOT / '.config')], 'Lua loading / required shortcuts / duplicate chords (mock)', env=env)
+    else:
+        print('SKIPPED: Lua compiler and load test unavailable')
+    for p in files:
+        if p.suffix == '.py':
+            try: ast.parse(p.read_text(), str(p))
+            except SyntaxError as exc: report(False, str(exc))
+    report(True, 'Python syntax parsed without generating bytecode')
+    tests = run(['python3', '-m', 'unittest', 'discover', '-s', 'tests', '-v'], 'Deployment and runtime integration tests (isolated temporary HOME / mocked commands)')
+    if tests.returncode == 0:
+        for line in tests.stderr.splitlines():
+            if line.startswith('Ran ') or line.startswith('OK'): print(line)
+            elif ' ... skipped ' in line: print('SKIPPED: ' + line)
+    active_files = [p for p in files if p.relative_to(ROOT).parts[0] in ('.config', '.local') or p.is_relative_to(ROOT / 'profiles/native')]
+    forbidden = re.compile(r'VMware|vmwgfx|llvmpipe|Virtual-1|LIBGL_ALWAYS_SOFTWARE|MESA_LOADER_DRIVER_OVERRIDE|GALLIUM_DRIVER|WLR_RENDERER_ALLOW_SOFTWARE|/home/luc|Tokyo|\bkitty\b|\bthunar\b', re.I)
+    hits = []
+    for p in active_files:
+        try:
+            if forbidden.search(p.read_text()): hits.append(str(p.relative_to(ROOT)))
+        except UnicodeError: pass
+    report(not hits, 'Native tree: no graphics workarounds, machine paths or obsolete app/theme defaults' + (': ' + ', '.join(hits) if hits else ''))
+    config = ROOT / '.config/hypr'
+    entry = (config / 'hyprland.lua').read_text()
+    modules = re.findall(r'"((?:lua|UserConfigs)/[^"\n]+\.lua|profile\.lua)"', entry)
+    missing = [x for x in modules if not (config / x).is_file()]
+    for p in (config / 'rofi').rglob('*.rasi'):
+        for name in re.findall(r'@(?:import|theme)\s+"([^"]+)"', p.read_text()):
+            if not (p.parent / name).is_file(): missing.append(f'{p.name}: {name}')
+    scripts = set(re.findall(r'(?:script\(|scripts\s*\.\.\s*)"([A-Za-z][\w-]+\.sh)', (config / 'lua/keybinds.lua').read_text() + (config / 'lua/startup.lua').read_text()))
+    for name in scripts:
+        if not (config / 'scripts' / name).is_file(): missing.append(name)
+    report(not missing, 'Entry modules, keybind scripts and Rofi theme imports resolve' + (': ' + ', '.join(missing) if missing else ''))
+    for p in (ROOT / '.config/alacritty').glob('*.toml'): tomllib.loads(p.read_text())
+    for p in (config / 'waybar/config', config / 'waybar/configs/Frosted-Glass'): json.loads(p.read_text())
+    ET.parse(ROOT / '.config/Kvantum/Frosted-Glass/Frosted-Glass.svg')
+    ET.parse(ROOT / '.local/share/kxmlgui5/dolphin/dolphinui.rc')
+    report(True, 'Alacritty TOML, Waybar JSON, Kvantum SVG and Dolphin XML parse')
+    if shutil.which('rofi'):
+        for p in sorted((config / 'rofi').rglob('*.rasi')):
+            # Rofi 2.0.0's early -rasi-validate path segfaults upstream, including
+            # on minimal themes. -dump-theme uses the fully initialized parser
+            # and exits before opening a graphical window.
+            run(['rofi', '-config', str(p), '-dump-theme'], 'Rofi parser: ' + str(p.relative_to(config)))
+    else:
+        print('SKIPPED: real Rofi theme parser unavailable')
+    if shutil.which('waybar'):
+        report(has_lua_workspace_ipc(), 'Waybar supports Lua workspace IPC required by this configuration')
+    else:
+        print('SKIPPED: Waybar Lua IPC capability check (binary unavailable)')
+    manifest = dict((line.split('\t')[0], line.split('\t')[2]) for line in (ROOT / 'docs/inventory-original.tsv').read_text().splitlines()[1:])
+    assets = ['wallpapers/min_forest.jpg', '.config/Kvantum/Frosted-Glass/Frosted-Glass.svg', '.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig', '.local/share/kxmlgui5/dolphin/dolphinui.rc']
+    report(all(hashlib.sha256((ROOT / p).read_bytes()).hexdigest() == manifest[p] for p in assets), 'Original wallpaper, Kvantum theme pair and Dolphin toolbar: identical SHA256')
+    secrets = re.compile(r'gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|-----BEGIN (?:OPENSSH|RSA|EC|DSA) PRIVATE KEY|AKIA[0-9A-Z]{16}')
+    secret_files = []
+    for p in files:
+        try:
+            if secrets.search(p.read_text()): secret_files.append(str(p.relative_to(ROOT)))
+        except UnicodeError: pass
+    report(not secret_files, 'Secret-pattern scan (current files): ' + (', '.join(secret_files) if secret_files else 'no matches'))
+    report(all(not p.is_symlink() or p.exists() for p in files), 'No broken filesystem symlinks')
+    if shutil.which('git'):
+        executable_paths = ['install.sh', 'uninstall.sh', 'verify.sh', 'scripts/build-runtime.sh']
+        executable_paths += [str(p.relative_to(ROOT)) for p in (config / 'scripts').glob('*.sh')]
+        executable_paths += [str(p.relative_to(ROOT)) for p in (config / 'UserScripts').glob('*.sh')]
+        index = subprocess.run(['git', 'ls-files', '-s', '--', *executable_paths], cwd=ROOT, capture_output=True, text=True)
+        modes = {line.split('\t', 1)[1]: line.split()[0] for line in index.stdout.splitlines()}
+        report(index.returncode == 0 and all(modes.get(name) == '100755' for name in executable_paths), 'Executable entrypoints and active scripts recorded as 100755 in Git')
+    if args.dependencies:
+        run(['python3', 'scripts/check-deps.py'], 'Installed runtime dependencies')
+    else:
+        print('SKIPPED: installed graphical dependencies (use --dependencies on target)')
+    if args.session and shutil.which('hyprctl') and os.environ.get('HYPRLAND_INSTANCE_SIGNATURE'):
+        r = run(['hyprctl', 'configerrors'], 'hyprctl configerrors query')
+        report(r.returncode == 0 and not r.stdout.strip(), 'Running Hyprland reports no configuration errors')
+        run(['hyprctl', 'monitors', '-j'], 'hyprctl monitors')
+        run(['awww', 'query'], 'awww query')
+    else:
+        print('SKIPPED: hyprctl configerrors, actual outputs and wallpaper IPC (no requested live Hyprland session)')
+    print('SKIPPED: visual theme, keyboard/mouse actions, PAM unlock and suspend/resume require interactive hardware testing')
+    print(f'RESULT: {failed} failed check(s)')
+    return 1 if failed else 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

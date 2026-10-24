@@ -1,0 +1,1 @@
+-- Native hardware: use the graphics drivers selected by the system.

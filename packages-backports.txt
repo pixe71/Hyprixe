@@ -1,0 +1,6 @@
+# Lua config requires Hyprland >= 0.55.2 (target: Debian 13 trixie-backports).
+hyprland
+hyprlock
+hypridle
+xdg-desktop-portal-hyprland
+xwayland

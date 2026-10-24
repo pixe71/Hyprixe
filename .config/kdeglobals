@@ -1,0 +1,9 @@
+[General]
+TerminalApplication=alacritty
+TerminalService=Alacritty.desktop
+
+[Icons]
+Theme=breeze-dark
+
+[KDE]
+widgetStyle=kvantum

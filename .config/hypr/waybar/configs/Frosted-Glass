@@ -1,0 +1,47 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 31,
+  "margin-left": 10,
+  "margin-right": 10,
+  "margin-top": 5,
+  "modules-left": ["hyprland/workspaces", "mpris", "tray"],
+  "modules-center": ["hyprland/submap", "idle_inhibitor", "clock"],
+  "modules-right": ["hyprland/window", "cpu", "memory", "network", "bluetooth", "pulseaudio", "custom/power"],
+  "hyprland/workspaces": {
+    "format": "{name}",
+    "on-click": "activate",
+    "all-outputs": false
+  },
+  "hyprland/window": {"format": "{}", "max-length": 32, "separate-outputs": true},
+  "hyprland/submap": {"format": "{}"},
+  "mpris": {"format": "{title}", "max-length": 22},
+  "tray": {"icon-size": 16, "spacing": 6},
+  "idle_inhibitor": {"format": "{icon}", "format-icons": {"activated": "", "deactivated": ""}},
+  "clock": {"format": "{:%H:%M}", "tooltip-format": "{:%A %d %B %Y}"},
+  "cpu": {"format": "CPU {usage}%", "interval": 3},
+  "memory": {"format": "RAM {percentage}%", "interval": 5},
+  "network": {
+    "format-wifi": " {essid}",
+    "format-ethernet": " {ipaddr}",
+    "format-disconnected": "Réseau hors ligne",
+    "tooltip-format": "{ifname} · ↓ {bandwidthDownBytes} ↑ {bandwidthUpBytes}",
+    "on-click": "nm-connection-editor"
+  },
+  "bluetooth": {
+    "format": " {status}",
+    "format-connected": " {num_connections}",
+    "on-click": "blueman-manager"
+  },
+  "pulseaudio": {
+    "format": " {volume}%",
+    "format-muted": " Muet",
+    "on-click": "pavucontrol",
+    "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+  },
+  "custom/power": {
+    "format": "",
+    "tooltip-format": "Session",
+    "on-click": "\"${XDG_CONFIG_HOME:-$HOME/.config}/hypr/scripts/PowerMenu.sh\""
+  }
+}

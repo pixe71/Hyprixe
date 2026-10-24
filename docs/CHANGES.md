@@ -1,0 +1,669 @@
+# Registre des fichiers
+
+Comparaison avec le commit initial `f96dfb4`. Les déplacements de la bibliothèque
+restent présents sous `extras/` ; ils ne sont pas des suppressions de contenu.
+Les différences de fins de ligne seules sont ignorées dans le classement.
+
+## Conservés inchangés (10)
+
+- `.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig`
+- `.config/Kvantum/Frosted-Glass/Frosted-Glass.svg`
+- `.config/Kvantum/kvantum.kvconfig`
+- `.config/hypr/UserConfigs/user_animations.lua`
+- `.config/hypr/UserConfigs/user_settings.lua`
+- `.config/hypr/hl.meta.lua`
+- `.config/hypr/lua/animations.lua`
+- `.config/hypr/rofi/wallust/colors-rofi.rasi`
+- `.local/share/kxmlgui5/dolphin/dolphinui.rc`
+- `wallpapers/min_forest.jpg`
+
+## Modifiés à leur chemin initial (32)
+
+- `.config/alacritty/alacritty.toml`
+- `.config/dolphinrc`
+- `.config/hypr/UserConfigs/monitors.lua`
+- `.config/hypr/UserConfigs/user_decorations.lua`
+- `.config/hypr/UserConfigs/user_defaults.lua`
+- `.config/hypr/UserConfigs/user_keybinds.lua`
+- `.config/hypr/UserScripts/RofiCalc.sh`
+- `.config/hypr/hypridle.conf`
+- `.config/hypr/hyprland.lua`
+- `.config/hypr/hyprlock.conf`
+- `.config/hypr/lua/env.lua`
+- `.config/hypr/lua/keybinds.lua`
+- `.config/hypr/lua/monitors.lua`
+- `.config/hypr/lua/settings.lua`
+- `.config/hypr/lua/startup.lua`
+- `.config/hypr/rofi/0-shared-fonts.rasi`
+- `.config/hypr/rofi/config-calc.rasi`
+- `.config/hypr/rofi/config-clipboard.rasi`
+- `.config/hypr/rofi/config.rasi`
+- `.config/hypr/scripts/ClipManager.sh`
+- `.config/hypr/scripts/ClipboardWatcher.sh`
+- `.config/hypr/scripts/LaunchTerminal.sh`
+- `.config/hypr/scripts/LockScreen.sh`
+- `.config/hypr/scripts/Polkit.sh`
+- `.config/hypr/scripts/RofiLauncher.sh`
+- `.config/hypr/scripts/ScreenShot.sh`
+- `.config/hypr/scripts/WaybarStartup.sh`
+- `.config/hypr/waybar/config`
+- `.config/hypr/waybar/style.css`
+- `.gitignore`
+- `packages.txt`
+- `system-info.txt`
+
+## Déplacés / renommés (359)
+
+- `.config/Kvantum/catppuccin-latte-blue/catppuccin-latte-blue.kvconfig → extras/kooldots/catppuccin-latte-blue/catppuccin-latte-blue.kvconfig`
+- `.config/Kvantum/catppuccin-latte-blue/catppuccin-latte-blue.svg → extras/kooldots/catppuccin-latte-blue/catppuccin-latte-blue.svg`
+- `.config/Kvantum/catppuccin-mocha-blue/catppuccin-mocha-blue.kvconfig → extras/kooldots/catppuccin-mocha-blue/catppuccin-mocha-blue.kvconfig`
+- `.config/Kvantum/catppuccin-mocha-blue/catppuccin-mocha-blue.svg → extras/kooldots/catppuccin-mocha-blue/catppuccin-mocha-blue.svg`
+- `.config/hypr/.luarc.json → extras/kooldots/hypr/.luarc.json`
+- `.config/hypr/Monitor_Profiles/HDMI-A-1-HighRefreshRate.lua → extras/kooldots/hypr/Monitor_Profiles/HDMI-A-1-HighRefreshRate.lua`
+- `.config/hypr/Monitor_Profiles/README → extras/kooldots/hypr/Monitor_Profiles/README`
+- `.config/hypr/Monitor_Profiles/Virtual-1-1920x1080.lua → profiles/vmware/monitor-examples/Virtual-1-1920x1080.lua`
+- `.config/hypr/Monitor_Profiles/Virtual-1-2560x1080.lua → profiles/vmware/monitor-examples/Virtual-1-2560x1080.lua`
+- `.config/hypr/Monitor_Profiles/default.lua → extras/kooldots/hypr/Monitor_Profiles/default.lua`
+- `.config/hypr/Monitor_Profiles/eDP-1-disable.lua → extras/kooldots/hypr/Monitor_Profiles/eDP-1-disable.lua`
+- `.config/hypr/UserConfigs/.luarc.json → extras/kooldots/hypr/UserConfigs/.luarc.json`
+- `.config/hypr/UserConfigs/00-Readme → extras/kooldots/hypr/UserConfigs/00-Readme`
+- `.config/hypr/UserConfigs/ghostty.conf → extras/kooldots/hypr/UserConfigs/ghostty.conf`
+- `.config/hypr/UserConfigs/hyprview-layout.conf → extras/kooldots/hypr/UserConfigs/hyprview-layout.conf`
+- `.config/hypr/UserConfigs/user_laptops.lua → extras/kooldots/hypr/UserConfigs/user_laptops.lua`
+- `.config/hypr/UserConfigs/user_layer_rules.lua → extras/kooldots/hypr/UserConfigs/user_layer_rules.lua`
+- `.config/hypr/UserConfigs/user_startup.lua → extras/kooldots/hypr/UserConfigs/user_startup.lua`
+- `.config/hypr/UserConfigs/user_window_rules.lua → extras/kooldots/hypr/UserConfigs/user_window_rules.lua`
+- `.config/hypr/UserConfigs/workspaces.lua → extras/kooldots/hypr/UserConfigs/workspaces.lua`
+- `.config/hypr/UserScripts/00-Readme → extras/kooldots/hypr/UserScripts/00-Readme`
+- `.config/hypr/UserScripts/RainbowBorders-low-cpu.sh → extras/kooldots/hypr/UserScripts/RainbowBorders-low-cpu.sh`
+- `.config/hypr/UserScripts/RainbowBorders.bak.sh → extras/kooldots/hypr/UserScripts/RainbowBorders.bak.sh`
+- `.config/hypr/UserScripts/RofiBeats.sh → extras/kooldots/hypr/UserScripts/RofiBeats.sh`
+- `.config/hypr/UserScripts/Weather.py → extras/kooldots/hypr/UserScripts/Weather.py`
+- `.config/hypr/UserScripts/Weather.sh → extras/kooldots/hypr/UserScripts/Weather.sh`
+- `.config/hypr/UserScripts/WeatherWrap.sh → extras/kooldots/hypr/UserScripts/WeatherWrap.sh`
+- `.config/hypr/UserScripts/WindowSwitcher.sh → .config/hypr/scripts/WindowSwitcher.sh`
+- `.config/hypr/animations/00-default.lua → extras/kooldots/hypr/animations/00-default.lua`
+- `.config/hypr/animations/01-default - v2.lua → extras/kooldots/hypr/animations/01-default - v2.lua`
+- `.config/hypr/animations/03- Disable Animation.lua → extras/kooldots/hypr/animations/03- Disable Animation.lua`
+- `.config/hypr/animations/END-4.lua → extras/kooldots/hypr/animations/END-4.lua`
+- `.config/hypr/animations/HYDE - Vertical.lua → extras/kooldots/hypr/animations/HYDE - Vertical.lua`
+- `.config/hypr/animations/HYDE - default.lua → extras/kooldots/hypr/animations/HYDE - default.lua`
+- `.config/hypr/animations/HYDE - minimal-1.lua → extras/kooldots/hypr/animations/HYDE - minimal-1.lua`
+- `.config/hypr/animations/HYDE - minimal-2.lua → extras/kooldots/hypr/animations/HYDE - minimal-2.lua`
+- `.config/hypr/animations/HYDE - optimized.lua → extras/kooldots/hypr/animations/HYDE - optimized.lua`
+- `.config/hypr/animations/Hyprland - OEM Default.lua → extras/kooldots/hypr/animations/Hyprland - OEM Default.lua`
+- `.config/hypr/animations/ML4W - classic.lua → extras/kooldots/hypr/animations/ML4W - classic.lua`
+- `.config/hypr/animations/ML4W - dynamic.lua → extras/kooldots/hypr/animations/ML4W - dynamic.lua`
+- `.config/hypr/animations/ML4W - fast.lua → extras/kooldots/hypr/animations/ML4W - fast.lua`
+- `.config/hypr/animations/ML4W - high.lua → extras/kooldots/hypr/animations/ML4W - high.lua`
+- `.config/hypr/animations/ML4W - moving.lua → extras/kooldots/hypr/animations/ML4W - moving.lua`
+- `.config/hypr/animations/ML4W - standard.lua → extras/kooldots/hypr/animations/ML4W - standard.lua`
+- `.config/hypr/animations/Mahaveer - me-1.lua → extras/kooldots/hypr/animations/Mahaveer - me-1.lua`
+- `.config/hypr/animations/Mahaveer - me-2.lua → extras/kooldots/hypr/animations/Mahaveer - me-2.lua`
+- `.config/hypr/animations/Spring-curves.lua → extras/kooldots/hypr/animations/Spring-curves.lua`
+- `.config/hypr/animations/amitpadhan.lua → extras/kooldots/hypr/animations/amitpadhan.lua`
+- `.config/hypr/application-style.conf → extras/kooldots/hypr/application-style.conf`
+- `.config/hypr/configs/.luarc.json → extras/kooldots/hypr/configs/.luarc.json`
+- `.config/hypr/configs/system_env.lua → extras/kooldots/hypr/configs/system_env.lua`
+- `.config/hypr/configs/system_keybinds.lua → extras/kooldots/hypr/configs/system_keybinds.lua`
+- `.config/hypr/configs/system_laptops.lua → extras/kooldots/hypr/configs/system_laptops.lua`
+- `.config/hypr/configs/system_layer_rules.lua → extras/kooldots/hypr/configs/system_layer_rules.lua`
+- `.config/hypr/configs/system_settings.lua → extras/kooldots/hypr/configs/system_settings.lua`
+- `.config/hypr/configs/system_startup.lua → extras/kooldots/hypr/configs/system_startup.lua`
+- `.config/hypr/configs/system_window_rules.lua → extras/kooldots/hypr/configs/system_window_rules.lua`
+- `.config/hypr/hyprlock-1080p.conf → extras/kooldots/hypr/hyprlock-1080p.conf`
+- `.config/hypr/hyprlock-2k.conf → extras/kooldots/hypr/hyprlock-2k.conf`
+- `.config/hypr/initial-boot.sh → extras/kooldots/hypr/initial-boot.sh`
+- `.config/hypr/lua/.luarc.json → extras/kooldots/hypr/lua/.luarc.json`
+- `.config/hypr/lua/decorations.lua → extras/kooldots/hypr/lua/decorations.lua`
+- `.config/hypr/lua/keybind_helpers.lua → extras/kooldots/hypr/lua/keybind_helpers.lua`
+- `.config/hypr/lua/laptop-lid.lua → extras/kooldots/hypr/lua/laptop-lid.lua`
+- `.config/hypr/lua/laptops.lua → extras/kooldots/hypr/lua/laptops.lua`
+- `.config/hypr/lua/layer_rules.lua → extras/kooldots/hypr/lua/layer_rules.lua`
+- `.config/hypr/lua/screenshot-region.lua → extras/kooldots/hypr/lua/screenshot-region.lua`
+- `.config/hypr/lua/submap_helper.lua → extras/kooldots/hypr/lua/submap_helper.lua`
+- `.config/hypr/lua/user_decorations_helper.lua → extras/kooldots/hypr/lua/user_decorations_helper.lua`
+- `.config/hypr/lua/user_defaults.lua → extras/kooldots/hypr/lua/user_defaults.lua`
+- `.config/hypr/lua/user_keybinds_helper.lua → extras/kooldots/hypr/lua/user_keybinds_helper.lua`
+- `.config/hypr/lua/user_layer_rules_helper.lua → extras/kooldots/hypr/lua/user_layer_rules_helper.lua`
+- `.config/hypr/lua/user_overrides.lua → extras/kooldots/hypr/lua/user_overrides.lua`
+- `.config/hypr/lua/user_startup_helper.lua → extras/kooldots/hypr/lua/user_startup_helper.lua`
+- `.config/hypr/lua/user_window_rules_helper.lua → extras/kooldots/hypr/lua/user_window_rules_helper.lua`
+- `.config/hypr/lua/virtual_workspaces.lua → extras/kooldots/hypr/lua/virtual_workspaces.lua`
+- `.config/hypr/lua/window_rules.lua → extras/kooldots/hypr/lua/window_rules.lua`
+- `.config/hypr/lua/workspaces.lua → extras/kooldots/hypr/lua/workspaces.lua`
+- `.config/hypr/rofi/00-terminal.rasi → extras/kooldots/hypr/rofi/00-terminal.rasi`
+- `.config/hypr/rofi/config-Animations.rasi → extras/kooldots/hypr/rofi/config-Animations.rasi`
+- `.config/hypr/rofi/config-Monitors.rasi → extras/kooldots/hypr/rofi/config-Monitors.rasi`
+- `.config/hypr/rofi/config-edit.rasi → extras/kooldots/hypr/rofi/config-edit.rasi`
+- `.config/hypr/rofi/config-emacs-keybinds.rasi → extras/kooldots/hypr/rofi/config-emacs-keybinds.rasi`
+- `.config/hypr/rofi/config-emoji.rasi → extras/kooldots/hypr/rofi/config-emoji.rasi`
+- `.config/hypr/rofi/config-ghostty-theme.rasi → extras/kooldots/hypr/rofi/config-ghostty-theme.rasi`
+- `.config/hypr/rofi/config-keybinds.rasi → extras/kooldots/hypr/rofi/config-keybinds.rasi`
+- `.config/hypr/rofi/config-kitty-theme.rasi → extras/kooldots/hypr/rofi/config-kitty-theme.rasi`
+- `.config/hypr/rofi/config-layout.rasi → extras/kooldots/hypr/rofi/config-layout.rasi`
+- `.config/hypr/rofi/config-rofi-Beats-menu.rasi → extras/kooldots/hypr/rofi/config-rofi-Beats-menu.rasi`
+- `.config/hypr/rofi/config-rofi-Beats.rasi → extras/kooldots/hypr/rofi/config-rofi-Beats.rasi`
+- `.config/hypr/rofi/config-rofi-theme.rasi → extras/kooldots/hypr/rofi/config-rofi-theme.rasi`
+- `.config/hypr/rofi/config-search.rasi → extras/kooldots/hypr/rofi/config-search.rasi`
+- `.config/hypr/rofi/config-starship.rasi → extras/kooldots/hypr/rofi/config-starship.rasi`
+- `.config/hypr/rofi/config-user-defaults.rasi → extras/kooldots/hypr/rofi/config-user-defaults.rasi`
+- `.config/hypr/rofi/config-wallpaper-effect.rasi → extras/kooldots/hypr/rofi/config-wallpaper-effect.rasi`
+- `.config/hypr/rofi/config-wallpaper.rasi → extras/kooldots/hypr/rofi/config-wallpaper.rasi`
+- `.config/hypr/rofi/config-waybar-layout.rasi → extras/kooldots/hypr/rofi/config-waybar-layout.rasi`
+- `.config/hypr/rofi/config-waybar-style.rasi → extras/kooldots/hypr/rofi/config-waybar-style.rasi`
+- `.config/hypr/rofi/config-zsh-theme.rasi → extras/kooldots/hypr/rofi/config-zsh-theme.rasi`
+- `.config/hypr/rofi/dwm-config-horiz.rasi → extras/kooldots/hypr/rofi/dwm-config-horiz.rasi`
+- `.config/hypr/rofi/dwm-config-vert.rasi → extras/kooldots/hypr/rofi/dwm-config-vert.rasi`
+- `.config/hypr/rofi/dwm-dmenu-horiz.rasi → extras/kooldots/hypr/rofi/dwm-dmenu-horiz.rasi`
+- `.config/hypr/rofi/dwm-dmenu-vert.rasi → extras/kooldots/hypr/rofi/dwm-dmenu-vert.rasi`
+- `.config/hypr/rofi/online_music.list → extras/kooldots/hypr/rofi/online_music.list`
+- `.config/hypr/rofi/themes/KooL_LonerOrZ.rasi → extras/kooldots/hypr/rofi/themes/KooL_LonerOrZ.rasi`
+- `.config/hypr/rofi/themes/KooL_TokyoNight.rasi → extras/kooldots/hypr/rofi/themes/KooL_TokyoNight.rasi`
+- `.config/hypr/rofi/themes/KooL_dwm.rasi → extras/kooldots/hypr/rofi/themes/KooL_dwm.rasi`
+- `.config/hypr/rofi/themes/KooL_style-1.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-1.rasi`
+- `.config/hypr/rofi/themes/KooL_style-10-Fancy-v2.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-10-Fancy-v2.rasi`
+- `.config/hypr/rofi/themes/KooL_style-10-Fancy.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-10-Fancy.rasi`
+- `.config/hypr/rofi/themes/KooL_style-11-Win11-list-dark.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-11-Win11-list-dark.rasi`
+- `.config/hypr/rofi/themes/KooL_style-11-Win11-list-light.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-11-Win11-list-light.rasi`
+- `.config/hypr/rofi/themes/KooL_style-12-TOP-Docu.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-12-TOP-Docu.rasi`
+- `.config/hypr/rofi/themes/KooL_style-13-Vertical.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-13-Vertical.rasi`
+- `.config/hypr/rofi/themes/KooL_style-14.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-14.rasi`
+- `.config/hypr/rofi/themes/KooL_style-15-solarized.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-15-solarized.rasi`
+- `.config/hypr/rofi/themes/KooL_style-2-Dark.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-2-Dark.rasi`
+- `.config/hypr/rofi/themes/KooL_style-2-Light.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-2-Light.rasi`
+- `.config/hypr/rofi/themes/KooL_style-3-FullScreen-v1.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-3-FullScreen-v1.rasi`
+- `.config/hypr/rofi/themes/KooL_style-3-Fullscreen-v2.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-3-Fullscreen-v2.rasi`
+- `.config/hypr/rofi/themes/KooL_style-4.rasi → .config/hypr/rofi/themes/Frosted-Glass.rasi`
+- `.config/hypr/rofi/themes/KooL_style-5.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-5.rasi`
+- `.config/hypr/rofi/themes/KooL_style-6.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-6.rasi`
+- `.config/hypr/rofi/themes/KooL_style-7.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-7.rasi`
+- `.config/hypr/rofi/themes/KooL_style-8.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-8.rasi`
+- `.config/hypr/rofi/themes/KooL_style-9.rasi → extras/kooldots/hypr/rofi/themes/KooL_style-9.rasi`
+- `.config/hypr/rofi/themes/saint-rofi.rasi → extras/kooldots/hypr/rofi/themes/saint-rofi.rasi`
+- `.config/hypr/scripts/Add-override-Hyprland-Portal.sh → extras/kooldots/hypr/scripts/Add-override-Hyprland-Portal.sh`
+- `.config/hypr/scripts/AirplaneMode.sh → extras/kooldots/hypr/scripts/AirplaneMode.sh`
+- `.config/hypr/scripts/Animations.sh → extras/kooldots/hypr/scripts/Animations.sh`
+- `.config/hypr/scripts/Battery.sh → extras/kooldots/hypr/scripts/Battery.sh`
+- `.config/hypr/scripts/Brightness.sh → extras/kooldots/hypr/scripts/Brightness.sh`
+- `.config/hypr/scripts/BrightnessKbd.sh → extras/kooldots/hypr/scripts/BrightnessKbd.sh`
+- `.config/hypr/scripts/ChangeBlur.sh → extras/kooldots/hypr/scripts/ChangeBlur.sh`
+- `.config/hypr/scripts/ChangeLayout.sh → extras/kooldots/hypr/scripts/ChangeLayout.sh`
+- `.config/hypr/scripts/ChangeStarshipPrompt.sh → extras/kooldots/hypr/scripts/ChangeStarshipPrompt.sh`
+- `.config/hypr/scripts/DisableWaybarService.sh → extras/kooldots/hypr/scripts/DisableWaybarService.sh`
+- `.config/hypr/scripts/Distro_update.sh → extras/kooldots/hypr/scripts/Distro_update.sh`
+- `.config/hypr/scripts/Dock.sh → extras/kooldots/hypr/scripts/Dock.sh`
+- `.config/hypr/scripts/Dropterminal.sh → extras/kooldots/hypr/scripts/Dropterminal.sh`
+- `.config/hypr/scripts/ExternalBrightness.sh → extras/kooldots/hypr/scripts/ExternalBrightness.sh`
+- `.config/hypr/scripts/Fix-Fedora-45-overview.sh → extras/kooldots/hypr/scripts/Fix-Fedora-45-overview.sh`
+- `.config/hypr/scripts/Float-all-Windows.sh → extras/kooldots/hypr/scripts/Float-all-Windows.sh`
+- `.config/hypr/scripts/GameMode.sh → extras/kooldots/hypr/scripts/GameMode.sh`
+- `.config/hypr/scripts/GhosttyThemeGuard.sh → extras/kooldots/hypr/scripts/GhosttyThemeGuard.sh`
+- `.config/hypr/scripts/Ghostty_themes.sh → extras/kooldots/hypr/scripts/Ghostty_themes.sh`
+- `.config/hypr/scripts/HyprLayoutModule.sh → extras/kooldots/hypr/scripts/HyprLayoutModule.sh`
+- `.config/hypr/scripts/Hypridle.sh → extras/kooldots/hypr/scripts/Hypridle.sh`
+- `.config/hypr/scripts/HypridleStartup.sh → extras/kooldots/hypr/scripts/HypridleStartup.sh`
+- `.config/hypr/scripts/HyprlockWallpaperSelect.sh → extras/kooldots/hypr/scripts/HyprlockWallpaperSelect.sh`
+- `.config/hypr/scripts/Hyprsunset.sh → extras/kooldots/hypr/scripts/Hyprsunset.sh`
+- `.config/hypr/scripts/JavaManager.sh → extras/kooldots/hypr/scripts/JavaManager.sh`
+- `.config/hypr/scripts/KeyBinds.sh → extras/kooldots/hypr/scripts/KeyBinds.sh`
+- `.config/hypr/scripts/KeyHints.sh → extras/kooldots/hypr/scripts/KeyHints.sh`
+- `.config/hypr/scripts/KeybindsLayoutInit.sh → extras/kooldots/hypr/scripts/KeybindsLayoutInit.sh`
+- `.config/hypr/scripts/KeyboardLayout.sh → extras/kooldots/hypr/scripts/KeyboardLayout.sh`
+- `.config/hypr/scripts/KillActiveProcess.sh → extras/kooldots/hypr/scripts/KillActiveProcess.sh`
+- `.config/hypr/scripts/KooLsDotsUpdate.sh → extras/kooldots/hypr/scripts/KooLsDotsUpdate.sh`
+- `.config/hypr/scripts/Kool_Quick_Settings.sh → extras/kooldots/hypr/scripts/Kool_Quick_Settings.sh`
+- `.config/hypr/scripts/LaunchFileManager.sh → extras/kooldots/hypr/scripts/LaunchFileManager.sh`
+- `.config/hypr/scripts/LayoutKeybindDispatch.sh → extras/kooldots/hypr/scripts/LayoutKeybindDispatch.sh`
+- `.config/hypr/scripts/LidSwitch.sh → extras/kooldots/hypr/scripts/LidSwitch.sh`
+- `.config/hypr/scripts/Logout.sh → extras/kooldots/hypr/scripts/Logout.sh`
+- `.config/hypr/scripts/LuaAutoReload.sh → extras/kooldots/hypr/scripts/LuaAutoReload.sh`
+- `.config/hypr/scripts/LuaCycleWindow.sh → extras/kooldots/hypr/scripts/LuaCycleWindow.sh`
+- `.config/hypr/scripts/LuaFocusWorkspaceRelative.sh → extras/kooldots/hypr/scripts/LuaFocusWorkspaceRelative.sh`
+- `.config/hypr/scripts/LuaFullscreenMaximized.sh → extras/kooldots/hypr/scripts/LuaFullscreenMaximized.sh`
+- `.config/hypr/scripts/LuaMoveWindowDirectional.sh → extras/kooldots/hypr/scripts/LuaMoveWindowDirectional.sh`
+- `.config/hypr/scripts/LuaMoveWindowWorkspaceRelative.sh → extras/kooldots/hypr/scripts/LuaMoveWindowWorkspaceRelative.sh`
+- `.config/hypr/scripts/LuaSwapWindow.sh → extras/kooldots/hypr/scripts/LuaSwapWindow.sh`
+- `.config/hypr/scripts/MediaCtrl.sh → extras/kooldots/hypr/scripts/MediaCtrl.sh`
+- `.config/hypr/scripts/MonitorProfiles.sh → extras/kooldots/hypr/scripts/MonitorProfiles.sh`
+- `.config/hypr/scripts/OverviewToggle.sh → extras/kooldots/hypr/scripts/OverviewToggle.sh`
+- `.config/hypr/scripts/PersistWorkspaceLayout.sh → extras/kooldots/hypr/scripts/PersistWorkspaceLayout.sh`
+- `.config/hypr/scripts/Polkit-Diag.sh → extras/kooldots/hypr/scripts/Polkit-Diag.sh`
+- `.config/hypr/scripts/Polkit-NixOS.sh → extras/kooldots/hypr/scripts/Polkit-NixOS.sh`
+- `.config/hypr/scripts/PortalHyprland.sh → extras/kooldots/hypr/scripts/PortalHyprland.sh`
+- `.config/hypr/scripts/PortalHyprlandUbuntu.sh → extras/kooldots/hypr/scripts/PortalHyprlandUbuntu.sh`
+- `.config/hypr/scripts/RainbowBordersStartup.sh → extras/kooldots/hypr/scripts/RainbowBordersStartup.sh`
+- `.config/hypr/scripts/Refresh.sh → extras/kooldots/hypr/scripts/Refresh.sh`
+- `.config/hypr/scripts/RefreshNoWaybar.sh → extras/kooldots/hypr/scripts/RefreshNoWaybar.sh`
+- `.config/hypr/scripts/ResizeActive.sh → extras/kooldots/hypr/scripts/ResizeActive.sh`
+- `.config/hypr/scripts/RofiEmoji.sh → extras/kooldots/hypr/scripts/RofiEmoji.sh`
+- `.config/hypr/scripts/RofiFocusedWallpaperLink.sh → extras/kooldots/hypr/scripts/RofiFocusedWallpaperLink.sh`
+- `.config/hypr/scripts/RofiSearch.sh → extras/kooldots/hypr/scripts/RofiSearch.sh`
+- `.config/hypr/scripts/RofiThemeSelector-modified.sh → extras/kooldots/hypr/scripts/RofiThemeSelector-modified.sh`
+- `.config/hypr/scripts/RofiThemeSelector.sh → extras/kooldots/hypr/scripts/RofiThemeSelector.sh`
+- `.config/hypr/scripts/RofiUserDefaults.sh → extras/kooldots/hypr/scripts/RofiUserDefaults.sh`
+- `.config/hypr/scripts/RofiWlogoutTheme.sh → extras/kooldots/hypr/scripts/RofiWlogoutTheme.sh`
+- `.config/hypr/scripts/RofiWlogoutWallust.sh → extras/kooldots/hypr/scripts/RofiWlogoutWallust.sh`
+- `.config/hypr/scripts/ScrollCycleColumnWidth.sh → extras/kooldots/hypr/scripts/ScrollCycleColumnWidth.sh`
+- `.config/hypr/scripts/ScrollMaximizeToggle.sh → extras/kooldots/hypr/scripts/ScrollMaximizeToggle.sh`
+- `.config/hypr/scripts/Sounds.sh → extras/kooldots/hypr/scripts/Sounds.sh`
+- `.config/hypr/scripts/Tak0-Autodispatch.sh → extras/kooldots/hypr/scripts/Tak0-Autodispatch.sh`
+- `.config/hypr/scripts/Tak0-Per-Window-Switch.sh → extras/kooldots/hypr/scripts/Tak0-Per-Window-Switch.sh`
+- `.config/hypr/scripts/ThemeChanger.sh → extras/kooldots/hypr/scripts/ThemeChanger.sh`
+- `.config/hypr/scripts/Toggle-Active-Window-Audio.sh → extras/kooldots/hypr/scripts/Toggle-Active-Window-Audio.sh`
+- `.config/hypr/scripts/Toggle-weather-waybar-units.sh → extras/kooldots/hypr/scripts/Toggle-weather-waybar-units.sh`
+- `.config/hypr/scripts/ToggleOpacity.sh → extras/kooldots/hypr/scripts/ToggleOpacity.sh`
+- `.config/hypr/scripts/ToggleWaybarTime.sh → extras/kooldots/hypr/scripts/ToggleWaybarTime.sh`
+- `.config/hypr/scripts/TouchPad.sh → extras/kooldots/hypr/scripts/TouchPad.sh`
+- `.config/hypr/scripts/UptimeNixOS.sh → extras/kooldots/hypr/scripts/UptimeNixOS.sh`
+- `.config/hypr/scripts/UserConfigsSwitcher.sh → extras/kooldots/hypr/scripts/UserConfigsSwitcher.sh`
+- `.config/hypr/scripts/Volume.sh → extras/kooldots/hypr/scripts/Volume.sh`
+- `.config/hypr/scripts/WallpaperAutoChange.sh → extras/kooldots/hypr/scripts/WallpaperAutoChange.sh`
+- `.config/hypr/scripts/WallpaperCmd.sh → extras/kooldots/hypr/scripts/WallpaperCmd.sh`
+- `.config/hypr/scripts/WallpaperDaemon.sh → extras/kooldots/hypr/scripts/WallpaperDaemon.sh`
+- `.config/hypr/scripts/WallpaperEffects.sh → extras/kooldots/hypr/scripts/WallpaperEffects.sh`
+- `.config/hypr/scripts/WallpaperRandom.sh → extras/kooldots/hypr/scripts/WallpaperRandom.sh`
+- `.config/hypr/scripts/WallpaperSelect.sh → extras/kooldots/hypr/scripts/WallpaperSelect.sh`
+- `.config/hypr/scripts/WallustConfig.sh → extras/kooldots/hypr/scripts/WallustConfig.sh`
+- `.config/hypr/scripts/WallustSwww.sh → extras/kooldots/hypr/scripts/WallustSwww.sh`
+- `.config/hypr/scripts/WaybarCava.sh → extras/kooldots/hypr/scripts/WaybarCava.sh`
+- `.config/hypr/scripts/WaybarLayout.sh → extras/kooldots/hypr/scripts/WaybarLayout.sh`
+- `.config/hypr/scripts/WaybarScripts.sh → extras/kooldots/hypr/scripts/WaybarScripts.sh`
+- `.config/hypr/scripts/WaybarStyles.sh → extras/kooldots/hypr/scripts/WaybarStyles.sh`
+- `.config/hypr/scripts/Wlogout.sh → extras/kooldots/hypr/scripts/Wlogout.sh`
+- `.config/hypr/scripts/Zoom.sh → extras/kooldots/hypr/scripts/Zoom.sh`
+- `.config/hypr/scripts/ZshChangeTheme.sh → extras/kooldots/hypr/scripts/ZshChangeTheme.sh`
+- `.config/hypr/scripts/build-awww.sh → extras/kooldots/hypr/scripts/build-awww.sh`
+- `.config/hypr/scripts/debian-fix-version.sh → extras/kooldots/hypr/scripts/debian-fix-version.sh`
+- `.config/hypr/scripts/disable.cpu.turbo.sh → extras/kooldots/hypr/scripts/disable.cpu.turbo.sh`
+- `.config/hypr/scripts/dots-tui → extras/kooldots/hypr/scripts/dots-tui`
+- `.config/hypr/scripts/fastfetch-wrapper.sh → extras/kooldots/hypr/scripts/fastfetch-wrapper.sh`
+- `.config/hypr/scripts/float.all.samesize.lua → extras/kooldots/hypr/scripts/float.all.samesize.lua`
+- `.config/hypr/scripts/hyprshot.sh → extras/kooldots/hypr/scripts/hyprshot.sh`
+- `.config/hypr/scripts/install-uv.sh → extras/kooldots/hypr/scripts/install-uv.sh`
+- `.config/hypr/scripts/keybinds_parser.py → extras/kooldots/hypr/scripts/keybinds_parser.py`
+- `.config/hypr/scripts/kooldots-add-ssh-agent.sh → extras/kooldots/hypr/scripts/kooldots-add-ssh-agent.sh`
+- `.config/hypr/scripts/kooldots-add-ssh-localhost.sh → extras/kooldots/hypr/scripts/kooldots-add-ssh-localhost.sh`
+- `.config/hypr/scripts/rofi-emacs-keybinds → extras/kooldots/hypr/scripts/rofi-emacs-keybinds`
+- `.config/hypr/scripts/rofi-ssh-menu.sh → extras/kooldots/hypr/scripts/rofi-ssh-menu.sh`
+- `.config/hypr/scripts/sddm_wallpaper.sh → extras/kooldots/hypr/scripts/sddm_wallpaper.sh`
+- `.config/hypr/scripts/select-hyprview-layout.sh → extras/kooldots/hypr/scripts/select-hyprview-layout.sh`
+- `.config/hypr/scripts/toggle-qs-hyprview.sh → extras/kooldots/hypr/scripts/toggle-qs-hyprview.sh`
+- `.config/hypr/wallust/templates/colors-cava → extras/kooldots/hypr/wallust/templates/colors-cava`
+- `.config/hypr/wallust/templates/colors-ghostty.conf → extras/kooldots/hypr/wallust/templates/colors-ghostty.conf`
+- `.config/hypr/wallust/templates/colors-hyprland.conf → extras/kooldots/hypr/wallust/templates/colors-hyprland.conf`
+- `.config/hypr/wallust/templates/colors-kitty.conf → extras/kooldots/hypr/wallust/templates/colors-kitty.conf`
+- `.config/hypr/wallust/templates/colors-nwg-dock.css → extras/kooldots/hypr/wallust/templates/colors-nwg-dock.css`
+- `.config/hypr/wallust/templates/colors-rofi.rasi → extras/kooldots/hypr/wallust/templates/colors-rofi.rasi`
+- `.config/hypr/wallust/templates/colors-swaync.css → extras/kooldots/hypr/wallust/templates/colors-swaync.css`
+- `.config/hypr/wallust/templates/colors-waybar.css → extras/kooldots/hypr/wallust/templates/colors-waybar.css`
+- `.config/hypr/wallust/templates/qml_color.json → extras/kooldots/hypr/wallust/templates/qml_color.json`
+- `.config/hypr/wallust/wallust-hyprland.conf → extras/kooldots/hypr/wallust/wallust-hyprland.conf`
+- `.config/hypr/wallust/wallust-kitty-v4.toml → extras/kooldots/hypr/wallust/wallust-kitty-v4.toml`
+- `.config/hypr/wallust/wallust-kitty.toml → extras/kooldots/hypr/wallust/wallust-kitty.toml`
+- `.config/hypr/wallust/wallust-v4.toml → extras/kooldots/hypr/wallust/wallust-v4.toml`
+- `.config/hypr/wallust/wallust.toml → extras/kooldots/hypr/wallust/wallust.toml`
+- `.config/hypr/waybar/Modules → extras/kooldots/hypr/waybar/Modules`
+- `.config/hypr/waybar/ModulesCustom → extras/kooldots/hypr/waybar/ModulesCustom`
+- `.config/hypr/waybar/ModulesGroups → extras/kooldots/hypr/waybar/ModulesGroups`
+- `.config/hypr/waybar/ModulesVertical → extras/kooldots/hypr/waybar/ModulesVertical`
+- `.config/hypr/waybar/ModulesWorkspaces → extras/kooldots/hypr/waybar/ModulesWorkspaces`
+- `.config/hypr/waybar/UserModules → extras/kooldots/hypr/waybar/UserModules`
+- `.config/hypr/waybar/configs/BOT-&-Left-SouthWest → extras/kooldots/hypr/waybar/configs/BOT-&-Left-SouthWest`
+- `.config/hypr/waybar/configs/BOT-&-Right-SouthEast → extras/kooldots/hypr/waybar/configs/BOT-&-Right-SouthEast`
+- `.config/hypr/waybar/configs/BOT-Camellia → extras/kooldots/hypr/waybar/configs/BOT-Camellia`
+- `.config/hypr/waybar/configs/BOT-Chrysanthemum → extras/kooldots/hypr/waybar/configs/BOT-Chrysanthemum`
+- `.config/hypr/waybar/configs/BOT-Default → extras/kooldots/hypr/waybar/configs/BOT-Default`
+- `.config/hypr/waybar/configs/BOT-Default-Laptop → extras/kooldots/hypr/waybar/configs/BOT-Default-Laptop`
+- `.config/hypr/waybar/configs/BOT-Gardenia → extras/kooldots/hypr/waybar/configs/BOT-Gardenia`
+- `.config/hypr/waybar/configs/BOT-Peony → extras/kooldots/hypr/waybar/configs/BOT-Peony`
+- `.config/hypr/waybar/configs/BOT-Simple → extras/kooldots/hypr/waybar/configs/BOT-Simple`
+- `.config/hypr/waybar/configs/BOT-Sleek → extras/kooldots/hypr/waybar/configs/BOT-Sleek`
+- `.config/hypr/waybar/configs/LEFT-WestWing → extras/kooldots/hypr/waybar/configs/LEFT-WestWing`
+- `.config/hypr/waybar/configs/LEFT-WestWing-v2 → extras/kooldots/hypr/waybar/configs/LEFT-WestWing-v2`
+- `.config/hypr/waybar/configs/RIGHT-EastWing → extras/kooldots/hypr/waybar/configs/RIGHT-EastWing`
+- `.config/hypr/waybar/configs/RIGHT-EastWing-v2 → extras/kooldots/hypr/waybar/configs/RIGHT-EastWing-v2`
+- `.config/hypr/waybar/configs/Senshi-Tokyo-Night → .config/hypr/waybar/configs/Frosted-Glass`
+- `.config/hypr/waybar/configs/TOP-&-BOT-SummitSplit → extras/kooldots/hypr/waybar/configs/TOP-&-BOT-SummitSplit`
+- `.config/hypr/waybar/configs/TOP-&-BOT-SummitSplit-glass → extras/kooldots/hypr/waybar/configs/TOP-&-BOT-SummitSplit-glass`
+- `.config/hypr/waybar/configs/TOP-&-BOT-SummitSplit-v2 → extras/kooldots/hypr/waybar/configs/TOP-&-BOT-SummitSplit-v2`
+- `.config/hypr/waybar/configs/TOP-&-BOT-SummitSplit-v3 → extras/kooldots/hypr/waybar/configs/TOP-&-BOT-SummitSplit-v3`
+- `.config/hypr/waybar/configs/TOP-&-Left-NorthWest → extras/kooldots/hypr/waybar/configs/TOP-&-Left-NorthWest`
+- `.config/hypr/waybar/configs/TOP-&-Right-NorthEast → extras/kooldots/hypr/waybar/configs/TOP-&-Right-NorthEast`
+- `.config/hypr/waybar/configs/TOP-0-Ja-0 → extras/kooldots/hypr/waybar/configs/TOP-0-Ja-0`
+- `.config/hypr/waybar/configs/TOP-Arrow → extras/kooldots/hypr/waybar/configs/TOP-Arrow`
+- `.config/hypr/waybar/configs/TOP-Camellia → extras/kooldots/hypr/waybar/configs/TOP-Camellia`
+- `.config/hypr/waybar/configs/TOP-Chrysanthemum → extras/kooldots/hypr/waybar/configs/TOP-Chrysanthemum`
+- `.config/hypr/waybar/configs/TOP-Default → extras/kooldots/hypr/waybar/configs/TOP-Default`
+- `.config/hypr/waybar/configs/TOP-Default-Laptop → extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop`
+- `.config/hypr/waybar/configs/TOP-Default-Laptop-glass → extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-glass`
+- `.config/hypr/waybar/configs/TOP-Default-Laptop-old-v1 → extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-old-v1`
+- `.config/hypr/waybar/configs/TOP-Default-Laptop-old-v2 → extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-old-v2`
+- `.config/hypr/waybar/configs/TOP-Default-Laptop-old-v3 → extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-old-v3`
+- `.config/hypr/waybar/configs/TOP-Default-Laptop-old-v4 → extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-old-v4`
+- `.config/hypr/waybar/configs/TOP-Default-Laptop-old-v5 → extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-old-v5`
+- `.config/hypr/waybar/configs/TOP-Default-old-v1 → extras/kooldots/hypr/waybar/configs/TOP-Default-old-v1`
+- `.config/hypr/waybar/configs/TOP-Default-old-v2 → extras/kooldots/hypr/waybar/configs/TOP-Default-old-v2`
+- `.config/hypr/waybar/configs/TOP-Default-old-v3 → extras/kooldots/hypr/waybar/configs/TOP-Default-old-v3`
+- `.config/hypr/waybar/configs/TOP-Default-old-v4 → extras/kooldots/hypr/waybar/configs/TOP-Default-old-v4`
+- `.config/hypr/waybar/configs/TOP-Everforest → extras/kooldots/hypr/waybar/configs/TOP-Everforest`
+- `.config/hypr/waybar/configs/TOP-Everforest-glass → extras/kooldots/hypr/waybar/configs/TOP-Everforest-glass`
+- `.config/hypr/waybar/configs/TOP-Gardenia → extras/kooldots/hypr/waybar/configs/TOP-Gardenia`
+- `.config/hypr/waybar/configs/TOP-Minimal-Long → extras/kooldots/hypr/waybar/configs/TOP-Minimal-Long`
+- `.config/hypr/waybar/configs/TOP-Minimal-Short → extras/kooldots/hypr/waybar/configs/TOP-Minimal-Short`
+- `.config/hypr/waybar/configs/TOP-Peony → extras/kooldots/hypr/waybar/configs/TOP-Peony`
+- `.config/hypr/waybar/configs/TOP-Simple → extras/kooldots/hypr/waybar/configs/TOP-Simple`
+- `.config/hypr/waybar/configs/TOP-Simpliest → extras/kooldots/hypr/waybar/configs/TOP-Simpliest`
+- `.config/hypr/waybar/configs/TOP-Sleek → extras/kooldots/hypr/waybar/configs/TOP-Sleek`
+- `.config/hypr/waybar/configs/TOP-ddubs-simple-bar → extras/kooldots/hypr/waybar/configs/TOP-ddubs-simple-bar`
+- `.config/hypr/waybar/style/Black-&-White-Monochrome.css → extras/kooldots/hypr/waybar/style/Black-&-White-Monochrome.css`
+- `.config/hypr/waybar/style/Catppuccin-Frappe.css → extras/kooldots/hypr/waybar/style/Catppuccin-Frappe.css`
+- `.config/hypr/waybar/style/Catppuccin-Latte.css → extras/kooldots/hypr/waybar/style/Catppuccin-Latte.css`
+- `.config/hypr/waybar/style/Catppuccin-Mocha.css → extras/kooldots/hypr/waybar/style/Catppuccin-Mocha.css`
+- `.config/hypr/waybar/style/Colored-Chroma-Glow.css → extras/kooldots/hypr/waybar/style/Colored-Chroma-Glow.css`
+- `.config/hypr/waybar/style/Colored-Translucent.css → extras/kooldots/hypr/waybar/style/Colored-Translucent.css`
+- `.config/hypr/waybar/style/Colorful-Aurora-Blossom.css → extras/kooldots/hypr/waybar/style/Colorful-Aurora-Blossom.css`
+- `.config/hypr/waybar/style/Colorful-Aurora.css → extras/kooldots/hypr/waybar/style/Colorful-Aurora.css`
+- `.config/hypr/waybar/style/Colorful-Oglo-Chicklets.css → extras/kooldots/hypr/waybar/style/Colorful-Oglo-Chicklets.css`
+- `.config/hypr/waybar/style/Colorful-Rainbow-Spectrum.css → extras/kooldots/hypr/waybar/style/Colorful-Rainbow-Spectrum.css`
+- `.config/hypr/waybar/style/Colorful-stolen-style.css → extras/kooldots/hypr/waybar/style/Colorful-stolen-style.css`
+- `.config/hypr/waybar/style/Crystal-Clear-Glass.css → extras/kooldots/hypr/waybar/style/Crystal-Clear-Glass.css`
+- `.config/hypr/waybar/style/Dark-Golden-Eclipse.css → extras/kooldots/hypr/waybar/style/Dark-Golden-Eclipse.css`
+- `.config/hypr/waybar/style/Dark-Golden-Noir.css → extras/kooldots/hypr/waybar/style/Dark-Golden-Noir.css`
+- `.config/hypr/waybar/style/Dark-Half-Moon.css → extras/kooldots/hypr/waybar/style/Dark-Half-Moon.css`
+- `.config/hypr/waybar/style/Dark-Latte-Wallust-combined-v2.css → extras/kooldots/hypr/waybar/style/Dark-Latte-Wallust-combined-v2.css`
+- `.config/hypr/waybar/style/Dark-Latte-Wallust-combined.css → extras/kooldots/hypr/waybar/style/Dark-Latte-Wallust-combined.css`
+- `.config/hypr/waybar/style/Dark-Purpl.css → extras/kooldots/hypr/waybar/style/Dark-Purpl.css`
+- `.config/hypr/waybar/style/Dark-Wallust-Obsidian-Edge.css → extras/kooldots/hypr/waybar/style/Dark-Wallust-Obsidian-Edge.css`
+- `.config/hypr/waybar/style/Extra-Arrow.css → extras/kooldots/hypr/waybar/style/Extra-Arrow.css`
+- `.config/hypr/waybar/style/Extra-Crimson.css → extras/kooldots/hypr/waybar/style/Extra-Crimson.css`
+- `.config/hypr/waybar/style/Extra-EverForest.css → extras/kooldots/hypr/waybar/style/Extra-EverForest.css`
+- `.config/hypr/waybar/style/Extra-ML4W-starter.css → extras/kooldots/hypr/waybar/style/Extra-ML4W-starter.css`
+- `.config/hypr/waybar/style/Extra-Mauve.css → extras/kooldots/hypr/waybar/style/Extra-Mauve.css`
+- `.config/hypr/waybar/style/Extra-Modern-Combined-Transparent.css → extras/kooldots/hypr/waybar/style/Extra-Modern-Combined-Transparent.css`
+- `.config/hypr/waybar/style/Extra-Modern-Combined.css → extras/kooldots/hypr/waybar/style/Extra-Modern-Combined.css`
+- `.config/hypr/waybar/style/Extra-Neon-Circuit.css → extras/kooldots/hypr/waybar/style/Extra-Neon-Circuit.css`
+- `.config/hypr/waybar/style/Extra-Prismatic-Glow.css → extras/kooldots/hypr/waybar/style/Extra-Prismatic-Glow.css`
+- `.config/hypr/waybar/style/Extra-Rose-Pine.css → extras/kooldots/hypr/waybar/style/Extra-Rose-Pine.css`
+- `.config/hypr/waybar/style/Extra-Simple-Pink.css → extras/kooldots/hypr/waybar/style/Extra-Simple-Pink.css`
+- `.config/hypr/waybar/style/Light-Monochrome-Contrast.css → extras/kooldots/hypr/waybar/style/Light-Monochrome-Contrast.css`
+- `.config/hypr/waybar/style/Light-Obsidian-Glow.css → extras/kooldots/hypr/waybar/style/Light-Obsidian-Glow.css`
+- `.config/hypr/waybar/style/ML4W-Glass-3d.css → extras/kooldots/hypr/waybar/style/ML4W-Glass-3d.css`
+- `.config/hypr/waybar/style/ML4W-Glass.css → extras/kooldots/hypr/waybar/style/ML4W-Glass.css`
+- `.config/hypr/waybar/style/ML4W/glass.css → extras/kooldots/hypr/waybar/style/ML4W/glass.css`
+- `.config/hypr/waybar/style/Rainbow-RGB-Bordered.css → extras/kooldots/hypr/waybar/style/Rainbow-RGB-Bordered.css`
+- `.config/hypr/waybar/style/Retro-Simple-Style.css → extras/kooldots/hypr/waybar/style/Retro-Simple-Style.css`
+- `.config/hypr/waybar/style/Senshi-Tokyo-Night.css → .config/hypr/waybar/style/Frosted-Glass.css`
+- `.config/hypr/waybar/style/Transparent-Crystal-Clear.css → extras/kooldots/hypr/waybar/style/Transparent-Crystal-Clear.css`
+- `.config/hypr/waybar/style/VERTICAL-Catpuccin-Mocha.css → extras/kooldots/hypr/waybar/style/VERTICAL-Catpuccin-Mocha.css`
+- `.config/hypr/waybar/style/Wallust-Bordered-Chroma-Fusion-Edge.css → extras/kooldots/hypr/waybar/style/Wallust-Bordered-Chroma-Fusion-Edge.css`
+- `.config/hypr/waybar/style/Wallust-Bordered-Chroma-Simple.css → extras/kooldots/hypr/waybar/style/Wallust-Bordered-Chroma-Simple.css`
+- `.config/hypr/waybar/style/Wallust-Box-type.css → extras/kooldots/hypr/waybar/style/Wallust-Box-type.css`
+- `.config/hypr/waybar/style/Wallust-Chroma-Edge.css → extras/kooldots/hypr/waybar/style/Wallust-Chroma-Edge.css`
+- `.config/hypr/waybar/style/Wallust-Chroma-Fusion.css → extras/kooldots/hypr/waybar/style/Wallust-Chroma-Fusion.css`
+- `.config/hypr/waybar/style/Wallust-Chroma-Tally-V2.css → extras/kooldots/hypr/waybar/style/Wallust-Chroma-Tally-V2.css`
+- `.config/hypr/waybar/style/Wallust-Chroma-Tally.css → extras/kooldots/hypr/waybar/style/Wallust-Chroma-Tally.css`
+- `.config/hypr/waybar/style/Wallust-Colored.css → extras/kooldots/hypr/waybar/style/Wallust-Colored.css`
+- `.config/hypr/waybar/style/Wallust-ML4W-modern-mixed.css → extras/kooldots/hypr/waybar/style/Wallust-ML4W-modern-mixed.css`
+- `.config/hypr/waybar/style/Wallust-ML4W-modern.css → extras/kooldots/hypr/waybar/style/Wallust-ML4W-modern.css`
+- `.config/hypr/waybar/style/Wallust-Simple.css → extras/kooldots/hypr/waybar/style/Wallust-Simple.css`
+- `.config/hypr/waybar/style/Wallust-Transparent-Crystal-Clear.css → extras/kooldots/hypr/waybar/style/Wallust-Transparent-Crystal-Clear.css`
+- `.config/hypr/waybar/style/catppuccin-themes/frappe.css → extras/kooldots/hypr/waybar/style/catppuccin-themes/frappe.css`
+- `.config/hypr/waybar/style/catppuccin-themes/latte.css → extras/kooldots/hypr/waybar/style/catppuccin-themes/latte.css`
+- `.config/hypr/waybar/style/catppuccin-themes/mocha.css → extras/kooldots/hypr/waybar/style/catppuccin-themes/mocha.css`
+- `.config/hypr/waybar/style/catppuccin-themes/rgbmocha.css → extras/kooldots/hypr/waybar/style/catppuccin-themes/rgbmocha.css`
+- `.config/hypr/waybar/wallust/colors-waybar.css → extras/kooldots/hypr/waybar/wallust/colors-waybar.css`
+
+## Supprimés (192)
+
+- `.config/hypr/.initial_startup_done`
+- `.config/hypr/UserConfigs/kitty-themes/00-Default.conf`
+- `.config/hypr/UserConfigs/kitty-themes/01-Wallust.conf`
+- `.config/hypr/UserConfigs/kitty-themes/3024_Day.conf`
+- `.config/hypr/UserConfigs/kitty-themes/3024_Night.conf`
+- `.config/hypr/UserConfigs/kitty-themes/AdventureTime.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Afterglow.conf`
+- `.config/hypr/UserConfigs/kitty-themes/AlienBlood.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Alucard.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Apprentice.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Argonaut.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Arthur.conf`
+- `.config/hypr/UserConfigs/kitty-themes/AtelierSulphurpool.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Atom.conf`
+- `.config/hypr/UserConfigs/kitty-themes/AtomOneLight.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Batman.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Belafonte_Day.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Belafonte_Night.conf`
+- `.config/hypr/UserConfigs/kitty-themes/BirdsOfParadise.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Blazer.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Borland.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Bright_Lights.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Broadcast.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Brogrammer.conf`
+- `.config/hypr/UserConfigs/kitty-themes/C64.conf`
+- `.config/hypr/UserConfigs/kitty-themes/CLRS.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Chalk.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Chalkboard.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Ciapre.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Cobalt2.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Cobalt_Neon.conf`
+- `.config/hypr/UserConfigs/kitty-themes/CrayonPonyFish.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Dark_Pastel.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Darkside.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Desert.conf`
+- `.config/hypr/UserConfigs/kitty-themes/DimmedMonokai.conf`
+- `.config/hypr/UserConfigs/kitty-themes/DotGov.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Dracula.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Dumbledore.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Duotone_Dark.conf`
+- `.config/hypr/UserConfigs/kitty-themes/ENCOM.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Earthsong.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Elemental.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Espresso.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Espresso_Libre.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Fideloper.conf`
+- `.config/hypr/UserConfigs/kitty-themes/FishTank.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Flat.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Flatland.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Floraverse.conf`
+- `.config/hypr/UserConfigs/kitty-themes/FrontEndDelight.conf`
+- `.config/hypr/UserConfigs/kitty-themes/FunForrest.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Galaxy.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Github.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Glacier.conf`
+- `.config/hypr/UserConfigs/kitty-themes/GoaBase.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Grape.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Grass.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Hardcore.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Harper.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Highway.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Hipster_Green.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Homebrew.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Hurtado.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Hybrid.conf`
+- `.config/hypr/UserConfigs/kitty-themes/IC_Green_PPL.conf`
+- `.config/hypr/UserConfigs/kitty-themes/IC_Orange_PPL.conf`
+- `.config/hypr/UserConfigs/kitty-themes/IR_Black.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Jackie_Brown.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Japanesque.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Jellybeans.conf`
+- `.config/hypr/UserConfigs/kitty-themes/JetBrains_Darcula.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Kibble.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Later_This_Evening.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Lavandula.conf`
+- `.config/hypr/UserConfigs/kitty-themes/LiquidCarbon.conf`
+- `.config/hypr/UserConfigs/kitty-themes/LiquidCarbonTransparent.conf`
+- `.config/hypr/UserConfigs/kitty-themes/LiquidCarbonTransparentInverse.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Man_Page.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Material.conf`
+- `.config/hypr/UserConfigs/kitty-themes/MaterialDark.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Mathias.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Medallion.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Misterioso.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Molokai.conf`
+- `.config/hypr/UserConfigs/kitty-themes/MonaLisa.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Monokai.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Monokai_Classic.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Monokai_Pro.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Monokai_Pro_(Filter_Machine).conf`
+- `.config/hypr/UserConfigs/kitty-themes/Monokai_Pro_(Filter_Octagon).conf`
+- `.config/hypr/UserConfigs/kitty-themes/Monokai_Pro_(Filter_Ristretto).conf`
+- `.config/hypr/UserConfigs/kitty-themes/Monokai_Pro_(Filter_Spectrum).conf`
+- `.config/hypr/UserConfigs/kitty-themes/Monokai_Soda.conf`
+- `.config/hypr/UserConfigs/kitty-themes/N0tch2k.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Neopolitan.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Neutron.conf`
+- `.config/hypr/UserConfigs/kitty-themes/NightLion_v1.conf`
+- `.config/hypr/UserConfigs/kitty-themes/NightLion_v2.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Nova.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Novel.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Obsidian.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Ocean.conf`
+- `.config/hypr/UserConfigs/kitty-themes/OceanicMaterial.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Ollie.conf`
+- `.config/hypr/UserConfigs/kitty-themes/OneDark.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Parasio_Dark.conf`
+- `.config/hypr/UserConfigs/kitty-themes/PaulMillr.conf`
+- `.config/hypr/UserConfigs/kitty-themes/PencilDark.conf`
+- `.config/hypr/UserConfigs/kitty-themes/PencilLight.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Piatto_Light.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Pnevma.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Pro.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Red_Alert.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Red_Sands.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Relaxed_Afterglow.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Renault_Style.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Renault_Style_Light.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Rippedcasts.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Royal.conf`
+- `.config/hypr/UserConfigs/kitty-themes/SeaShells.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Seafoam_Pastel.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Seti.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Shaman.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Slate.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Smyck.conf`
+- `.config/hypr/UserConfigs/kitty-themes/SoftServer.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Solarized_Darcula.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Solarized_Dark.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Solarized_Dark_-_Patched.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Solarized_Dark_Higher_Contrast.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Solarized_Light.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Source_Code_X.conf`
+- `.config/hypr/UserConfigs/kitty-themes/SpaceGray.conf`
+- `.config/hypr/UserConfigs/kitty-themes/SpaceGray_Eighties.conf`
+- `.config/hypr/UserConfigs/kitty-themes/SpaceGray_Eighties_Dull.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Spacedust.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Spiderman.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Spring.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Square.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Sundried.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Symfonic.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Tango_Dark.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Tango_Light.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Teerb.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Thayer_Bright.conf`
+- `.config/hypr/UserConfigs/kitty-themes/The_Hulk.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Tomorrow.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Tomorrow_Night.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Tomorrow_Night_Blue.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Tomorrow_Night_Bright.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Tomorrow_Night_Eighties.conf`
+- `.config/hypr/UserConfigs/kitty-themes/ToyChest.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Treehouse.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Twilight.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Ubuntu.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Urple.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Vaughn.conf`
+- `.config/hypr/UserConfigs/kitty-themes/VibrantInk.conf`
+- `.config/hypr/UserConfigs/kitty-themes/WarmNeon.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Wez.conf`
+- `.config/hypr/UserConfigs/kitty-themes/WildCherry.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Wombat.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Wryan.conf`
+- `.config/hypr/UserConfigs/kitty-themes/Zenburn.conf`
+- `.config/hypr/UserConfigs/kitty-themes/ayu.conf`
+- `.config/hypr/UserConfigs/kitty-themes/ayu_light.conf`
+- `.config/hypr/UserConfigs/kitty-themes/ayu_mirage.conf`
+- `.config/hypr/UserConfigs/kitty-themes/gruvbox_dark.conf`
+- `.config/hypr/UserConfigs/kitty-themes/gruvbox_light.conf`
+- `.config/hypr/UserConfigs/kitty-themes/idleToes.conf`
+- `.config/hypr/UserConfigs/kitty-themes/snazzy.conf`
+- `.config/hypr/UserConfigs/kitty.conf`
+- `.config/hypr/UserConfigs/user_env.lua`
+- `.config/hypr/UserScripts/SetFrostedWallpaper.sh`
+- `.config/hypr/backup-before-tokyonight/colors-waybar.css`
+- `.config/hypr/backup-before-tokyonight/style.css.backup`
+- `.config/hypr/backup-before-tokyonight/user_decorations.lua`
+- `.config/hypr/backup-before-tokyonight/wallust-hyprland.conf`
+- `.config/hypr/rofi/.current_wallpaper`
+- `.config/hypr/rofi/.current_wallpaper_Virtual-1`
+- `.config/hypr/rofi/.current_wallpaper_focused`
+- `.config/hypr/scripts/Kitty_themes.sh`
+- `.config/hypr/scripts/LaunchThunar.sh`
+- `.config/hypr/scripts/dots-tui-ubuntu-2404`
+- `.config/hypr/scripts/set-default-thunar-terminal.sh`
+- `.config/hypr/v2.3.27.7`
+- `.config/hypr/wallpaper_effects/.hyprlock_current`
+- `.config/hypr/wallpaper_effects/.wallpaper_current`
+- `.config/hypr/wallpaper_effects/.wallpaper_current_Virtual-1`
+- `.config/hypr/wallpaper_effects/.wallpaper_modified`
+- `.config/hypr/waybar/configs/[TOP & BOT] SummitSplit v3`
+
+## Créés (55)
+
+- `.config/hypr/lua/rules.lua`
+- `.config/hypr/profile.env`
+- `.config/hypr/profile.lua`
+- `.config/hypr/scripts/PowerMenu.sh`
+- `.config/hypr/scripts/SessionStartup.sh`
+- `.config/hypr/scripts/Wallpaper.sh`
+- `.config/kdeglobals`
+- `.config/qt6ct/qt6ct.conf`
+- `.config/systemd/user/waybar.service.d/hyprixe.conf`
+- `.gitattributes`
+- `CREDITS.md`
+- `INSTALL.md`
+- `LICENSE`
+- `README.md`
+- `docs/AUDIT.md`
+- `docs/CHANGES.md`
+- `docs/VALIDATION.md`
+- `docs/inventory-original.tsv`
+- `docs/screenshots/README.md`
+- `extras/kooldots/README.md`
+- `extras/kooldots/hypr/UserConfigs/monitors.lua`
+- `extras/kooldots/hypr/UserConfigs/user_defaults.lua`
+- `extras/kooldots/hypr/hypridle.conf`
+- `extras/kooldots/hypr/hyprland.lua`
+- `extras/kooldots/hypr/hyprlock.conf`
+- `extras/kooldots/hypr/lua/env.lua`
+- `extras/kooldots/hypr/lua/keybinds.lua`
+- `extras/kooldots/hypr/lua/monitors.lua`
+- `extras/kooldots/hypr/lua/settings.lua`
+- `extras/kooldots/hypr/lua/startup.lua`
+- `extras/kooldots/hypr/rofi/config.rasi`
+- `extras/kooldots/hypr/scripts/LaunchTerminal.sh`
+- `extras/kooldots/hypr/scripts/LockScreen.sh`
+- `extras/kooldots/hypr/scripts/RofiLauncher.sh`
+- `extras/kooldots/hypr/scripts/WaybarStartup.sh`
+- `install.sh`
+- `packages-backports.txt`
+- `packages-optional.txt`
+- `profiles/native/profile.env`
+- `profiles/native/profile.lua`
+- `profiles/vmware/packages.txt`
+- `profiles/vmware/profile.env`
+- `profiles/vmware/profile.lua`
+- `scripts/build-runtime.sh`
+- `scripts/check-deps.py`
+- `scripts/deploy.py`
+- `scripts/verify.py`
+- `scripts/waybar-lua-ipc.hpp`
+- `scripts/waybar_compat.py`
+- `tests/check_lua.lua`
+- `tests/test_deploy.py`
+- `tests/test_runtime.py`
+- `tests/test_waybar_compat.py`
+- `uninstall.sh`
+- `verify.sh`
+
