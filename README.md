@@ -1,134 +1,133 @@
 # Hyprixe Debian — Frosted Glass
 
-Configuration Debian 13 / Hyprland issue de KoolDots, adaptée à Alacritty et Dolphin.
-Le profil principal utilise les pilotes graphiques du PC. Un profil VMware distinct
-conserve les adaptations de rendu logiciel nécessaires aux anciens essais.
+Debian 13 / Hyprland configuration based on KoolDots, adapted for Alacritty and Dolphin.
+The main profile uses the PC's graphics drivers. A separate VMware profile
+preserves the software-rendering adjustments needed during earlier testing.
 
-Le thème conserve le wallpaper `min_forest.jpg`, le verre translucide bleu/cyan,
-le blur, les arrondis de 13 px, les bordures bleues/violettes, Waybar en haut et
-le thème Kvantum Frosted-Glass. Les fichiers SVG/Kvantum, le wallpaper et la toolbar
-Dolphin d’origine sont conservés octet pour octet.
+The theme preserves the `min_forest.jpg` wallpaper, translucent blue/cyan glass,
+blur, 13 px rounded corners, blue/purple borders, a top Waybar and the
+Frosted-Glass Kvantum theme. The original SVG/Kvantum files, wallpaper and Dolphin
+toolbar are preserved byte for byte.
 
-![Wallpaper Frosted Glass](wallpapers/min_forest.jpg)
+![Frosted Glass wallpaper](wallpapers/min_forest.jpg)
 
-Les captures de la session sur machine physique sont à ajouter dans
-[`docs/screenshots/`](docs/screenshots/README.md). L’image ci-dessus est le wallpaper,
-pas une capture d’une session validée.
+Screenshots of a session on physical hardware should be added to
+[`docs/screenshots/`](docs/screenshots/README.md). The image above is the wallpaper,
+not a screenshot of a validated session.
 
-## Installation rapide
+## Quick installation
 
-Cible : **Debian 13**, **Hyprland 0.56.2 avec configuration Lua** (version
-fonctionnelle indiquée par l’utilisateur, API vérifiée au tag upstream v0.56.2).
-**0.55.2 est la version minimale acceptée par l’installateur**, pas une version
-imposée : 0.56.2 est acceptée. Les versions futures demandent leur propre contrôle.
-Utiliser un compte utilisateur avec `sudo` et un pilote GPU opérationnel.
+Target: **Debian 13**, **Hyprland 0.56.2 with Lua configuration** (the working
+version reported by the user; API checked against the upstream v0.56.2 tag).
+**0.55.2 is the minimum version accepted by the installer**, not a required
+version: 0.56.2 is accepted. Future versions require their own compatibility review.
+Use a regular user account with `sudo` and a working GPU driver.
 
 ```bash
 git clone https://github.com/pixe71/hyprixe-debian.git
 cd hyprixe-debian
-./install.sh                 # native par défaut
-# ou : ./install.sh vmware
+./install.sh                 # native by default
+# or: ./install.sh vmware
 ```
 
-L’installateur installe les dépendances Debian, active les backports officiels si
-nécessaire, prépare Rofi Wayland 2.0.0 / awww 0.12.1 et un Waybar compatible IPC Lua
-si nécessaire, puis sauvegarde et
-déploie les fichiers utilisateur. La première compilation peut prendre plusieurs
-minutes et télécharger les outils C/Rust. Lire [INSTALL.md](INSTALL.md) pour les
-prérequis, les effets système, les sauvegardes, la restauration et les contrôles.
+The installer installs Debian dependencies, enables official backports if needed,
+prepares Rofi Wayland 2.0.0 / awww 0.12.1 and a Waybar build with Lua IPC support
+if needed, then backs up and deploys user files. The first build may take several
+minutes and download C/Rust tools. Read [INSTALL.md](INSTALL.md) for prerequisites,
+system changes, backups, restoration and validation steps.
 
-Waybar 0.12 de Debian utilise encore l’ancien IPC pour les clics sur les workspaces.
-L’installateur réutilise un Waybar doté du support Lua ou compile la même base
-0.12 avec une adaptation limitée de ces requêtes. La disposition et le thème de
-la barre restent identiques. Voir le contrôle 0.56.2 dans `docs/VALIDATION.md`.
+Debian's Waybar 0.12 still uses the old IPC for workspace clicks. The installer
+reuses a Waybar build with Lua support or builds the same 0.12 base with a limited
+adaptation of those requests. The bar's layout and theme stay the same.
+See the 0.56.2 compatibility review in `docs/VALIDATION.md`.
 
 ```bash
-./install.sh --dry-run       # aperçu, sans APT ni copie de configuration
-./install.sh --no-packages   # dépendances déjà présentes, vérifiées avant copie
-./verify.sh                 # contrôles statiques et tests dans un HOME temporaire
+./install.sh --dry-run       # preview, without APT or configuration copying
+./install.sh --no-packages   # dependencies already installed, checked before copying
+./verify.sh                 # static checks and tests in a temporary HOME
 ./uninstall.sh --list
 ./uninstall.sh --dry-run
-./uninstall.sh              # annule la dernière transaction non restaurée
+./uninstall.sh              # undo the latest transaction that has not been restored
 ```
 
-## Composants
+## Components
 
-Hyprland et les modules Lua KoolDots, Alacritty, Dolphin, Kvantum/Qt6, Waybar,
+Hyprland and KoolDots Lua modules, Alacritty, Dolphin, Kvantum/Qt6, Waybar,
 Rofi Wayland, Hyprlock, Hypridle, awww, PipeWire/WirePlumber, NetworkManager,
-Blueman, SwayNC et cliphist. Les icônes utilisent Breeze et FontAwesome ; la
-police JetBrains Mono est disponible dans Debian.
+Blueman, SwayNC and cliphist. Icons use Breeze and FontAwesome; the
+JetBrains Mono font is available in Debian.
 
-## Raccourcis
+## Keybindings
 
-Clavier par défaut : français AZERTY `fr/latin9`. Les workspaces utilisent les
-codes physiques de la rangée supérieure, indépendamment des chiffres AZERTY.
+Default keyboard layout: French AZERTY `fr/latin9`. Workspace bindings use
+physical keycodes on the top row, regardless of the AZERTY number symbols.
 
-| Raccourci | Action |
+| Shortcut | Action |
 | --- | --- |
 | SUPER + Return | Alacritty |
 | SUPER + E | Dolphin |
 | SUPER + Space | Rofi |
-| SUPER + Q | Fermer la fenêtre |
+| SUPER + Q | Close the window |
 | SUPER + L | Hyprlock |
-| SUPER + clic gauche / droit | Déplacer / redimensionner |
-| SUPER + flèches | Déplacer le focus |
-| SUPER + SHIFT + flèches | Déplacer la fenêtre |
-| SUPER + CTRL + flèches | Redimensionner par pas de 50 px |
-| SUPER + touches 1–0, positions physiques | Workspaces 1–10 |
-| SUPER + SHIFT + touches 1–0 | Envoyer la fenêtre au workspace |
-| SUPER + PageUp / PageDown ou molette | Workspace précédent / suivant |
-| SUPER + F / SHIFT + F | Plein écran / maximiser |
+| SUPER + left / right click | Move / resize |
+| SUPER + arrow keys | Move focus |
+| SUPER + SHIFT + arrow keys | Move the window |
+| SUPER + CTRL + arrow keys | Resize in 50 px steps |
+| SUPER + keys 1–0, physical positions | Workspaces 1–10 |
+| SUPER + SHIFT + keys 1–0 | Send the window to a workspace |
+| SUPER + PageUp / PageDown or scroll wheel | Previous / next workspace |
+| SUPER + F / SHIFT + F | Fullscreen / maximize |
 | SUPER + V | Floating |
-| SUPER + P / J | Pseudo / inversion du split dwindle |
-| ALT + Tab / ALT + SHIFT + Tab | Fenêtre suivante / précédente du workspace courant |
-| ALT + F10 | Sélecteur Rofi de toutes les fenêtres |
-| SUPER + CTRL + V | Historique du presse-papiers |
-| SUPER + Print / SHIFT + Print | Capture entière / zone |
-| SUPER + SHIFT + E | Menu session/power |
+| SUPER + P / J | Pseudo / toggle dwindle split |
+| ALT + Tab / ALT + SHIFT + Tab | Next / previous window on the current workspace |
+| ALT + F10 | Rofi switcher for all windows |
+| SUPER + CTRL + V | Clipboard history |
+| SUPER + Print / SHIFT + Print | Full-screen / area screenshot |
+| SUPER + SHIFT + E | Session/power menu |
 
-Touches multimédia et luminosité conservées. Un geste horizontal à trois doigts
-change le workspace. Il n’y a qu’une source de raccourcis actifs :
-`.config/hypr/lua/keybinds.lua`. Les ajouts personnels sont chargés ensuite depuis
-`UserConfigs/user_keybinds.lua` ; aucun fichier de `extras/` ne les écrase.
+Media and brightness keys are preserved. A horizontal three-finger gesture
+switches workspaces. There is a single source of active keybindings:
+`.config/hypr/lua/keybinds.lua`. Personal additions are loaded afterwards from
+`UserConfigs/user_keybinds.lua`; no file in `extras/` overrides them.
 
-## Profils et organisation
+## Profiles and layout
 
 ```text
-.config/                  configuration active, native par défaut
-.local/share/kxmlgui5/    toolbar Dolphin (chemin également utilisé par KF6)
-wallpapers/               image Frosted Glass unique
-profiles/native/          aucun forçage graphique
-profiles/vmware/           rendu logiciel explicite, exemples d’écrans facultatifs
-extras/kooldots/           bibliothèque upstream facultative, jamais installée
-scripts/                  déploiement, dépendances, validation
-tests/                    tests isolés ; aucune session graphique simulée comme réelle
-docs/                     audit, inventaire original et validations
+.config/                  active configuration, native by default
+.local/share/kxmlgui5/     Dolphin toolbar (path also used by KF6)
+wallpapers/               single Frosted Glass image
+profiles/native/          no forced graphics settings
+profiles/vmware/          explicit software rendering, optional monitor examples
+extras/kooldots/          optional upstream library, never installed
+scripts/                  deployment, dependencies, validation
+tests/                    isolated tests; no mock session presented as a real one
+docs/                     audit, original inventory and validation results
 install.sh / uninstall.sh / verify.sh
 packages*.txt
 ```
 
-Les profils partagent le thème, les raccourcis SUPER et la détection des écrans.
-Le profil VMware ajoute les variables Mesa de rendu logiciel et le curseur
-logiciel. Il ne force aucune résolution ; les exemples `Virtual-1` ne sont pas
-installés. Un changement de profil demande une reconnexion pour renouveler
-l’environnement des applications.
+The profiles share the theme, SUPER keybindings and monitor detection.
+The VMware profile adds Mesa software-rendering variables and a software cursor.
+It does not force a resolution; the `Virtual-1` examples are not installed.
+Switching profiles requires logging out and back in to refresh the application
+environment.
 
-## Crédits
+## Credits
 
 - [KoolDots / LinuxBeginnings](https://github.com/LinuxBeginnings/Hyprland-Dots),
-  issu des [dotfiles de JaKooLit](https://github.com/JaKooLit/Hyprland-Dots) :
-  base Lua, scripts, animations et bibliothèque de configurations. Les en-têtes
-  GPL-3.0-or-later sont conservés.
-- Senshi : inspiration et fichiers Frosted Glass/Dolphin indiqués par le dépôt
-  initial et son auteur. Le dépôt initial n’inclut pas d’URL de provenance précise
-  ni de licence du wallpaper ; voir [CREDITS.md](CREDITS.md).
-- [adi1090x/rofi](https://github.com/adi1090x/rofi) : disposition Rofi, reprise via KoolDots.
-- [Kvantum / Tsu Jan](https://github.com/tsujan/Kvantum), KvAdapta et Vince/Liuice :
-  auteurs mentionnés dans le thème Kvantum fourni.
+  based on [JaKooLit's dotfiles](https://github.com/JaKooLit/Hyprland-Dots):
+  Lua base, scripts, animations and configuration library. The
+  GPL-3.0-or-later headers are preserved.
+- Senshi: Frosted Glass/Dolphin inspiration and files, as identified by the
+  original repository and its author. The original repository does not include
+  an exact source URL or wallpaper license; see [CREDITS.md](CREDITS.md).
+- [adi1090x/rofi](https://github.com/adi1090x/rofi): Rofi layout, inherited through KoolDots.
+- [Kvantum / Tsu Jan](https://github.com/tsujan/Kvantum), KvAdapta and Vince/Liuice:
+  authors credited in the supplied Kvantum theme.
 - [Hyprland](https://github.com/hyprwm/Hyprland), [Waybar](https://github.com/Alexays/Waybar),
   [Rofi](https://github.com/davatorium/rofi), [awww](https://codeberg.org/LGFae/awww),
   [Alacritty](https://github.com/alacritty/alacritty), [Dolphin](https://invent.kde.org/system/dolphin).
 
-Ce projet est une adaptation et une intégration de ces travaux. Les références
-et limites de provenance figurent dans [CREDITS.md](CREDITS.md) et
+This project adapts and integrates those works. References and provenance
+limitations are documented in [CREDITS.md](CREDITS.md) and
 [docs/AUDIT.md](docs/AUDIT.md).

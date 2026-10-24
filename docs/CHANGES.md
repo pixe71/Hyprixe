@@ -1,10 +1,10 @@
-# Registre des fichiers
+# File change log
 
-Comparaison avec le commit initial `f96dfb4`. Les déplacements de la bibliothèque
-restent présents sous `extras/` ; ils ne sont pas des suppressions de contenu.
-Les différences de fins de ligne seules sont ignorées dans le classement.
+Comparison against the initial commit `f96dfb4`. Moved library files remain
+available under `extras/`; these are not content deletions.
+Line-ending-only differences are ignored when classifying changes.
 
-## Conservés inchangés (10)
+## Kept unchanged (10)
 
 - `.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig`
 - `.config/Kvantum/Frosted-Glass/Frosted-Glass.svg`
@@ -17,7 +17,7 @@ Les différences de fins de ligne seules sont ignorées dans le classement.
 - `.local/share/kxmlgui5/dolphin/dolphinui.rc`
 - `wallpapers/min_forest.jpg`
 
-## Modifiés à leur chemin initial (32)
+## Modified at their original paths (32)
 
 - `.config/alacritty/alacritty.toml`
 - `.config/dolphinrc`
@@ -52,7 +52,7 @@ Les différences de fins de ligne seules sont ignorées dans le classement.
 - `packages.txt`
 - `system-info.txt`
 
-## Déplacés / renommés (359)
+## Moved / renamed (359)
 
 - `.config/Kvantum/catppuccin-latte-blue/catppuccin-latte-blue.kvconfig → extras/kooldots/catppuccin-latte-blue/catppuccin-latte-blue.kvconfig`
 - `.config/Kvantum/catppuccin-latte-blue/catppuccin-latte-blue.svg → extras/kooldots/catppuccin-latte-blue/catppuccin-latte-blue.svg`
@@ -414,7 +414,7 @@ Les différences de fins de ligne seules sont ignorées dans le classement.
 - `.config/hypr/waybar/style/catppuccin-themes/rgbmocha.css → extras/kooldots/hypr/waybar/style/catppuccin-themes/rgbmocha.css`
 - `.config/hypr/waybar/wallust/colors-waybar.css → extras/kooldots/hypr/waybar/wallust/colors-waybar.css`
 
-## Supprimés (192)
+## Deleted (192)
 
 - `.config/hypr/.initial_startup_done`
 - `.config/hypr/UserConfigs/kitty-themes/00-Default.conf`
@@ -609,7 +609,7 @@ Les différences de fins de ligne seules sont ignorées dans le classement.
 - `.config/hypr/wallpaper_effects/.wallpaper_modified`
 - `.config/hypr/waybar/configs/[TOP & BOT] SummitSplit v3`
 
-## Créés (55)
+## Created (55)
 
 - `.config/hypr/lua/rules.lua`
 - `.config/hypr/profile.env`

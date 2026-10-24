@@ -1,6 +1,6 @@
-# Captures à ajouter
+# Screenshots to add
 
-Ajouter ici les captures d’une vraie session Debian 13 / Hyprland, notamment :
+Add screenshots of a real Debian 13 / Hyprland session here, including:
 `desktop-native.png`, `dolphin-frosted.png`, `rofi.png`, `hyprlock.png`.
-Masquer les informations personnelles avant publication. Aucune capture de
-session sur matériel physique n’a été produite pendant cet audit sous Windows/WSL.
+Hide personal information before publishing. No screenshots of a session
+on physical hardware were produced during this Windows/WSL audit.

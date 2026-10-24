@@ -1,102 +1,101 @@
-# Validation effectuée
+# Validation performed
 
-Audit du 25 octobre 2026 (Europe/Paris), depuis Windows avec Debian 13 sous WSL2,
-x86_64. **Aucune session Hyprland sur matériel physique n’a été démarrée.**
-Les commandes graphiques interactives ne sont pas présentées comme testées.
+Audit dated October 25, 2026 (Europe/Paris), from Windows with Debian 13 under
+WSL2, x86_64. **No Hyprland session on physical hardware was started.**
+Interactive graphical commands are not presented as tested.
 
-## Commandes et résultats
+## Commands and results
 
-Les contrôles ci-dessous ont réellement été exécutés sur les fichiers du dépôt.
-Les préfixes absolus du répertoire de travail sont omis dans les commandes Linux.
+The checks below were actually run against the repository files.
+Absolute working-directory prefixes are omitted from Linux commands.
 
-| Commande / contrôle | Résultat constaté |
+| Command / check | Observed result |
 | --- | --- |
-| `bash -n` sur tous les `*.sh`, via `verify.sh` | 131 scripts, aucune erreur, bibliothèque facultative incluse |
-| `shellcheck -S error` sur tous les scripts | Aucune erreur de cette sévérité |
-| `shellcheck -S warning` sur les scripts actifs | Aucun warning ni erreur |
-| `luac -p` sur tous les `*.lua` | 82 fichiers, aucune erreur de syntaxe |
-| `lua tests/check_lua.lua "$REPO/.config"`, avec XDG_CONFIG_HOME pointant sur cette config | Chargement complet, 64 combinaisons uniques, 13 raccourcis obligatoires présents, cycles avant/arrière et callbacks startup/hotplug exécutés contre une API mock explicite |
-| `python3 -m unittest discover -s tests -v` | 32 tests, résultat OK dans le banc Debian WSL après le contrôle 0.56.2 ; détail ci-dessous |
-| `./verify.sh`, avec les binaires compilés dans PATH | Zéro contrôle en échec ; les contrôles nécessitant la session réelle sont SKIPPED |
-| `apt-get -s install` avec `packages.txt` | Résolution des 41 paquets réussie, code 0 |
-| `apt-get -s install -t trixie-backports` avec `packages-backports.txt` | Résolution des 5 paquets réussie, code 0 |
-| `apt-get -s install` avec `profiles/vmware/packages.txt` | Résolution des 2 paquets réussie, code 0 |
-| `python3 scripts/check-deps.py` dans le banc sans bureau Hyprland | Code 1 attendu, liste explicite des commandes et du plugin Qt6 manquants, aucun déploiement |
-| `bash scripts/build-runtime.sh STAGING_DIRECTORY` | awww + awww-daemon 0.12.1 compilés ; Rofi au commit 0b6aa8b (tag 2.0.0) compilé avec Wayland activé et XCB désactivé |
-| Même script, binaires compilés déjà dans PATH | Code 0, aucun nouveau build/APT déclenché |
+| `bash -n` on all `*.sh` files, through `verify.sh` | 131 scripts, no errors, including the optional library |
+| `shellcheck -S error` on all scripts | No findings at this severity |
+| `shellcheck -S warning` on active scripts | No warnings or errors |
+| `luac -p` on all `*.lua` files | 82 files, no syntax errors |
+| `lua tests/check_lua.lua "$REPO/.config"`, with XDG_CONFIG_HOME pointing to this configuration | Full load, 64 unique combinations, 13 required bindings present, forward/backward cycling and startup/hotplug callbacks executed against an explicit mock API |
+| `python3 -m unittest discover -s tests -v` | 32 tests, OK in the Debian WSL test environment after the 0.56.2 review; details below |
+| `./verify.sh`, with compiled binaries in PATH | Zero failed checks; checks requiring a real session are SKIPPED |
+| `apt-get -s install` with `packages.txt` | All 41 packages resolved successfully, exit code 0 |
+| `apt-get -s install -t trixie-backports` with `packages-backports.txt` | All 5 packages resolved successfully, exit code 0 |
+| `apt-get -s install` with `profiles/vmware/packages.txt` | Both packages resolved successfully, exit code 0 |
+| `python3 scripts/check-deps.py` in the environment without a Hyprland desktop | Expected exit code 1, explicit list of missing commands and Qt6 plugin, no deployment |
+| `bash scripts/build-runtime.sh STAGING_DIRECTORY` | awww + awww-daemon 0.12.1 built; Rofi at commit 0b6aa8b (tag 2.0.0) built with Wayland enabled and XCB disabled |
+| Same script, with compiled binaries already in PATH | Exit code 0, no new build/APT operations triggered |
 | `awww --version`, `awww-daemon --version`, `rofi -version` | `awww 0.12.1`, `awww-daemon 0.12.1`, `Version: 0b6aa8b` |
-| `rofi -info`, affichage volontairement inexistant | `wayland enabled`, `xcb disabled` ; aucune fenêtre ouverte |
-| `rofi -config FICHIER -dump-theme` | Les 6 fichiers Rasi actifs sont acceptés, code 0 ; cette voie utilise le vrai parseur avant création d’une fenêtre |
-| Parseurs Python JSON/TOML/XML | Waybar, Alacritty, SVG Kvantum et XML Dolphin acceptés |
-| Comparaison SHA256 des assets avec l’inventaire original | Wallpaper, deux fichiers Kvantum et toolbar Dolphin identiques |
-| Scan des motifs VMware/logiciel, anciens défauts et chemins personnels dans `.config`, `.local`, `profiles/native` | Aucune correspondance |
-| Scan de motifs de secrets dans les fichiers actuels et le seul commit historique | Aucun token GitHub/AWS ni clé privée correspondant aux motifs recherchés |
-| Recherche du marqueur EXIF dans le wallpaper | Absent |
-| Vérification des liens et des permissions Git | Aucun lien cassé ; entrypoints et scripts actifs enregistrés en mode 100755 |
-| `git status --short`, `git diff HEAD`, `git diff --cached`, `git diff --check`, `git diff --cached --check` | Modifications revues, absence d’erreur de whitespace ; aucun commit créé |
+| `rofi -info`, with a deliberately nonexistent display | `wayland enabled`, `xcb disabled`; no window opened |
+| `rofi -config FILE -dump-theme` | All 6 active Rasi files accepted, exit code 0; this path uses the real parser before creating a window |
+| Python JSON/TOML/XML parsers | Waybar, Alacritty, Kvantum SVG and Dolphin XML accepted |
+| Asset SHA256 comparison against the original inventory | Wallpaper, both Kvantum files and Dolphin toolbar identical |
+| Scan for VMware/software-rendering patterns, old defaults and personal paths in `.config`, `.local`, `profiles/native` | No matches |
+| Secret-pattern scan in current files and the single historical commit | No GitHub/AWS tokens or private keys matching the searched patterns |
+| EXIF marker search in the wallpaper | Absent |
+| Link and Git permission checks | No broken links; entry points and active scripts recorded as mode 100755 |
+| `git status --short`, `git diff HEAD`, `git diff --cached`, `git diff --check`, `git diff --cached --check` | Changes reviewed, no whitespace errors; no commit created |
 
-Les résultats détaillés des fichiers sont consignés dans
-[CHANGES.md](CHANGES.md). Les sources compilées, journaux de compilation,
-fixtures et caches de test sont hors des fichiers livrés ; `.validation/` et
-`__pycache__/` sont ignorés.
+Detailed file changes are recorded in [CHANGES.md](CHANGES.md).
+Compiled sources, build logs, fixtures and test caches are outside the delivered
+files; `.validation/` and `__pycache__/` are ignored.
 
-## Scénarios automatisés
+## Automated scenarios
 
-Les tests utilisent des HOME temporaires distincts, supprimés ensuite. Ils
-vérifient : installation native, deuxième installation sans nouvelle sauvegarde,
-profil VMware puis retour au natif et restauration inverse ; sauvegarde d’une
-ancienne entrée Lua/Hyprlang, conservation des fichiers personnels supplémentaires,
-permissions originales, liens symboliques de fichiers, rejet de parents
-symboliques, fusion MIME/KDE/Qt, chemins XDG personnalisés et espaces ; aperçu
-sans copie, profil invalide, cible XDG hors HOME, sauvegarde corrompue, refus des
-éditions post-installation et rollback après une erreur d’écriture injectée.
+Tests use separate temporary HOME directories, removed afterwards.
+They check: native installation, a second installation without a new backup,
+switching to VMware and back to native and restoring in reverse order;
+backup of an old Lua/Hyprlang entry point, preservation of additional personal
+files, original permissions, file symlinks, rejection of symlinked parent
+directories, MIME/KDE/Qt merging, custom XDG paths and spaces; preview without
+copying, invalid profile, XDG target outside HOME, corrupted backup, refusal
+of post-installation edits and rollback after an injected write error.
 
-Le test des seuls bits de permission couvre un contenu inchangé avec mode
-modifié. Les exécutables construits suivent également la sauvegarde/restauration.
+The permission-only test covers unchanged contents with a changed mode.
+Built executables are also covered by backup/restoration.
 
-Les mocks de commandes contrôlent : awww existant réutilisé, daemon manquant
-démarré une seule fois, sorties DP/eDP dynamiques, application à tous les écrans,
-échec borné sans relances répétées ; sélecteur Rofi sur un instantané unique,
-annulation et index invalide ; démarrage Waybar par service activé ou lancement
-direct avec les chemins config/CSS explicites. Un contrôle exécute aussi le vrai
-`install.sh --dry-run` sous UID non privilégié via `setpriv`.
+Command mocks check: reuse of an existing awww daemon, a missing daemon
+started only once, dynamic DP/eDP outputs, application to all monitors,
+bounded failure without repeated restarts; a Rofi switcher using a single
+snapshot, cancellation and an invalid index; Waybar startup through an
+enabled service or direct launch with explicit config/CSS paths.
+One check also runs the real `install.sh --dry-run` under an unprivileged UID
+through `setpriv`.
 
-Ces tests valident la logique des scripts et des actions enregistrées. Les mocks
-ne valident ni les dispatchers à l’intérieur d’un compositor, ni le rendu GPU.
+These tests validate script logic and recorded actions. Mocks do not validate
+dispatchers inside a compositor or GPU rendering.
 
-## Échecs rencontrés et corrigés
+## Failures encountered and addressed
 
-- Une réinstallation déplaçait des lignes vides dans les fichiers INI fusionnés
-  et créait une nouvelle transaction. Correction de la fusion, test d’idempotence
-  vert sur le contenu final.
-- Le premier build awww a révélé une dépendance de compilation manquante,
-  `wayland-protocols`. Ajoutée, puis build complet réussi.
-- ShellCheck a signalé une affectation vide ambiguë `DISPLAY=` dans la sonde
-  Rofi. Remplacée par `DISPLAY=''`, contrôles actifs sans warning.
-- `rofi -rasi-validate` segfaulte dans le build upstream 2.0.0 testé, y compris
-  sur les fichiers de palette. La validation finale utilise `-config …
-  -dump-theme`, voie initialisée du même parseur ; les six fichiers passent.
-  Ce défaut d’outil de validation est documenté, sans conclure à un test visuel
-  ou cacher un échec de la configuration normale.
+- Reinstallation moved blank lines in merged INI files and created a new
+  transaction. The merge was corrected; the idempotence test passes on the
+  final contents.
+- The first awww build exposed a missing build dependency,
+  `wayland-protocols`. It was added, then the full build succeeded.
+- ShellCheck reported an ambiguous empty `DISPLAY=` assignment in the Rofi
+  probe. It was replaced with `DISPLAY=''`; active checks report no warnings.
+- `rofi -rasi-validate` segfaults in the tested upstream 2.0.0 build, including
+  on palette files. Final validation uses `-config … -dump-theme`, an
+  initialized path through the same parser; all six files pass.
+  This validation-tool defect is documented without claiming a visual test
+  or hiding a failure of the normal configuration.
 
-## Contrôles restant SKIPPED ici
+## Checks still SKIPPED here
 
-- `hyprctl configerrors` : Hyprland et son IPC de session ne sont pas disponibles
-  dans le banc de validation ; syntaxe Lua et tests de chargement seulement.
-- Installation complète de tous les paquets du bureau : APT a été simulé ; les
-  dépendances C/Rust nécessaires aux builds ont réellement été installées dans
-  Debian WSL. Aucun bureau complet ni gestionnaire de connexion installé pour
-  prétendre à un test d’intégration graphique.
-- Résultat visuel Frosted Glass : assets et paramètres vérifiés, aucune capture
-  d’une session physique comparée.
-- Raccourcis/clavier/souris, vrai cycle de focus, multi-écran/HiDPI/hotplug.
-- Hyprlock/PAM, verrouillage avant veille et déverrouillage après reprise.
-- Modules Waybar sur de vrais périphériques réseau, Bluetooth et audio ; GPU
-  Intel/AMD/NVIDIA, accélération et profil VMware dans un vrai invité.
-- Affichage du panneau d’information Dolphin au premier lancement sans état KDE
-  préalable ; F11 et les étapes de contrôle sont documentés dans INSTALL.md.
+- `hyprctl configerrors`: Hyprland and its session IPC are unavailable in the
+  validation environment; only Lua syntax and loading tests were performed.
+- Full installation of all desktop packages: APT was simulated; C/Rust build
+  dependencies were actually installed in Debian WSL. No complete desktop or
+  display manager was installed to claim graphical integration testing.
+- Frosted Glass appearance: assets and settings checked, no physical-session
+  screenshot compared.
+- Keybindings/keyboard/mouse, actual focus cycling, multi-monitor/HiDPI/hotplug.
+- Hyprlock/PAM, locking before suspend and unlocking after resume.
+- Waybar modules on real network, Bluetooth and audio devices; Intel/AMD/NVIDIA
+  GPUs, acceleration and the VMware profile inside a real guest.
+- Dolphin information-panel visibility on first launch without prior KDE
+  state; F11 and verification steps are documented in INSTALL.md.
 
-Exécuter sur le PC cible :
+Run on the target PC:
 
 ```bash
 ./verify.sh --dependencies --session
@@ -106,60 +105,62 @@ hyprctl binds -j
 awww query
 ```
 
-Puis tester SUPER+Return/E/Space/Q/L, les deux clics et les flèches, Alt+Tab dans
-les deux sens, le rendu Dolphin/Kvantum, la veille/reprise et un branchement
-d’écran. Les limites de provenance des assets Senshi sont décrites dans CREDITS.md.
+Then test SUPER+Return/E/Space/Q/L, both mouse clicks and arrow keys, Alt+Tab
+in both directions, Dolphin/Kvantum rendering, suspend/resume and connecting
+a monitor. Senshi asset provenance limitations are described in CREDITS.md.
 
-## Complément : compatibilité Hyprland 0.56.2
+## Addendum: Hyprland 0.56.2 compatibility
 
-Version fonctionnelle précisée par l’utilisateur : **0.56.2**. Audit des sources
-au tag `v0.56.2`, commit `efb50993780079460b0cbed1363e2166a2de1d9f`.
-**0.55.2 désigne le seuil minimal de l’installateur ; 0.56.2 est acceptée et
-devient la référence documentée.** Ce seuil ne garantit pas toutes les versions
-futures. Aucun paramètre visuel ni raccourci Lua n’a été modifié par ce contrôle.
+Working version specified by the user: **0.56.2**. Sources audited at tag
+`v0.56.2`, commit `efb50993780079460b0cbed1363e2166a2de1d9f`.
+**0.55.2 is the installer's minimum threshold; 0.56.2 is accepted and becomes
+the documented reference version.** This threshold does not guarantee all
+future versions. No visual settings or Lua keybindings were changed during
+this review.
 
-| Élément | Vérification spécifique |
+| Item | Specific check |
 | --- | --- |
-| Syntaxe et options Lua | Chargement complet avec le banc existant ; 49 noms d’options configurés comparés au registre `ConfigValues.cpp` 0.56.2, types bool/int/float acceptés |
-| API | 25 noms de fonctions `hl.*` / dispatchers utilisés retrouvés dans les registrations du tag 0.56.2 |
-| Souris | `mouse:272` + `window.drag()` et `mouse:273` + `window.resize()`, avec `{ mouse = true }`, correspondent exactement à l’exemple officiel 0.56.2 |
-| Alt+Tab | `cycle_next({ next = true/false })` et `alter_zorder({ mode = "top" })` acceptés par les factories du tag ; les deux callbacks restent couverts par le test Lua |
-| Window/layer rules | Propriétés class/title, float/center/pin, namespace/blur/ignore_alpha présentes dans les descripteurs 0.56.2 |
-| Blur/décoration/animations | Options présentes dans le registre ; les 10 feuilles d’animation utilisées existent dans l’arbre du tag |
-| Hyprlock | Protocole ext-session-lock-v1 toujours annoncé ; les 34 couples catégorie/champ utilisés existent dans le parseur Hyprlock 0.9.6. Ce fichier relève de Hyprlock, pas de la syntaxe Lua du compositor |
-| Démarrage | Événements `hyprland.start` et `monitor.added` présents ; `hl.exec_cmd` conservé ; les commandes Hypridle/lock/menu utilisent les dispatchers Lua acceptés |
-| Waybar | Incompatibilité des clics workspace de Waybar Debian 0.12 détectée et corrigée, voir ci-dessous |
+| Lua syntax and options | Full load with the existing test environment; 49 configured option names compared against the 0.56.2 `ConfigValues.cpp` registry, bool/int/float types accepted |
+| API | 25 used `hl.*` function / dispatcher names found in the 0.56.2 tag's registrations |
+| Mouse | `mouse:272` + `window.drag()` and `mouse:273` + `window.resize()`, with `{ mouse = true }`, exactly match the official 0.56.2 example |
+| Alt+Tab | `cycle_next({ next = true/false })` and `alter_zorder({ mode = "top" })` accepted by the tag's factories; both callbacks remain covered by the Lua test |
+| Window/layer rules | class/title, float/center/pin, namespace/blur/ignore_alpha properties present in the 0.56.2 descriptors |
+| Blur/decoration/animations | Options present in the registry; all 10 animation leaves used exist in the tag's tree |
+| Hyprlock | ext-session-lock-v1 protocol still advertised; all 34 category/field pairs used exist in the Hyprlock 0.9.6 parser. This file belongs to Hyprlock, not the compositor's Lua syntax |
+| Startup | `hyprland.start` and `monitor.added` events present; `hl.exec_cmd` retained; Hypridle/lock/menu commands use accepted Lua dispatchers |
+| Waybar | Workspace-click incompatibility in Debian Waybar 0.12 detected and fixed, see below |
 
-### Correction Waybar strictement nécessaire
+### Required Waybar correction
 
-Dans ce tag Hyprland, la requête IPC `dispatch …` évalue
-`hl.dispatch(…)`. Waybar Debian 0.12 envoie encore `dispatch workspace 1`, qui ne
-constitue pas une expression Lua valide. Le défaut concerne les clics sur les
-workspaces ; les modules de lecture JSON et le thème ne nécessitent pas de refonte.
+In this Hyprland tag, the `dispatch …` IPC request evaluates
+`hl.dispatch(…)`. Debian Waybar 0.12 still sends `dispatch workspace 1`,
+which is not a valid Lua expression. The issue affects workspace clicks;
+JSON read modules and the theme do not require a redesign.
 
-Le build optionnel préparé par l’installateur conserve Waybar 0.12 et convertit
-seulement les requêtes workspace vers `hl.dsp.focus` / `toggle_special`. Il
-s’identifie `hyprixe-lua-ipc1`. Un Waybar upstream disposant déjà des deux chemins
-IPC Lua est réutilisé, sans compilation. Le drop-in systemd pointe vers le binaire
-sélectionné, y compris lorsqu’il est dans `~/.local/bin` ; sauvegarde/restauration
-du binaire sont couvertes par les tests. Aucun CSS ou agencement Waybar modifié.
+The optional build prepared by the installer retains Waybar 0.12 and converts
+only workspace requests to `hl.dsp.focus` / `toggle_special`.
+It identifies itself as `hyprixe-lua-ipc1`. An upstream Waybar build that
+already has both Lua IPC paths is reused without compilation.
+The systemd drop-in points to the selected executable, including when it is
+in `~/.local/bin`; backup/restoration of the executable is covered by tests.
+No Waybar CSS or layout was changed.
 
-Six tests supplémentaires couvrent la détection des capacités et compilent le
-petit adaptateur C++ pour soumettre ses résultats à un véritable interpréteur
-Lua : workspace numérique, noms avec guillemets/antislash/retour à la ligne,
-workspace sur moniteur courant, workspaces spéciaux et requêtes de lecture
-inchangées. Les 32 tests passent. La compilation complète Waybar et son contrôle
-de capacités sont réalisés dans Debian WSL, sans ouverture d’une session.
+Six additional tests cover capability detection and compile the small C++
+adapter to submit its output to a real Lua interpreter: numeric workspaces,
+names containing quotes/backslashes/newlines, workspace on the current
+monitor, special workspaces and unchanged read requests.
+All 32 tests pass. The full Waybar build and its capability check were performed
+in Debian WSL, without opening a session.
 
-La comparaison au code source et les tests instrumentés ne remplacent pas
-`hyprctl configerrors` dans une session 0.56.2, ni le test physique du glisser,
-du resize, du cycle de focus et du verrouillage. Ces validations restent SKIPPED ici.
+Source comparison and instrumented tests do not replace `hyprctl configerrors`
+in a 0.56.2 session or physical testing of dragging, resizing, focus cycling
+and locking. Those validations remain SKIPPED here.
 
-Sources primaires du contrôle :
-[exemple officiel 0.56.2](https://github.com/hyprwm/Hyprland/blob/v0.56.2/example/hyprland.lua),
+Primary sources for the review:
+[official 0.56.2 example](https://github.com/hyprwm/Hyprland/blob/v0.56.2/example/hyprland.lua),
 [bindings/dispatchers](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/config/lua/bindings/LuaBindingsDispatchers.cpp),
-[registre d’options](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/config/values/ConfigValues.cpp),
-[traitement IPC](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/debug/HyprCtl.cpp),
-[clics Waybar 0.12](https://github.com/Alexays/Waybar/blob/0.12.0/src/modules/hyprland/workspace.cpp),
-[backend Lua Waybar upstream](https://github.com/Alexays/Waybar/blob/master/src/modules/hyprland/backend.cpp),
-[parseur Hyprlock 0.9.6](https://github.com/hyprwm/hyprlock/blob/v0.9.6/src/config/ConfigManager.cpp).
+[option registry](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/config/values/ConfigValues.cpp),
+[IPC handling](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/debug/HyprCtl.cpp),
+[Waybar 0.12 clicks](https://github.com/Alexays/Waybar/blob/0.12.0/src/modules/hyprland/workspace.cpp),
+[upstream Waybar Lua backend](https://github.com/Alexays/Waybar/blob/master/src/modules/hyprland/backend.cpp),
+[Hyprlock 0.9.6 parser](https://github.com/hyprwm/hyprlock/blob/v0.9.6/src/config/ConfigManager.cpp).

@@ -1,26 +1,26 @@
-# Bibliothèque KoolDots facultative
+# Optional KoolDots library
 
-Ces fichiers proviennent de la configuration KoolDots initiale. Ils sont conservés
-pour consultation afin de ne pas perdre des fonctions facultatives dont le rôle
-a été identifié pendant l’audit : gestion des thèmes, profils d’animation/écran,
-musique/météo, réglages rapides, overview Quickshell, layout scrolling, scripts
-de diagnostic, autres distributions et applications.
+These files come from the original KoolDots configuration. They are kept for
+reference to preserve optional features whose roles were identified during
+the audit: theme management, animation/monitor profiles, music/weather,
+quick settings, Quickshell overview, scrolling layout, diagnostic scripts,
+other distributions and applications.
 
-**Aucun fichier de ce répertoire n’est installé ou exécuté par Hyprixe.**
-Ce n’est pas un deuxième profil prêt à installer. Les références aux chemins
-historiques `~/.config/hypr`, à des configs externes et aux autres applications
-décrivent l’écosystème KoolDots complet ; il faut porter et vérifier une fonction
-avant de la réintégrer. Les scripts SSH, réparations système, mise à jour et
-téléchargements sont des exemples à lire, pas des étapes de notre installation.
+**No file in this directory is installed or executed by Hyprixe.**
+This is not a second profile ready for installation. References to historical
+`~/.config/hypr` paths, external configurations and other applications describe
+the full KoolDots ecosystem; a feature must be ported and verified before
+being reintegrated. SSH scripts, system repairs, updates and downloads are
+examples to read, not steps in our installation.
 
-Les thèmes Tokyo Night, Kitty, Thunar et autres noms encore présents ici sont des
-choix génériques upstream ou des branches de compatibilité. Ils n’influencent
-ni les applications par défaut ni Frosted Glass. Les collections de thèmes Kitty,
-le lanceur Thunar dédié et le binaire TUI Ubuntu ont été retirés de l’ensemble
-initial car ils ne servent pas cette installation. Les en-têtes et crédits des
-fichiers conservés restent en place.
+Tokyo Night, Kitty, Thunar and other names still present here are generic
+upstream choices or compatibility branches. They do not affect the default
+applications or Frosted Glass. The Kitty theme collections, dedicated Thunar
+launcher and Ubuntu TUI binary were removed from the original set because
+they do not serve this installation. Headers and credits in retained files
+remain in place.
 
-`verify.sh` vérifie néanmoins la syntaxe Bash/Lua de cette bibliothèque et les
-erreurs ShellCheck de sévérité error. Les avertissements stylistiques upstream
-et les dépendances externes de ces exemples ne sont pas des validations de leur
-fonctionnement. Le périmètre actif est décrit dans le README principal.
+`verify.sh` still checks this library's Bash/Lua syntax and ShellCheck findings
+at error severity. Upstream style warnings and external dependencies of these
+examples are not evidence of runtime validation. The active scope is described
+in the main README.

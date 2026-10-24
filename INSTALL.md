@@ -1,37 +1,38 @@
-# Installer Hyprixe Debian
+# Installing Hyprixe Debian
 
-## Prérequis
+## Prerequisites
 
-- Debian GNU/Linux **13 (trixie)**, compte utilisateur normal, accès à `sudo`,
-  connexion réseau et plusieurs Go libres pour APT et les premières compilations.
-- Pilotes DRM/Mesa ou NVIDIA adaptés au matériel, session logind/DBus utilisable.
-  Le dépôt n’installe pas automatiquement de pilote propriétaire.
-- Un gestionnaire de connexion déjà installé, ou une console locale permettant
-  de démarrer Hyprland. Le script ne remplace pas votre gestionnaire de connexion.
-- Hyprland **0.56.2** est la version de référence de cette configuration Lua et
-  la version fonctionnelle indiquée par l’utilisateur. Ses API et options ont été
-  vérifiées au tag upstream v0.56.2. **0.55.2 reste le seuil minimal accepté** par
-  l’installateur : la mention 0.55.2+ n’impose aucune rétrogradation vers 0.55.2.
-  Les métadonnées trixie-backports consultées proposent `0.55.2+ds-1~bpo13+1` ;
-  conserver votre installation fonctionnelle de 0.56.2. Le script ne fixe pas de
-  version APT exacte. Une version antérieure au seuil est refusée avant copie.
+- Debian GNU/Linux **13 (trixie)**, a regular user account, access to `sudo`,
+  a network connection and several GB of free space for APT and the first builds.
+- DRM/Mesa or NVIDIA drivers suitable for the hardware, and a working
+  logind/DBus session. This repository does not install proprietary drivers
+  automatically.
+- An existing display manager, or a local console from which to start Hyprland.
+  The script does not replace your display manager.
+- Hyprland **0.56.2** is the reference version for this Lua configuration and
+  the working version reported by the user. Its APIs and options were checked
+  against the upstream v0.56.2 tag. **0.55.2 remains the minimum accepted version**
+  for the installer: 0.55.2+ does not require downgrading to 0.55.2.
+  The trixie-backports metadata consulted lists `0.55.2+ds-1~bpo13+1`;
+  keep your working 0.56.2 installation. The script does not pin an exact
+  APT version. Versions below the minimum are rejected before copying files.
 
-Si `sudo`/`git` manquent, les installer depuis un compte administrateur puis
-revenir au compte qui ouvrira la session graphique :
+If `sudo`/`git` are missing, install them from an administrator account, then
+return to the account that will run the graphical session:
 
 ```bash
 su -
 apt update
 apt install sudo git
-usermod -aG sudo VOTRE_COMPTE
+usermod -aG sudo YOUR_ACCOUNT
 exit
-# Se déconnecter/reconnecter pour activer le groupe sudo.
+# Log out and back in to activate sudo group membership.
 ```
 
 ## Installation
 
-Fermer Dolphin, Alacritty et les éditeurs de configuration pour éviter qu’ils
-réécrivent leurs préférences pendant la copie.
+Close Dolphin, Alacritty and configuration editors to prevent them from
+rewriting their preferences while files are being copied.
 
 ```bash
 git clone https://github.com/pixe71/hyprixe-debian.git
@@ -39,7 +40,7 @@ cd hyprixe-debian
 ./install.sh
 ```
 
-Équivalents et options :
+Equivalent commands and options:
 
 ```bash
 ./install.sh native
@@ -48,129 +49,132 @@ cd hyprixe-debian
 ./install.sh native --no-packages
 ```
 
-Ne pas lancer `sudo ./install.sh`. Le déploiement s’effectue avec votre compte ;
-seules les commandes APT utilisent `sudo`. Sur une copie ayant perdu les bits
-exécutables, utiliser `chmod +x install.sh uninstall.sh verify.sh scripts/build-runtime.sh`.
+Do not run `sudo ./install.sh`. Deployment runs under your account;
+only APT commands use `sudo`. If the executable bits were lost when copying
+the repository, run `chmod +x install.sh uninstall.sh verify.sh scripts/build-runtime.sh`.
 
-Le mode `--dry-run` affiche les chemins qui seraient modifiés, sans APT ni copie.
-Il ne garantit pas que les dépendances sont déjà installées. `--no-packages`
-contrôle les commandes, la version Hyprland, le backend Wayland de Rofi et le
-plugin Qt6 Kvantum ; il échoue avant de toucher aux configurations si l’un manque.
+The `--dry-run` mode shows which paths would change, without running APT or
+copying files. It does not guarantee that dependencies are already installed.
+`--no-packages` checks commands, the Hyprland version, Rofi's Wayland backend
+and the Qt6 Kvantum plugin; it fails before touching configuration files if
+any requirement is missing.
 
-## Dépendances et effets système
+## Dependencies and system changes
 
-`packages.txt` contient les applications Debian stables réellement utilisées.
-`packages-backports.txt` contient Hyprland, Hyprlock, Hypridle, XWayland et le
-portail Hyprland. `packages-optional.txt` reste facultatif. Le profil VMware
-installe également les paquets de `profiles/vmware/packages.txt`.
+`packages.txt` lists the Debian stable applications actually used.
+`packages-backports.txt` lists Hyprland, Hyprlock, Hypridle, XWayland and the
+Hyprland portal. `packages-optional.txt` is optional. The VMware profile
+also installs the packages in `profiles/vmware/packages.txt`.
 
-Si aucun dépôt trixie-backports n’est configuré, l’installateur crée uniquement
-`/etc/apt/sources.list.d/hyprixe-backports.sources`, vers le dépôt Debian officiel
-signé par la clé Debian. Un fichier existant à ce nom n’est pas écrasé. Les
-paquets Hyprland sont demandés explicitement à trixie-backports.
+If no trixie-backports repository is configured, the installer creates only
+`/etc/apt/sources.list.d/hyprixe-backports.sources`, pointing to the official
+Debian repository signed with the Debian key. An existing file at that path
+is not overwritten. Hyprland packages are explicitly requested from
+trixie-backports.
 
-Debian stable fournit Rofi 1.7.5 X11 dans les index utilisés lors de l’audit ;
-awww n’y est pas empaqueté. Si nécessaire, `scripts/build-runtime.sh` construit :
+Debian stable provides Rofi 1.7.5 for X11 in the indexes used during the audit;
+awww is not packaged there. When needed, `scripts/build-runtime.sh` builds:
 
-| Programme | Source et révision fixe |
+| Program | Source and pinned revision |
 | --- | --- |
 | Rofi 2.0.0, Wayland | `davatorium/rofi`, `0b6aa8ba8b4879f00c3cc96f2e47a13c079fe814` |
 | awww 0.12.1 | `codeberg.org/LGFae/awww`, `f66e12a76dbc4c669b2f1375f78bce49f5b19d66` |
-| Waybar 0.12, si son IPC Lua manque | `Alexays/Waybar`, `8490a1d9b9a5c8770dd63e9faca0a5e01acedcae`, adaptation locale limitée dans `scripts/waybar-lua-ipc.hpp` |
+| Waybar 0.12, if Lua IPC support is missing | `Alexays/Waybar`, `8490a1d9b9a5c8770dd63e9faca0a5e01acedcae`, with a limited local adaptation in `scripts/waybar-lua-ipc.hpp` |
 
-Le script vérifie les commits, initialise les sous-modules aux révisions
-enregistrées et utilise `cargo build --release --locked`. Il installe les outils
-C/Meson et Rust/Cargo des backports nécessaires à cette compilation. Les sources
-sont compilées sans privilèges dans un répertoire temporaire supprimé ensuite.
-Les exécutables préparés sont déployés dans `~/.local/bin` avec le même système de
-sauvegarde que les configurations. Les versions déjà capables sont réutilisées.
-Le support Waybar est détecté par la présence de ses commandes IPC Lua compilées,
-sans envoyer d’action au compositor. Le Waybar stable 0.12 n’en dispose pas : sa
-version préparée convertit uniquement les changements de workspace en
-`hl.dsp.focus` / `hl.dsp.workspace.toggle_special`. Les requêtes JSON de lecture,
-les modules et le CSS ne changent pas. Le correctif est identifié par
-`hyprixe-lua-ipc1` dans `waybar --version`. Les headers C++/GTK nécessaires sont
-installés par APT si cette compilation est requise.
-Le PATH de Hyprland inclut ce répertoire. Pour les commandes de diagnostic depuis
-une console existante, exécuter `export PATH="$HOME/.local/bin:$PATH"`.
+The script verifies commits, initializes submodules at their recorded revisions
+and uses `cargo build --release --locked`. It installs the C/Meson tools and
+Rust/Cargo backports needed for compilation. Sources are built without elevated
+privileges in a temporary directory that is removed afterwards.
+The resulting executables are deployed to `~/.local/bin` using the same backup
+system as the configuration files. Existing versions with the required
+capabilities are reused.
+Waybar support is detected by checking for its compiled Lua IPC commands,
+without sending actions to the compositor. Stable Waybar 0.12 lacks this
+support: the prepared build converts only workspace changes to
+`hl.dsp.focus` / `hl.dsp.workspace.toggle_special`. JSON read requests,
+modules and CSS are unchanged. The patch is identified by
+`hyprixe-lua-ipc1` in `waybar --version`. Required C++/GTK headers are installed
+through APT if this build is needed.
+Hyprland's PATH includes this directory. For diagnostic commands from an
+existing console, run `export PATH="$HOME/.local/bin:$PATH"`.
 
-Les téléchargements APT/Cargo/Git demandent un accès réseau. Si la compilation
-échoue, les configurations utilisateur ne sont pas déployées ; les paquets APT
-déjà installés restent présents. Aucune commande `curl | sh` n’est utilisée.
+APT/Cargo/Git downloads require network access. If a build fails, user
+configuration files are not deployed; APT packages already installed remain
+in place. No `curl | sh` command is used.
 
-## Fichiers modifiés et sauvegardes
+## Modified files and backups
 
-L’installateur copie les fichiers de `.config/`, la toolbar sous
-`.local/share/kxmlgui5/dolphin/` et le wallpaper sous
-`~/.local/share/hyprixe/wallpapers/min_forest.jpg`. Il ne copie jamais `extras/`.
-Il sélectionne `profile.lua` et `profile.env` depuis le profil demandé.
+The installer copies files from `.config/`, the toolbar under
+`.local/share/kxmlgui5/dolphin/` and the wallpaper to
+`~/.local/share/hyprixe/wallpapers/min_forest.jpg`. It never copies `extras/`.
+It selects `profile.lua` and `profile.env` from the requested profile.
 
-Les valeurs concernées de `mimeapps.list`, `kdeglobals` et `qt6ct.conf` sont
-fusionnées : les autres associations MIME, groupes et préférences sont conservés.
-Le fichier spécifique `hyprland-mimeapps.list` reçoit aussi l’association des
-dossiers pour éviter qu’un ancien choix propre à cette session soit prioritaire.
-Dolphin devient l’application pour `inode/directory`. Alacritty est le terminal
-de Hyprland, Rofi et KDE. Le thème Qt Widgets est Kvantum ; Qt Quick utilise Basic.
-Un drop-in `systemd/user/waybar.service.d/hyprixe.conf` fournit le chemin du binaire
-Waybar sélectionné et les mêmes chemins
-au service Waybar s’il était déjà activé. Le script ne l’active pas globalement ;
-il réutilise le service existant ou démarre directement une instance protégée
-par flock. Ce drop-in est lui aussi sauvegardé et restauré.
+The relevant values in `mimeapps.list`, `kdeglobals` and `qt6ct.conf` are
+merged: other MIME associations, groups and preferences are preserved.
+The session-specific `hyprland-mimeapps.list` also receives the directory
+association so an older session-specific choice cannot take priority.
+Dolphin becomes the application for `inode/directory`. Alacritty is the
+terminal for Hyprland, Rofi and KDE. Qt Widgets uses Kvantum; Qt Quick uses Basic.
+A `systemd/user/waybar.service.d/hyprixe.conf` drop-in supplies the selected
+Waybar executable and the same configuration paths to the Waybar service if
+it was already enabled. The script does not enable it globally; it reuses
+the existing service or directly starts an instance protected by flock.
+This drop-in is also backed up and restored.
 
-Un ancien `hypr/hyprland.conf` est sauvegardé puis retiré pour qu’il ne prenne pas
-le pas sur l’entrée Lua. Les fichiers personnels supplémentaires ne sont pas
-supprimés. Les fichiers gérés présents sont sauvegardés **avant toute écriture**.
+An old `hypr/hyprland.conf` is backed up and removed so it cannot take
+precedence over the Lua entry point. Additional personal files are not deleted.
+Existing managed files are backed up **before any writes**.
 
 ```text
-~/.local/state/hyprixe/backups/DATE_UTC-PROFIL/
-├── manifest.json     chemins, état avant/après, empreintes et permissions
-├── files/            fichiers originaux, y compris les liens symboliques
-└── complete          transaction terminée
+~/.local/state/hyprixe/backups/DATE_UTC-PROFILE/
+├── manifest.json     paths, before/after state, hashes and permissions
+├── files/            original files, including symbolic links
+└── complete          completed transaction
 ```
 
-Les sauvegardes sont privées (répertoire `0700`). Une erreur de copie déclenche
-le retour arrière des écritures déjà effectuées. Une deuxième installation
-identique ne recopie rien et ne crée pas de sauvegarde supplémentaire. Une
-réinstallation après édition personnelle sauvegarde la version éditée.
+Backups are private (directory mode `0700`). A copy error rolls back writes
+already performed. A second identical installation copies nothing and creates
+no additional backup. Reinstalling after personal edits backs up the edited
+version.
 
-Les variables XDG_CONFIG_HOME, XDG_DATA_HOME et XDG_STATE_HOME sont acceptées
-si elles désignent des sous-répertoires absolus et réels du HOME. Les chemins
-Hyprlock, Rofi, Hypridle et Waybar sont rendus en conséquence. Des parents
-symboliques sont refusés pour éviter d’écrire à travers un autre gestionnaire
-de dotfiles : sauvegarder/détacher d’abord ces liens et relancer.
+XDG_CONFIG_HOME, XDG_DATA_HOME and XDG_STATE_HOME are accepted if they point
+to absolute, real subdirectories of HOME. Hyprlock, Rofi, Hypridle and Waybar
+paths are rendered accordingly. Symlinked parent directories are rejected to
+avoid writing through another dotfile manager: back up and detach those links
+first, then run the installer again.
 
-## Restaurer / désinstaller
+## Restore / uninstall
 
 ```bash
 ./uninstall.sh --list
 ./uninstall.sh --dry-run
 ./uninstall.sh
-./uninstall.sh --backup ID_AFFICHE_PAR_LIST
+./uninstall.sh --backup ID_FROM_LIST
 ```
 
-Par défaut, la dernière transaction non restaurée est annulée. Les fichiers
-précédents retrouvent leur contenu et leurs permissions ; les fichiers créés par
-la transaction sont retirés. Seuls les répertoires créés devenus vides sont
-retirés. Les autres fichiers personnels restent en place.
+By default, the latest transaction that has not been restored is undone.
+Previous files regain their contents and permissions; files created by that
+transaction are removed. Only directories created by the transaction that
+are now empty are removed. Other personal files remain in place.
 
-Si un fichier installé a été modifié depuis, la restauration refuse l’ensemble
-de l’opération et affiche les chemins concernés. Copier vos éditions ailleurs,
-remettre ces fichiers dans leur état installé puis relancer. Aucun `--force`
-destructif n’est proposé. Les empreintes des sauvegardes sont vérifiées avant
-restauration. Pour revenir à l’état antérieur à plusieurs installations, annuler
-les transactions de la plus récente à la plus ancienne ; ne pas effacer les
-sauvegardes intermédiaires. Une restauration interrompue peut être relancée.
+If an installed file has since been edited, restoration refuses the entire
+operation and lists the affected paths. Copy your edits elsewhere, return those
+files to their installed state, then try again. No destructive `--force` option
+is provided. Backup hashes are verified before restoration.
+To return to the state before several installations, undo transactions from
+newest to oldest; do not delete intermediate backups. An interrupted restore
+can be run again.
 
-Les paquets APT et le dépôt backports ne sont pas désinstallés automatiquement.
-Ils peuvent servir à d’autres applications ; gérer leur retrait séparément avec
-APT. Se reconnecter après restauration ou changement de profil.
+APT packages and the backports repository are not removed automatically.
+They may be used by other applications; manage their removal separately with
+APT. Log out and back in after restoring or changing profiles.
 
-## Premier lancement
+## First launch
 
-Se déconnecter, choisir **Hyprland** dans le gestionnaire de connexion, se
-reconnecter. Depuis une console locale sans gestionnaire, utiliser `Hyprland`
-dans une session utilisateur logind. Ne pas lancer un deuxième compositor
-depuis votre session graphique existante.
+Log out, select **Hyprland** in the display manager, then log back in.
+From a local console without a display manager, run `Hyprland` in a logind
+user session. Do not start a second compositor inside an existing graphical
+session.
 
 ```bash
 Hyprland --version
@@ -181,34 +185,34 @@ hyprctl binds -j
 ./verify.sh --dependencies --session
 ```
 
-`configerrors` doit être vide. Les écrans doivent correspondre au matériel.
-La règle par défaut utilise le mode et l’échelle préférés de chaque sortie.
-Pour personnaliser une sortie, modifier `UserConfigs/monitors.lua` après avoir
-consulté `hyprctl monitors`, puis `hyprctl reload`.
+`configerrors` should be empty. Monitors should match the hardware.
+The default rule uses each output's preferred mode and scale.
+To customize an output, edit `UserConfigs/monitors.lua` after checking
+`hyprctl monitors`, then run `hyprctl reload`.
 
-Les modules Lua sont chargés explicitement. Pour recharger après une édition :
+Lua modules are loaded explicitly. To reload after an edit:
 
 ```bash
 hyprctl reload
 hyprctl configerrors
 ```
 
-Les changements d’environnement/profil et le passage Hyprlang → Lua nécessitent
-une nouvelle session, même si le rechargement ne signale pas d’erreur.
+Environment/profile changes and the Hyprlang → Lua transition require
+a new session, even if reloading reports no errors.
 
-## Contrôler les composants
+## Checking components
 
 ```bash
-# Waybar : démarrage s’il manque ; journal dans session.log.
+# Waybar: start it if missing; logs go to session.log.
 ~/.config/hypr/scripts/WaybarStartup.sh
-# Recharger CSS/config d’une instance existante :
+# Reload the CSS/configuration of an existing instance:
 pkill -USR2 -x waybar
 
-# Wallpaper : réutilise le daemon, détecte toutes les sorties.
+# Wallpaper: reuse the daemon and detect all outputs.
 ~/.config/hypr/scripts/Wallpaper.sh
 awww query
 
-# Verrouillage interactif (à tester avec le mot de passe du compte).
+# Interactive locking (test with the account password).
 ~/.config/hypr/scripts/LockScreen.sh
 
 # Applications
@@ -218,47 +222,47 @@ dolphin
 xdg-mime query default inode/directory
 ```
 
-Si XDG_CONFIG_HOME est personnalisé, remplacer `~/.config` dans ces commandes
-manuelles. Les scripts de session utilisent déjà les variables XDG.
+If XDG_CONFIG_HOME is customized, replace `~/.config` in these manual commands.
+Session scripts already use the XDG variables.
 
-Hyprlock lit la même image que awww, directement depuis le répertoire de données :
-il ne dépend pas d’un cache généré pendant le démarrage. Tester le verrouillage
-et le déverrouillage avant d’utiliser la veille. Hypridle verrouille après
-10 minutes, puis éteint les sorties après 12 minutes. Pas de suspension
-automatique ; l’inhibiteur Waybar peut suspendre l’inactivité.
+Hyprlock reads the same image as awww, directly from the data directory:
+it does not depend on a cache generated during startup. Test locking and
+unlocking before using suspend. Hypridle locks after 10 minutes and turns
+outputs off after 12 minutes. There is no automatic suspend; Waybar's idle
+inhibitor can pause idle handling.
 
-Dolphin conserve la toolbar minimale, les réglages Places/InformationPanel et
-les plugins d’aperçu. `F9` affiche Places, `F11` Information, `F12` les aperçus.
-Sur un premier démarrage KDE sans état de fenêtre préalable, afficher le panneau
-d’information avec F11 si nécessaire : aucun état binaire de géométrie de la VM
-n’est distribué. Le panneau terminal intégré de Dolphin dépend de KonsolePart,
-facultatif ; la commande « ouvrir un terminal » utilise Alacritty.
+Dolphin retains the minimal toolbar, Places/InformationPanel settings and
+preview plugins. `F9` shows Places, `F11` Information, and `F12` previews.
+On the first KDE launch without an existing window state, show the information
+panel with F11 if needed: no binary VM window-geometry state is distributed.
+Dolphin's embedded terminal panel depends on the optional KonsolePart;
+the “open terminal” command uses Alacritty.
 
-## Diagnostic et limites
+## Troubleshooting and limitations
 
-- Journaux : `~/.local/state/hyprixe/session.log` et `wallpaper.log`.
-- Aucun daemon awww n’est tué par les scripts actifs. L’attente de 5 s maximum
-  concerne la disponibilité de son IPC et de ses sorties, pas un délai fixe de
-  démarrage. Le hotplug relance seulement l’application de l’image.
-- Éviter un second service Waybar/Hypridle ou un autre outil de wallpaper déjà
-  activé dans une configuration personnelle. Le démarrage détecte les instances
-  présentes ; il ne modifie pas leurs unités systemd.
-- Le profil natif ne force aucun pilote NVIDIA/Intel/AMD. Installer le pilote
-  approprié au GPU ; vérifier DRM et l’accélération avant d’attribuer un défaut
-  de rendu au thème.
-- Alt+Tab parcourt les fenêtres du workspace courant. Alt+F10 affiche toutes
-  les fenêtres dans Rofi. Le cycle suit l’ordre Hyprland du workspace courant ;
-  le sélecteur graphique se valide avec Entrée.
-- La bibliothèque `extras/kooldots` contient des exemples génériques non portés
-  intégralement à cet ensemble réduit. Ses outils de mise à jour, thèmes,
-  repairs Fedora/Ubuntu et scripts SSH ne sont jamais lancés ni installés.
-- `./verify.sh` affiche **SKIPPED** pour les contrôles graphiques indisponibles.
-  Les validations réellement effectuées figurent dans [docs/VALIDATION.md](docs/VALIDATION.md).
+- Logs: `~/.local/state/hyprixe/session.log` and `wallpaper.log`.
+- Active scripts never kill an awww daemon. The wait of up to 5 seconds is
+  for IPC and output readiness, not a fixed startup delay.
+  Hotplug only reapplies the image.
+- Avoid a second Waybar/Hypridle service or another wallpaper tool already
+  enabled in personal configuration. Startup detects existing instances;
+  it does not modify their systemd units.
+- The native profile does not force any NVIDIA/Intel/AMD driver. Install the
+  appropriate GPU driver; check DRM and acceleration before attributing a
+  rendering issue to the theme.
+- Alt+Tab cycles through windows on the current workspace. Alt+F10 shows all
+  windows in Rofi. Cycling follows Hyprland's current-workspace order;
+  confirm a selection in the graphical switcher with Enter.
+- The `extras/kooldots` library contains generic examples that have not been
+  fully ported to this reduced configuration. Its update tools, themes,
+  Fedora/Ubuntu repair tools and SSH scripts are never run or installed.
+- `./verify.sh` reports **SKIPPED** for unavailable graphical checks.
+  The validations actually performed are recorded in [docs/VALIDATION.md](docs/VALIDATION.md).
 
-Références primaires : [Hyprland Lua 0.56.2](https://github.com/hyprwm/Hyprland/blob/v0.56.2/example/hyprland.lua),
-[paquet Debian backports](https://packages.debian.org/source/trixie-backports/hyprland),
-[instructions backports Debian](https://backports.debian.org/Instructions/),
-[Qt/KDE Debian 13](https://wiki.debian.org/PkgQtKde/TrixieReleasePlans),
+Primary references: [Hyprland Lua 0.56.2](https://github.com/hyprwm/Hyprland/blob/v0.56.2/example/hyprland.lua),
+[Debian backports package](https://packages.debian.org/source/trixie-backports/hyprland),
+[Debian backports instructions](https://backports.debian.org/Instructions/),
+[Qt/KDE in Debian 13](https://wiki.debian.org/PkgQtKde/TrixieReleasePlans),
 [Kvantum Qt6](https://packages.debian.org/trixie/qt6-style-kvantum),
-[KXMLGUI6 conserve kxmlgui5](https://github.com/KDE/kxmlgui/blob/v6.13.0/src/kxmlguiclient.cpp),
-[compilation Rofi](https://github.com/davatorium/rofi/blob/2.0.0/INSTALL.md).
+[KXMLGUI6 retains kxmlgui5](https://github.com/KDE/kxmlgui/blob/v6.13.0/src/kxmlguiclient.cpp),
+[building Rofi](https://github.com/davatorium/rofi/blob/2.0.0/INSTALL.md).

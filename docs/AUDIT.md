@@ -1,95 +1,94 @@
-# Audit technique
+# Technical audit
 
-## Périmètre et méthode
+## Scope and method
 
-Base : commit `f96dfb4`, dépôt initial sans modification locale. **593 fichiers**
-inventoriés, 588 fichiers texte décodés entièrement ; les assets binaires ont
-été identifiés et hachés. Le chiffre annoncé au premier point d’avancement était
-une estimation, remplacée ici par le décompte exact de l’inventaire.
+Baseline: commit `f96dfb4`, the original repository with no local changes.
+**593 files** were inventoried, with 588 text files decoded in full; binary
+assets were identified and hashed. The figure given in the first progress
+update was an estimate, replaced here by the exact inventory count.
 
-L’inventaire original contient pour chaque fichier son chemin, sa taille et son
-SHA256 : [inventory-original.tsv](inventory-original.tsv). Les rôles des scripts,
-leurs dépendances et leur rattachement aux entrées startup/keybinds ont été
-examinés avant réorganisation. La revue a distingué les fonctions installées,
-les exemples génériques KoolDots et l’état généré de la VM.
+The original inventory records each file's path, size and SHA256:
+[inventory-original.tsv](inventory-original.tsv). Script roles, dependencies
+and links to startup/keybinding entry points were examined before
+reorganization. The review distinguished installed features, generic KoolDots
+examples and generated VM state.
 
-## Constats corrigés
+## Issues addressed
 
-| Constat initial | Traitement |
+| Original finding | Resolution |
 | --- | --- |
-| Forçage global `LIBGL_ALWAYS_SOFTWARE` en double | Retiré de l’arbre natif ; profil explicite séparé |
-| Hyprlock lancé avec trois overrides Mesa | Lanceur normal natif ; environnement optionnel fourni par le profil |
-| Plusieurs règles moniteur génériques contradictoires, puis `Virtual-1` | Une règle wildcard, mode préféré, échelle/position automatiques |
-| Workspace 1 lié à l’écran de la VM | Aucun workspace lié à un connecteur |
-| Deux systèmes wallpaper et délai de 3 s | Un seul script, verrou flock, attente bornée de l’IPC/sorties |
-| Daemon awww tué puis relancé | Réutilisation du daemon ; démarrage s’il manque, aucune destruction |
-| Wallpaper dupliqué et caches par écran versionnés | Une image source ; Hyprlock utilise directement l’image installée |
-| Fichiers config/style Waybar contenant simplement un chemin `/home/luc/...` | Vrais fichiers JSON/CSS avec imports résolus et rendus à l’installation |
-| Superposition de raccourcis KoolDots, ALT et deux actions ALT+Tab | Une seule table native, contrôlée pour les doublons |
-| SUPER+Tab en doublon groupe/workspace | Suppression de l’ambiguïté ; PageUp/PageDown pour les workspaces |
-| Qt Widgets testé comme un module QML, repli Fusion injustifié | Kvantum pour Widgets, Basic pour Qt Quick, plugin Qt6 vérifié |
-| Variables NVIDIA imposées à tous les GPU et curseur logiciel | Aucun pilote forcé dans native ; curseur logiciel réservé au profil VM |
-| Autostarts Quickshell/overview/Kitty sans fichiers associés | Retirés du démarrage actif, exemples facultatifs conservés séparément |
-| Palette Tokyo Night dans Alacritty | Harmonisation avec les couleurs bleu/cyan Frosted Glass ; opacité/padding conservés |
-| CSS Waybar dupliqué, bouton power défini deux fois dont en rose | Une seule feuille Frosted-Glass, couleurs communes pour le bouton power |
-| Liste packages issue de la VM | Dépendances actives, backports, options et guest integration séparés |
+| Duplicate global `LIBGL_ALWAYS_SOFTWARE` forcing | Removed from the native tree; separate explicit profile |
+| Hyprlock launched with three Mesa overrides | Normal native launcher; optional environment supplied by the profile |
+| Several conflicting generic monitor rules, followed by `Virtual-1` | One wildcard rule, preferred mode, automatic scale/position |
+| Workspace 1 tied to the VM display | No workspace tied to a connector |
+| Two wallpaper systems and a 3-second delay | One script, flock lock, bounded wait for IPC/outputs |
+| awww daemon killed and restarted | Reuse the daemon; start it if missing, without killing it |
+| Duplicate wallpaper and tracked per-monitor caches | One source image; Hyprlock uses the installed image directly |
+| Waybar config/style files containing only a `/home/luc/...` path | Actual JSON/CSS files with imports resolved and rendered during installation |
+| Overlapping KoolDots and ALT bindings, with two ALT+Tab actions | One native binding table, checked for duplicates |
+| Duplicate SUPER+Tab group/workspace actions | Ambiguity removed; PageUp/PageDown for workspaces |
+| Qt Widgets tested as a QML module, unjustified Fusion fallback | Kvantum for Widgets, Basic for Qt Quick, Qt6 plugin checked |
+| NVIDIA variables and software cursor forced for all GPUs | No forced driver in native; software cursor limited to the VM profile |
+| Quickshell/overview/Kitty autostarts without associated files | Removed from active startup; optional examples preserved separately |
+| Tokyo Night palette in Alacritty | Aligned with Frosted Glass blue/cyan colors; opacity/padding preserved |
+| Duplicate Waybar CSS, power button defined twice, once in pink | A single Frosted-Glass stylesheet, shared colors for the power button |
+| Package list taken from the VM | Active dependencies, backports, optional packages and guest integration separated |
 
-## Fonctionnalités conservées
+## Preserved features
 
-Wallpaper, Kvantum et toolbar Dolphin d’origine sont vérifiés par SHA256.
-Les valeurs de décoration sont inchangées : arrondi 13, opacité active 0.78 /
-inactive 0.72, blur taille 4 / 3 passes, gaps 4/10, bordures 2 px et mêmes
-couleurs. Rofi garde sa disposition KoolDots/adi1090x et sa palette translucide.
-Waybar garde les couleurs/background et position haute ; MPRIS, tray et
-inhibiteur d’inactivité sont également conservés.
+The original wallpaper, Kvantum files and Dolphin toolbar are verified by SHA256.
+Decoration values are unchanged: rounding 13, active opacity 0.78 /
+inactive 0.72, blur size 4 / 3 passes, gaps 4/10, 2 px borders and the same
+colors. Rofi retains its KoolDots/adi1090x layout and translucent palette.
+Waybar retains its colors/background and top position; MPRIS, the tray and
+idle inhibitor are also preserved.
 
-Les applications actives sont Alacritty/Dolphin ; les fonctions audio, média,
-luminosité, captures, notifications, presse-papiers, gestuelle et gestion des
-fenêtres/workspaces restent accessibles. Alt+F10 reste un sélecteur graphique.
-La navigation principale Alt+Tab utilise le dispatcher Lua officiel, sans
-workaround destiné aux plantages Wayland de la VM.
+The active applications are Alacritty/Dolphin; audio, media, brightness,
+screenshots, notifications, clipboard, gestures and window/workspace
+management remain accessible. Alt+F10 remains a graphical switcher.
+The primary Alt+Tab navigation uses the official Lua dispatcher, without
+a workaround for Wayland crashes in the VM.
 
-Les thèmes alternatifs, météo/musique, quick settings, réparations de versions,
-scripts SSH, outils SDDM/docks/Quickshell et réglages d’autres distributions sont
-identifiés comme bibliothèque facultative dans `extras/kooldots`. Ils ne font
-pas partie du déploiement. Leur syntaxe est contrôlée ; leurs références
-externes ne constituent pas une promesse de fonctionnement dans Hyprixe.
+Alternative themes, weather/music, quick settings, version repairs, SSH
+scripts, SDDM/dock/Quickshell tools and settings for other distributions are
+identified as an optional library in `extras/kooldots`. They are not deployed.
+Their syntax is checked; their external references do not constitute a
+guarantee that they work in Hyprixe.
 
-## Retraits justifiés
+## Reasons for removals
 
-- Ancienne sauvegarde `backup-before-tokyonight`, marqueurs de premier boot et
-  fichiers de cache wallpaper : état généré, non nécessaire à une installation.
-- Trois copies du wallpaper et version modifiée générée : l’original unique
-  reste dans `wallpapers/min_forest.jpg`.
-- Ancien script `SetFrostedWallpaper.sh` : remplacé par `Wallpaper.sh`, avec
-  détection des sorties et sans variables graphiques natives.
-- Thèmes Kitty et lanceur Thunar dédié : applications remplacées ; les scripts
-  génériques de sélection upstream restent des références facultatives.
-- Binaire précompilé `dots-tui-ubuntu-2404` (~17,7 Mo) : outil d’une autre
-  distribution, non lancé par la configuration cible, sans source intégrée.
-- Anciens noms Senshi-Tokyo-Night : remplacés par Frosted-Glass.
+- Old `backup-before-tokyonight` backup, first-boot markers and wallpaper
+  cache files: generated state, unnecessary for installation.
+- Three wallpaper copies and a generated modified version: the single
+  original remains in `wallpapers/min_forest.jpg`.
+- Old `SetFrostedWallpaper.sh` script: replaced by `Wallpaper.sh`, with
+  output detection and no native graphics overrides.
+- Kitty themes and dedicated Thunar launcher: applications replaced;
+  generic upstream selection scripts remain as optional references.
+- Precompiled `dots-tui-ubuntu-2404` binary (~17.7 MB): a tool for another
+  distribution, not launched by the target configuration, without bundled source.
+- Old Senshi-Tokyo-Night names: replaced by Frosted-Glass.
 
-Les éventuelles occurrences Kitty/Thunar/Tokyo restantes sont confinées aux
-exemples génériques et aux documents d’audit. Aucun défaut, raccourci, script ou
-installateur actif ne lance ces applications. Les exemples d’écrans de la VM
-sont conservés uniquement sous `profiles/vmware/monitor-examples` et ne sont
-jamais appliqués automatiquement.
+Any remaining Kitty/Thunar/Tokyo references are confined to generic examples
+and audit documents. No active default, keybinding, script or installer launches
+these applications. VM monitor examples are kept only under
+`profiles/vmware/monitor-examples` and are never applied automatically.
 
-## Sécurité et limites
+## Security and limitations
 
-Aucun motif de token GitHub/AWS ou de clé privée n’a été trouvé dans les fichiers
-actuels ni dans le seul commit de l’historique. Les noms de fichiers ont aussi été contrôlés pour `.env`, credentials,
-cookies, historique shell, logs et caches. Les caches de la VM ont été retirés,
-les ignorances complétées, et les copies temporaires/tests sont exclues du suivi.
-Les tests ne déclenchent ni verrouillage, ni suspension, ni arrêt de machine.
+No GitHub/AWS token or private-key patterns were found in the current files
+or in the single historical commit. File names were also checked for `.env`,
+credentials, cookies, shell history, logs and caches. VM caches were removed,
+ignore rules expanded, and temporary/test copies excluded from tracking.
+Tests do not trigger locking, suspend or shutdown.
 
-L’installateur refuse root pour le déploiement, limite les cibles au HOME, refuse
-les parents symboliques, sauvegarde par fichier, protège les sauvegardes et
-vérifie leurs empreintes. Les appels réseau/build upstream utilisent des
-révisions fixes et s’exécutent sans privilèges ; APT utilise les dépôts signés.
-Les outils système facultatifs archivés ne sont jamais lancés.
+The installer rejects root for deployment, limits targets to HOME, rejects
+symlinked parent directories, backs up each file, protects backups and
+checks their hashes. Upstream network/build operations use pinned revisions
+and run without elevated privileges; APT uses signed repositories.
+Archived optional system tools are never run.
 
-La provenance exacte de Senshi/wallpaper reste à compléter : voir CREDITS.md.
-Les tests sous WSL ne prouvent pas le rendu, les périphériques d’un PC, le
-déverrouillage PAM ou la reprise après veille. Ces points sont explicitement
-SKIPPED et nécessitent la procédure INSTALL.md sur la machine cible.
+The exact Senshi/wallpaper provenance still needs to be completed: see CREDITS.md.
+WSL tests do not establish rendering quality, physical PC device behavior,
+PAM unlocking or resume from suspend. These checks are explicitly SKIPPED
+and require the INSTALL.md procedure on the target machine.
