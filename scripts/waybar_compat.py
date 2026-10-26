@@ -1,4 +1,4 @@
-"""Detect Lua workspace IPC in Waybar; apply its narrow compatibility patch at build time."""
+"""Detect Waybar's required taskbar/Lua capabilities; patch only workspace IPC."""
 import argparse
 from pathlib import Path
 import shutil
@@ -36,6 +36,17 @@ def patch_source(source):
     shutil.copyfile(Path(__file__).with_name('waybar-lua-ipc.hpp'), source / 'include/util/hyprixe_lua_ipc.hpp')
 
 
+def has_wlr_taskbar(executable=None):
+    executable = executable or shutil.which('waybar')
+    if not executable:
+        return False
+    try:
+        data = Path(executable).read_bytes()
+    except OSError:
+        return False
+    return b'wlr/taskbar' in data and b'zwlr_foreign_toplevel_manager_v1' in data
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--patch', metavar='SOURCE')
@@ -43,4 +54,4 @@ if __name__ == '__main__':
     if args.patch:
         patch_source(args.patch)
     else:
-        sys.exit(0 if has_lua_workspace_ipc() else 1)
+        sys.exit(0 if has_lua_workspace_ipc() and has_wlr_taskbar() else 1)

@@ -13,7 +13,7 @@ import sys
 import tempfile
 import tomllib
 import xml.etree.ElementTree as ET
-from waybar_compat import has_lua_workspace_ipc
+from waybar_compat import has_lua_workspace_ipc, has_wlr_taskbar
 from rofi_compat import has_wayland_support
 from session_checks import check_session, check_source_order
 from sddm_theme import SystemTheme, source_payload as sddm_payload, FILES as SDDM_FILES, THEME as SDDM_THEME
@@ -136,6 +136,22 @@ def check_sddm(root, installed=False):
         print('SKIPPED: system SDDM installation (use --sddm or --dependencies on target)')
 
 
+def check_taskbar(root):
+    try:
+        bar = json.loads((root / '.config/hypr/waybar/configs/Frosted-Glass').read_text())
+        taskbar = bar['wlr/taskbar']
+        left = bar['modules-left']
+        assert left.count('wlr/taskbar') == 1 and left.index('wlr/taskbar') == left.index('hyprland/workspaces') + 1
+        assert taskbar['format'] == '{icon}' and taskbar['on-click'] == 'activate'
+        assert taskbar['all-outputs'] is True and taskbar['tooltip-format'] == '{title}'
+        css = (root / '.config/hypr/waybar/style/Frosted-Glass.css').read_text()
+        assert '#taskbar button.active' in css
+    except (OSError, ValueError, KeyError, TypeError, AttributeError, AssertionError) as exc:
+        report(False, f'Waybar icon taskbar configuration/style: {exc or "missing icon/focus/active-state setting"}')
+    else:
+        report(True, 'Waybar taskbar: icons beside workspaces, focus click, per-window tooltips and active style')
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--session', action='store_true', help='Also query an existing Hyprland session (read-only)')
@@ -200,6 +216,7 @@ def main():
         if not (config / 'scripts' / name).is_file(): missing.append(name)
     report(not missing, 'Entry modules, keybind scripts and Rofi theme imports resolve' + (': ' + ', '.join(missing) if missing else ''))
     check_configuration_formats(ROOT)
+    check_taskbar(ROOT)
     check_sddm(ROOT, installed=args.sddm or args.dependencies)
     ordering = check_source_order(ROOT / '.config/systemd/user')
     report(not ordering, 'UWSM service ordering: wallpaper before Waybar/notifications' +
@@ -223,6 +240,7 @@ def main():
         print('SKIPPED: real Rofi theme parser unavailable')
     if shutil.which('waybar'):
         report(has_lua_workspace_ipc(), 'Waybar supports Lua workspace IPC required by this configuration')
+        report(has_wlr_taskbar(), 'Waybar includes native wlr/taskbar and foreign-toplevel support')
     else:
         print('SKIPPED: Waybar Lua IPC capability check (binary unavailable)')
     check_original_assets(ROOT)

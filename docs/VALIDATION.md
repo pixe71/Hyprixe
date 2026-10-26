@@ -533,3 +533,58 @@ Primary references: [Debian SDDM InputMethod and configuration precedence](https
 [Debian greeter revision](https://github.com/sddm/sddm/blob/4fe234b/src/greeter/GreeterApp.cpp),
 [Hyprland 0.56.2 clear color/configuration](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/config/values/ConfigValues.cpp),
 [Hyprland background renderer](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/render/Renderer.cpp).
+
+## Waybar icon taskbar — October 26, 2026
+
+The existing Waybar build (`8490a1d`, `hyprixe-lua-ipc1`) contains `wlr/taskbar`
+and `zwlr_foreign_toplevel_manager_v1`. Hyprland v0.56.2 advertises version 3 of
+that protocol and activates the selected window through its native handle. No
+Hyprland IPC fallback, window-management changes, keybindings, services or new
+runtime packages were needed. Build/dependency checks now require this compiled
+module as well as the existing Lua workspace support.
+
+Only the new JSON module and `#taskbar` CSS rules affect the visible bar. The
+workspace configuration, every existing module, overall layout/height and other
+CSS rules remain unchanged. Each toplevel has a separate icon, with the title
+available on hover and an active-state fill/outline. There is no app grouping
+that would prevent selecting a particular window.
+
+Validation actually performed under Debian 13 WSL:
+
+- `./verify.sh`: **102 tests OK**, zero failed checks, including the compiled
+  module/protocol capability regression, Bash/ShellCheck/Lua/QML checks, Rofi
+  parses and unchanged original Frosted Glass asset hashes. The verifier also
+  checks the icon-only/focus/tooltip configuration and active-state styling.
+- Started the actual prepared Waybar with the complete updated JSON and CSS on
+  an isolated Sway 1.10.1 headless compositor, with a private runtime directory,
+  session bus and virtual pointer. A minimal read-only Hyprland IPC fixture
+  supplied workspace/window metadata for the existing Hyprland-specific modules.
+  **Taskbar enumeration, clicks, state changes and activation used the real
+  Wayland foreign-toplevel protocol**, not that fixture.
+- Three actual Qt Wayland window fixtures were opened: two with the same
+  Alacritty app ID and one with the Dolphin app ID. GTK loaded the Breeze icons;
+  their separate 16 px buttons and cyan active indicator were inspected in
+  native rendered captures. Waybar kept its **1900×31** geometry on a 1920 px
+  output with the existing 10 px left/right margins.
+- Pointer clicks on each of the three buttons focused exactly its associated
+  window, checked against the compositor's actual focused-window state. Moving
+  one terminal to workspace 2 and clicking its icon activated that workspace
+  and that specific terminal. Closing the other terminal removed only its
+  toplevel while the remaining terminal and Waybar stayed running. The rendered
+  active highlight moved with focus; the four workspace buttons remained shown.
+- The isolated environment lacks some desktop services (MPRIS, audio and
+  Bluetooth). Their unrelated module diagnostics were not treated as a taskbar
+  failure; the bar still ran. GTK accepted the actual stylesheet without parse
+  errors. Test-only Sway, pointer/IPC fixtures, packages, captures and logs are
+  outside the repository and are not installed on the user's PC.
+- `git diff --check` and final source review: no unrelated window/keybinding,
+  profile, SDDM or service changes; no cache/test artifacts added; no commit made.
+
+This is a real Waybar/Wayland integration test on a separate headless compositor,
+not a live Hyprland 0.56.2 or physical GPU session. Confirm the actual application
+icons, monitor scaling and native Hyprland focus/workspace behavior on the PC
+using the procedure in [INSTALL.md](../INSTALL.md#waybar-application-icons).
+
+Primary sources: [Waybar 0.12 taskbar interface](https://github.com/Alexays/Waybar/blob/0.12.0/man/waybar-wlr-taskbar.5.scd),
+[Hyprland 0.56.2 protocol registration](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/managers/ProtocolManager.cpp),
+[Hyprland native activation](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/protocols/ForeignToplevelWlr.cpp).

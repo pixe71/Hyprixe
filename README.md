@@ -96,6 +96,11 @@ JetBrains Mono font is available in Debian.
 Workspaces **1–4** are persistent in Hyprland and always shown on Waybar's left
 side, without a fixed monitor name. Workspaces 5–10 remain available dynamically.
 
+A compact native `wlr/taskbar` sits beside the workspace buttons: one 16 px icon
+per open window, including multiple windows of the same app and other workspaces.
+Click to focus that window; its button uses a cyan outline and blue active fill.
+Hover shows the window title. The other Waybar modules and keybindings are unchanged.
+
 Default keyboard layout: French AZERTY `fr/latin9`. Workspace bindings use
 physical keycodes on the top row, regardless of the AZERTY number symbols.
 

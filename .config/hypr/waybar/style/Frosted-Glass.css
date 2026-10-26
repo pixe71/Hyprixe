@@ -42,6 +42,28 @@ window#waybar {
     padding: 0 11px;
 }
 #workspaces button:hover { background: #7ed6ff; color: #1e4c84; }
+/* One compact icon per window; focus is reported by the toplevel protocol. */
+#taskbar {
+    background: rgba(30, 76, 132, 0.45);
+    margin: 4px 2px;
+    padding: 0 3px;
+    border-radius: 10px;
+    border: 1px solid rgba(126, 214, 255, 0.18);
+}
+#taskbar button {
+    background: transparent;
+    padding: 0 4px;
+    margin: 1px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+}
+#taskbar button:hover { background: rgba(126, 214, 255, 0.25); }
+#taskbar button.active {
+    background: rgba(39, 112, 192, 0.68);
+    border-color: #7ed6ff;
+}
+#taskbar.empty { background: transparent; border: none; padding: 0; margin: 0; }
+
 tooltip {
     background: rgba(30, 76, 132, 0.92);
     border: 1px solid rgba(126, 214, 255, 0.45);

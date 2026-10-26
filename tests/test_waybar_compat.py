@@ -21,6 +21,15 @@ class CapabilityTests(unittest.TestCase):
             self.assertTrue(compat.has_lua_workspace_ipc(binary))
             self.assertFalse(compat.has_lua_workspace_ipc(Path(tmp) / 'missing'))
 
+    def test_taskbar_requires_compiled_module_and_protocol(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            binary = Path(tmp) / 'waybar'
+            binary.write_bytes(b'wlr/taskbar')
+            self.assertFalse(compat.has_wlr_taskbar(binary))
+            binary.write_bytes(b'wlr/taskbar\0zwlr_foreign_toplevel_manager_v1')
+            self.assertTrue(compat.has_wlr_taskbar(binary))
+            self.assertFalse(compat.has_wlr_taskbar(Path(tmp) / 'missing'))
+
 
 @unittest.skipUnless(shutil.which('g++') and shutil.which('lua'), 'C++ compiler and Lua required for IPC compatibility tests')
 class WorkspaceProtocolTests(unittest.TestCase):

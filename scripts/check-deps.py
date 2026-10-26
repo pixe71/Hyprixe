@@ -4,7 +4,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
-from waybar_compat import has_lua_workspace_ipc
+from waybar_compat import has_lua_workspace_ipc, has_wlr_taskbar
 from rofi_compat import has_wayland_support
 
 commands = ('Hyprland', 'hyprctl', 'uwsm', 'hyprlock', 'hypridle', 'alacritty', 'dolphin',
@@ -22,6 +22,8 @@ for name in ('rofi', 'waybar', 'awww', 'awww-daemon'):
     print(f'INFO: {name}: {shutil.which(name) or "not found in PATH"}', flush=True)
 if shutil.which('waybar') and not has_lua_workspace_ipc():
     errors.append('Waybar lacks Lua workspace IPC support; run ./install.sh to prepare the compatible build.')
+if shutil.which('waybar') and not has_wlr_taskbar():
+    errors.append('Waybar lacks wlr/taskbar support; run ./install.sh to prepare the compatible build.')
 if shutil.which('Hyprland'):
     result = subprocess.run(['Hyprland', '--version'], capture_output=True, text=True)
     match = re.search(r'\b(\d+)\.(\d+)\.(\d+)', result.stdout + result.stderr)

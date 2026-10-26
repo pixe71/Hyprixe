@@ -34,7 +34,7 @@ if ! command -v awww >/dev/null || ! command -v awww-daemon >/dev/null; then
     install -m755 "$build/awww/target/release/awww-daemon" "$output/awww-daemon"
 fi
 if ! python3 "$script_dir/waybar_compat.py"; then
-    echo 'Preparing Waybar 0.12 with Lua workspace IPC for Hyprland 0.56.2.'
+    echo 'Preparing Waybar 0.12 with Lua workspace IPC and wlr/taskbar for Hyprland 0.56.2.'
     install_build_dependencies waybar
     checkout https://github.com/Alexays/Waybar.git 8490a1d9b9a5c8770dd63e9faca0a5e01acedcae waybar
     python3 "$script_dir/waybar_compat.py" --patch "$build/waybar"

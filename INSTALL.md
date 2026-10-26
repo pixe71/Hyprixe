@@ -405,6 +405,38 @@ a new session, even if reloading reports no errors.
 
 ## Checking components
 
+### Waybar application icons
+
+`wlr/taskbar` uses Wayland's foreign-toplevel protocol, supported by Hyprland
+0.56.2 and the prepared Waybar 0.12 build. Focus requests use that protocol
+directly; they do not depend on legacy Hyprland dispatch strings or a polling
+script. Each window gets its own button, so two Dolphin or Alacritty windows
+remain independently accessible. All outputs/workspaces are included without
+a hardcoded monitor, and activating a window can switch to its workspace.
+
+The icons are 16 px, use Breeze with GTK's existing fallback, and show only the
+window title on hover. The active window has a blue fill/cyan outline. Button
+positions remain stable on focus changes; the module collapses when empty.
+
+For an existing working Hyprixe installation, apply the update without rebooting:
+
+```bash
+cd ~/hyprixe-debian
+git pull
+./install.sh native --no-packages
+systemctl --user restart waybar.service
+./verify.sh --dependencies --session
+```
+
+Run those commands inside **Hyprland (uwsm-managed)**. If dependency preflight
+reports a Waybar missing `wlr/taskbar`, use `./install.sh native` to prepare the
+compatible build, then restart Waybar. The current prepared build already
+contains the module, so normally no rebuild is needed. Existing backups/restore
+cover the JSON and CSS changes. Check two windows of the same app, switch focus
+using their icons, and confirm the four workspace buttons still work.
+
+### Other components
+
 ```bash
 # Waybar: request Debian's service inside an active UWSM session.
 ~/.config/hypr/scripts/WaybarStartup.sh
