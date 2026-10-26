@@ -272,6 +272,13 @@ The default rule uses each output's preferred mode and scale.
 To customize an output, edit `UserConfigs/monitors.lua` after checking
 `hyprctl monitors`, then run `hyprctl reload`.
 
+Workspaces 1–4 are real persistent Hyprland workspaces, defined by concrete
+`hl.workspace_rule` entries in `lua/workspaces.lua`, without a monitor binding.
+Waybar uses `persistent-workspaces: {"*": [1, 2, 3, 4]}` and numeric sorting
+to keep those four buttons visible on the left. Workspaces 5–10 remain dynamic.
+To inspect compositor state, use `hyprctl workspaces -j` and
+`hyprctl workspacerules -j`, including after emptying a workspace and leaving it.
+
 Lua modules are loaded explicitly. To reload after an edit:
 
 ```bash

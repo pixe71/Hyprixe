@@ -11,7 +11,9 @@
   "hyprland/workspaces": {
     "format": "{name}",
     "on-click": "activate",
-    "all-outputs": false
+    "all-outputs": false,
+    "sort-by": "number",
+    "persistent-workspaces": {"*": [1, 2, 3, 4]}
   },
   "hyprland/window": {"format": "{}", "max-length": 32, "separate-outputs": true},
   "hyprland/submap": {"format": "{}"},

@@ -609,9 +609,10 @@ Line-ending-only differences are ignored when classifying changes.
 - `.config/hypr/waybar/config`
 - `.config/hypr/waybar/configs/[TOP & BOT] SummitSplit v3`
 
-## Created (71)
+## Created (72)
 
 - `.config/hypr/lua/rules.lua`
+- `.config/hypr/lua/workspaces.lua`
 - `.config/hypr/profile.env`
 - `.config/hypr/profile.lua`
 - `.config/hypr/scripts/LaunchApp.sh`

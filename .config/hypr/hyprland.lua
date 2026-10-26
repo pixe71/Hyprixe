@@ -7,7 +7,7 @@ for _, name in ipairs({
   "lua/settings.lua", "UserConfigs/user_settings.lua",
   "UserConfigs/user_decorations.lua", "lua/animations.lua",
   "UserConfigs/user_animations.lua", "lua/monitors.lua",
-  "UserConfigs/monitors.lua", "lua/rules.lua", "lua/keybinds.lua",
+  "UserConfigs/monitors.lua", "lua/workspaces.lua", "lua/rules.lua", "lua/keybinds.lua",
   "UserConfigs/user_keybinds.lua", "lua/startup.lua",
 }) do
   dofile(base .. name)

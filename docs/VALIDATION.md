@@ -389,3 +389,28 @@ status with two clear SDDM/graphical-target diagnostics and no traceback.
 References: [Hyprland UWSM integration and application scopes](https://wiki.hypr.land/Useful-Utilities/Systemd-start/),
 [UWSM startup, environment and shutdown](https://github.com/Vladimir-csp/uwsm),
 and the Debian-packaged unit/desktop files inspected above.
+
+## Persistent workspaces 1–4
+
+Waybar now uses `persistent-workspaces: {"*": [1, 2, 3, 4]}` with numeric
+sorting. Explicit IDs avoid the monitor-ID offsets of a wildcard integer
+count in Waybar 0.12. The compositor independently loads four concrete
+`hl.workspace_rule({ workspace = tostring(id), persistent = true })` entries.
+There is no monitor field, range selector, startup workspace-switching script
+or CSS change. Workspaces 5–10 remain available dynamically.
+
+The v0.56.2 Lua rule parser and workspace placement controller were checked:
+the boolean persistence rule creates missing concrete workspaces, marks them
+persistent and uses an available/focused monitor when no monitor is specified.
+The Lua load test records all four rules and rejects missing/duplicate IDs or
+monitor bindings. A deployment regression also checks the installed Waybar IDs
+and executes the installed Lua graph when Lua is available.
+
+Actual validation: `./verify.sh` exits 0, 70 tests OK, 83 Lua files parsed,
+64 unique bindings retained; `git diff --check` passes and the Waybar stylesheets
+are unchanged. Live `hyprctl`/visual confirmation remains SKIPPED without a real
+Hyprland session in this environment.
+
+Primary sources: [Hyprland 0.56.2 workspace rules](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/config/lua/bindings/LuaBindingsConfigRules.cpp),
+[persistent workspace creation](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/state/WorkspacePlacementController.cpp),
+[Waybar 0.12 explicit persistent IDs](https://github.com/Alexays/Waybar/blob/0.12.0/man/waybar-hyprland-workspaces.5.scd).

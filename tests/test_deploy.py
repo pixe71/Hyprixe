@@ -54,6 +54,23 @@ class DeploymentTests(unittest.TestCase):
         self.assertTrue((self.roots['config'] / 'hypr/scripts/Wallpaper.sh').stat().st_mode & 0o111)
         self.assertEqual((self.roots['data'] / 'hyprixe/wallpapers/min_forest.jpg').read_bytes(), (ROOT / 'wallpapers/min_forest.jpg').read_bytes())
 
+    def test_persistent_workspaces_deploy_for_waybar_and_compositor(self):
+        import shutil
+        import subprocess
+        self.install()
+        hypr = self.roots['config'] / 'hypr'
+        bar = json.loads((hypr / 'waybar/configs/Frosted-Glass').read_text())
+        self.assertEqual(bar['hyprland/workspaces']['persistent-workspaces'], {'*': [1, 2, 3, 4]})
+        self.assertEqual(bar['hyprland/workspaces']['sort-by'], 'number')
+        self.assertEqual(bar['modules-left'][0], 'hyprland/workspaces')
+        self.assertTrue((hypr / 'lua/workspaces.lua').is_file())
+        self.assertIn('lua/workspaces.lua', (hypr / 'hyprland.lua').read_text())
+        if shutil.which('lua'):
+            result = subprocess.run(['lua', str(ROOT / 'tests/check_lua.lua'), str(self.roots['config'])],
+                                    env=dict(os.environ, XDG_CONFIG_HOME=str(self.roots['config'])),
+                                    capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_existing_config_backup_restore_and_personal_file(self):
         old = self.write('hypr/hyprland.lua', 'old config\n')
         personal = self.write('hypr/personal.txt', 'keep me')

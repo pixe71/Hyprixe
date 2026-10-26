@@ -70,6 +70,9 @@ JetBrains Mono font is available in Debian.
 
 ## Keybindings
 
+Workspaces **1–4** are persistent in Hyprland and always shown on Waybar's left
+side, without a fixed monitor name. Workspaces 5–10 remain available dynamically.
+
 Default keyboard layout: French AZERTY `fr/latin9`. Workspace bindings use
 physical keycodes on the top row, regardless of the AZERTY number symbols.
 
