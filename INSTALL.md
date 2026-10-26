@@ -435,6 +435,45 @@ contains the module, so normally no rebuild is needed. Existing backups/restore
 cover the JSON and CSS changes. Check two windows of the same app, switch focus
 using their icons, and confirm the four workspace buttons still work.
 
+### Screenshots
+
+| Shortcut | Action |
+| --- | --- |
+| SUPER + SHIFT + S | `slurp` selection, `grim` capture, then PNG to `wl-copy`; no persistent screenshot file |
+| Print | Save the entire desktop (all outputs) to `~/Pictures/Screenshots/` |
+| SHIFT + Print | Select an area and save to `~/Pictures/Screenshots/` |
+| SUPER + Print / SUPER + SHIFT + Print | Existing full/area shortcuts: save under the XDG Pictures directory and copy to the clipboard |
+
+The new save-only shortcuts use the exact `Pictures/Screenshots` path below HOME,
+including when Debian's localized XDG Pictures directory is `Images`. They create
+that directory on the first successful capture and preserve the current
+clipboard. The legacy shortcuts continue to respect `xdg-user-dir PICTURES`.
+Delayed, active-window and optional Swappy modes remain available.
+
+Names have a readable local timestamp and an atomically reserved unique suffix,
+for example `Screenshot-2026-10-26_21-30-15-a1B2c3.png`. Existing files cannot be
+overwritten by simultaneous captures. Escape/cancel creates no file and leaves
+the clipboard unchanged. Capture failure is reported before any clipboard write;
+temporary images are cleaned up automatically. Notifications are non-critical.
+
+`grim`, `slurp` and `wl-clipboard` are already in the repository's dependencies.
+No additional package is needed on a working Hyprixe installation. To update:
+
+```bash
+cd ~/hyprixe-debian
+git pull
+./install.sh native --no-packages
+hyprctl reload
+hyprctl configerrors
+./verify.sh
+```
+
+Run this from Hyprland. No logout or reboot is required. Test the three shortcuts,
+including Escape during selection and pasting the copied image into an application
+that accepts images. The verifier checks the Lua bindings for duplicates and
+retains the old combinations. Script tests cover cancellation, concurrent names,
+clipboard preservation, failed capture and the previous save/copy modes.
+
 ### Other components
 
 ```bash

@@ -588,3 +588,49 @@ using the procedure in [INSTALL.md](../INSTALL.md#waybar-application-icons).
 Primary sources: [Waybar 0.12 taskbar interface](https://github.com/Alexays/Waybar/blob/0.12.0/man/waybar-wlr-taskbar.5.scd),
 [Hyprland 0.56.2 protocol registration](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/managers/ProtocolManager.cpp),
 [Hyprland native activation](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/protocols/ForeignToplevelWlr.cpp).
+
+## Screenshot shortcuts — October 26, 2026
+
+Reused the existing `ScreenShot.sh` helper. Added only `SUPER+SHIFT+S` (selected
+area to clipboard), `Print` (full save) and `SHIFT+Print` (area save). Existing
+`SUPER+Print` / `SUPER+SHIFT+Print` save-and-copy bindings and delayed/active-window/
+optional editor modes remain. The new save modes use `~/Pictures/Screenshots/`;
+legacy modes keep the XDG Pictures location. Timestamped destinations use
+`mktemp` for atomic unique reservation, including concurrent same-second captures.
+Selection happens before creating a screenshot directory. Clipboard writes occur
+only after successful capture, and save-only modes leave the clipboard alone.
+
+Actual validation in Debian 13 WSL:
+
+- `./verify.sh`: **112 tests OK**, zero failed checks; 133 Bash scripts pass
+  `bash -n` and both ShellCheck levels; 83 Lua files parse. The complete native
+  Lua graph loads **67 unique chords**, including all five screenshot bindings
+  and the existing workspace, mouse and Alt+Tab combinations.
+- Ten new script regressions use a temporary HOME containing spaces and explicit
+  command mocks. They verify PNG MIME/geometry arguments, copy-only without a
+  saved file, full/area saves in the literal Pictures directory, unchanged
+  clipboard on save/cancel/failure, four concurrent captures at one frozen
+  timestamp, invalid arguments, cleanup of temporary/empty files and preservation
+  of legacy XDG save/copy, countdown and editor behavior.
+- Real tools were also exercised on an isolated Sway headless Wayland display
+  using a private session bus/runtime directory and protocol-based virtual
+  pointer. Actual `grim` produced a **1920×1080** full-desktop PNG in the requested
+  directory. A real `slurp` drag selected a **301×201** area; `grim` captured it,
+  `wl-copy --type image/png` owned the selection, and `wl-paste --type image/png`
+  retrieved that PNG after the capture script exited, without an additional
+  persistent file. The real area-save path created its PNG and left the previous
+  clipboard bytes unchanged.
+- Initial attempts to emulate a drag using Sway's deprecated cursor IPC cancelled
+  the selector; the successful test used actual virtual-pointer motion/button
+  protocol events. This was a test-input issue, not a change to the shipped
+  selection script. All fixture code, test-only packages, logs and captures stay
+  outside the repository. No Sway/virtual-input setup is deployed to the PC.
+- Original Frosted Glass asset hashes, other component checks and `git diff --check`
+  pass. No keybinding was removed and no service, profile, Waybar, SDDM or lock
+  configuration changed. No commit made.
+
+The real-tool test validates Wayland capture/clipboard behavior on a separate
+headless compositor. Actual keyboard dispatch under Hyprland 0.56.2, the physical
+Print key (including any laptop Fn behavior), monitor scaling and image pasting
+into the user's applications still require a check on the PC. Apply and reload
+using [the screenshot procedure](../INSTALL.md#screenshots).

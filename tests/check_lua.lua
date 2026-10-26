@@ -56,6 +56,12 @@ for _, chord in ipairs({"super + return", "super + e", "super + space", "super +
   assert(binds[chord], "Missing chord: " .. chord)
 end
 assert(binds["super + mouse:272"].options.mouse)
+for chord, mode in pairs({
+  ["super + shift + s"] = "--copy-area", ["print"] = "--save", ["shift + print"] = "--save-area",
+  ["super + print"] = "--now", ["super + shift + print"] = "--area",
+}) do
+  assert(binds[chord] and binds[chord].fn.opts:find('ScreenShot.sh" ' .. mode, 1, true), "Missing/conflicting screenshot binding: " .. chord)
+end
 assert(binds["super + mouse:273"].options.mouse)
 assert(binds["super + e"].fn.opts:find('LaunchApp.sh" dolphin', 1, true))
 assert(KOOLDOTS_DEFAULTS.term == "alacritty")

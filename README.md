@@ -124,13 +124,21 @@ physical keycodes on the top row, regardless of the AZERTY number symbols.
 | ALT + Tab / ALT + SHIFT + Tab | Next / previous window on the current workspace |
 | ALT + F10 | Rofi switcher for all windows |
 | SUPER + CTRL + V | Clipboard history |
-| SUPER + Print / SHIFT + Print | Full-screen / area screenshot |
+| SUPER + SHIFT + S | Select an area and copy its PNG to the clipboard |
+| Print | Save a full-desktop PNG in `~/Pictures/Screenshots/` |
+| SHIFT + Print | Select an area and save its PNG in `~/Pictures/Screenshots/` |
+| SUPER + Print / SUPER + SHIFT + Print | Existing full-screen / area capture: save and copy |
 | SUPER + SHIFT + E | Session/power menu |
 
 Media and brightness keys are preserved. A horizontal three-finger gesture
 switches workspaces. There is a single source of active keybindings:
 `.config/hypr/lua/keybinds.lua`. Personal additions are loaded afterwards from
 `UserConfigs/user_keybinds.lua`; no file in `extras/` overrides them.
+
+Saved screenshots use timestamped names such as
+`Screenshot-2026-10-26_21-30-15-a1B2c3.png`. The unique suffix prevents overwrites
+even for captures taken simultaneously. Cancelling a selection leaves the
+clipboard and screenshot directory untouched. See [INSTALL.md](INSTALL.md#screenshots).
 
 ## Profiles and layout
 
