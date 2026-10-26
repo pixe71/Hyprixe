@@ -21,7 +21,8 @@ Target: **Debian 13**, **Hyprland 0.56.2 with Lua configuration** (the working
 version reported by the user; API checked against the upstream v0.56.2 tag).
 **0.55.2 is the minimum version accepted by the installer**, not a required
 version: 0.56.2 is accepted. Future versions require their own compatibility review.
-Use a regular user account with `sudo` and a working GPU driver.
+Use a regular user account with `sudo`, an existing Debian SDDM installation
+(Qt 6 greeter) and a working GPU driver.
 
 ```bash
 git clone https://github.com/pixe71/hyprixe-debian.git
@@ -47,6 +48,20 @@ if needed, then backs up and deploys user files. The first build may take severa
 minutes and download C/Rust tools. Read [INSTALL.md](INSTALL.md) for prerequisites,
 system changes, backups, restoration and validation steps.
 
+The dedicated **Hyprixe Frosted Glass SDDM theme** extends the same wallpaper,
+navy/cyan palette and translucent, blurred panels to the login screen. It includes
+the clock/date, account/avatar, password and error feedback, session selector and
+power menu. Its Qt 6 QML is written for this project; no downloaded theme is
+substituted. Small displays use a scrollable layout and Qt handles HiDPI scaling.
+The wallpaper stays a single source asset in the repository.
+
+Installation uses `sudo` for APT and the SDDM theme/configuration files, with
+separate system backups. Other themes and session entries are preserved. Reboot
+after installing to load the new SDDM configuration; the installer does not restart
+SDDM or interrupt your session. Select **Hyprland (uwsm-managed)** in the theme's
+session menu. The theme retains SDDM's last selection rather than forcing one.
+See [SDDM installation and recovery](INSTALL.md#sddm-frosted-glass-login-screen).
+
 Debian's Waybar 0.12 still uses the old IPC for workspace clicks. The installer
 reuses a Waybar build with Lua support or builds the same 0.12 base with a limited
 adaptation of those requests. The bar's layout and theme stay the same.
@@ -56,14 +71,17 @@ See the 0.56.2 compatibility review in `docs/VALIDATION.md`.
 ./install.sh --dry-run       # preview, without APT or configuration copying
 ./install.sh --no-packages   # dependencies already installed, checked before copying
 ./verify.sh                 # static checks and tests in a temporary HOME
+./verify.sh --sddm          # also check the installed login theme and UWSM entry
 ./uninstall.sh --list
 ./uninstall.sh --dry-run
 ./uninstall.sh              # undo the latest transaction that has not been restored
+./uninstall.sh --sddm-only  # restore only the previous login theme, including from a TTY
 ```
 
 ## Components
 
-Hyprland with UWSM and KoolDots Lua modules, Alacritty, Dolphin, Kvantum/Qt6, Waybar,
+SDDM with the Hyprixe Qt 6 theme, Hyprland with UWSM and KoolDots Lua modules,
+Alacritty, Dolphin, Kvantum/Qt6, Waybar,
 Rofi Wayland, Hyprlock, Hypridle, awww, PipeWire/WirePlumber, NetworkManager,
 Blueman, SwayNC and cliphist. Icons use Breeze and FontAwesome; the
 JetBrains Mono font is available in Debian.
@@ -110,6 +128,7 @@ switches workspaces. There is a single source of active keybindings:
 .config/                  active configuration, native by default
 .local/share/kxmlgui5/     Dolphin toolbar (path also used by KF6)
 wallpapers/               single Frosted Glass image
+sddm/themes/hyprixe-frosted/ original Qt 6 login theme; wallpaper copied at install time
 profiles/native/          no forced graphics settings
 profiles/vmware/          explicit software rendering, optional monitor examples
 extras/kooldots/          optional upstream library, never installed
@@ -140,6 +159,7 @@ environment.
   authors credited in the supplied Kvantum theme.
 - [Hyprland](https://github.com/hyprwm/Hyprland), [Waybar](https://github.com/Alexays/Waybar),
   [UWSM](https://github.com/Vladimir-csp/uwsm),
+  [SDDM](https://github.com/sddm/sddm) and [Qt Quick](https://doc.qt.io/qt-6/qtquick-index.html),
   [Rofi](https://github.com/davatorium/rofi), [awww](https://codeberg.org/LGFae/awww),
   [Alacritty](https://github.com/alacritty/alacritty), [Dolphin](https://invent.kde.org/system/dolphin).
 

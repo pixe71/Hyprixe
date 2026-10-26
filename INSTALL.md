@@ -7,9 +7,12 @@
 - DRM/Mesa or NVIDIA drivers suitable for the hardware, and a working
   logind/DBus session. This repository does not install proprietary drivers
   automatically.
-- An existing display manager, or a local console from which to start Hyprland.
-  SDDM is supported: select **Hyprland (uwsm-managed)** after installation.
-  The script does not replace your display manager or configure autologin.
+- An existing Debian **SDDM with its Qt 6 greeter** (`sddm-greeter-qt6`).
+  Select **Hyprland (uwsm-managed)** after installation. The installer checks
+  SDDM first; it does not replace a different display manager or configure autologin.
+  If SDDM is not installed, an administrator must install/select it beforehand
+  (`sudo apt install sddm`). Replacing an existing display manager remains an
+  explicit administrator choice.
 - Hyprland **0.56.2** is the reference version for this Lua configuration and
   the working version reported by the user. Its APIs and options were checked
   against the upstream v0.56.2 tag. **0.55.2 remains the minimum accepted version**
@@ -51,14 +54,18 @@ Equivalent commands and options:
 ```
 
 Do not run `sudo ./install.sh`. Deployment runs under your account;
-only APT commands use `sudo`. If the executable bits were lost when copying
+only APT and SDDM system installation/restoration use `sudo`.
+If the executable bits were lost when copying
 the repository, run `chmod +x install.sh uninstall.sh verify.sh scripts/build-runtime.sh`.
 
 The `--dry-run` mode shows which paths would change, without running APT or
 copying files. It does not guarantee that dependencies are already installed.
+It also previews SDDM paths without `sudo` or system changes.
 `--no-packages` checks commands, the Hyprland version, Rofi's Wayland backend
 and the Qt6 Kvantum plugin; it fails before touching configuration files if
 any requirement is missing.
+It also requires the SDDM Qt 6 modules in `packages-sddm.txt` and the existing
+Debian UWSM session entry. Both real installation modes include the login theme.
 
 Use the normal `./install.sh native` command to repair missing awww or an
 incompatible Rofi/Waybar. `--no-packages` also skips runtime builds; it cannot
@@ -71,6 +78,9 @@ already present in `~/.local/bin` and builds only what is missing or incompatibl
 `packages-backports.txt` lists Hyprland, UWSM, Hyprlock, Hypridle, XWayland and the
 Hyprland portal. `packages-optional.txt` is optional. The VMware profile
 also installs the packages in `profiles/vmware/packages.txt`.
+`packages-sddm.txt` contains the Qt 6 Quick, Controls, Templates, Layouts,
+Effects, Window, WorkerScript and SVG runtime packages for the login theme.
+These use normal Debian APT candidates, without a global backports switch.
 
 If no trixie-backports repository is configured, the installer creates only
 `/etc/apt/sources.list.d/hyprixe-backports.sources`, pointing to the official
@@ -223,9 +233,103 @@ APT packages and the backports repository are not removed automatically.
 They may be used by other applications; manage their removal separately with
 APT. Log out and back in after restoring or changing profiles.
 
+## SDDM Frosted Glass login screen
+
+`./install.sh native` and `./install.sh vmware` install the same original
+`hyprixe-frosted` theme. SDDM must already be installed; Qt 6 runtime modules are
+installed from `packages-sddm.txt` unless `--no-packages` was requested. The
+installer does not change SDDM's greeter display-server backend, PAM, autologin,
+session commands, session desktop files, UWSM or the Hyprixe session services.
+The last selected user/session comes from SDDM's own models. Choose
+**Hyprland (uwsm-managed)**; selecting plain Hyprland still starts the plain
+session and is diagnosed by `./verify.sh --session`.
+
+System paths managed through `sudo`:
+
+| Path | Contents / behavior |
+| --- | --- |
+| `/usr/share/sddm/themes/hyprixe-frosted/Main.qml` | Responsive login screen, user/session models and SDDM login/power API |
+| `/usr/share/sddm/themes/hyprixe-frosted/components/` | Glass panel, button and session/account ComboBox components |
+| `/usr/share/sddm/themes/hyprixe-frosted/assets/user.svg` | Original fallback avatar; SDDM's supplied avatar is used when available |
+| `/usr/share/sddm/themes/hyprixe-frosted/metadata.desktop` | Theme metadata selecting Qt 6 |
+| `/usr/share/sddm/themes/hyprixe-frosted/theme.conf` | Wallpaper name and font |
+| `/usr/share/sddm/themes/hyprixe-frosted/min_forest.jpg` | Exact copy of `wallpapers/min_forest.jpg`; no second source copy in Git and no dependency on a user's home permissions |
+| `/etc/sddm.conf.d/zz-hyprixe-theme.conf` | `[Theme]` with `Current=hyprixe-frosted` and `ThemeDir=/usr/share/sddm/themes` |
+| `/var/lib/hyprixe/sddm/backups/UTC-sddm-ID/` | Private root-owned manifest and originals, including modes/owners and hashes |
+
+SDDM reads `/etc/sddm.conf` **after** the configuration snippets. If it, or an
+alphabetically later local snippet, sets `[Theme] Current` or `ThemeDir`, the
+installer backs up that file and replaces only those overriding lines with
+comments. All other settings and comments remain. The dedicated snippet becomes
+the effective selection, verified after installation. Earlier and vendor snippets
+are left untouched. Symlinked system targets are refused with a clear error.
+
+Every overwritten system file is backed up before any system writes. Installation
+is idempotent; an identical rerun creates no extra backup. A system deployment
+error rolls back its successful writes and the new user deployment. The root
+backup ID is recorded in the corresponding user transaction so the ordinary
+`./uninstall.sh` can restore both. When only SDDM changed, a user restore entry
+is still created. Other SDDM themes and additional personal theme files remain.
+APT packages are retained on restore.
+
+Reboot after installation so SDDM reads the new selection. No automatic restart
+or service enablement is performed. For a safe windowed preview from an existing
+graphical session, run as your normal user:
+
+```bash
+sddm-greeter-qt6 --test-mode --theme /usr/share/sddm/themes/hyprixe-frosted
+./verify.sh --sddm
+./verify.sh --dependencies --session   # inside Hyprland (uwsm-managed)
+```
+
+`--sddm` checks installed file bytes, wallpaper, readability, effective theme
+selection, Qt 6 runtime modules, and the packaged UWSM desktop entry and session
+search path. `--dependencies` includes these checks too. Plain `./verify.sh`
+checks the repository theme without requiring a system deployment. Optional
+`qt6-declarative-dev-tools` enables `qmllint`; `python3-pyqt6.qtquick` enables the
+isolated Qt interaction test. Missing optional validators report **SKIPPED**.
+The interaction test uses a mocked SDDM proxy; it never authenticates or reboots.
+
+The wide layout places the clock on the left and the glass form on the right;
+smaller widths stack them. Short screens can scroll the form to reach the
+session selector. Qt's logical pixels and SDDM's existing HiDPI configuration are
+used without changing global DPI settings. The glass blur samples the wallpaper
+through Qt Quick Effects, independently of Hyprland's compositor blur.
+
+### Recover only the previous SDDM theme
+
+If the greeter has a problem, switch to a TTY with **Ctrl+Alt+F3**, log in to your
+normal account, and run:
+
+```bash
+cd ~/hyprixe-debian
+./uninstall.sh --sddm-only --list
+./uninstall.sh --sddm-only --dry-run
+./uninstall.sh --sddm-only
+# Or select a specific system backup from the list:
+./uninstall.sh --sddm-only --backup SYSTEM_BACKUP_ID
+```
+
+These commands use `sudo` to access the private system backup and restore just
+the files/theme selection managed by that transaction. They do not depend on
+unchanged personal Hyprland files and do not touch your desktop configuration.
+The default selects the newest unrestored SDDM transaction belonging to the
+installing user. Undo multiple transactions from newest to oldest if needed.
+Changed installed system files block restoration before any files are changed;
+save those edits elsewhere and restore their installed contents first.
+After recovery, reboot when your work is saved so SDDM rereads its configuration.
+Do not manually delete the dedicated snippet: a higher-priority original theme
+setting may also need restoration from the backup.
+
+References: [SDDM theme interface](https://github.com/sddm/sddm/blob/develop/docs/THEMING.md),
+[Debian SDDM configuration precedence](https://manpages.debian.org/trixie/sddm/sddm.conf.5.en.html),
+[Qt 6.8 MultiEffect](https://doc.qt.io/qt-6.8/qml-qtquick-effects-multieffect.html).
+
 ## First launch
 
 Log out completely and select **Hyprland (uwsm-managed)** in SDDM, then log in.
+After first installing the login theme, reboot to ensure SDDM rereads its system
+configuration. Installation never restarts the display manager automatically.
 Debian provides `/usr/share/wayland-sessions/hyprland-uwsm.desktop`, whose command
 is `uwsm start -e -D Hyprland hyprland.desktop`. The plain **Hyprland** entry
 uses `/usr/bin/start-hyprland`; it can run the compositor and import its

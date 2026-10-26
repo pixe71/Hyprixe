@@ -609,7 +609,7 @@ Line-ending-only differences are ignored when classifying changes.
 - `.config/hypr/waybar/config`
 - `.config/hypr/waybar/configs/[TOP & BOT] SummitSplit v3`
 
-## Created (72)
+## Created (83)
 
 - `.config/hypr/lua/rules.lua`
 - `.config/hypr/lua/workspaces.lua`
@@ -659,6 +659,7 @@ Line-ending-only differences are ignored when classifying changes.
 - `install.sh`
 - `packages-backports.txt`
 - `packages-optional.txt`
+- `packages-sddm.txt`
 - `profiles/native/profile.env`
 - `profiles/native/profile.lua`
 - `profiles/vmware/packages.txt`
@@ -670,17 +671,27 @@ Line-ending-only differences are ignored when classifying changes.
 - `scripts/deploy.py`
 - `scripts/rofi_compat.py`
 - `scripts/session_checks.py`
+- `scripts/sddm_theme.py`
 - `scripts/verify.py`
 - `scripts/waybar-lua-ipc.hpp`
 - `scripts/waybar_compat.py`
 - `tests/check_lua.lua`
+- `tests/sddm_qml_smoke.py`
 - `tests/test_apt_build_deps.py`
 - `tests/test_deploy.py`
 - `tests/test_rofi_compat.py`
 - `tests/test_runtime.py`
+- `tests/test_sddm.py`
 - `tests/test_session_checks.py`
 - `tests/test_verify.py`
 - `tests/test_waybar_compat.py`
 - `uninstall.sh`
 - `verify.sh`
+- `sddm/themes/hyprixe-frosted/Main.qml`
+- `sddm/themes/hyprixe-frosted/metadata.desktop`
+- `sddm/themes/hyprixe-frosted/theme.conf`
+- `sddm/themes/hyprixe-frosted/components/GlassPane.qml`
+- `sddm/themes/hyprixe-frosted/components/GlassButton.qml`
+- `sddm/themes/hyprixe-frosted/components/GlassComboBox.qml`
+- `sddm/themes/hyprixe-frosted/assets/user.svg`
 

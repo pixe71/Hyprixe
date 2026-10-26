@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import shutil
 import stat
+import subprocess
 import sys
 import uuid
 
@@ -169,6 +170,13 @@ def restore(backup, home, dry=False, rollback=False):
                 raise ValueError(f'Backup is missing or corrupt: {saved}')
     if conflicts:
         raise ValueError('Files changed since installation; save your edits first. Nothing restored:\n' + '\n'.join(conflicts))
+    system_backup = manifest.get('sddm_backup')
+    if system_backup:
+        # Check both transactions before either is changed. Root restoration is
+        # resumable if a later user write fails or power is interrupted.
+        system_theme('restore', '--backup', system_backup, '--dry-run')
+        if not dry:
+            system_theme('restore', '--backup', system_backup)
     for entry in reversed(entries):
         target = Path(entry['target'])
         print('RESTORE', target)
@@ -269,6 +277,52 @@ def install(home, roots, profile, dry=False, runtime=None):
         raise
     (backup / 'complete').touch()
     print('Backup:', backup)
+    return backup
+
+
+def system_theme(action, *arguments):
+    command = [sys.executable, str(REPO / 'scripts/sddm_theme.py'), action, *arguments]
+    # Preview/check never needs elevated privileges. Only system writes and
+    # access to private root backups use sudo.
+    if not (action in ('check', 'prerequisites') or
+            (action == 'install' and '--dry-run' in arguments)) and os.geteuid() != 0:
+        command.insert(0, 'sudo')
+    result = subprocess.run(command, text=True, stdout=subprocess.PIPE, check=True)
+    return result.stdout
+
+
+def install_with_sddm(home, roots, profile, dry=False, runtime=None):
+    if dry:
+        install(home, roots, profile, dry=True, runtime=runtime)
+        print(system_theme('install', '--dry-run'), end='')
+        return
+    system_theme('prerequisites')
+    backup = install(home, roots, profile, runtime=runtime)
+    system_backup = None
+    try:
+        system_backup = json.loads(system_theme('install'))['backup']
+        if not system_backup:
+            return backup
+        if backup is None:
+            # A system-only update still gets an ordinary user restore entry.
+            identifier = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S.%fZ') + '-' + profile
+            backup = roots['state'] / 'hyprixe/backups' / identifier
+            backup.mkdir(parents=True, mode=0o700)
+            manifest = {'format': 1, 'id': identifier, 'home': str(home),
+                        'profile': profile, 'files': [], 'directories': []}
+        else:
+            manifest = read_manifest(backup)
+        manifest['sddm_backup'] = system_backup
+        atomic(backup / 'manifest.json', (json.dumps(manifest, indent=2) + '\n').encode())
+        (backup / 'complete').touch()
+        print('SDDM system backup linked to user transaction:', backup)
+        return backup
+    except BaseException:
+        if system_backup:
+            system_theme('restore', '--backup', system_backup)
+        if backup and (backup / 'manifest.json').is_file():
+            restore(backup, home, rollback=True)
+        raise
 
 
 def main():
@@ -278,6 +332,7 @@ def main():
     ins.add_argument('--profile', choices=['native', 'vmware'], default='native')
     ins.add_argument('--dry-run', action='store_true')
     ins.add_argument('--runtime', help='Internal: directory containing staged runtime binaries')
+    ins.add_argument('--sddm', action='store_true', help='Also deploy the system SDDM theme through sudo')
     res = sub.add_parser('restore')
     res.add_argument('--backup', help='Backup ID (default: most recent unrestored transaction)')
     res.add_argument('--list', action='store_true')
@@ -287,13 +342,15 @@ def main():
     state = roots['state'] / 'hyprixe'
     guard(state / 'deployment.lock', home)
     if args.action == 'install' and args.dry_run:
-        install(home, roots, args.profile, dry=True, runtime=args.runtime)
+        function = install_with_sddm if args.sddm else install
+        function(home, roots, args.profile, dry=True, runtime=args.runtime)
         return
     state.mkdir(parents=True, exist_ok=True)
     with (state / 'deployment.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         if args.action == 'install':
-            install(home, roots, args.profile, runtime=args.runtime)
+            function = install_with_sddm if args.sddm else install
+            function(home, roots, args.profile, runtime=args.runtime)
         else:
             backups = sorted((state / 'backups').glob('*'), reverse=True)
             backups = [p for p in backups if (p / 'manifest.json').is_file()]
@@ -319,6 +376,6 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except (ValueError, OSError, KeyError, json.JSONDecodeError) as exc:
+    except (ValueError, OSError, KeyError, subprocess.CalledProcessError) as exc:
         print('ERROR:', exc, file=sys.stderr)
         sys.exit(1)

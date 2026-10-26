@@ -2,7 +2,8 @@
 
 Audit dated October 25, 2026 (Europe/Paris), from Windows with Debian 13 under
 WSL2, x86_64. **No Hyprland session on physical hardware was started.**
-Interactive graphical commands are not presented as tested.
+Interactive desktop login is not presented as tested. The later SDDM section
+records separate greeter test-mode rendering, not a physical login session.
 
 ## Commands and results
 
@@ -414,3 +415,53 @@ Hyprland session in this environment.
 Primary sources: [Hyprland 0.56.2 workspace rules](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/config/lua/bindings/LuaBindingsConfigRules.cpp),
 [persistent workspace creation](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/state/WorkspacePlacementController.cpp),
 [Waybar 0.12 explicit persistent IDs](https://github.com/Alexays/Waybar/blob/0.12.0/man/waybar-hyprland-workspaces.5.scd).
+
+## SDDM Frosted Glass theme — October 26, 2026
+
+Environment: Debian 13 under WSL2. Qt 6.8.2 and the native Debian SDDM greeter
+from `sddm 0.21.0+git20250502.4fe234b-2` were used. The SDDM package was downloaded
+and extracted for test-mode rendering, not installed or started as the system
+display manager. No physical SDDM/PAM login or Hyprland session was started.
+
+The new theme is original QML in `sddm/themes/hyprixe-frosted/`, using the existing
+wallpaper. No files under `.config/`, `.local/` or `profiles/` changed in this
+SDDM work. UWSM session files, Waybar fixes and keyboard bindings remain intact.
+
+| Command / check actually executed | Observed result |
+| --- | --- |
+| `./verify.sh`, with the previously built Rofi/Waybar/awww in PATH | Exit 0; **89 tests OK**, 133 Bash scripts, 83 Lua files, both ShellCheck levels, six real Rofi parses, original asset hashes and source/security checks pass |
+| `/usr/lib/qt6/bin/qmllint --ignore-settings --unqualified info` on `Main.qml` and the three components | Exit 0. Only informational notices for SDDM-injected `config`, `sddm`, `userModel` and `sessionModel`; syntax/import/property checks are not disabled |
+| `python3 -m unittest discover -s tests -v` through the verifier | Includes **19 new SDDM tests**: system transactions, combined user/system restore, root CLI lock/backup flow, and actual Qt controls/context models |
+| Qt interaction child process: `tests/sddm_qml_smoke.py`, offscreen/software Qt backend | Actual Qt 6 `QAbstractListModel` roles and Controls load with zero runtime warnings. Last user/session retained; chosen session index forwarded unchanged; errors clear the password; duplicate login blocked; account/session popups open; power methods reach only the mocked proxy; empty user/session models handled |
+| Same Qt layout test at 1920×1080, 1280×720, 1024×768, 800×600 and 3840×2160 | Controls remain usable and inside the horizontal layout; small screens retain scrolling. This test does not validate shader rendering |
+| Extracted `sddm-greeter-qt6 --test-mode --theme STAGED_THEME`, on a dedicated Xvfb display using Qt's xcb backend | Theme loads in the real Debian greeter. Rendered captures were examined at 1920×1080, 1280×720, 800×600, and 3840×2160 with `QT_SCALE_FACTOR=2`. Wallpaper, cyan borders, dark translucent panel, GPU blur, rounded corners, clock/date and footer render correctly |
+| System installation/restore in a temporary filesystem, including the privileged CLI path | Exact wallpaper copy, effective theme selection, dated backups, no-op repeat, permissions, owner restriction, unchanged UWSM entry, other themes/personal files preserved; corruption, changed files, source absence, symlinked targets/state and injected disk errors handled |
+| Combined user/system transaction tests | Root backup linked to user restore; system-only change creates a restore transaction; failed system install rolls user files back; conflict in either scope prevents the other scope from being restored |
+| `apt-get -s install --no-remove` with the eight packages in `packages-sddm.txt` | Exit 0; Qt modules already installed at the expected stable Qt 6 versions; no removals or downgrades |
+| `./verify.sh --dependencies` in this WSL environment | Exit 1, **3 expected failed check groups**, no verifier traceback: no installed system SDDM theme, no installed SDDM daemon/greeter, and missing desktop runtime dependencies. Repository tests still all pass; this is not a successful deployment check on the physical PC |
+| `git diff --check`, current/untracked file review | No whitespace errors or generated runtime assets added to the repository; no commit made |
+
+The native greeter preview correctly reports an empty session directory in the
+test environment, disables login, and uses the fallback avatar. Its missing
+default face-image warning and absent daemon-socket notice are expected in this
+isolated test-mode setup. Session choice and power dispatch were exercised with
+explicit Qt model/proxy fixtures, not real authentication or shutdown. Xvfb,
+staging copies, logs and captures remain outside the repository. The original
+wallpaper is present only once as a source asset; installation copies it into
+the system theme so the greeter does not need access to a user's home directory.
+
+Still required on the physical Debian PC:
+
+1. Run `./install.sh native`, then `./verify.sh --dependencies` to validate actual
+   installed files, effective SDDM configuration and available UWSM entry.
+2. Reboot; inspect the real greeter on the GPU, outputs, resolutions and DPI settings.
+3. Test actual account selection/avatar, keyboard layout/password entry, failed
+   authentication and successful PAM login into **Hyprland (uwsm-managed)**.
+4. Inside that session, run `./verify.sh --dependencies --session`; confirm the
+   UWSM graphical target and Waybar/session services after a real SDDM login.
+5. Check the greeter's power menu and multi-monitor behavior when convenient.
+   A windowed/offscreen preview cannot establish hardware shutdown or seat behavior.
+
+Recovery is documented in [INSTALL.md](../INSTALL.md#recover-only-the-previous-sddm-theme):
+`./uninstall.sh --sddm-only` restores the previous login theme from its private
+system backup, including from a TTY, without restoring personal desktop files.

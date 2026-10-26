@@ -21,17 +21,21 @@ done
 # shellcheck source=/dev/null
 source /etc/os-release
 [[ ${ID:-} == debian && ${VERSION_ID:-} == 13 ]] || { echo 'ERROR: This installer targets Debian 13 only.' >&2; exit 1; }
-[[ $EUID -ne 0 ]] || { echo 'ERROR: Run as your desktop user, without sudo. APT uses sudo separately.' >&2; exit 1; }
+[[ $EUID -ne 0 ]] || { echo 'ERROR: Run as your desktop user, without sudo. APT and SDDM system files use sudo separately.' >&2; exit 1; }
 trap 'printf "ERROR: installation failed (line %s). No session was started.\n" "$LINENO" >&2' ERR
 runtime=$(mktemp -d -t hyprixe-runtime.XXXXXXXX)
 trap 'rm -rf -- "$runtime"' EXIT
 if $dry_run; then
     command -v python3 >/dev/null || { echo 'Install python3 to preview the deployment.' >&2; exit 1; }
-    python3 "$repo/scripts/deploy.py" install --profile "$profile" --dry-run
+    python3 "$repo/scripts/deploy.py" install --profile "$profile" --dry-run --sddm
     exit 0
 fi
+command -v sddm >/dev/null && command -v sddm-greeter-qt6 >/dev/null || {
+    echo 'ERROR: Debian SDDM with its Qt 6 greeter must already be installed; see INSTALL.md.' >&2
+    exit 1
+}
+command -v sudo >/dev/null || { echo 'ERROR: sudo is required for SDDM system files (and APT); see INSTALL.md.' >&2; exit 1; }
 if $packages; then
-    command -v sudo >/dev/null || { echo 'ERROR: Install/configure sudo first; see INSTALL.md.' >&2; exit 1; }
     echo 'Installing Debian packages; sudo may request your password.'
     # A separate source file is created only if no backports suite is configured.
     if ! grep -RqsE '(^deb .*|^Suites:.*)trixie-backports' /etc/apt/sources.list /etc/apt/sources.list.d; then
@@ -48,6 +52,8 @@ if $packages; then
     read_packages() { sed -e 's/#.*//' -e '/^[[:space:]]*$/d' "$1"; }
     mapfile -t stable < <(read_packages "$repo/packages.txt")
     sudo apt-get install -y "${stable[@]}"
+    mapfile -t sddm_packages < <(read_packages "$repo/packages-sddm.txt")
+    sudo apt-get install --no-remove -y "${sddm_packages[@]}"
     mapfile -t backports < <(read_packages "$repo/packages-backports.txt")
     sudo apt-get install -y -t trixie-backports "${backports[@]}"
     if [[ $profile == vmware ]]; then
@@ -63,6 +69,7 @@ if $packages; then
 fi
 command -v python3 >/dev/null || { echo 'ERROR: python3 is required.' >&2; exit 1; }
 PATH="$runtime:$PATH" python3 "$repo/scripts/check-deps.py"
-python3 "$repo/scripts/deploy.py" install --profile "$profile" --runtime "$runtime"
-echo 'Installed. Log out and select "Hyprland (uwsm-managed)" in SDDM, then log in.'
+python3 "$repo/scripts/deploy.py" install --profile "$profile" --runtime "$runtime" --sddm
+echo 'SDDM Frosted Glass installed with a separate system backup. SDDM was not restarted.'
+echo 'Installed. Reboot to load the SDDM theme, then select "Hyprland (uwsm-managed)" and log in.'
 echo 'The plain Hyprland entry does not provide the required UWSM session lifecycle. See INSTALL.md.'

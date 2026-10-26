@@ -20,6 +20,7 @@ reassign rights to the wallpaper, icons or illustrations.
 | [adi1090x/rofi](https://github.com/adi1090x/rofi) | Rofi style 4 layout, attribution preserved |
 | [Alexays/Waybar](https://github.com/Alexays/Waybar) | MIT-licensed Waybar; optional 0.12 build with a local adaptation of workspace requests to the Lua API, using the same dispatchers as the recent upstream Lua backend |
 | [Vladimir-csp/UWSM](https://github.com/Vladimir-csp/uwsm) | Session lifecycle, environment finalization and application scopes; uses Debian's packaged UWSM and Hyprland session entry |
+| [SDDM](https://github.com/sddm/sddm) and [Qt Quick](https://doc.qt.io/qt-6/qtquick-index.html) | Greeter platform and Qt 6 controls/effects. The Hyprixe QML layout, glass components and fallback user icon in `sddm/themes/hyprixe-frosted/` were authored for this project under GPL-3.0-or-later, using the existing wallpaper; they are not a downloaded third-party theme |
 | [Tsu Jan / Kvantum](https://github.com/tsujan/Kvantum) | Kvantum engine and KvAdapta base mentioned in the theme |
 | [Vince / vinceliuice](https://github.com/vinceliuice) | Author named in Frosted-Glass.kvconfig, Materia theme base |
 | [SherLock707](https://github.com/SherLock707) | Historical Hyprlock/Hypridle contributions, preserved in the examples |

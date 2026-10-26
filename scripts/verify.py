@@ -16,6 +16,7 @@ import xml.etree.ElementTree as ET
 from waybar_compat import has_lua_workspace_ipc
 from rofi_compat import has_wayland_support
 from session_checks import check_session
+from sddm_theme import SystemTheme, source_payload as sddm_payload, FILES as SDDM_FILES, THEME as SDDM_THEME
 
 ROOT = Path(__file__).resolve().parents[1]
 failed = 0
@@ -93,10 +94,52 @@ def check_original_assets(root):
         report(actual == expected, f'Original asset SHA256: {name}{detail}')
 
 
+def check_sddm(root, installed=False):
+    try:
+        sddm_payload(root)
+        theme = root / 'sddm/themes' / SDDM_THEME
+        metadata = configparser.ConfigParser(interpolation=None)
+        metadata.read(theme / 'metadata.desktop')
+        settings = configparser.ConfigParser(interpolation=None)
+        settings.read(theme / 'theme.conf')
+        assert metadata['SddmGreeterTheme']['QtVersion'] == '6'
+        assert metadata['SddmGreeterTheme']['MainScript'] == 'Main.qml'
+        assert settings['General']['background'] == 'min_forest.jpg'
+    except (OSError, ValueError, KeyError, AssertionError, configparser.Error) as exc:
+        report(False, f'SDDM theme source/metadata/wallpaper: {exc}')
+        return
+    report(True, 'SDDM Qt 6 theme, QML components, icon and original wallpaper exist')
+    lint = '/usr/lib/qt6/bin/qmllint' if Path('/usr/lib/qt6/bin/qmllint').is_file() else shutil.which('qmllint6')
+    if not lint and shutil.which('qmllint'):
+        version = subprocess.run(['qmllint', '--version'], capture_output=True, text=True)
+        if version.returncode == 0 and re.search(r'\b6\.\d', version.stdout + version.stderr):
+            lint = shutil.which('qmllint')
+    if lint:
+        # SDDM injects config/sddm/userModel/sessionModel at runtime; qmllint
+        # cannot resolve those context globals. Keep their notices as info;
+        # syntax, imports, missing properties and other warnings still fail.
+        run([lint, '--ignore-settings', '--unqualified', 'info',
+             *[str(theme / name) for name in SDDM_FILES if name.endswith('.qml')]],
+            'Qt 6 qmllint: SDDM theme (runtime context globals reported as info)')
+    else:
+        print('SKIPPED: Qt 6 qmllint unavailable (optional: qt6-declarative-dev-tools)')
+    if installed:
+        try:
+            failures = SystemTheme(repo=root).check_installed()
+        except (OSError, ValueError, configparser.Error) as exc:
+            failures = [str(exc)]
+        report(not failures, 'Installed SDDM files, effective theme selection and UWSM session entry' +
+               (': ' + '; '.join(failures) if failures else ''))
+        run(['python3', 'scripts/sddm_theme.py', 'prerequisites'], 'Installed SDDM Qt 6 greeter and QML dependencies')
+    else:
+        print('SKIPPED: system SDDM installation (use --sddm or --dependencies on target)')
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--session', action='store_true', help='Also query an existing Hyprland session (read-only)')
     parser.add_argument('--dependencies', action='store_true', help='Require installed runtime dependencies')
+    parser.add_argument('--sddm', action='store_true', help='Also check installed SDDM theme, configuration and UWSM entry')
     args = parser.parse_args()
     entries = [p for p in ROOT.rglob('*') if not any(x in p.relative_to(ROOT).parts for x in ('.git', '.validation', '__pycache__'))]
     sources_ok = check_source_tree(ROOT, entries)
@@ -155,6 +198,7 @@ def main():
         if not (config / 'scripts' / name).is_file(): missing.append(name)
     report(not missing, 'Entry modules, keybind scripts and Rofi theme imports resolve' + (': ' + ', '.join(missing) if missing else ''))
     check_configuration_formats(ROOT)
+    check_sddm(ROOT, installed=args.sddm or args.dependencies)
     rofi = shutil.which('rofi')
     if rofi and has_wayland_support(rofi):
         for p in sorted((config / 'rofi').rglob('*.rasi')):
