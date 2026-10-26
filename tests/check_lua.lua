@@ -36,7 +36,7 @@ for _, chord in ipairs({"super + return", "super + e", "super + space", "super +
 end
 assert(binds["super + mouse:272"].options.mouse)
 assert(binds["super + mouse:273"].options.mouse)
-assert(binds["super + e"].fn.opts == "dolphin")
+assert(binds["super + e"].fn.opts:find('LaunchApp.sh" dolphin', 1, true))
 assert(KOOLDOTS_DEFAULTS.term == "alacritty")
 binds["alt + tab"].fn()
 assert(dispatched[1].name == "cycle_next" and dispatched[1].opts.next == true)

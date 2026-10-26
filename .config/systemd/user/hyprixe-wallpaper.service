@@ -1,0 +1,13 @@
+[Unit]
+Description=Apply the Frosted Glass wallpaper
+Requires=hyprixe-awww.service
+Requisite=graphical-session.target
+After=graphical-session.target hyprixe-awww.service
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=-%t/uwsm/env_session.conf
+ExecStart="@HYPR_CONFIG@/scripts/Wallpaper.sh"
+RemainAfterExit=yes
+Slice=background-graphical.slice

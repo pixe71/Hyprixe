@@ -15,6 +15,7 @@ import tomllib
 import xml.etree.ElementTree as ET
 from waybar_compat import has_lua_workspace_ipc
 from rofi_compat import has_wayland_support
+from session_checks import check_session
 
 ROOT = Path(__file__).resolve().parents[1]
 failed = 0
@@ -28,7 +29,10 @@ def report(ok, message):
 
 
 def run(command, message, **kwargs):
-    r = subprocess.run(command, cwd=ROOT, text=True, capture_output=True, **kwargs)
+    try:
+        r = subprocess.run(command, cwd=ROOT, text=True, capture_output=True, **kwargs)
+    except OSError as exc:
+        r = subprocess.CompletedProcess(command, 127, '', str(exc))
     report(r.returncode == 0, message)
     if r.returncode:
         print(r.stdout + r.stderr)
@@ -188,13 +192,17 @@ def main():
         run(['python3', 'scripts/check-deps.py'], 'Installed runtime dependencies')
     else:
         print('SKIPPED: installed graphical dependencies (use --dependencies on target)')
-    if args.session and shutil.which('hyprctl') and os.environ.get('HYPRLAND_INSTANCE_SIGNATURE'):
-        r = run(['hyprctl', 'configerrors'], 'hyprctl configerrors query')
-        report(r.returncode == 0 and not r.stdout.strip(), 'Running Hyprland reports no configuration errors')
-        run(['hyprctl', 'monitors', '-j'], 'hyprctl monitors')
-        run(['awww', 'query'], 'awww query')
+    if args.session:
+        check_session(report)
+        if shutil.which('hyprctl') and os.environ.get('HYPRLAND_INSTANCE_SIGNATURE'):
+            r = run(['hyprctl', 'configerrors'], 'hyprctl configerrors query')
+            report(r.returncode == 0 and not r.stdout.strip(), 'Running Hyprland reports no configuration errors')
+            run(['hyprctl', 'monitors', '-j'], 'hyprctl monitors')
+            run(['awww', 'query'], 'awww query')
+        else:
+            print('SKIPPED: compositor IPC checks require hyprctl and a current Hyprland environment')
     else:
-        print('SKIPPED: hyprctl configerrors, actual outputs and wallpaper IPC (no requested live Hyprland session)')
+        print('SKIPPED: UWSM/session services, hyprctl configerrors, outputs and wallpaper IPC (use --session inside Hyprland)')
     print('SKIPPED: visual theme, keyboard/mouse actions, PAM unlock and suspend/resume require interactive hardware testing')
     print(f'RESULT: {failed} failed check(s)')
     return 1 if failed else 0

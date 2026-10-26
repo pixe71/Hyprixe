@@ -1,0 +1,6 @@
+[Unit]
+Description=Hyprixe services for the UWSM Hyprland session
+Requisite=graphical-session.target
+After=graphical-session.target
+PartOf=graphical-session.target
+Wants=waybar.service hypridle.service swaync.service hyprixe-wallpaper.service hyprixe-polkit.service hyprixe-clipboard.service

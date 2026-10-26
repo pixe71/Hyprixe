@@ -8,7 +8,8 @@
   logind/DBus session. This repository does not install proprietary drivers
   automatically.
 - An existing display manager, or a local console from which to start Hyprland.
-  The script does not replace your display manager.
+  SDDM is supported: select **Hyprland (uwsm-managed)** after installation.
+  The script does not replace your display manager or configure autologin.
 - Hyprland **0.56.2** is the reference version for this Lua configuration and
   the working version reported by the user. Its APIs and options were checked
   against the upstream v0.56.2 tag. **0.55.2 remains the minimum accepted version**
@@ -67,7 +68,7 @@ already present in `~/.local/bin` and builds only what is missing or incompatibl
 ## Dependencies and system changes
 
 `packages.txt` lists the Debian stable applications actually used.
-`packages-backports.txt` lists Hyprland, Hyprlock, Hypridle, XWayland and the
+`packages-backports.txt` lists Hyprland, UWSM, Hyprlock, Hypridle, XWayland and the
 Hyprland portal. `packages-optional.txt` is optional. The VMware profile
 also installs the packages in `profiles/vmware/packages.txt`.
 
@@ -140,12 +141,13 @@ association so an older session-specific choice cannot take priority.
 Dolphin becomes the application for `inode/directory`. Alacritty is the
 terminal for Hyprland, Rofi and KDE. Qt Widgets uses Kvantum; Qt Quick uses Basic.
 A `systemd/user/waybar.service.d/hyprixe.conf` drop-in supplies the selected
-Waybar executable and the same configuration paths to the Waybar service if
-it was already enabled. The script does not enable it globally; it reuses
-the existing service or directly starts an instance protected by flock.
-This drop-in is also backed up and restored.
+Waybar executable and configuration paths to Debian's Waybar service. Its
+`PartOf=`, `After=` and `Requisite=graphical-session.target` dependencies are
+preserved. Hyprixe requests the service through its own session target, even
+if Waybar was not previously enabled. No direct Waybar fallback bypasses those
+dependencies. The drop-in is also backed up and restored.
 
-Both launch paths use `hypr/waybar/configs/Frosted-Glass` directly with `-c`
+The Waybar service uses `hypr/waybar/configs/Frosted-Glass` directly with `-c`
 and `hypr/waybar/style.css` with `-s`. The old `hypr/waybar/config` JSON include
 wrapper is no longer required or generated. These paths follow XDG_CONFIG_HOME,
 including paths containing spaces. The stylesheet keeps its relative import
@@ -157,6 +159,21 @@ After updating from the wrapper-based layout, run `./install.sh native --no-pack
 to deploy the updated launcher and systemd drop-in, then run
 `./verify.sh --dependencies`. Use the same profile you selected previously.
 The existing backup and restore behavior still applies.
+
+The installer also deploys `hyprixe-session.target` and units for the persistent
+awww daemon, wallpaper application, clipboard watcher and authentication agent.
+The target reuses Debian's `waybar.service`, `hypridle.service` and `swaync.service`.
+A Hypridle drop-in provides its explicit XDG configuration path. All these files
+use the existing dated backup and restoration mechanism; no persistent service
+enablement is needed. The startup hook calls `uwsm finalize` after Hyprland has
+set its environment, then queues only `hyprixe-session.target`. UWSM activates
+and cleans up `graphical-session.target`; Hyprixe never starts it manually.
+The wallpaper daemon stays in its own service when the image-application
+oneshot finishes, and is stopped when the graphical session ends.
+Static services read UWSM's per-session `env_session.conf`, so transient login
+metadata is not placed in the global manager environment. Hypridle explicitly
+locks `$XDG_SESSION_ID`, which is necessary when its process runs as a user
+service outside the login session's process scope.
 
 An old `hypr/hyprland.conf` is backed up and removed so it cannot take
 precedence over the Lua entry point. Additional personal files are not deleted.
@@ -208,10 +225,25 @@ APT. Log out and back in after restoring or changing profiles.
 
 ## First launch
 
-Log out, select **Hyprland** in the display manager, then log back in.
-From a local console without a display manager, run `Hyprland` in a logind
-user session. Do not start a second compositor inside an existing graphical
-session.
+Log out completely and select **Hyprland (uwsm-managed)** in SDDM, then log in.
+Debian provides `/usr/share/wayland-sessions/hyprland-uwsm.desktop`, whose command
+is `uwsm start -e -D Hyprland hyprland.desktop`. The plain **Hyprland** entry
+uses `/usr/bin/start-hyprland`; it can run the compositor and import its
+environment without providing the UWSM lifecycle expected by these services.
+Installing UWSM or running `hyprctl reload` does not convert that existing
+session: log out and choose the managed entry.
+
+For the one-time migration from an already running plain session, save your
+work and exit that session with `hyprctl dispatch 'hl.dsp.exit()'` if needed.
+Once using UWSM, use the power menu or `uwsm stop` for logout instead.
+
+From a local console without a display manager, use the same UWSM command in
+a normal logind login session. Do not start a second compositor inside an
+existing graphical session:
+
+```bash
+uwsm start -e -D Hyprland hyprland.desktop
+```
 
 ```bash
 Hyprland --version
@@ -220,7 +252,20 @@ hyprctl configerrors
 hyprctl monitors -j
 hyprctl binds -j
 ./verify.sh --dependencies --session
+uwsm check is-active -v compositor-only
+systemctl --user is-active graphical-session.target
+systemctl --user status hyprixe-session.target waybar.service hypridle.service swaync.service --no-pager
 ```
+
+`graphical-session.target` must be active. A missing `hyprland-session.target`
+is not an error in this architecture: UWSM supplies `wayland-wm@...` and
+`wayland-session@...` units. Do not create or start a graphical target manually,
+and do not remove Waybar's `Requisite=` to work around a plain-session login.
+
+`./verify.sh --session` is read-only. It diagnoses a missing UWSM compositor,
+an inactive graphical target, stale/missing manager environment, and inactive
+or failed session services, with the appropriate journal commands. Run it
+from a terminal inside the managed Hyprland session, not from an unrelated TTY.
 
 `configerrors` should be empty. Monitors should match the hardware.
 The default rule uses each output's preferred mode and scale.
@@ -240,10 +285,10 @@ a new session, even if reloading reports no errors.
 ## Checking components
 
 ```bash
-# Waybar: start it if missing; logs go to session.log.
+# Waybar: request Debian's service inside an active UWSM session.
 ~/.config/hypr/scripts/WaybarStartup.sh
 # Reload the CSS/configuration of an existing instance:
-pkill -USR2 -x waybar
+systemctl --user reload waybar.service
 
 # Wallpaper: reuse the daemon and detect all outputs.
 ~/.config/hypr/scripts/Wallpaper.sh
@@ -258,6 +303,13 @@ dolphin
 ~/.config/hypr/scripts/RofiLauncher.sh
 xdg-mime query default inode/directory
 ```
+
+Alacritty, Dolphin, the Rofi launcher and Hyprlock use `uwsm app --`, as
+recommended for applications in a systemd-managed compositor session.
+Rofi's `run-command` also prefixes selected applications with `uwsm app --`.
+The keyboard combinations and applications are unchanged. Short control
+commands such as focus, volume and brightness remain direct commands.
+The power menu's logout action calls `uwsm stop` for ordered session teardown.
 
 If XDG_CONFIG_HOME is customized, replace `~/.config` in these manual commands.
 Session scripts already use the XDG variables.
@@ -277,13 +329,20 @@ the “open terminal” command uses Alacritty.
 
 ## Troubleshooting and limitations
 
-- Logs: `~/.local/state/hyprixe/session.log` and `wallpaper.log`.
+- Startup/finalization log: `~/.local/state/hyprixe/session.log`.
+  Managed services log to the user journal, for example
+  `journalctl --user -b -u waybar.service -u hyprixe-awww.service -u hyprixe-wallpaper.service`.
+  `wallpaper.log` is used only by the standalone wallpaper helper's fallback.
 - Active scripts never kill an awww daemon. The wait of up to 5 seconds is
   for IPC and output readiness, not a fixed startup delay.
   Hotplug only reapplies the image.
-- Avoid a second Waybar/Hypridle service or another wallpaper tool already
-  enabled in personal configuration. Startup detects existing instances;
-  it does not modify their systemd units.
+- Keep one Waybar/Hypridle instance and one wallpaper daemon. The session target
+  reuses the vendor services, so enabled units do not cause duplicate instances.
+  Remove separate manual copies from personal autostart configuration when migrating.
+- If Waybar reports `result=dependency`, check the selected SDDM session,
+  `uwsm check is-active -v compositor-only` and `graphical-session.target` first.
+  A populated systemd environment alone does not prove that its graphical
+  session target is active. Use the managed session instead of altering dependencies.
 - The native profile does not force any NVIDIA/Intel/AMD driver. Install the
   appropriate GPU driver; check DRM and acceleration before attributing a
   rendering issue to the theme.
@@ -318,3 +377,6 @@ Primary references: [Hyprland Lua 0.56.2](https://github.com/hyprwm/Hyprland/blo
 [Kvantum Qt6](https://packages.debian.org/trixie/qt6-style-kvantum),
 [KXMLGUI6 retains kxmlgui5](https://github.com/KDE/kxmlgui/blob/v6.13.0/src/kxmlguiclient.cpp),
 [building Rofi](https://github.com/davatorium/rofi/blob/2.0.0/INSTALL.md).
+
+Session references: [Hyprland's UWSM integration](https://wiki.hypr.land/Useful-Utilities/Systemd-start/)
+and [UWSM session/application management](https://github.com/Vladimir-csp/uwsm).

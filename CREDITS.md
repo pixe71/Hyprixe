@@ -19,6 +19,7 @@ reassign rights to the wallpaper, icons or illustrations.
 | Senshi | Frosted Glass theme and Dolphin adaptations according to the original repository's author; exact URL/version/license absent from the received repository |
 | [adi1090x/rofi](https://github.com/adi1090x/rofi) | Rofi style 4 layout, attribution preserved |
 | [Alexays/Waybar](https://github.com/Alexays/Waybar) | MIT-licensed Waybar; optional 0.12 build with a local adaptation of workspace requests to the Lua API, using the same dispatchers as the recent upstream Lua backend |
+| [Vladimir-csp/UWSM](https://github.com/Vladimir-csp/uwsm) | Session lifecycle, environment finalization and application scopes; uses Debian's packaged UWSM and Hyprland session entry |
 | [Tsu Jan / Kvantum](https://github.com/tsujan/Kvantum) | Kvantum engine and KvAdapta base mentioned in the theme |
 | [Vince / vinceliuice](https://github.com/vinceliuice) | Author named in Frosted-Glass.kvconfig, Materia theme base |
 | [SherLock707](https://github.com/SherLock707) | Historical Hyprlock/Hypridle contributions, preserved in the examples |

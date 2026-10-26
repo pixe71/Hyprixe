@@ -609,16 +609,25 @@ Line-ending-only differences are ignored when classifying changes.
 - `.config/hypr/waybar/config`
 - `.config/hypr/waybar/configs/[TOP & BOT] SummitSplit v3`
 
-## Created (60)
+## Created (71)
 
 - `.config/hypr/lua/rules.lua`
 - `.config/hypr/profile.env`
 - `.config/hypr/profile.lua`
+- `.config/hypr/scripts/LaunchApp.sh`
 - `.config/hypr/scripts/PowerMenu.sh`
 - `.config/hypr/scripts/SessionStartup.sh`
 - `.config/hypr/scripts/Wallpaper.sh`
+- `.config/hypr/scripts/WallpaperDaemon.sh`
 - `.config/kdeglobals`
 - `.config/qt6ct/qt6ct.conf`
+- `.config/systemd/user/hypridle.service.d/hyprixe.conf`
+- `.config/systemd/user/hyprixe-awww.service`
+- `.config/systemd/user/hyprixe-clipboard.service`
+- `.config/systemd/user/hyprixe-polkit.service`
+- `.config/systemd/user/hyprixe-session.target`
+- `.config/systemd/user/hyprixe-wallpaper.service`
+- `.config/systemd/user/swaync.service.d/hyprixe.conf`
 - `.config/systemd/user/waybar.service.d/hyprixe.conf`
 - `.gitattributes`
 - `CREDITS.md`
@@ -659,6 +668,7 @@ Line-ending-only differences are ignored when classifying changes.
 - `scripts/check-deps.py`
 - `scripts/deploy.py`
 - `scripts/rofi_compat.py`
+- `scripts/session_checks.py`
 - `scripts/verify.py`
 - `scripts/waybar-lua-ipc.hpp`
 - `scripts/waybar_compat.py`
@@ -667,6 +677,7 @@ Line-ending-only differences are ignored when classifying changes.
 - `tests/test_deploy.py`
 - `tests/test_rofi_compat.py`
 - `tests/test_runtime.py`
+- `tests/test_session_checks.py`
 - `tests/test_verify.py`
 - `tests/test_waybar_compat.py`
 - `uninstall.sh`

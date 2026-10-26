@@ -110,7 +110,7 @@ def payload(roots, profile, runtime=None):
         result[hypr / name] = ((REPO / 'profiles' / profile / name).read_bytes(), 0o644)
     # Render application paths once; session scripts themselves honour XDG variables.
     for target, (data, mode) in list(result.items()):
-        if target.suffix in ('.rasi', '.conf'):
+        if target.suffix in ('.rasi', '.conf', '.service', '.target'):
             text = data.decode('utf-8')
             text = text.replace('~/.config/hypr', str(hypr))
             text = text.replace('$HOME/.config/hypr', str(hypr))

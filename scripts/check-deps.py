@@ -1,12 +1,13 @@
 """Check actual executable capabilities before changing any user configuration."""
 import re
+from pathlib import Path
 import shutil
 import subprocess
 import sys
 from waybar_compat import has_lua_workspace_ipc
 from rofi_compat import has_wayland_support
 
-commands = ('Hyprland', 'hyprctl', 'hyprlock', 'hypridle', 'alacritty', 'dolphin',
+commands = ('Hyprland', 'hyprctl', 'uwsm', 'hyprlock', 'hypridle', 'alacritty', 'dolphin',
             'waybar', 'rofi', 'awww', 'awww-daemon', 'jq', 'flock', 'wpctl',
             'wl-paste', 'wl-copy', 'cliphist', 'swaync', 'nm-connection-editor',
             'blueman-manager', 'pavucontrol', 'playerctl', 'brightnessctl',
@@ -15,6 +16,8 @@ missing = [c for c in commands if not shutil.which(c)]
 errors = []
 if missing:
     errors.append('Missing commands: ' + ', '.join(missing))
+if not Path('/usr/share/wayland-sessions/hyprland-uwsm.desktop').is_file():
+    errors.append('Debian Hyprland UWSM session entry is missing; install the Hyprland package from trixie-backports.')
 for name in ('rofi', 'waybar', 'awww', 'awww-daemon'):
     print(f'INFO: {name}: {shutil.which(name) or "not found in PATH"}', flush=True)
 if shutil.which('waybar') and not has_lua_workspace_ipc():

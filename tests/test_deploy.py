@@ -155,6 +155,16 @@ class DeploymentTests(unittest.TestCase):
         unit = (self.roots['config'] / 'systemd/user/waybar.service.d/hyprixe.conf').read_text()
         self.assertIn(f'-c "{waybar}" -s "{style}"', unit)
         self.assertNotIn('@HYPR_CONFIG@', unit)
+        for name, script in (('hyprixe-awww', 'WallpaperDaemon.sh'),
+                             ('hyprixe-wallpaper', 'Wallpaper.sh'),
+                             ('hyprixe-polkit', 'Polkit.sh'),
+                             ('hyprixe-clipboard', 'ClipboardWatcher.sh')):
+            service = (self.roots['config'] / f'systemd/user/{name}.service').read_text()
+            self.assertIn(f'ExecStart="{self.roots["config"]}/hypr/scripts/{script}"', service)
+            self.assertNotIn('@HYPR_CONFIG@', service)
+        idle = (self.roots['config'] / 'systemd/user/hypridle.service.d/hyprixe.conf').read_text()
+        self.assertIn(f'-c "{self.roots["config"]}/hypr/hypridle.conf"', idle)
+        self.assertIn('EnvironmentFile=-%t/uwsm/env_session.conf', idle)
 
     def test_missing_active_waybar_files_abort_before_writing(self):
         source = Path(self.temp.name) / 'incomplete-repository'

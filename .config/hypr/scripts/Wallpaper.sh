@@ -11,8 +11,14 @@ flock 9
 state="${XDG_STATE_HOME:-$HOME/.local/state}/hyprixe"
 mkdir -p "$state"
 if ! awww query >/dev/null 2>&1; then
-    # Start once. Never kill a daemon that another client might be using.
-    awww-daemon 9>&- >>"$state/wallpaper.log" 2>&1 &
+    if command -v uwsm >/dev/null && uwsm check is-active compositor-only; then
+        # The persistent daemon belongs to the session, not to this short-lived
+        # image-application process. systemd stops it with the UWSM session.
+        systemctl --user start hyprixe-awww.service
+    else
+        # Keep the standalone wallpaper helper usable for manual diagnostics.
+        awww-daemon 9>&- >>"$state/wallpaper.log" 2>&1 &
+    fi
 fi
 # Wait for IPC and for newly connected outputs to be registered, bounded at 5s.
 ready=false

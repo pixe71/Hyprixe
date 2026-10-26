@@ -1,0 +1,12 @@
+[Unit]
+Description=Hyprixe wallpaper daemon
+Requisite=graphical-session.target
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=exec
+EnvironmentFile=-%t/uwsm/env_session.conf
+ExecStart="@HYPR_CONFIG@/scripts/WallpaperDaemon.sh"
+Restart=on-failure
+Slice=background-graphical.slice

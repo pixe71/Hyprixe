@@ -6,4 +6,4 @@ source "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/profile.env"
 exec 9>"$XDG_RUNTIME_DIR/hyprixe-lock.lock"
 flock -n 9 || exit 0
 pgrep -u "$(id -u)" -x hyprlock >/dev/null && exit 0
-hyprlock -c "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprlock.conf"
+uwsm app -- hyprlock -c "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprlock.conf"

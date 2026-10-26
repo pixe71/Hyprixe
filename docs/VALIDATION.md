@@ -311,3 +311,81 @@ above do not use mocked package versions.
 
 Primary references: [Debian's selective backports installation](https://backports.debian.org/Instructions/)
 and [the libxkbcommon backports source package](https://packages.debian.org/source/trixie-backports/libxkbcommon).
+
+## UWSM-managed Debian session integration
+
+The user reported a working physical Hyprland session and imported activation
+variables, but inactive `graphical-session.target`. Debian's Waybar service
+therefore failed its `Requisite=` dependency. Importing an environment and
+starting a compositor do not by themselves establish the UWSM lifecycle.
+
+The actual Debian packages were inspected: the plain `hyprland.desktop` runs
+`/usr/bin/start-hyprland`; `hyprland-uwsm.desktop` is named
+`Hyprland (uwsm-managed)` and runs `uwsm start -e -D Hyprland hyprland.desktop`.
+UWSM `0.26.7+ds-2~bpo13+1` was actually installed from backports in the test
+environment. The updated six-package backports list resolves with APT exit 0.
+Debian's Waybar, Hypridle and SwayNC vendor unit files were also inspected.
+
+The startup hook now finalizes its environment with UWSM and queues the Hyprixe
+service target without blocking compositor startup. Only UWSM activates the
+graphical target. Debian Waybar's `PartOf=`, `After=` and `Requisite=` remain
+intact; its drop-in selects the existing Frosted Glass paths and app slice.
+The target also requests the vendor idle/notification services and dedicated
+units for the persistent awww daemon, wallpaper application, clipboard watcher
+and authentication agent. Their lifecycle is bound to the graphical session.
+Static units read UWSM's session-specific environment file; Hypridle's lock
+commands explicitly address `$XDG_SESSION_ID` instead of relying on the PID
+of a systemd user service to identify the login session.
+
+Alacritty, Dolphin, Rofi and Hyprlock launch through `uwsm app --`; Rofi uses
+that prefix for selected applications as recommended upstream. Short control
+commands and all 64 keyboard/mouse combinations are preserved. Logout uses
+`uwsm stop`. `--session` adds read-only diagnostics for UWSM, the graphical
+target, activation environment and each session service. It never starts a
+target or edits dependencies to make a failing check pass.
+
+Validation performed:
+
+- All 69 unit/integration tests pass, including unmanaged sessions with already
+  imported variables, an inactive graphical target, stale manager environment,
+  failed Waybar, read-only diagnostics, GUI argument preservation, UWSM startup
+  ordering, managed wallpaper startup and orderly logout.
+- The complete native Lua graph still loads with 64 unique bindings and the
+  required mouse/Alt+Tab callbacks. Six real Rofi parser checks accept the
+  configuration, including the application launch prefix.
+- A dedicated temporary Linux user and real systemd user manager were used
+  with the packaged UWSM and the actual Debian vendor service dependencies.
+  The rendered units passed `systemd-analyze --user verify`.
+- Before UWSM startup, an actual `systemctl --user start waybar.service` failed
+  with dependency result while `graphical-session.target` remained inactive.
+- The actual UWSM startup/finalization handshake activated the graphical target,
+  then `hyprixe-session.target` and all seven requested services became active.
+  The wallpaper oneshot completed while its separate daemon remained running.
+  The new session diagnostic function passed against the real user manager.
+- The real `uwsm app` command placed the terminal fixture in
+  `app-graphical.slice`. The real `uwsm stop` deactivated the graphical target
+  and every managed unit, and all daemon/application fixture PIDs disappeared.
+  The temporary account was removed and the host user manager was unchanged.
+
+The live service-lifecycle test deliberately used a compositor stand-in, GUI
+daemon/clipboard stand-ins and synthetic login-session metadata because WSL
+does not provide an SDDM VT login. UWSM, D-Bus, systemd, dependency ordering,
+service activation and cgroup teardown were real. Earlier harness attempts
+without login/seat metadata stopped in UWSM's environment preloader; these
+were test-environment limitations, not fixed by changing production targets.
+No physical SDDM login, Wayland rendering, PAM unlock or suspend/resume is
+claimed as tested here. Those checks remain for the target Debian PC after
+selecting the managed session.
+
+Final checks on the delivered code: `./verify.sh` exits 0 with 69 tests OK,
+133 Bash syntax checks, both ShellCheck levels, 82 Lua syntax checks, six real
+Rofi parser checks, original asset hashes and Git modes passing. The live
+unit/cgroup harness also passes with a home directory containing spaces.
+A CLI regression using synthetic current-Hyprland variables and a real inactive
+UWSM/user manager makes `./verify.sh --session` return the expected nonzero
+status with two clear SDDM/graphical-target diagnostics and no traceback.
+`git diff --check` and `git diff --cached --check` both pass.
+
+References: [Hyprland UWSM integration and application scopes](https://wiki.hypr.land/Useful-Utilities/Systemd-start/),
+[UWSM startup, environment and shutdown](https://github.com/Vladimir-csp/uwsm),
+and the Debian-packaged unit/desktop files inspected above.

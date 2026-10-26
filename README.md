@@ -30,6 +30,17 @@ cd hyprixe-debian
 # or: ./install.sh vmware
 ```
 
+Log out completely, then select **Hyprland (uwsm-managed)** in SDDM and log in.
+The installer installs UWSM from `trixie-backports` and uses Debian's existing
+`hyprland-uwsm.desktop` session entry. Installing it does not convert a running
+plain Hyprland session; a configuration reload is not enough.
+
+UWSM owns the graphical session lifecycle. Hyprixe starts Waybar and its other
+session services after `graphical-session.target`, preserving Debian Waybar's
+`Requisite=` dependency. Applications use UWSM scopes, and logout uses `uwsm stop`.
+The plain **Hyprland** entry (`start-hyprland`) is not the supported session for
+this setup. See [INSTALL.md](INSTALL.md) for session diagnostics.
+
 The installer installs Debian dependencies, enables official backports if needed,
 prepares Rofi Wayland 2.0.0 / awww 0.12.1 and a Waybar build with Lua IPC support
 if needed, then backs up and deploys user files. The first build may take several
@@ -52,7 +63,7 @@ See the 0.56.2 compatibility review in `docs/VALIDATION.md`.
 
 ## Components
 
-Hyprland and KoolDots Lua modules, Alacritty, Dolphin, Kvantum/Qt6, Waybar,
+Hyprland with UWSM and KoolDots Lua modules, Alacritty, Dolphin, Kvantum/Qt6, Waybar,
 Rofi Wayland, Hyprlock, Hypridle, awww, PipeWire/WirePlumber, NetworkManager,
 Blueman, SwayNC and cliphist. Icons use Breeze and FontAwesome; the
 JetBrains Mono font is available in Debian.
@@ -125,6 +136,7 @@ environment.
 - [Kvantum / Tsu Jan](https://github.com/tsujan/Kvantum), KvAdapta and Vince/Liuice:
   authors credited in the supplied Kvantum theme.
 - [Hyprland](https://github.com/hyprwm/Hyprland), [Waybar](https://github.com/Alexays/Waybar),
+  [UWSM](https://github.com/Vladimir-csp/uwsm),
   [Rofi](https://github.com/davatorium/rofi), [awww](https://codeberg.org/LGFae/awww),
   [Alacritty](https://github.com/alacritty/alacritty), [Dolphin](https://invent.kde.org/system/dolphin).
 

@@ -64,4 +64,5 @@ fi
 command -v python3 >/dev/null || { echo 'ERROR: python3 is required.' >&2; exit 1; }
 PATH="$runtime:$PATH" python3 "$repo/scripts/check-deps.py"
 python3 "$repo/scripts/deploy.py" install --profile "$profile" --runtime "$runtime"
-echo 'Installed. Log out, select Hyprland, and log in. See INSTALL.md for the session checks.'
+echo 'Installed. Log out and select "Hyprland (uwsm-managed)" in SDDM, then log in.'
+echo 'The plain Hyprland entry does not provide the required UWSM session lifecycle. See INSTALL.md.'

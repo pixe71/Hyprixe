@@ -6,7 +6,7 @@ choice=$(printf 'Verrouiller\nSuspendre\nDéconnexion\nRedémarrer\nÉteindre\n'
 case "$choice" in
     Verrouiller) exec "$config/scripts/LockScreen.sh" ;;
     Suspendre) exec systemctl suspend ;;
-    Déconnexion) hyprctl dispatch 'hl.dsp.exit()' ;;
+    Déconnexion) exec uwsm stop ;;
     Redémarrer|Éteindre)
         confirm=$(printf 'Annuler\nConfirmer\n' | rofi -config "$config/rofi/config.rasi" -dmenu -p "$choice") || exit 0
         [[ "$confirm" == Confirmer ]] || exit 0

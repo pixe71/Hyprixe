@@ -23,10 +23,17 @@ elif name=='awww' and sys.argv[1]=='query':
 elif name=='awww-daemon': (root/'ready').touch()
 elif name=='rofi':
     if os.environ.get('MOCK_CANCEL'): sys.exit(1)
-    print(os.environ.get('MOCK_INDEX','0'))
+    print(os.environ.get('MOCK_CHOICE',os.environ.get('MOCK_INDEX','0')))
+elif name=='uwsm':
+    if sys.argv[1:]==['check','is-active','compositor-only']:
+        sys.exit(0 if os.environ.get('MOCK_UWSM')=='1' else 1)
 elif name=='systemctl':
+    if 'is-active' in sys.argv and 'graphical-session.target' in sys.argv:
+        sys.exit(0 if os.environ.get('MOCK_GRAPHICAL')=='active' else 1)
     if 'is-enabled' in sys.argv or 'is-active' in sys.argv:
         sys.exit(0 if os.environ.get('MOCK_SERVICE')=='enabled' else 1)
+    if 'start' in sys.argv and 'hyprixe-awww.service' in sys.argv:
+        (root/'ready').touch()
 elif name=='pgrep': sys.exit(1)
 '''
 
@@ -38,7 +45,7 @@ class RuntimeTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         bin_dir = self.root / 'bin'
         bin_dir.mkdir()
-        for name in ('hyprctl', 'awww', 'awww-daemon', 'rofi', 'sleep', 'systemctl', 'pgrep', 'waybar'):
+        for name in ('hyprctl', 'awww', 'awww-daemon', 'rofi', 'sleep', 'systemctl', 'pgrep', 'waybar', 'uwsm'):
             p = bin_dir / name
             p.write_text(MOCK)
             p.chmod(0o755)
@@ -52,8 +59,8 @@ class RuntimeTests(unittest.TestCase):
 
     def tearDown(self): self.temp.cleanup()
 
-    def run_script(self, name):
-        return subprocess.run(['bash', str(SCRIPTS / name)], env=self.env, capture_output=True, text=True, timeout=15)
+    def run_script(self, name, *args):
+        return subprocess.run(['bash', str(SCRIPTS / name), *args], env=self.env, capture_output=True, text=True, timeout=15)
 
     def calls(self):
         return [json.loads(line) for line in (self.root / 'calls').read_text().splitlines()]
@@ -100,37 +107,83 @@ class RuntimeTests(unittest.TestCase):
         self.assertNotEqual(self.run_script('WindowSwitcher.sh').returncode, 0)
         self.assertFalse(any(c[:2] == ['hyprctl', 'dispatch'] for c in self.calls()))
 
-    def test_waybar_reuses_enabled_service(self):
-        self.env['MOCK_SERVICE'] = 'enabled'
+    def test_waybar_uses_vendor_service_even_if_not_enabled(self):
+        self.env.update(MOCK_UWSM='1', MOCK_GRAPHICAL='active')
         r = self.run_script('WaybarStartup.sh')
         self.assertEqual(r.returncode, 0, r.stderr)
         calls = self.calls()
         self.assertTrue(any(c[:3] == ['systemctl', '--user', 'start'] for c in calls))
         self.assertFalse(any(c[0] == 'waybar' for c in calls))
 
-    def test_waybar_direct_launch_uses_explicit_config_and_style(self):
-        r = self.run_script('WaybarStartup.sh')
-        self.assertEqual(r.returncode, 0, r.stderr)
-        call = next(c for c in self.calls() if c[0] == 'waybar')
-        self.assertEqual(call[1:], ['-c', str(ROOT / '.config/hypr/waybar/configs/Frosted-Glass'), '-s', str(ROOT / '.config/hypr/waybar/style.css')])
-        self.assertTrue(Path(call[2]).is_file())
-        self.assertTrue(Path(call[4]).is_file())
+    def test_waybar_rejects_unmanaged_or_inactive_sessions_without_bypass(self):
+        for managed, graphical in (('0', 'inactive'), ('0', 'active'), ('1', 'inactive')):
+            with self.subTest(managed=managed, graphical=graphical):
+                (self.root / 'calls').write_text('')
+                self.env.update(MOCK_UWSM=managed, MOCK_GRAPHICAL=graphical)
+                r = self.run_script('WaybarStartup.sh')
+                self.assertNotEqual(r.returncode, 0)
+                self.assertIn('Hyprland (uwsm-managed)', r.stderr)
+                self.assertFalse(any('start' in c or c[0] == 'waybar' for c in self.calls()))
 
-    def test_waybar_custom_xdg_uses_existing_files_without_config_wrapper(self):
+    def test_waybar_custom_xdg_still_uses_managed_service(self):
         settings = self.root / 'settings with spaces'
         hypr = settings / 'hypr'
         shutil.copytree(ROOT / '.config/hypr', hypr)
         # The launcher must work when no legacy include wrapper is installed.
         (hypr / 'waybar/config').unlink(missing_ok=True)
         self.env['XDG_CONFIG_HOME'] = str(settings)
+        self.env.update(MOCK_UWSM='1', MOCK_GRAPHICAL='active')
         r = subprocess.run(['bash', str(hypr / 'scripts/WaybarStartup.sh')],
                            env=self.env, capture_output=True, text=True, timeout=15)
         self.assertEqual(r.returncode, 0, r.stderr)
-        call = next(c for c in self.calls() if c[0] == 'waybar')
-        self.assertEqual(call[1:], ['-c', str(hypr / 'waybar/configs/Frosted-Glass'),
-                                   '-s', str(hypr / 'waybar/style.css')])
-        self.assertTrue(Path(call[2]).is_file())
-        self.assertTrue(Path(call[4]).is_file())
+        self.assertIn(['systemctl', '--user', 'start', 'waybar.service'], self.calls())
+        self.assertFalse(any(c[0] == 'waybar' for c in self.calls()))
+
+    def test_session_startup_finalizes_before_queuing_services(self):
+        self.env['MOCK_UWSM'] = '1'
+        r = self.run_script('SessionStartup.sh')
+        self.assertEqual(r.returncode, 0, r.stderr)
+        calls = self.calls()
+        finalize = next(i for i, c in enumerate(calls) if c[:2] == ['uwsm', 'finalize'])
+        start = calls.index(['systemctl', '--user', 'start', '--no-block', 'hyprixe-session.target'])
+        self.assertLess(finalize, start)
+        self.assertIn('HYPRLAND_INSTANCE_SIGNATURE', calls[finalize])
+        self.assertFalse(any('start' in c and 'graphical-session.target' in c for c in calls))
+        self.assertFalse(any(c[0] in ('awww-daemon', 'waybar') for c in calls))
+
+    def test_session_startup_rejects_plain_hyprland(self):
+        r = self.run_script('SessionStartup.sh')
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn('Hyprland (uwsm-managed)', (self.root / 'state/hyprixe/session.log').read_text())
+        self.assertFalse(any(c[0] == 'systemctl' for c in self.calls()))
+
+    def test_wallpaper_managed_session_uses_persistent_daemon_service(self):
+        self.env['MOCK_UWSM'] = '1'
+        r = self.run_script('Wallpaper.sh')
+        self.assertEqual(r.returncode, 0, r.stderr)
+        calls = self.calls()
+        self.assertIn(['systemctl', '--user', 'start', 'hyprixe-awww.service'], calls)
+        self.assertFalse(any(c[0] == 'awww-daemon' for c in calls))
+        self.assertTrue(any(c[:2] == ['awww', 'img'] for c in calls))
+
+    def test_gui_launchers_use_uwsm_scopes_and_preserve_arguments(self):
+        cases = [('LaunchApp.sh', ['dolphin', '/folder with spaces'], ['dolphin', '/folder with spaces']),
+                 ('LaunchTerminal.sh', ['--working-directory', '/folder with spaces'],
+                  ['alacritty', '--working-directory', '/folder with spaces']),
+                 ('RofiLauncher.sh', [], ['rofi', '-config', str(ROOT / '.config/hypr/rofi/config.rasi'), '-show', 'drun'])]
+        for name, args, expected in cases:
+            with self.subTest(name=name):
+                (self.root / 'calls').write_text('')
+                r = self.run_script(name, *args)
+                self.assertEqual(r.returncode, 0, r.stderr)
+                self.assertIn(['uwsm', 'app', '--', *expected], self.calls())
+
+    def test_logout_uses_uwsm_stop(self):
+        self.env['MOCK_CHOICE'] = 'Déconnexion'
+        r = self.run_script('PowerMenu.sh')
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn(['uwsm', 'stop'], self.calls())
+        self.assertFalse(any(c[0] == 'hyprctl' for c in self.calls()))
 
 
 class InstallPreflightTests(unittest.TestCase):
