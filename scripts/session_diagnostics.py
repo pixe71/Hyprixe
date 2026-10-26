@@ -65,6 +65,15 @@ def collect(environ=None, runner=None):
     query(['uwsm', 'check', 'is-active', '-v', 'compositor-only'])
     query(['hyprctl', 'version'])
     query(['hyprctl', 'configerrors'])
+    query(['hyprctl', '-j', 'binds'], lambda raw: json.dumps([
+        {key: bind.get(key) for key in ('description', 'modmask', 'key', 'keycode', 'mouse',
+                                      'dispatcher', 'submap', 'release', 'repeat')}
+        for bind in json.loads(raw)], indent=2))
+    query(['hyprctl', '-j', 'devices'])
+    query(['hyprctl', 'submap'])
+    for option in ('input:kb_layout', 'input:kb_variant', 'input:kb_options',
+                   'input:resolve_binds_by_sym', 'input:follow_mouse', 'binds:disable_keybind_grabbing'):
+        query(['hyprctl', 'getoption', option, '-j'])
     query(['hyprctl', 'getoption', 'misc:background_color'])
     query(['hyprctl', 'clients', '-j'], lambda raw: json.dumps([
         {key: client.get(key) for key in ('class', 'initialClass', 'pid', 'mapped', 'fullscreen', 'workspace')}

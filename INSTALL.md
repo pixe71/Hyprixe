@@ -590,7 +590,8 @@ restart makes the original chronology **SKIPPED**, rather than a false failure.
 the critical chain, current client classes/fullscreen flags, layers, awww IPC and
 XDG autostart program names. It never restarts SDDM, starts/stops services, kills
 windows or uses sudo. Window titles, full command arguments and complete process
-environments are not requested. A snapshot cannot identify a transient window
+environments are not included in the diagnostic report. Bind command arguments
+are also omitted. A snapshot cannot identify a transient window
 that disappeared before collection. If system journal access is restricted, run
 the SDDM query explicitly:
 
@@ -626,8 +627,16 @@ GPU/VT transition still require observation on the physical PC.
   appropriate GPU driver; check DRM and acceleration before attributing a
   rendering issue to the theme.
 - Alt+Tab cycles through windows on the current workspace. Alt+F10 shows all
-  windows in Rofi. Cycling follows Hyprland's current-workspace order;
+  windows in Rofi. Cycling follows stable creation-ID order on that workspace;
   confirm a selection in the graphical switcher with Enter.
+  Run `./verify.sh --dependencies --session` inside the affected session to check
+  all 67 actual bindings and enabled Lua handles, root submap, modifiers,
+  duplicates, installed script permissions, command dependencies and dispatcher
+  constructors. Only a no-op is dispatched by this check. Use left Alt rather
+  than French AltGr, and open at least two windows on one workspace for cycling.
+  See [docs/KEYBINDS.md](docs/KEYBINDS.md) for the complete contract, application
+  commands and diagnostic procedure. Physical input and focus effects still
+  require testing on the PC.
 - The `extras/kooldots` library contains generic examples that have not been
   fully ported to this reduced configuration. Its update tools, themes,
   Fedora/Ubuntu repair tools and SSH scripts are never run or installed.

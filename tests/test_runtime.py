@@ -20,13 +20,16 @@ if name=='hyprctl':
             print('[]')
         else: print('[{"name":"DP-3"},{"name":"eDP-2"}]')
     elif sys.argv[1]=='clients':
-        print('[{"mapped":true,"address":"0xabc","class":"Alacritty","title":"Example"}]')
+        print(os.environ.get('MOCK_CLIENTS', '[{"mapped":true,"address":"0xabc","class":"Alacritty","title":"Example"}]'))
+    elif sys.argv[1]=='dispatch':
+        print(os.environ.get('MOCK_DISPATCH_RESULT', 'ok'))
 elif name=='awww' and sys.argv[1]=='query':
     if os.environ.get('MOCK_NEVER_READY') or not (root/'ready').exists(): sys.exit(1)
     print('DP-3: 2560x1440, scale: 1, currently displaying: image\\neDP-2: 1920x1080')
 elif name=='awww-daemon': (root/'ready').touch()
 elif name=='rofi':
     if os.environ.get('MOCK_CANCEL'): sys.exit(1)
+    if os.environ.get('MOCK_ROFI_FAILURE'): sys.exit(17)
     print(os.environ.get('MOCK_CHOICE',os.environ.get('MOCK_INDEX','0')))
 elif name=='uwsm':
     if sys.argv[1:]==['check','is-active','compositor-only']:
@@ -116,6 +119,50 @@ class RuntimeTests(unittest.TestCase):
         self.env['MOCK_CANCEL'] = '1'
         self.assertEqual(self.run_script('WindowSwitcher.sh').returncode, 0)
         self.assertFalse(any(c[:2] == ['hyprctl', 'dispatch'] for c in self.calls()))
+
+    def test_switcher_lua_error_with_zero_exit_is_not_success(self):
+        self.env['MOCK_DISPATCH_RESULT'] = 'Lua error: unsupported dispatcher'
+        result = self.run_script('WindowSwitcher.sh')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('focus failed', result.stderr)
+
+    def test_switcher_rofi_failure_is_not_a_successful_cancel(self):
+        self.env['MOCK_ROFI_FAILURE'] = '1'
+        result = self.run_script('WindowSwitcher.sh')
+        self.assertEqual(result.returncode, 17)
+        self.assertIn('rofi failed', result.stderr)
+        self.assertFalse(any(c[:2] == ['hyprctl', 'dispatch'] for c in self.calls()))
+
+    def test_switcher_selects_one_of_multiple_windows_of_same_application(self):
+        self.env['MOCK_CLIENTS'] = json.dumps([
+            {'mapped': True, 'hidden': True, 'address': '0x000', 'class': 'Hidden', 'title': 'skip'},
+            {'mapped': True, 'address': '0xabc', 'class': 'Alacritty', 'title': 'first'},
+            {'mapped': True, 'address': '0xdef', 'class': 'Alacritty', 'title': 'second\nline'},
+        ])
+        self.env['MOCK_INDEX'] = '1'
+        result = self.run_script('WindowSwitcher.sh')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        dispatch = next(c for c in self.calls() if c[:2] == ['hyprctl', 'dispatch'])
+        self.assertIn('hl.dsp.focus({ window = "address:0xdef" })', dispatch[2])
+        self.assertIn('hl.dsp.window.alter_zorder({ mode = "top", window = "address:0xdef" })', dispatch[2])
+        self.assertEqual(sum(c[:2] == ['hyprctl', 'clients'] for c in self.calls()), 1)
+
+    def test_switcher_rejects_invalid_address_without_dispatch(self):
+        self.env['MOCK_CLIENTS'] = '[{"mapped":true,"address":"bad; os.execute()","class":"test","title":"test"}]'
+        result = self.run_script('WindowSwitcher.sh')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(any(c[:2] == ['hyprctl', 'dispatch'] for c in self.calls()))
+
+    def test_switcher_prefers_managed_rofi(self):
+        managed = self.root / '.local/bin/rofi'
+        managed.parent.mkdir(parents=True)
+        managed.write_text(MOCK.replace("name=pathlib.Path(sys.argv[0]).name", "name='rofi-managed'")
+                           + "\nif name=='rofi-managed': print('0')\n")
+        managed.chmod(0o755)
+        result = self.run_script('WindowSwitcher.sh')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(any(c[0] == 'rofi-managed' for c in self.calls()))
+        self.assertFalse(any(c[0] == 'rofi' for c in self.calls()))
 
     def test_switcher_invalid_index_fails_without_dispatch(self):
         self.env['MOCK_INDEX'] = '999'

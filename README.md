@@ -133,6 +133,12 @@ switches workspaces. There is a single source of active keybindings:
 `.config/hypr/lua/keybinds.lua`. Personal additions are loaded afterwards from
 `UserConfigs/user_keybinds.lua`; no file in `extras/` overrides them.
 
+`./verify.sh --session` audits the 67 bindings actually registered in Hyprland,
+their enabled Lua handles, modifiers, physical workspace codes, conflicts,
+installed scripts and command dependencies. See the [keyboard/mouse audit](docs/KEYBINDS.md)
+for API evidence, limitations and the physical-PC test procedure. A registry
+check does not simulate a key press or prove the resulting focus change.
+
 Saved screenshots use timestamped names such as
 `Screenshot-2026-10-26_21-30-15-a1B2c3.png`. The unique suffix prevents overwrites
 even for captures taken simultaneously. Cancelling a selection leaves the

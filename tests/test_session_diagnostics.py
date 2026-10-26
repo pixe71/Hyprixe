@@ -32,6 +32,8 @@ class DiagnosticTests(unittest.TestCase):
                 value = '[{"class":"example","fullscreen":2,"title":"PRIVATE_WINDOW_TITLE"}]'
             elif command[:2] == ['hyprctl', 'layers']:
                 value = '{}'
+            elif command == ['hyprctl', '-j', 'binds']:
+                value = '[{"key":"F10","dispatcher":"exec","arg":"PRIVATE_BIND_ARGUMENT"}]'
             return subprocess.CompletedProcess(command, 0, value, '')
         with tempfile.TemporaryDirectory() as tmp, contextlib.redirect_stdout(output):
             autostart = Path(tmp) / '.config/autostart/example.desktop'
@@ -41,4 +43,5 @@ class DiagnosticTests(unittest.TestCase):
         self.assertIn('example', output.getvalue())
         self.assertNotIn('PRIVATE_WINDOW_TITLE', output.getvalue())
         self.assertNotIn('PRIVATE_ARGUMENT', output.getvalue())
+        self.assertNotIn('PRIVATE_BIND_ARGUMENT', output.getvalue())
         self.assertIn('cannot identify a window that already disappeared', output.getvalue())

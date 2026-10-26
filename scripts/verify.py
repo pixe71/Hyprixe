@@ -16,6 +16,7 @@ import xml.etree.ElementTree as ET
 from waybar_compat import has_lua_workspace_ipc, has_wlr_taskbar
 from rofi_compat import has_wayland_support
 from session_checks import check_session, check_source_order
+from keybind_checks import check_native_config, check_session_keybinds
 from sddm_theme import SystemTheme, source_payload as sddm_payload, FILES as SDDM_FILES, THEME as SDDM_THEME
 from session_diagnostics import collect as collect_session_diagnostics
 
@@ -183,6 +184,7 @@ def main():
         run(['lua', 'tests/check_lua.lua', str(ROOT / '.config')], 'Lua loading / required shortcuts / duplicate chords (mock)', env=env)
     else:
         print('SKIPPED: Lua compiler and load test unavailable')
+    check_native_config(report, ROOT)
     for p in files:
         if p.suffix == '.py':
             try: ast.parse(p.read_text(), str(p))
@@ -266,9 +268,8 @@ def main():
         print('SKIPPED: installed graphical dependencies (use --dependencies on target)')
     if args.session:
         check_session(report)
+        check_session_keybinds(report, ROOT)
         if shutil.which('hyprctl') and os.environ.get('HYPRLAND_INSTANCE_SIGNATURE'):
-            r = run(['hyprctl', 'configerrors'], 'hyprctl configerrors query')
-            report(r.returncode == 0 and not r.stdout.strip(), 'Running Hyprland reports no configuration errors')
             run(['hyprctl', 'monitors', '-j'], 'hyprctl monitors')
             run(['awww', 'query'], 'awww query')
         else:

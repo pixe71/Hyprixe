@@ -4,6 +4,8 @@ local config = assert(arg[1])
 local binds, hooks, settings, dispatched = {}, {}, {}, {}
 local workspaces = {}
 local executed = {}
+local window_snapshot, active_window, query_count = {}, nil, 0
+local current_workspace, special_workspace = {id = 1}, nil
 local function action(name)
   return function(opts) return { name = name, opts = opts } end
 end
@@ -24,7 +26,29 @@ hl = {
   window_rule = function() end,
   layer_rule = function() end,
   exec_cmd = function(command) executed[#executed+1] = command end,
-  dispatch = function(a) assert(a.name); dispatched[#dispatched+1] = a end,
+  dispatch = function(a)
+    assert(a.name); dispatched[#dispatched+1] = a
+    if a.name == "focus" and a.opts.window then
+      for _, window in ipairs(window_snapshot) do
+        if a.opts.window == "address:" .. window.address then active_window = window end
+      end
+    elseif a.name == "alter_zorder" then
+      -- Mimic native z-order mutation, including a floating selected window.
+      for i, window in ipairs(window_snapshot) do
+        if a.opts.window == "address:" .. window.address then
+          table.remove(window_snapshot, i); table.insert(window_snapshot, window); break
+        end
+      end
+    end
+  end,
+  get_active_window = function() return active_window end,
+  get_active_workspace = function() return current_workspace end,
+  get_active_special_workspace = function() return special_workspace end,
+  get_windows = function(query)
+    assert(query.workspace == (special_workspace or current_workspace) and query.mapped == true)
+    query_count = query_count + 1
+    return window_snapshot
+  end,
   on = function(event, fn) assert(not hooks[event]); hooks[event] = fn end,
   bind = function(chord, fn, options)
     local normalized = chord:lower()
@@ -35,7 +59,7 @@ hl = {
   dsp = { exec_cmd = action("exec_cmd"), focus = action("focus"), layout = action("layout"),
     window = {} },
 }
-for _, name in ipairs({"close", "fullscreen", "float", "pseudo", "drag", "resize", "move", "cycle_next", "alter_zorder"}) do
+for _, name in ipairs({"close", "fullscreen", "float", "pseudo", "drag", "resize", "move", "alter_zorder"}) do
   hl.dsp.window[name] = action(name)
 end
 dofile(config .. "/hypr/hyprland.lua")
@@ -55,21 +79,62 @@ for _, chord in ipairs({"super + return", "super + e", "super + space", "super +
   "super + mouse:272", "super + mouse:273", "super + left", "super + right", "super + up", "super + down", "alt + tab", "alt + shift + tab"}) do
   assert(binds[chord], "Missing chord: " .. chord)
 end
-assert(binds["super + mouse:272"].options.mouse)
+assert(binds["super + mouse:272"].fn.name == "drag")
+assert(not binds["super + mouse:272"].options.mouse, "Lua does not support opts.mouse")
 for chord, mode in pairs({
   ["super + shift + s"] = "--copy-area", ["print"] = "--save", ["shift + print"] = "--save-area",
   ["super + print"] = "--now", ["super + shift + print"] = "--area",
 }) do
   assert(binds[chord] and binds[chord].fn.opts:find('ScreenShot.sh" ' .. mode, 1, true), "Missing/conflicting screenshot binding: " .. chord)
 end
-assert(binds["super + mouse:273"].options.mouse)
+assert(binds["super + mouse:273"].fn.name == "resize")
+assert(binds["super + mouse:273"].fn.opts == nil, "Mouse resize must start interactive resizing, not a pixel step")
+for chord, binding in pairs(binds) do
+  assert(binding.options.description:sub(1, 10) == "Hyprixe | ", "Missing live-audit identity: " .. chord)
+end
 assert(binds["super + e"].fn.opts:find('LaunchApp.sh" dolphin', 1, true))
 assert(KOOLDOTS_DEFAULTS.term == "alacritty")
-binds["alt + tab"].fn()
-assert(dispatched[1].name == "cycle_next" and dispatched[1].opts.next == true)
-assert(dispatched[2].name == "alter_zorder")
+window_snapshot = {
+  {address="0xa", stable_id=1, accepts_input=true},
+  {address="0xb", stable_id=2, accepts_input=true, floating=true},
+  {address="0xc", stable_id=3, accepts_input=true},
+  {address="0xd", stable_id=4, accepts_input=true, hidden=true},
+  {address="invalid", stable_id=5, accepts_input=true},
+  {address="0xe", stable_id=6, accepts_input=false},
+}
+active_window = window_snapshot[1]
+for _, address in ipairs({"0xb", "0xc", "0xa", "0xb"}) do
+  local before = query_count
+  binds["alt + tab"].fn()
+  assert(active_window.address == address, "Forward cycle skipped a window after z-order changed")
+  assert(query_count == before + 1, "Cycle must query one window snapshot")
+  assert(dispatched[#dispatched-1].name == "alter_zorder" and dispatched[#dispatched].name == "focus")
+end
+for _, address in ipairs({"0xa", "0xc", "0xb"}) do
+  binds["alt + shift + tab"].fn()
+  assert(active_window.address == address, "Reverse cycle is not the inverse of forward cycling")
+end
+-- A closed selected window, empty workspace and single window are all bounded.
+window_snapshot = {{address="0xa", stable_id=1, accepts_input=true}}
+active_window = nil
 binds["alt + shift + tab"].fn()
-assert(dispatched[3].opts.next == false)
+assert(active_window.address == "0xa")
+local before = #dispatched
+binds["alt + tab"].fn()
+assert(#dispatched == before, "Single-window cycle must do nothing")
+window_snapshot = {}
+binds["alt + tab"].fn()
+assert(#dispatched == before, "Empty-workspace cycle must do nothing")
+-- Honor the visible special workspace, and permit focus behind fullscreen.
+special_workspace = {id = -99}
+window_snapshot = {
+  {address="0xa", stable_id=1, accepts_input=true, fullscreen=2},
+  {address="0xb", stable_id=2, accepts_input=false},
+}
+active_window = window_snapshot[1]
+binds["alt + tab"].fn()
+assert(active_window.address == "0xb", "Fullscreen-blocked windows must remain selectable")
+special_workspace = nil
 assert(hooks["hyprland.start"] and hooks["monitor.added"])
 hooks["monitor.added"]()
 assert(executed[#executed]:find('systemctl --user is-active --quiet graphical-session.target && ', 1, true), "Hotplug must wait for UWSM graphical readiness")

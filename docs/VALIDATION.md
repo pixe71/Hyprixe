@@ -634,3 +634,87 @@ headless compositor. Actual keyboard dispatch under Hyprland 0.56.2, the physica
 Print key (including any laptop Fn behavior), monitor scaling and image pasting
 into the user's applications still require a check on the PC. Apply and reload
 using [the screenshot procedure](../INSTALL.md#screenshots).
+
+## Native keyboard/mouse audit — October 26, 2026
+
+The report and complete shortcut contract are in [KEYBINDS.md](KEYBINDS.md).
+The physical Debian PC is not accessible through this workspace's terminal;
+the following commands ran in Debian 13 **WSL**, not in the user's session.
+
+Changes and verified causes:
+
+- The old `cycle_next` followed by `alter_zorder(top)` changed the list traversed
+  by the next cycle. This follows from both upstream implementations (0.55.2's
+  compositor window vector and 0.56.2's `WindowQuery`/`WindowState`). A three-window
+  regression reproduces z-order mutations and verifies the replacement uses all
+  three windows in both directions. The replacement queries native Lua once per
+  keypress, sorts by immutable creation ID, raises, then focuses a validated
+  address. Empty/one-window, hidden/non-input clients, a closed active window,
+  special workspace and fullscreen-blocked candidates are covered by the mock.
+- Mouse actions remain native `window.drag()` / interactive `window.resize()`.
+  Removed `opts.mouse`, which these Lua versions ignore. The old mock asserted
+  that unsupported option; it now checks the actual actions.
+- WindowSwitcher still uses a single client snapshot. Tests cover separate
+  windows of the same application, invalid address/index, cancellation, managed
+  Rofi precedence, abnormal Rofi errors and Lua errors returned with status zero.
+  The selected window is raised before focus so floating windows remain visible.
+- The live audit checks all 67 JSON rows and their real retained Lua handles,
+  including enabled state and physical codes missing from JSON. It checks
+  modifiers, flags, submap, obvious conflicts, script permissions, installed-file
+  drift, required commands, Rofi Wayland capability, compositor PATH, version
+  and native query/dispatcher APIs. It never invokes actual bound window actions.
+
+Actual commands/results:
+
+- `./verify.sh`: **134 tests OK**, **0 failed checks**, exit 0. All **133 shell
+  scripts** pass `bash -n` and both ShellCheck levels. **83 Lua files** parse;
+  the complete load-graph regression records **67 unique bindings** and four
+  persistent workspaces. Original theme hashes, Rofi parsing, SDDM QML lint,
+  service-order checks and Waybar capabilities pass.
+- `python3 -m unittest discover -s tests -p test_keybind_checks.py -v`:
+  **17 tests OK**. These use explicit registry/command fixtures, including missing
+  binds, duplicates, wrong modifiers/flags/submaps, disabled/removed handles,
+  opaque physical-key rows, zero-exit IPC errors, timeouts, installed-file drift
+  and parser isolation. A regression also proves that existing `configerrors`
+  are captured before and never cleared by Lua probes: upstream evaluation
+  resets that list, so probes are skipped while load errors exist.
+  These tests do not claim physical input success.
+- Actual `/usr/bin/Hyprland --verify-config -c <temporary config>` under UID 65534,
+  with a temporary HOME/XDG path containing spaces: **exit 0 / config ok**.
+  The installed binary is **0.55.2**, commit
+  `39d7e209c79d451efab1b21151d5938289da838d`. The instrumented native parse reads
+  **67 real `HL.Keybind` objects**: their emitted registry-equivalent rows have
+  **zero contract errors**, all handles are enabled, and all actual dispatcher
+  constructor variants are accepted. Only `no_op` is executed.
+- The new `check_native_config` function was separately run as UID 65534 against
+  that real binary: **PASS**. The root WSL invocation of the full verifier
+  explicitly skips this check; it runs normally for the desktop user on Debian.
+- Negative native parser tests append a deliberate disable/unbind to a temporary
+  config: `set_enabled(false)` and `hl.unbind("ALT + Tab")` are **rejected with
+  an explicit Disabled/removed assertion**, as intended. During development an
+  expired-handle getter caused the 0.55.2 parser to segfault. The final probe
+  checks its safe `HL.Keybind(expired)` string before accessing any property;
+  native disable/unbind tests and the expired-object regression now pass.
+- Exact v0.56.2 bind-option/dispatcher/IPC source blobs were checked against
+  their Git tree hashes. Native query functions and `stable_id`, `address`,
+  `hidden`, `accepts_input`, `fullscreen` properties were inspected in both
+  0.55.2 and 0.56.2. A 0.56.2 binary is not installed in this WSL environment.
+- `./verify.sh --dependencies --session`: repository checks/tests pass, but
+  **6 failed check groups / exit 1** are expected in this WSL setup: SDDM system
+  files; SDDM runtime; installed user units; missing desktop dependencies;
+  missing active UWSM/Hyprland environment; unavailable live binding audit.
+  There is no traceback and these are not suppressed or counted as success.
+- `git diff --check`: passed. Git status reviewed; only source/docs/tests are
+  changed, with no generated fixture, cache, log or secret committed. No commit
+  made. Installer deployment already includes the edited Lua/scripts, preserving
+  its existing dated backups/restore. No profile, theme, SDDM, Waybar, workspace,
+  lock or UWSM service configuration was changed.
+
+An attempt to start a real isolated Hyprland compositor in WSL failed at backend
+creation because no usable DRM/GPU device is exposed. Consequently **physical
+Alt/Tab/F10 delivery, focus effects, overlapping floating windows, fullscreen
+behavior, mouse drag/release, workspace keys, screenshot input/clipboard and
+the user's actual loaded registry still require testing on the PC**. The
+algorithm defect is established; it does not prove the cause of a chord that
+never triggers. Run the application/session procedure in KEYBINDS.md and collect
+`./verify.sh --session --diagnostics` from the affected physical session.
