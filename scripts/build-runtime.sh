@@ -39,9 +39,7 @@ if ! python3 "$script_dir/waybar_compat.py"; then
     meson compile -C "$build/waybar/build" -j 2
     install -m755 "$build/waybar/build/waybar" "$output/waybar"
 fi
-rofi_info=$(WAYLAND_DISPLAY=hyprixe-capability-probe DISPLAY='' rofi -info 2>/dev/null || true)
-rofi_version=$(rofi -version 2>/dev/null || true)
-if ! command -v rofi >/dev/null || ! grep -qiE 'wayland[[:space:]]+enabled|wayland:.*selected|Version.*wayland' <<<"$rofi_info $rofi_version"; then
+if ! python3 "$script_dir/rofi_compat.py"; then
     echo 'Building Rofi 2.0.0 with its native Wayland backend (Debian stable has X11 Rofi).'
     sudo apt-get install -y build-essential meson ninja-build pkg-config flex bison \
         libglib2.0-dev libcairo2-dev libpango1.0-dev libgdk-pixbuf-2.0-dev \

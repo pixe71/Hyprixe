@@ -14,6 +14,7 @@ import tempfile
 import tomllib
 import xml.etree.ElementTree as ET
 from waybar_compat import has_lua_workspace_ipc
+from rofi_compat import has_wayland_support
 
 ROOT = Path(__file__).resolve().parents[1]
 failed = 0
@@ -52,12 +53,50 @@ def check_configuration_formats(root):
             report(True, f'{label}: {relative} parses')
 
 
+def check_source_tree(root, entries):
+    broken = [p for p in entries if p.is_symlink() and not p.exists()]
+    for path in broken:
+        report(False, f'Broken source symlink: {path.relative_to(root)} -> {os.readlink(path)!r}')
+    required = ('configs/Frosted-Glass', 'style.css', 'style/Frosted-Glass.css')
+    missing = [root / '.config/hypr/waybar' / name for name in required
+               if not (root / '.config/hypr/waybar' / name).is_file()]
+    for path in missing:
+        report(False, f'Required Waybar source file missing: {path.relative_to(root)}')
+    if not broken and not missing:
+        report(True, 'Source files: no broken symlinks; active Waybar JSON and CSS exist')
+    return not broken and not missing
+
+
+def check_original_assets(root):
+    try:
+        lines = (root / 'docs/inventory-original.tsv').read_text().splitlines()[1:]
+        manifest = {line.split('\t')[0]: line.split('\t')[2] for line in lines}
+    except (OSError, UnicodeError, IndexError) as exc:
+        report(False, f'Cannot read original asset inventory: {exc}')
+        return
+    assets = ('wallpapers/min_forest.jpg',
+              '.config/Kvantum/Frosted-Glass/Frosted-Glass.svg',
+              '.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig',
+              '.local/share/kxmlgui5/dolphin/dolphinui.rc')
+    for name in assets:
+        try:
+            expected = manifest[name]
+            actual = hashlib.sha256((root / name).read_bytes()).hexdigest()
+        except (OSError, KeyError) as exc:
+            report(False, f'Original asset: {name}: {exc}')
+            continue
+        detail = '' if actual == expected else f' (expected {expected}, got {actual})'
+        report(actual == expected, f'Original asset SHA256: {name}{detail}')
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--session', action='store_true', help='Also query an existing Hyprland session (read-only)')
     parser.add_argument('--dependencies', action='store_true', help='Require installed runtime dependencies')
     args = parser.parse_args()
-    files = [p for p in ROOT.rglob('*') if p.is_file() and not any(x in p.relative_to(ROOT).parts for x in ('.git', '.validation', '__pycache__'))]
+    entries = [p for p in ROOT.rglob('*') if not any(x in p.relative_to(ROOT).parts for x in ('.git', '.validation', '__pycache__'))]
+    sources_ok = check_source_tree(ROOT, entries)
+    files = [p for p in entries if p.is_file()]
     shells = sorted(p for p in files if p.suffix == '.sh')
     shell_results = [subprocess.run(['bash', '-n', str(p)], capture_output=True, text=True) for p in shells]
     report(all(r.returncode == 0 for r in shell_results), f'bash -n: {len(shells)} scripts (including optional examples)')
@@ -84,11 +123,14 @@ def main():
             try: ast.parse(p.read_text(), str(p))
             except SyntaxError as exc: report(False, str(exc))
     report(True, 'Python syntax parsed without generating bytecode')
-    tests = run(['python3', '-m', 'unittest', 'discover', '-s', 'tests', '-v'], 'Deployment and runtime integration tests (isolated temporary HOME / mocked commands)')
-    if tests.returncode == 0:
-        for line in tests.stderr.splitlines():
-            if line.startswith('Ran ') or line.startswith('OK'): print(line)
-            elif ' ... skipped ' in line: print('SKIPPED: ' + line)
+    if sources_ok:
+        tests = run(['python3', '-m', 'unittest', 'discover', '-s', 'tests', '-v'], 'Deployment and runtime integration tests (isolated temporary HOME / mocked commands)')
+        if tests.returncode == 0:
+            for line in tests.stderr.splitlines():
+                if line.startswith('Ran ') or line.startswith('OK'): print(line)
+                elif ' ... skipped ' in line: print('SKIPPED: ' + line)
+    else:
+        print('SKIPPED: integration tests require intact source files; repair the source failures reported above first')
     active_files = [p for p in files if p.relative_to(ROOT).parts[0] in ('.config', '.local') or p.is_relative_to(ROOT / 'profiles/native')]
     forbidden = re.compile(r'VMware|vmwgfx|llvmpipe|Virtual-1|LIBGL_ALWAYS_SOFTWARE|MESA_LOADER_DRIVER_OVERRIDE|GALLIUM_DRIVER|WLR_RENDERER_ALLOW_SOFTWARE|/home/luc|Tokyo|\bkitty\b|\bthunar\b', re.I)
     hits = []
@@ -109,21 +151,23 @@ def main():
         if not (config / 'scripts' / name).is_file(): missing.append(name)
     report(not missing, 'Entry modules, keybind scripts and Rofi theme imports resolve' + (': ' + ', '.join(missing) if missing else ''))
     check_configuration_formats(ROOT)
-    if shutil.which('rofi'):
+    rofi = shutil.which('rofi')
+    if rofi and has_wayland_support(rofi):
         for p in sorted((config / 'rofi').rglob('*.rasi')):
             # Rofi 2.0.0's early -rasi-validate path segfaults upstream, including
             # on minimal themes. -dump-theme uses the fully initialized parser
             # and exits before opening a graphical window.
-            run(['rofi', '-config', str(p), '-dump-theme'], 'Rofi parser: ' + str(p.relative_to(config)))
+            run([rofi, '-config', str(p), '-dump-theme'], 'Rofi parser: ' + str(p.relative_to(config)))
+    elif rofi:
+        report(False, f'Rofi lacks Wayland support: {rofi}; run ./install.sh native')
+        print('SKIPPED: theme parser requires a suitable Wayland Rofi; this is a runtime capability failure, not six theme failures')
     else:
         print('SKIPPED: real Rofi theme parser unavailable')
     if shutil.which('waybar'):
         report(has_lua_workspace_ipc(), 'Waybar supports Lua workspace IPC required by this configuration')
     else:
         print('SKIPPED: Waybar Lua IPC capability check (binary unavailable)')
-    manifest = dict((line.split('\t')[0], line.split('\t')[2]) for line in (ROOT / 'docs/inventory-original.tsv').read_text().splitlines()[1:])
-    assets = ['wallpapers/min_forest.jpg', '.config/Kvantum/Frosted-Glass/Frosted-Glass.svg', '.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig', '.local/share/kxmlgui5/dolphin/dolphinui.rc']
-    report(all(hashlib.sha256((ROOT / p).read_bytes()).hexdigest() == manifest[p] for p in assets), 'Original wallpaper, Kvantum theme pair and Dolphin toolbar: identical SHA256')
+    check_original_assets(ROOT)
     secrets = re.compile(r'gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|-----BEGIN (?:OPENSSH|RSA|EC|DSA) PRIVATE KEY|AKIA[0-9A-Z]{16}')
     secret_files = []
     for p in files:
@@ -131,14 +175,15 @@ def main():
             if secrets.search(p.read_text()): secret_files.append(str(p.relative_to(ROOT)))
         except UnicodeError: pass
     report(not secret_files, 'Secret-pattern scan (current files): ' + (', '.join(secret_files) if secret_files else 'no matches'))
-    report(all(not p.is_symlink() or p.exists() for p in files), 'No broken filesystem symlinks')
     if shutil.which('git'):
         executable_paths = ['install.sh', 'uninstall.sh', 'verify.sh', 'scripts/build-runtime.sh']
         executable_paths += [str(p.relative_to(ROOT)) for p in (config / 'scripts').glob('*.sh')]
         executable_paths += [str(p.relative_to(ROOT)) for p in (config / 'UserScripts').glob('*.sh')]
-        index = subprocess.run(['git', 'ls-files', '-s', '--', *executable_paths], cwd=ROOT, capture_output=True, text=True)
+        waybar_css = '.config/hypr/waybar/style.css'
+        index = subprocess.run(['git', 'ls-files', '-s', '--', *executable_paths, waybar_css], cwd=ROOT, capture_output=True, text=True)
         modes = {line.split('\t', 1)[1]: line.split()[0] for line in index.stdout.splitlines()}
         report(index.returncode == 0 and all(modes.get(name) == '100755' for name in executable_paths), 'Executable entrypoints and active scripts recorded as 100755 in Git')
+        report(index.returncode == 0 and modes.get(waybar_css) == '100644', 'Waybar style.css recorded as a regular file in Git (not a CSS-text symlink)')
     if args.dependencies:
         run(['python3', 'scripts/check-deps.py'], 'Installed runtime dependencies')
     else:

@@ -207,3 +207,56 @@ in PATH, without modifying desktop dependency detection:
 
 The physical Debian PC's dependency result has not been observed from this
 terminal. A zero-failure result for that machine is not claimed here.
+
+## Physical-PC report: Git checkout portability and runtime selection
+
+The user subsequently supplied a physical Debian PC report with a broken
+`style.css`, unavailable awww, X11-only Rofi, a Waybar without Lua workspace IPC,
+and an asset-hash failure. That report supersedes the earlier absence of
+target-machine output; the commands below are still agent-run Linux/WSL checks.
+
+Two repository defects were reproduced from an actual Linux `git archive HEAD`,
+independently of the Windows working tree:
+
+- Git stored `hypr/waybar/style.css` as mode `120000`, with CSS import text as
+  the symbolic-link target. Windows with `core.symlinks=false` exposed the blob
+  as an apparently usable regular file, hiding the Linux failure. Its Git mode
+  is now `100644`; the CSS content is unchanged.
+- The original inventory matched the raw CRLF bytes of both Kvantum files and
+  Dolphin's toolbar. Git had normalized their blobs to LF, so clean Linux
+  checkouts failed the exact hash checks. Attributes now disable normalization
+  for these three assets, and the stored blobs contain the original bytes.
+  No colors, SVG elements or toolbar actions changed. Hash checks remain strict
+  and now report each path, expected hash and actual hash on a mismatch.
+
+The verifier now examines dangling links before filtering readable files. A
+source failure stays a FAIL and prevents the dependent deployment suite from
+producing repeated fixture tracebacks. Missing or changed real assets still
+fail. `verify.sh` uses the same `~/.local/bin` priority as installation and the
+session. Rofi capability detection is shared by the builder, dependency checker
+and verifier. An X11-only build is an explicit runtime failure, with theme
+parsing SKIPPED until a suitable Wayland build is available.
+
+Regression coverage includes the invalid CSS-text symlink, missing source CSS,
+per-asset failures, and headless Rofi capability probes. The working-tree suite
+passes all **48 tests**. A separate Linux export of the prospective Git tree is
+also checked as an unprivileged user without DISPLAY or WAYLAND_DISPLAY, with
+the real previously built binaries placed in that user's `~/.local/bin`.
+
+The physical PC must receive these changes and rerun `./install.sh native`
+if runtime capabilities are still missing, followed by `./verify.sh --dependencies`.
+`--no-packages` is unsuitable for preparing missing runtime binaries. No VMware
+profile or graphics-rendering variable was changed by these fixes.
+
+Observed results for that exported Git tree (not a copy of the Windows files):
+
+| Command / check | Result |
+| --- | --- |
+| Linux extraction of the old HEAD | Reproduced the dangling CSS-text symlink and all three line-ending-only asset hash mismatches |
+| Linux extraction of the corrected prospective tree | Regular `style.css`; all four original asset SHA256 values match |
+| `./verify.sh`, UID 65534, no graphical display | 48 tests OK, with the root-only fixture SKIPPED; all six real Rofi parser checks pass; exit 0, zero failures, no traceback |
+| Same export, `./verify.sh --dependencies` | Only the unavailable WSL desktop dependencies fail; Rofi, Waybar and both awww executables resolve to the temporary user's actual `~/.local/bin`; no traceback |
+
+The previous validation had not checked the Linux representation of the Git
+tree and therefore missed these repository defects. The verifier now also
+checks the Git mode of `style.css` explicitly, including on Windows.

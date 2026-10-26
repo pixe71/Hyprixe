@@ -1,10 +1,10 @@
 """Check actual executable capabilities before changing any user configuration."""
 import re
-import os
 import shutil
 import subprocess
 import sys
 from waybar_compat import has_lua_workspace_ipc
+from rofi_compat import has_wayland_support
 
 commands = ('Hyprland', 'hyprctl', 'hyprlock', 'hypridle', 'alacritty', 'dolphin',
             'waybar', 'rofi', 'awww', 'awww-daemon', 'jq', 'flock', 'wpctl',
@@ -15,6 +15,8 @@ missing = [c for c in commands if not shutil.which(c)]
 errors = []
 if missing:
     errors.append('Missing commands: ' + ', '.join(missing))
+for name in ('rofi', 'waybar', 'awww', 'awww-daemon'):
+    print(f'INFO: {name}: {shutil.which(name) or "not found in PATH"}', flush=True)
 if shutil.which('waybar') and not has_lua_workspace_ipc():
     errors.append('Waybar lacks Lua workspace IPC support; run ./install.sh to prepare the compatible build.')
 if shutil.which('Hyprland'):
@@ -22,13 +24,8 @@ if shutil.which('Hyprland'):
     match = re.search(r'\b(\d+)\.(\d+)\.(\d+)', result.stdout + result.stderr)
     if result.returncode or not match or tuple(map(int, match.groups())) < (0, 55, 2):
         errors.append('Hyprland >= 0.55.2 is required for the Lua configuration.')
-if shutil.which('rofi'):
-    probe = dict(os.environ, WAYLAND_DISPLAY='hyprixe-capability-probe', DISPLAY='')
-    result = subprocess.run(['rofi', '-info'], capture_output=True, text=True, env=probe)
-    version = subprocess.run(['rofi', '-version'], capture_output=True, text=True)
-    capabilities = result.stdout + '\n' + version.stdout
-    if not re.search(r'wayland\s+enabled|wayland:.*selected|Version.*wayland', capabilities, re.I):
-        errors.append('Rofi must include Wayland support (rofi 2.x or rofi-wayland).')
+if shutil.which('rofi') and not has_wayland_support():
+    errors.append('Rofi must include Wayland support (rofi 2.x or rofi-wayland); run ./install.sh native to prepare it.')
 kvantum = list(__import__('pathlib').Path('/usr/lib').glob('**/qt6/plugins/styles/libkvantum.so'))
 if not kvantum:
     errors.append('Qt6 Kvantum plugin not found; install qt6-style-kvantum.')

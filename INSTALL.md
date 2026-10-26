@@ -59,6 +59,11 @@ copying files. It does not guarantee that dependencies are already installed.
 and the Qt6 Kvantum plugin; it fails before touching configuration files if
 any requirement is missing.
 
+Use the normal `./install.sh native` command to repair missing awww or an
+incompatible Rofi/Waybar. `--no-packages` also skips runtime builds; it cannot
+prepare those missing capabilities. The installer reuses suitable binaries
+already present in `~/.local/bin` and builds only what is missing or incompatible.
+
 ## Dependencies and system changes
 
 `packages.txt` lists the Debian stable applications actually used.
@@ -271,6 +276,21 @@ the “open terminal” command uses Alacritty.
   Fedora/Ubuntu repair tools and SSH scripts are never run or installed.
 - `./verify.sh` reports **SKIPPED** for unavailable graphical checks.
   The validations actually performed are recorded in [docs/VALIDATION.md](docs/VALIDATION.md).
+- The verifier prepends `~/.local/bin` to PATH, just like the installer and
+  Hyprland, and the dependency report lists the selected Rofi/Waybar/awww paths.
+  A terminal outside Hyprland can therefore find the installed user binaries.
+  An X11-only Rofi is reported as an incompatible runtime; its display-connection
+  errors are not presented as six separate theme errors.
+- ShellCheck and Lua validation tools are optional. Install them with
+  `sudo apt install shellcheck lua5.4` to run those checks. Running the verifier
+  as your desktop user is correct; the root-only test fixture may remain SKIPPED.
+
+The tracked `hypr/waybar/style.css` is a regular CSS file containing a relative
+import. It must not be a symbolic link whose target is CSS text. Source checks
+include dangling symlinks before filtering readable files, and a broken source
+tree fails validation before deployment tests run. Git attributes preserve the
+exact original bytes of the two Frosted Glass Kvantum files and Dolphin toolbar;
+their SHA256 checks do not depend on the checkout platform or line-ending settings.
 
 Primary references: [Hyprland Lua 0.56.2](https://github.com/hyprwm/Hyprland/blob/v0.56.2/example/hyprland.lua),
 [Debian backports package](https://packages.debian.org/source/trixie-backports/hyprland),
