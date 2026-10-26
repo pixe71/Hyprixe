@@ -145,11 +145,32 @@ class DeploymentTests(unittest.TestCase):
         self.install()
         lock = (self.roots['config'] / 'hypr/hyprlock.conf').read_text()
         self.assertIn(str(self.home / 'data/hyprixe/wallpapers/min_forest.jpg'), lock)
-        wrapper = json.loads((self.roots['config'] / 'hypr/waybar/config').read_text())
-        self.assertTrue(Path(wrapper['include'][0]).is_file())
+        waybar = self.roots['config'] / 'hypr/waybar/configs/Frosted-Glass'
+        self.assertEqual(json.loads(waybar.read_text()),
+                         json.loads((ROOT / '.config/hypr/waybar/configs/Frosted-Glass').read_text()))
+        self.assertFalse((self.roots['config'] / 'hypr/waybar/config').exists())
+        style = self.roots['config'] / 'hypr/waybar/style.css'
+        self.assertTrue(style.is_file())
+        self.assertTrue((style.parent / 'style/Frosted-Glass.css').is_file())
         unit = (self.roots['config'] / 'systemd/user/waybar.service.d/hyprixe.conf').read_text()
-        self.assertIn(str(self.home / 'settings/hypr/waybar/config'), unit)
+        self.assertIn(f'-c "{waybar}" -s "{style}"', unit)
         self.assertNotIn('@HYPR_CONFIG@', unit)
+
+    def test_missing_active_waybar_files_abort_before_writing(self):
+        source = Path(self.temp.name) / 'incomplete-repository'
+        for missing in ('configs/Frosted-Glass', 'style.css', 'style/Frosted-Glass.css'):
+            with self.subTest(missing=missing):
+                for relative in ('configs/Frosted-Glass', 'style.css', 'style/Frosted-Glass.css'):
+                    path = source / '.config/hypr/waybar' / relative
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    if relative == missing:
+                        path.unlink(missing_ok=True)
+                    else:
+                        path.write_text('fixture')
+                with patch.object(deploy, 'REPO', source):
+                    with self.assertRaisesRegex(FileNotFoundError, 'Required Waybar file missing'):
+                        self.install()
+                self.assertEqual(list(self.home.iterdir()), [])
 
     def test_backup_corruption_is_detected_before_restore(self):
         self.write('hypr/hyprland.lua', 'original')

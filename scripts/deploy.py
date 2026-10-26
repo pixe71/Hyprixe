@@ -90,6 +90,10 @@ def merge_ini(old, updates):
 
 
 def payload(roots, profile, runtime=None):
+    for relative in ('configs/Frosted-Glass', 'style.css', 'style/Frosted-Glass.css'):
+        source = REPO / '.config/hypr/waybar' / relative
+        if not source.is_file():
+            raise FileNotFoundError(f'Required Waybar file missing: {source}')
     result = {}
     for p in sorted((REPO / '.config').rglob('*')):
         if p.is_file():
@@ -106,7 +110,7 @@ def payload(roots, profile, runtime=None):
         result[hypr / name] = ((REPO / 'profiles' / profile / name).read_bytes(), 0o644)
     # Render application paths once; session scripts themselves honour XDG variables.
     for target, (data, mode) in list(result.items()):
-        if target.suffix in ('.rasi', '.conf') or target == hypr / 'waybar/config':
+        if target.suffix in ('.rasi', '.conf'):
             text = data.decode('utf-8')
             text = text.replace('~/.config/hypr', str(hypr))
             text = text.replace('$HOME/.config/hypr', str(hypr))
@@ -114,9 +118,6 @@ def payload(roots, profile, runtime=None):
             unit_path = str(hypr).replace('%', '%%').replace('\\', '\\\\').replace('"', '\\"')
             text = text.replace('@HYPR_CONFIG@', unit_path)
             text = text.replace('@WAYBAR_EXEC@', waybar.replace('%', '%%').replace('\\', '\\\\').replace('"', '\\"'))
-            # Waybar wrapper is JSON; escape paths containing quotes/backslashes.
-            if target == hypr / 'waybar/config':
-                text = json.dumps({'include': [str(hypr / 'waybar/configs/Frosted-Glass')]}) + '\n'
             result[target] = (text.encode(), mode)
     # Set directory MIME default while preserving all other associations.
     result[roots['config'] / 'mimeapps.list'] = (b'', 0o644)

@@ -121,6 +121,19 @@ it was already enabled. The script does not enable it globally; it reuses
 the existing service or directly starts an instance protected by flock.
 This drop-in is also backed up and restored.
 
+Both launch paths use `hypr/waybar/configs/Frosted-Glass` directly with `-c`
+and `hypr/waybar/style.css` with `-s`. The old `hypr/waybar/config` JSON include
+wrapper is no longer required or generated. These paths follow XDG_CONFIG_HOME,
+including paths containing spaces. The stylesheet keeps its relative import
+of `style/Frosted-Glass.css`. Installation refuses to deploy if any of these
+three active Waybar files is missing. An old wrapper already in your personal
+configuration may remain; the managed launchers do not read it.
+
+After updating from the wrapper-based layout, run `./install.sh native --no-packages`
+to deploy the updated launcher and systemd drop-in, then run
+`./verify.sh --dependencies`. Use the same profile you selected previously.
+The existing backup and restore behavior still applies.
+
 An old `hypr/hyprland.conf` is backed up and removed so it cannot take
 precedence over the Lua entry point. Additional personal files are not deleted.
 Existing managed files are backed up **before any writes**.

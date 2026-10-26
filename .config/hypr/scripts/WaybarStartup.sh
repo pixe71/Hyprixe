@@ -12,4 +12,4 @@ if systemctl --user is-enabled --quiet waybar.service 2>/dev/null || systemctl -
 fi
 if pgrep -u "$(id -u)" -x waybar >/dev/null; then exit 0; fi
 config="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/waybar"
-waybar -c "$config/config" -s "$config/style.css"
+waybar -c "$config/configs/Frosted-Glass" -s "$config/style.css"

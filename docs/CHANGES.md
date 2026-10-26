@@ -17,7 +17,7 @@ Line-ending-only differences are ignored when classifying changes.
 - `.local/share/kxmlgui5/dolphin/dolphinui.rc`
 - `wallpapers/min_forest.jpg`
 
-## Modified at their original paths (32)
+## Modified at their original paths (31)
 
 - `.config/alacritty/alacritty.toml`
 - `.config/dolphinrc`
@@ -46,7 +46,6 @@ Line-ending-only differences are ignored when classifying changes.
 - `.config/hypr/scripts/RofiLauncher.sh`
 - `.config/hypr/scripts/ScreenShot.sh`
 - `.config/hypr/scripts/WaybarStartup.sh`
-- `.config/hypr/waybar/config`
 - `.config/hypr/waybar/style.css`
 - `.gitignore`
 - `packages.txt`
@@ -414,7 +413,7 @@ Line-ending-only differences are ignored when classifying changes.
 - `.config/hypr/waybar/style/catppuccin-themes/rgbmocha.css → extras/kooldots/hypr/waybar/style/catppuccin-themes/rgbmocha.css`
 - `.config/hypr/waybar/wallust/colors-waybar.css → extras/kooldots/hypr/waybar/wallust/colors-waybar.css`
 
-## Deleted (192)
+## Deleted (193)
 
 - `.config/hypr/.initial_startup_done`
 - `.config/hypr/UserConfigs/kitty-themes/00-Default.conf`
@@ -607,9 +606,10 @@ Line-ending-only differences are ignored when classifying changes.
 - `.config/hypr/wallpaper_effects/.wallpaper_current`
 - `.config/hypr/wallpaper_effects/.wallpaper_current_Virtual-1`
 - `.config/hypr/wallpaper_effects/.wallpaper_modified`
+- `.config/hypr/waybar/config`
 - `.config/hypr/waybar/configs/[TOP & BOT] SummitSplit v3`
 
-## Created (55)
+## Created (56)
 
 - `.config/hypr/lua/rules.lua`
 - `.config/hypr/profile.env`
@@ -663,6 +663,7 @@ Line-ending-only differences are ignored when classifying changes.
 - `tests/check_lua.lua`
 - `tests/test_deploy.py`
 - `tests/test_runtime.py`
+- `tests/test_verify.py`
 - `tests/test_waybar_compat.py`
 - `uninstall.sh`
 - `verify.sh`

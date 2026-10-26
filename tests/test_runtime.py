@@ -112,7 +112,25 @@ class RuntimeTests(unittest.TestCase):
         r = self.run_script('WaybarStartup.sh')
         self.assertEqual(r.returncode, 0, r.stderr)
         call = next(c for c in self.calls() if c[0] == 'waybar')
-        self.assertEqual(call[1:], ['-c', str(ROOT / '.config/hypr/waybar/config'), '-s', str(ROOT / '.config/hypr/waybar/style.css')])
+        self.assertEqual(call[1:], ['-c', str(ROOT / '.config/hypr/waybar/configs/Frosted-Glass'), '-s', str(ROOT / '.config/hypr/waybar/style.css')])
+        self.assertTrue(Path(call[2]).is_file())
+        self.assertTrue(Path(call[4]).is_file())
+
+    def test_waybar_custom_xdg_uses_existing_files_without_config_wrapper(self):
+        settings = self.root / 'settings with spaces'
+        hypr = settings / 'hypr'
+        shutil.copytree(ROOT / '.config/hypr', hypr)
+        # The launcher must work when no legacy include wrapper is installed.
+        (hypr / 'waybar/config').unlink(missing_ok=True)
+        self.env['XDG_CONFIG_HOME'] = str(settings)
+        r = subprocess.run(['bash', str(hypr / 'scripts/WaybarStartup.sh')],
+                           env=self.env, capture_output=True, text=True, timeout=15)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        call = next(c for c in self.calls() if c[0] == 'waybar')
+        self.assertEqual(call[1:], ['-c', str(hypr / 'waybar/configs/Frosted-Glass'),
+                                   '-s', str(hypr / 'waybar/style.css')])
+        self.assertTrue(Path(call[2]).is_file())
+        self.assertTrue(Path(call[4]).is_file())
 
 
 class InstallPreflightTests(unittest.TestCase):

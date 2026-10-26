@@ -34,6 +34,24 @@ def run(command, message, **kwargs):
     return r
 
 
+def check_configuration_formats(root):
+    # Check the files actually used by the launchers, not a legacy Waybar
+    # include wrapper. Report each missing/invalid file and keep checking.
+    formats = (
+        ('.config/alacritty/alacritty.toml', 'Alacritty TOML', tomllib.loads),
+        ('.config/hypr/waybar/configs/Frosted-Glass', 'Waybar JSON', json.loads),
+        ('.config/Kvantum/Frosted-Glass/Frosted-Glass.svg', 'Kvantum SVG', ET.fromstring),
+        ('.local/share/kxmlgui5/dolphin/dolphinui.rc', 'Dolphin XML', ET.fromstring),
+    )
+    for relative, label, parse in formats:
+        try:
+            parse((root / relative).read_text(encoding='utf-8'))
+        except (OSError, ValueError, ET.ParseError) as exc:
+            report(False, f'{label}: {relative}: {exc}')
+        else:
+            report(True, f'{label}: {relative} parses')
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--session', action='store_true', help='Also query an existing Hyprland session (read-only)')
@@ -90,11 +108,7 @@ def main():
     for name in scripts:
         if not (config / 'scripts' / name).is_file(): missing.append(name)
     report(not missing, 'Entry modules, keybind scripts and Rofi theme imports resolve' + (': ' + ', '.join(missing) if missing else ''))
-    for p in (ROOT / '.config/alacritty').glob('*.toml'): tomllib.loads(p.read_text())
-    for p in (config / 'waybar/config', config / 'waybar/configs/Frosted-Glass'): json.loads(p.read_text())
-    ET.parse(ROOT / '.config/Kvantum/Frosted-Glass/Frosted-Glass.svg')
-    ET.parse(ROOT / '.local/share/kxmlgui5/dolphin/dolphinui.rc')
-    report(True, 'Alacritty TOML, Waybar JSON, Kvantum SVG and Dolphin XML parse')
+    check_configuration_formats(ROOT)
     if shutil.which('rofi'):
         for p in sorted((config / 'rofi').rglob('*.rasi')):
             # Rofi 2.0.0's early -rasi-validate path segfaults upstream, including

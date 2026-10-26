@@ -164,3 +164,46 @@ Primary sources for the review:
 [Waybar 0.12 clicks](https://github.com/Alexays/Waybar/blob/0.12.0/src/modules/hyprland/workspace.cpp),
 [upstream Waybar Lua backend](https://github.com/Alexays/Waybar/blob/master/src/modules/hyprland/backend.cpp),
 [Hyprlock 0.9.6 parser](https://github.com/hyprwm/hyprlock/blob/v0.9.6/src/config/ConfigManager.cpp).
+
+## October 26 follow-up: Waybar entry point and XDG regression
+
+The target PC reported a missing `hypr/waybar/config` file during
+`test_custom_xdg_paths_are_rendered`, followed by an unhandled exception in
+the verifier. In the source checkout, this file was only a JSON include wrapper
+pointing to `hypr/waybar/configs/Frosted-Glass`; both launch paths still used
+the wrapper. It contained no independent settings.
+
+The direct launcher and systemd drop-in now both select `configs/Frosted-Glass`
+explicitly with `-c`, alongside `style.css` with `-s`. The redundant wrapper was
+removed from the repository and is no longer synthesized during deployment.
+Custom XDG paths, including spaces, are checked against the actual copied
+configuration and the rendered service arguments. Existing personal wrapper
+files are left alone and are not used by these launchers. The Frosted Glass
+configuration and stylesheet contents were not changed.
+
+The deployment test now checks the actual JSON file, CSS files and service
+arguments. Direct-launch tests also check that the files passed to Waybar
+exist, so a command mock cannot silently accept a nonexistent configuration.
+Additional regression tests cover launching with custom XDG paths without a
+wrapper, rejecting incomplete Waybar payloads before any configuration writes,
+and reporting missing/invalid JSON, TOML or XML without aborting the format
+checks. A genuinely missing active configuration still produces a failure.
+
+Validation is rerun from the available Debian 13 WSL environment, not remotely
+on the user's physical PC. The real desktop dependency check remains enabled:
+missing local Hyprland/desktop commands and the Qt6 Kvantum plugin must still
+cause `--dependencies` to return a nonzero status here. No desktop dependencies
+are mocked or waived to obtain a passing result. The target PC must rerun
+`./verify.sh --dependencies` after receiving these changes.
+
+Final commands were run with the previously built awww/Rofi/Waybar executables
+in PATH, without modifying desktop dependency detection:
+
+| Command | Result on the final code |
+| --- | --- |
+| `./verify.sh` | 38 tests OK; Bash, ShellCheck, 82 Lua files, format parsers, Rofi, Lua IPC, asset hashes and native-profile checks pass; `RESULT: 0 failed check(s)`, exit code 0 |
+| `./verify.sh --dependencies` | The same 38 tests and repository checks pass; only `Installed runtime dependencies` fails because this WSL environment lacks Hyprland/desktop commands and the Qt6 Kvantum plugin; `RESULT: 1 failed check(s)`, exit code 1, no traceback |
+| `git diff --check` | Exit code 0, no whitespace errors |
+
+The physical Debian PC's dependency result has not been observed from this
+terminal. A zero-failure result for that machine is not claimed here.
