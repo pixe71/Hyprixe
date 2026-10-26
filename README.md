@@ -8,9 +8,8 @@ The theme preserves the `min_forest.jpg` wallpaper, translucent blue/cyan glass,
 blur, 13 px rounded corners, blue/purple borders, a top Waybar and the
 Frosted-Glass Kvantum theme. The original SVG/Kvantum files, wallpaper and Dolphin
 toolbar are preserved byte for byte.
-
-![Frosted Glass wallpaper](wallpapers/min_forest.jpg)
-
+<!-- ![Frosted Glass wallpaper](wallpapers/min_forest.jpg)
+-->
 ## Preview
 ![Frosted Glass wallpaper](docs/screenshots/screenshot.png).
 
