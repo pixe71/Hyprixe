@@ -260,3 +260,54 @@ Observed results for that exported Git tree (not a copy of the Windows files):
 The previous validation had not checked the Linux representation of the Git
 tree and therefore missed these repository defects. The verifier now also
 checks the Git mode of `style.css` explicitly, including on Windows.
+
+## XKB stable/backports build dependency regression
+
+The target PC reported XKB runtimes `1.13.1-1~bpo13+1` with APT attempting to
+install stable `1.7.0-2` headers. Debian's metadata confirms that the development
+packages require exactly matching runtime versions, and that
+`libxkbregistry-dev` also requires the matching `libxkbcommon-dev`.
+
+`scripts/apt-build-deps.py` now selects headers by installed backports source
+family, including indirect development dependencies. Waybar explicitly lists
+both XKB headers. The same planner is used by the awww and Rofi build steps.
+Only matching headers use `/trixie-backports`; the rest retain normal APT
+selection. Build dependency transactions prohibit removals and downgrades.
+Planner failures stop the build; no process-substitution failure is ignored.
+
+Real APT tests were run in Debian 13 WSL, with actual Debian packages rather
+than mocked package status:
+
+| Command / scenario | Observed result |
+| --- | --- |
+| Planner simulation before the upgrade, XKB runtime/dev `1.7.0-2` | Resolver exit 0; headers stay on stable |
+| Remove the test environment's XKB headers, then install `libxkbcommon0/trixie-backports libxkbregistry0/trixie-backports` | Both runtimes actually installed at `1.13.1-1~bpo13+1`; headers absent |
+| Original Waybar build dependency command, `apt-get -s install ... libxkbregistry-dev ...` | Exit 100; reproduced the exact stable-header/backports-runtime conflict and attempted `1.7.0-2` downgrade |
+| Corrected planner and `apt-get -s --no-remove -o APT::Get::allow-Downgrades=false install ...` | Exit 0; only the two XKB headers selected explicitly from backports; GTK/gtkmm/dbusmenu headers remain stable |
+| Actual installation of that corrected dependency list | Exit 0; both headers installed at `1.13.1-1~bpo13+1`, both runtimes preserved at that version; no removals or downgrades |
+| `dpkg-query -W` for the four XKB packages | All four actually installed at `1.13.1-1~bpo13+1` |
+| `python3 scripts/apt-build-deps.py --simulate rofi` after the XKB upgrade | Exit 0; the shared selection also resolves Rofi headers |
+
+The current Waybar dependency graph was inspected, including its indirect
+headers. The selector covers other already-backported source families, such as
+Wayland or XML, without forcing GTK, systemd or the rest of the system into
+backports. A missing matching backport is a fatal error, not a stable fallback.
+Seven unit regressions cover stable, XKB backports, indirect headers, unrelated
+backports, removed packages, unavailable headers and failed metadata queries.
+
+The updated `scripts/build-runtime.sh` was then actually run with the backports
+XKB runtime/dev packages installed. It reused the real awww/Rofi binaries,
+installed the selected Waybar build dependencies through APT, fetched the pinned
+Waybar source and compiled all 124 Ninja steps successfully. The resulting
+`Waybar v8490a1d (branch 'HEAD') (hyprixe-lua-ipc1)` passes the Lua workspace IPC
+capability check. The binary and full build/APT logs are outside the repository.
+No graphical session or physical GPU test is claimed for this build test.
+
+Final `./verify.sh` with the previously built runtime tools in PATH: **55 tests
+OK**, Bash/ShellCheck/Lua/format/asset checks pass, `RESULT: 0 failed check(s)`,
+exit 0. `git diff --check` also exits 0. Desktop dependency/session checks remain
+subject to the earlier WSL limitations; the real APT and Waybar build scenarios
+above do not use mocked package versions.
+
+Primary references: [Debian's selective backports installation](https://backports.debian.org/Instructions/)
+and [the libxkbcommon backports source package](https://packages.debian.org/source/trixie-backports/libxkbcommon).

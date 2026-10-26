@@ -100,6 +100,25 @@ support: the prepared build converts only workspace changes to
 modules and CSS are unchanged. The patch is identified by
 `hyprixe-lua-ipc1` in `waybar --version`. Required C++/GTK headers are installed
 through APT if this build is needed.
+
+Build dependencies are selected by `scripts/apt-build-deps.py`. It inspects
+installed Debian package source families and direct/indirect header dependencies.
+If a runtime family is already installed from Debian 13 backports, its required
+headers are explicitly requested as `PACKAGE/trixie-backports`. In particular,
+backported `libxkbcommon0` or `libxkbregistry0` selects both `libxkbcommon-dev`
+and `libxkbregistry-dev` from that suite. Other build dependencies keep their
+normal APT candidates; there is no global backports target or persistent pin
+for the build dependency transaction. The same selection is used for Rofi and awww.
+
+Build dependency installation prohibits package removals and automatic downgrades.
+If matching headers are unavailable, preparation stops with an error instead of
+falling back to stable headers. The installer refreshes APT indexes before this
+selection. To inspect the real resolver plan without installing anything:
+
+```bash
+python3 scripts/apt-build-deps.py --simulate waybar
+```
+
 Hyprland's PATH includes this directory. For diagnostic commands from an
 existing console, run `export PATH="$HOME/.local/bin:$PATH"`.
 

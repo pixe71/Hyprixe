@@ -609,7 +609,7 @@ Line-ending-only differences are ignored when classifying changes.
 - `.config/hypr/waybar/config`
 - `.config/hypr/waybar/configs/[TOP & BOT] SummitSplit v3`
 
-## Created (58)
+## Created (60)
 
 - `.config/hypr/lua/rules.lua`
 - `.config/hypr/profile.env`
@@ -654,6 +654,7 @@ Line-ending-only differences are ignored when classifying changes.
 - `profiles/vmware/packages.txt`
 - `profiles/vmware/profile.env`
 - `profiles/vmware/profile.lua`
+- `scripts/apt-build-deps.py`
 - `scripts/build-runtime.sh`
 - `scripts/check-deps.py`
 - `scripts/deploy.py`
@@ -662,6 +663,7 @@ Line-ending-only differences are ignored when classifying changes.
 - `scripts/waybar-lua-ipc.hpp`
 - `scripts/waybar_compat.py`
 - `tests/check_lua.lua`
+- `tests/test_apt_build_deps.py`
 - `tests/test_deploy.py`
 - `tests/test_rofi_compat.py`
 - `tests/test_runtime.py`

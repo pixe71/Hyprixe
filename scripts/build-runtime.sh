@@ -7,6 +7,14 @@ script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
 [[ -d "$output" ]] || { echo 'ERROR: staging directory must exist' >&2; exit 1; }
 build=$(mktemp -d -t hyprixe-build.XXXXXXXX)
 trap 'rm -rf -- "$build"' EXIT
+install_build_dependencies() {
+    local plan
+    local -a packages
+    # Do not use process substitution: a failed planner must stop installation.
+    plan=$(python3 "$script_dir/apt-build-deps.py" "$1") || return 1
+    mapfile -t packages <<<"$plan"
+    sudo apt-get install -y --no-remove -o APT::Get::allow-Downgrades=false "${packages[@]}"
+}
 checkout() {
     local url=$1 commit=$2 name=$3
     git init -q "$build/$name"
@@ -18,7 +26,7 @@ checkout() {
 }
 if ! command -v awww >/dev/null || ! command -v awww-daemon >/dev/null; then
     echo 'Building awww v0.12.1 (pinned upstream commit).'
-    sudo apt-get install -y build-essential pkg-config libwayland-dev liblz4-dev wayland-protocols
+    install_build_dependencies awww
     sudo apt-get install -y -t trixie-backports cargo rustc
     checkout https://codeberg.org/LGFae/awww.git f66e12a76dbc4c669b2f1375f78bce49f5b19d66 awww
     (cd "$build/awww" && cargo build --release --locked)
@@ -27,10 +35,7 @@ if ! command -v awww >/dev/null || ! command -v awww-daemon >/dev/null; then
 fi
 if ! python3 "$script_dir/waybar_compat.py"; then
     echo 'Preparing Waybar 0.12 with Lua workspace IPC for Hyprland 0.56.2.'
-    sudo apt-get install -y build-essential meson ninja-build pkg-config \
-        libgtkmm-3.0-dev libjsoncpp-dev libsigc++-2.0-dev libfmt-dev libspdlog-dev \
-        libwayland-dev wayland-protocols libdbusmenu-gtk3-dev libnl-3-dev \
-        libnl-genl-3-dev libpulse-dev libplayerctl-dev libxkbregistry-dev libudev-dev libgtk-layer-shell-dev
+    install_build_dependencies waybar
     checkout https://github.com/Alexays/Waybar.git 8490a1d9b9a5c8770dd63e9faca0a5e01acedcae waybar
     python3 "$script_dir/waybar_compat.py" --patch "$build/waybar"
     meson setup "$build/waybar/build" "$build/waybar" --buildtype=release --wrap-mode=nodownload \
@@ -41,9 +46,7 @@ if ! python3 "$script_dir/waybar_compat.py"; then
 fi
 if ! python3 "$script_dir/rofi_compat.py"; then
     echo 'Building Rofi 2.0.0 with its native Wayland backend (Debian stable has X11 Rofi).'
-    sudo apt-get install -y build-essential meson ninja-build pkg-config flex bison \
-        libglib2.0-dev libcairo2-dev libpango1.0-dev libgdk-pixbuf-2.0-dev \
-        libxkbcommon-dev libwayland-dev wayland-protocols
+    install_build_dependencies rofi
     checkout https://github.com/davatorium/rofi.git 0b6aa8ba8b4879f00c3cc96f2e47a13c079fe814 rofi
     meson setup "$build/rofi/build" "$build/rofi" --buildtype=release \
         -Dwayland=enabled -Dxcb=disabled -Dimdkit=false -Dcheck=disabled
