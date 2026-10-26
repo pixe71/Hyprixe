@@ -101,6 +101,10 @@ def run():
             return result
         require(item('sessions').property('currentText') == 'Hyprland (uwsm-managed)', 'Last session must be retained, not forced')
         require(root.property('loginName') == 'bob', 'Last user must be retained')
+        item('password').forceActiveFocus()
+        QTest.keyClick(view, Qt.Key.Key_A)
+        require(item('password').property('text') == 'a', 'Physical keyboard input must reach the password field')
+        item('password').setProperty('text', '')
         item('password').setProperty('text', 'test-only-password')
         QMetaObject.invokeMethod(root, 'authenticate')
         require(proxy.calls[-1] == ('login', 'bob', 'test-only-password', 1), 'Login must preserve selected SDDM session index')

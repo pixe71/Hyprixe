@@ -3,6 +3,7 @@
 local config = assert(arg[1])
 local binds, hooks, settings, dispatched = {}, {}, {}, {}
 local workspaces = {}
+local executed = {}
 local function action(name)
   return function(opts) return { name = name, opts = opts } end
 end
@@ -22,7 +23,7 @@ hl = {
   gesture = function() end,
   window_rule = function() end,
   layer_rule = function() end,
-  exec_cmd = function() end,
+  exec_cmd = function(command) executed[#executed+1] = command end,
   dispatch = function(a) assert(a.name); dispatched[#dispatched+1] = a end,
   on = function(event, fn) assert(not hooks[event]); hooks[event] = fn end,
   bind = function(chord, fn, options)
@@ -38,6 +39,12 @@ for _, name in ipairs({"close", "fullscreen", "float", "pseudo", "drag", "resize
   hl.dsp.window[name] = action(name)
 end
 dofile(config .. "/hypr/hyprland.lua")
+local misc = {}
+for _, setting in ipairs(settings) do
+  for key, value in pairs(setting.misc or {}) do misc[key] = value end
+end
+assert(misc.background_color == "rgb(122434)", "Initial compositor background must match Frosted Glass")
+assert(misc.disable_splash_rendering == true, "Built-in splash must not appear between greeter and wallpaper")
 for id = 1, 4 do
   assert(workspaces[tostring(id)], "Missing persistent workspace " .. id)
 end
@@ -58,6 +65,8 @@ assert(dispatched[2].name == "alter_zorder")
 binds["alt + shift + tab"].fn()
 assert(dispatched[3].opts.next == false)
 assert(hooks["hyprland.start"] and hooks["monitor.added"])
+hooks["monitor.added"]()
+assert(executed[#executed]:find('systemctl --user is-active --quiet graphical-session.target && ', 1, true), "Hotplug must wait for UWSM graphical readiness")
 for _, callback in pairs(hooks) do callback() end
 local count = 0
 for _ in pairs(binds) do count = count + 1 end

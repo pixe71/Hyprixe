@@ -14,7 +14,11 @@ name=pathlib.Path(sys.argv[0]).name
 root=pathlib.Path(os.environ['MOCK_ROOT'])
 with (root/'calls').open('a') as f: f.write(json.dumps([name]+sys.argv[1:])+'\\n')
 if name=='hyprctl':
-    if sys.argv[1]=='monitors': print('[{"name":"DP-3"},{"name":"eDP-2"}]')
+    if sys.argv[1]=='monitors':
+        if os.environ.get('MOCK_MONITORS_DELAYED') and not (root/'monitors-polled').exists():
+            (root/'monitors-polled').touch()
+            print('[]')
+        else: print('[{"name":"DP-3"},{"name":"eDP-2"}]')
     elif sys.argv[1]=='clients':
         print('[{"mapped":true,"address":"0xabc","class":"Alacritty","title":"Example"}]')
 elif name=='awww' and sys.argv[1]=='query':
@@ -72,6 +76,8 @@ class RuntimeTests(unittest.TestCase):
         calls = self.calls()
         self.assertFalse(any(c[0] == 'awww-daemon' for c in calls))
         img = next(c for c in calls if c[:2] == ['awww', 'img'])
+        self.assertEqual(img[img.index('--transition-type') + 1], 'none')
+        self.assertNotIn('--transition-duration', img)
         self.assertNotIn('--outputs', img)
         self.assertNotIn('-o', img)
         self.assertEqual(img[-1], str(self.root / 'data/hyprixe/wallpapers/min_forest.jpg'))
@@ -88,6 +94,15 @@ class RuntimeTests(unittest.TestCase):
         self.assertIn('not ready', r.stderr)
         self.assertEqual(sum(c[0] == 'awww-daemon' for c in self.calls()), 1)
         self.assertFalse(any(c[:2] == ['awww', 'img'] for c in self.calls()))
+
+    def test_wallpaper_retries_only_until_initial_monitor_ipc_is_ready(self):
+        self.env['MOCK_MONITORS_DELAYED'] = '1'
+        (self.root / 'ready').touch()
+        r = self.run_script('Wallpaper.sh')
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(sum(c[:2] == ['hyprctl', 'monitors'] for c in self.calls()), 2)
+        self.assertEqual(sum(c[0] == 'sleep' for c in self.calls()), 1)
+        self.assertTrue(any(c[:2] == ['awww', 'img'] for c in self.calls()))
 
     def test_switcher_uses_one_snapshot_and_valid_address(self):
         r = self.run_script('WindowSwitcher.sh')
@@ -145,8 +160,10 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stderr)
         calls = self.calls()
         finalize = next(i for i, c in enumerate(calls) if c[:2] == ['uwsm', 'finalize'])
+        reload_units = calls.index(['systemctl', '--user', 'daemon-reload'])
         start = calls.index(['systemctl', '--user', 'start', '--no-block', 'hyprixe-session.target'])
         self.assertLess(finalize, start)
+        self.assertLess(reload_units, finalize)
         self.assertIn('HYPRLAND_INSTANCE_SIGNATURE', calls[finalize])
         self.assertFalse(any('start' in c and 'graphical-session.target' in c for c in calls))
         self.assertFalse(any(c[0] in ('awww-daemon', 'waybar') for c in calls))
@@ -158,13 +175,20 @@ class RuntimeTests(unittest.TestCase):
         self.assertFalse(any(c[0] == 'systemctl' for c in self.calls()))
 
     def test_wallpaper_managed_session_uses_persistent_daemon_service(self):
-        self.env['MOCK_UWSM'] = '1'
+        self.env.update(MOCK_UWSM='1', MOCK_GRAPHICAL='active')
         r = self.run_script('Wallpaper.sh')
         self.assertEqual(r.returncode, 0, r.stderr)
         calls = self.calls()
         self.assertIn(['systemctl', '--user', 'start', 'hyprixe-awww.service'], calls)
         self.assertFalse(any(c[0] == 'awww-daemon' for c in calls))
         self.assertTrue(any(c[:2] == ['awww', 'img'] for c in calls))
+
+    def test_early_hotplug_waits_for_session_unit_without_starting_a_daemon(self):
+        self.env.update(MOCK_UWSM='1', MOCK_GRAPHICAL='inactive')
+        r = self.run_script('Wallpaper.sh')
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn('deferred', r.stdout)
+        self.assertFalse(any(c[0] in ('awww', 'awww-daemon') or 'start' in c for c in self.calls()))
 
     def test_gui_launchers_use_uwsm_scopes_and_preserve_arguments(self):
         cases = [('LaunchApp.sh', ['dolphin', '/folder with spaces'], ['dolphin', '/folder with spaces']),

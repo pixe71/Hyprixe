@@ -15,8 +15,9 @@ import tomllib
 import xml.etree.ElementTree as ET
 from waybar_compat import has_lua_workspace_ipc
 from rofi_compat import has_wayland_support
-from session_checks import check_session
+from session_checks import check_session, check_source_order
 from sddm_theme import SystemTheme, source_payload as sddm_payload, FILES as SDDM_FILES, THEME as SDDM_THEME
+from session_diagnostics import collect as collect_session_diagnostics
 
 ROOT = Path(__file__).resolve().parents[1]
 failed = 0
@@ -108,7 +109,7 @@ def check_sddm(root, installed=False):
     except (OSError, ValueError, KeyError, AssertionError, configparser.Error) as exc:
         report(False, f'SDDM theme source/metadata/wallpaper: {exc}')
         return
-    report(True, 'SDDM Qt 6 theme, QML components, icon and original wallpaper exist')
+    report(True, 'SDDM Qt 6 theme, QML components, icon and original wallpaper exist; no forced virtual keyboard')
     lint = '/usr/lib/qt6/bin/qmllint' if Path('/usr/lib/qt6/bin/qmllint').is_file() else shutil.which('qmllint6')
     if not lint and shutil.which('qmllint'):
         version = subprocess.run(['qmllint', '--version'], capture_output=True, text=True)
@@ -128,7 +129,7 @@ def check_sddm(root, installed=False):
             failures = SystemTheme(repo=root).check_installed()
         except (OSError, ValueError, configparser.Error) as exc:
             failures = [str(exc)]
-        report(not failures, 'Installed SDDM files, effective theme selection and UWSM session entry' +
+        report(not failures, 'Installed SDDM files, effective theme, disabled InputMethod and UWSM session entry' +
                (': ' + '; '.join(failures) if failures else ''))
         run(['python3', 'scripts/sddm_theme.py', 'prerequisites'], 'Installed SDDM Qt 6 greeter and QML dependencies')
     else:
@@ -140,6 +141,7 @@ def main():
     parser.add_argument('--session', action='store_true', help='Also query an existing Hyprland session (read-only)')
     parser.add_argument('--dependencies', action='store_true', help='Require installed runtime dependencies')
     parser.add_argument('--sddm', action='store_true', help='Also check installed SDDM theme, configuration and UWSM entry')
+    parser.add_argument('--diagnostics', action='store_true', help='Print read-only login journals, service timings, clients, layers and autostarts')
     args = parser.parse_args()
     entries = [p for p in ROOT.rglob('*') if not any(x in p.relative_to(ROOT).parts for x in ('.git', '.validation', '__pycache__'))]
     sources_ok = check_source_tree(ROOT, entries)
@@ -199,6 +201,14 @@ def main():
     report(not missing, 'Entry modules, keybind scripts and Rofi theme imports resolve' + (': ' + ', '.join(missing) if missing else ''))
     check_configuration_formats(ROOT)
     check_sddm(ROOT, installed=args.sddm or args.dependencies)
+    ordering = check_source_order(ROOT / '.config/systemd/user')
+    report(not ordering, 'UWSM service ordering: wallpaper before Waybar/notifications' +
+           (': ' + '; '.join(ordering) if ordering else ''))
+    if args.dependencies:
+        settings = Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config'))
+        ordering = check_source_order(settings / 'systemd/user')
+        report(not ordering, 'Installed Hyprixe wallpaper/session units and vendor drop-ins' +
+               (': ' + '; '.join(ordering) if ordering else ''))
     rofi = shutil.which('rofi')
     if rofi and has_wayland_support(rofi):
         for p in sorted((config / 'rofi').rglob('*.rasi')):
@@ -247,6 +257,8 @@ def main():
             print('SKIPPED: compositor IPC checks require hyprctl and a current Hyprland environment')
     else:
         print('SKIPPED: UWSM/session services, hyprctl configerrors, outputs and wallpaper IPC (use --session inside Hyprland)')
+    if args.diagnostics:
+        collect_session_diagnostics()
     print('SKIPPED: visual theme, keyboard/mouse actions, PAM unlock and suspend/resume require interactive hardware testing')
     print(f'RESULT: {failed} failed check(s)')
     return 1 if failed else 0

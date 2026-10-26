@@ -11,7 +11,7 @@ spec.loader.exec_module(session)
 
 class SessionChecks(unittest.TestCase):
     def inspect(self, managed=True, graphical='active', stale=False, failed_unit=None,
-                external_agent=False, environment=None):
+                external_agent=False, environment=None, ordering=True, wp_start=100, wp_ready=200):
         reports, commands = [], []
         env = {'WAYLAND_DISPLAY': 'wayland-1', 'HYPRLAND_INSTANCE_SIGNATURE': 'test-instance'}
         if environment is not None:
@@ -31,6 +31,11 @@ class SessionChecks(unittest.TestCase):
             else:
                 unit = command[3]
                 output = 'ActiveState=failed\nResult=dependency\n' if unit == failed_unit else 'ActiveState=active\nResult=success\n'
+                if unit in ('waybar.service', 'swaync.service'):
+                    output += ('After=graphical-session.target hyprixe-wallpaper.service\nWants=hyprixe-wallpaper.service\n' if ordering else '')
+                    output += 'InactiveExitTimestampMonotonic=300\nActiveEnterTimestampMonotonic=310\n'
+                elif unit == 'hyprixe-wallpaper.service':
+                    output += f'InactiveExitTimestampMonotonic={wp_start}\nActiveEnterTimestampMonotonic={wp_ready}\n'
             return subprocess.CompletedProcess(command, code, output, '')
 
         ok = session.check_session(lambda passed, message: reports.append((passed, message)),
@@ -93,6 +98,38 @@ class SessionChecks(unittest.TestCase):
                                    runner=unavailable)
         self.assertFalse(ok)
         self.assertTrue(any(not passed for passed, _ in reports))
+
+    def test_source_units_order_wallpaper_before_visible_services(self):
+        self.assertEqual(session.check_source_order(ROOT / '.config/systemd/user'), [])
+
+    def test_missing_ordering_is_reported(self):
+        import tempfile
+        import shutil
+        with tempfile.TemporaryDirectory() as tmp:
+            units = Path(tmp) / 'units'
+            shutil.copytree(ROOT / '.config/systemd/user', units)
+            dropin = units / 'waybar.service.d/hyprixe.conf'
+            dropin.write_text(dropin.read_text().replace('After=hyprixe-wallpaper.service', 'After=graphical-session.target'))
+            self.assertTrue(any('waybar.service.d' in failure for failure in session.check_source_order(units)))
+
+    def test_loaded_units_without_wallpaper_ordering_fail(self):
+        ok, reports, _ = self.inspect(ordering=False)
+        self.assertFalse(ok)
+        self.assertTrue(any(not passed and 'ordering is missing' in message for passed, message in reports))
+
+    def test_services_starting_before_wallpaper_completion_fail(self):
+        ok, reports, _ = self.inspect(wp_ready=400)
+        self.assertFalse(ok)
+        self.assertTrue(any(not passed and 'before wallpaper completion' in message for passed, message in reports))
+
+    def test_later_manual_wallpaper_restart_is_not_a_false_login_failure(self):
+        import contextlib
+        import io
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            ok, _, _ = self.inspect(wp_start=400, wp_ready=500)
+        self.assertTrue(ok)
+        self.assertIn('SKIPPED:', output.getvalue())
 
 
 if __name__ == '__main__':

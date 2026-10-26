@@ -71,5 +71,6 @@ command -v python3 >/dev/null || { echo 'ERROR: python3 is required.' >&2; exit 
 PATH="$runtime:$PATH" python3 "$repo/scripts/check-deps.py"
 python3 "$repo/scripts/deploy.py" install --profile "$profile" --runtime "$runtime" --sddm
 echo 'SDDM Frosted Glass installed with a separate system backup. SDDM was not restarted.'
+echo 'SDDM virtual keyboard disabled through [General] InputMethod=; the physical keyboard stays enabled.'
 echo 'Installed. Reboot to load the SDDM theme, then select "Hyprland (uwsm-managed)" and log in.'
 echo 'The plain Hyprland entry does not provide the required UWSM session lifecycle. See INSTALL.md.'

@@ -609,7 +609,7 @@ Line-ending-only differences are ignored when classifying changes.
 - `.config/hypr/waybar/config`
 - `.config/hypr/waybar/configs/[TOP & BOT] SummitSplit v3`
 
-## Created (83)
+## Created (85)
 
 - `.config/hypr/lua/rules.lua`
 - `.config/hypr/lua/workspaces.lua`
@@ -671,6 +671,7 @@ Line-ending-only differences are ignored when classifying changes.
 - `scripts/deploy.py`
 - `scripts/rofi_compat.py`
 - `scripts/session_checks.py`
+- `scripts/session_diagnostics.py`
 - `scripts/sddm_theme.py`
 - `scripts/verify.py`
 - `scripts/waybar-lua-ipc.hpp`
@@ -683,6 +684,7 @@ Line-ending-only differences are ignored when classifying changes.
 - `tests/test_runtime.py`
 - `tests/test_sddm.py`
 - `tests/test_session_checks.py`
+- `tests/test_session_diagnostics.py`
 - `tests/test_verify.py`
 - `tests/test_waybar_compat.py`
 - `uninstall.sh`

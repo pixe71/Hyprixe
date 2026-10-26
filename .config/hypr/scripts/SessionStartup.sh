@@ -11,12 +11,13 @@ if ! uwsm check is-active compositor-only; then
     echo 'Importing environment variables does not activate graphical-session.target.' >&2
     exit 1
 fi
+# Load service ordering before finalization can activate enabled vendor units.
+systemctl --user daemon-reload
 # Finalize from the compositor's child environment after hl.env. UWSM owns
 # activation/cleanup of graphical-session.target; never start it ourselves.
 uwsm finalize HYPRLAND_INSTANCE_SIGNATURE PATH TERMINAL XDG_CURRENT_DESKTOP XDG_SESSION_TYPE \
     QT_QPA_PLATFORM QT_QPA_PLATFORMTHEME QT_STYLE_OVERRIDE QT_QUICK_CONTROLS_STYLE \
     QT_WAYLAND_DISABLE_WINDOWDECORATION MOZ_ENABLE_WAYLAND XCURSOR_THEME XCURSOR_SIZE
-systemctl --user daemon-reload
 # Services are ordered after UWSM's graphical target. Queue without blocking
 # compositor startup while UWSM completes its readiness handshake.
 systemctl --user start --no-block hyprixe-session.target

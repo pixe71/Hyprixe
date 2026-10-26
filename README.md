@@ -60,6 +60,10 @@ separate system backups. Other themes and session entries are preserved. Reboot
 after installing to load the new SDDM configuration; the installer does not restart
 SDDM or interrupt your session. Select **Hyprland (uwsm-managed)** in the theme's
 session menu. The theme retains SDDM's last selection rather than forcing one.
+Qt Virtual Keyboard is disabled with `[General] InputMethod=`; physical keyboard
+input and password focus remain normal. The wallpaper request now precedes
+Waybar/notifications, without the previous one-second fade. A matching dark base
+color covers Hyprland's initial background while the wallpaper layer initializes.
 See [SDDM installation and recovery](INSTALL.md#sddm-frosted-glass-login-screen).
 
 Debian's Waybar 0.12 still uses the old IPC for workspace clicks. The installer
@@ -72,6 +76,7 @@ See the 0.56.2 compatibility review in `docs/VALIDATION.md`.
 ./install.sh --no-packages   # dependencies already installed, checked before copying
 ./verify.sh                 # static checks and tests in a temporary HOME
 ./verify.sh --sddm          # also check the installed login theme and UWSM entry
+./verify.sh --session --diagnostics # read-only login journals, timings, clients and layers
 ./uninstall.sh --list
 ./uninstall.sh --dry-run
 ./uninstall.sh              # undo the latest transaction that has not been restored

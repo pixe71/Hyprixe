@@ -1,11 +1,38 @@
 """Read-only checks for the UWSM/systemd lifecycle of a Hyprixe session."""
 import os
+import configparser
+from pathlib import Path
 import subprocess
 
 SESSION_UNITS = ('hyprixe-session.target', 'waybar.service', 'hypridle.service',
                  'swaync.service', 'hyprixe-awww.service', 'hyprixe-wallpaper.service',
                  'hyprixe-clipboard.service', 'hyprixe-polkit.service')
 LOGIN_HINT = 'Log out and select "Hyprland (uwsm-managed)" in SDDM, then log in again.'
+
+
+def check_source_order(units):
+    """Check our explicit ordering; never infer it just from Wants= membership."""
+    rules = {
+        'hyprixe-session.target': {'Wants': {'hyprixe-wallpaper.service', 'waybar.service'}},
+        'hyprixe-awww.service': {'After': {'graphical-session.target'}, 'PartOf': {'graphical-session.target'}},
+        'hyprixe-wallpaper.service': {'Requires': {'hyprixe-awww.service'},
+            'After': {'graphical-session.target', 'hyprixe-awww.service'},
+            'Before': {'waybar.service', 'swaync.service'}, 'PartOf': {'graphical-session.target'}},
+        'waybar.service.d/hyprixe.conf': {'Wants': {'hyprixe-wallpaper.service'}, 'After': {'hyprixe-wallpaper.service'}},
+        'swaync.service.d/hyprixe.conf': {'Wants': {'hyprixe-wallpaper.service'}, 'After': {'hyprixe-wallpaper.service'}},
+    }
+    failures = []
+    for name, keys in rules.items():
+        parser = configparser.ConfigParser(interpolation=None, strict=False)
+        parser.optionxform = str
+        try:
+            parser.read_string((Path(units) / name).read_text())
+            for key, expected in keys.items():
+                if not expected.issubset(set(parser.get('Unit', key, fallback='').split())):
+                    failures.append(f'{name}: {key} must include {" ".join(sorted(expected))}')
+        except (OSError, configparser.Error) as exc:
+            failures.append(f'{name}: {exc}')
+    return failures
 
 
 def check_session(report, environ=None, runner=None):
@@ -42,9 +69,13 @@ def check_session(report, environ=None, runner=None):
     report(matches, 'systemd activation environment matches the current Hyprland session' if matches else
            'systemd activation environment is missing or stale; check UWSM finalization and log in again')
     ok = matches
+    states = {}
     for unit in SESSION_UNITS:
-        result = query(['systemctl', '--user', 'show', unit, '-p', 'ActiveState', '-p', 'Result'])
+        result = query(['systemctl', '--user', 'show', unit, '-p', 'ActiveState', '-p', 'Result',
+                        '-p', 'After', '-p', 'Wants', '-p', 'Requires',
+                        '-p', 'InactiveExitTimestampMonotonic', '-p', 'ActiveEnterTimestampMonotonic'])
         state = dict(line.split('=', 1) for line in result.stdout.splitlines() if '=' in line)
+        states[unit] = state
         running = result.returncode == 0 and state.get('ActiveState') == 'active'
         if not running and unit == 'hyprixe-polkit.service':
             # An XDG-autostarted agent can legitimately make our duplicate guard exit.
@@ -60,4 +91,27 @@ def check_session(report, environ=None, runner=None):
             detail += f'; inspect journalctl --user -b -u {unit}'
         report(running, detail)
         ok = ok and running
+    wallpaper = states['hyprixe-wallpaper.service']
+    for unit in ('waybar.service', 'swaync.service'):
+        state = states[unit]
+        ordered = ('hyprixe-wallpaper.service' in state.get('After', '').split() and
+                   'hyprixe-wallpaper.service' in state.get('Wants', '').split())
+        report(ordered, f'{unit}: pulls in and starts after the wallpaper service' if ordered else
+               f'{unit}: wallpaper ordering is missing from loaded units; reinstall, log out and log in again')
+        ok = ok and ordered
+        try:
+            start = int(state.get('InactiveExitTimestampMonotonic', 0))
+            wp_start = int(wallpaper.get('InactiveExitTimestampMonotonic', 0))
+            wp_ready = int(wallpaper.get('ActiveEnterTimestampMonotonic', 0))
+        except ValueError:
+            start = wp_start = wp_ready = 0
+        if not start or not wp_start or not wp_ready:
+            print(f'SKIPPED: {unit} startup chronology (active timestamps unavailable)')
+        elif wp_start > start:
+            print(f'SKIPPED: {unit} initial chronology (wallpaper was restarted later)')
+        else:
+            ordered_time = wp_ready <= start
+            report(ordered_time, f'{unit}: wallpaper request completed before service activation' if ordered_time else
+                   f'{unit}: activated before wallpaper completion; inspect monotonic user journal timestamps')
+            ok = ok and ordered_time
     return ok

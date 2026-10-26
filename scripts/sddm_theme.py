@@ -1,4 +1,4 @@
-"""Install/restore only the Hyprixe SDDM theme, with root-owned file backups.
+"""Install/restore the Hyprixe SDDM theme/input method, with root-owned backups.
 
 No display-manager restart, PAM change, autologin change or session-file write.
 """
@@ -30,10 +30,26 @@ QML_PACKAGES = ('qml6-module-qtquick', 'qml6-module-qtquick-window',
                 'qml6-module-qtquick-controls', 'qml6-module-qtquick-templates',
                 'qml6-module-qtquick-layouts', 'qml6-module-qtquick-effects',
                 'qml6-module-qtqml-workerscript', 'libqt6svg6')
+MANAGED_SETTINGS = {'Theme': {'Current': THEME, 'ThemeDir': '/usr/share/sddm/themes'},
+                    'General': {'InputMethod': ''}}
+
+
+def virtual_keyboard_sources(theme):
+    """Reject a theme-side panel or explicit request to show a virtual keyboard."""
+    pattern = re.compile(r'QtQuick\.VirtualKeyboard|\b(?:InputPanel|VirtualKeyboard|InputPanelLoader)\b|Qt\.inputMethod\.show\s*\(')
+    hits = []
+    for path in theme.rglob('*.qml'):
+        source = re.sub(r'/\*.*?\*/|//[^\n]*', '', path.read_text(), flags=re.S)
+        if pattern.search(source):
+            hits.append(str(path.relative_to(theme)))
+    return hits
 
 
 def source_payload(repo=REPO):
     source = repo / 'sddm/themes' / THEME
+    forced = virtual_keyboard_sources(source)
+    if forced:
+        raise ValueError('Theme must not force a virtual keyboard: ' + ', '.join(forced))
     result = {}
     for name in FILES:
         path = source / name
@@ -75,17 +91,18 @@ def prerequisites():
         raise ValueError('Missing SDDM Qt 6 dependencies: ' + ', '.join(missing))
 
 
-def neutralize_theme_keys(text):
-    # Only higher-priority Theme keys move to our dedicated snippet. Leave
-    # DisplayServer, Autologin, SessionDir and every other setting untouched.
+def neutralize_managed_keys(text):
+    # Move only theme selection and the desktop input-method choice to our
+    # snippet. Preserve DisplayServer, Autologin and session configuration.
     section = ''
     output = []
     for line in text.splitlines(keepends=True):
         header = re.match(r'^\s*\[([^]]+)\]', line)
         if header:
             section = header.group(1)
-        if section == 'Theme' and re.match(r'^\s*(Current|ThemeDir)\s*=', line):
-            output.append('# Hyprixe: theme selection is managed by zz-hyprixe-theme.conf\n')
+        key = line.split('=', 1)[0].strip() if '=' in line else None
+        if key in MANAGED_SETTINGS.get(section, {}):
+            output.append('# Hyprixe: ' + section + '.' + key + ' is managed by zz-hyprixe-theme.conf\n')
         else:
             output.append(line)
     return ''.join(output)
@@ -151,8 +168,7 @@ class SystemTheme:
         content = {self.path(name): data for name, data in source_payload(self.repo).items()}
         config = self.path(CONFIG)
         self.guard(config)
-        content[config] = merge_ini(config.read_text() if config.exists() else '',
-                                   {'Theme': {'Current': THEME, 'ThemeDir': '/usr/share/sddm/themes'}}).encode()
+        content[config] = merge_ini(config.read_text() if config.exists() else '', MANAGED_SETTINGS).encode()
         # /etc/sddm.conf is read last by SDDM, regardless of snippet names.
         higher = [p for p in self.path('/etc/sddm.conf.d').glob('*.conf') if p.name > config.name]
         higher.append(self.path('/etc/sddm.conf'))
@@ -160,7 +176,7 @@ class SystemTheme:
             self.guard(path)
             if path.exists():
                 before = path.read_text()
-                after = neutralize_theme_keys(before)
+                after = neutralize_managed_keys(before)
                 if before != after:
                     content[path] = after.encode()
         for path in content:
@@ -224,6 +240,8 @@ class SystemTheme:
                 save()
             if self.effective_theme() != (THEME, '/usr/share/sddm/themes'):
                 raise ValueError('A higher-priority SDDM setting prevents Hyprixe theme selection')
+            if self.configuration().get('General', 'InputMethod', fallback=None) != '':
+                raise ValueError('A higher-priority SDDM setting prevents InputMethod from being disabled')
         except BaseException:
             manifest['files'] = applied
             save()
@@ -314,6 +332,8 @@ class SystemTheme:
             failures.append('Effective SDDM configuration does not select hyprixe-frosted from /usr/share/sddm/themes')
         if not self.path(CONFIG).is_file():
             failures.append(f'Missing dedicated SDDM configuration: {CONFIG}')
+        if self.configuration().get('General', 'InputMethod', fallback=None) != '':
+            failures.append('Effective SDDM [General] InputMethod must be explicitly empty (virtual keyboard disabled)')
         problem = session_error(self.path(SESSION))
         if problem:
             failures.append(problem)
@@ -340,7 +360,7 @@ def main():
             print('FAIL:', failure)
         if failures:
             raise ValueError('SDDM installation validation failed')
-        print('PASS: installed SDDM theme, exact wallpaper, effective configuration and UWSM session entry')
+        print('PASS: installed SDDM theme, exact wallpaper, disabled InputMethod and UWSM session entry')
         return
     if args.action == 'install' and args.dry_run:
         theme.install(dry=True)

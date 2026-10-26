@@ -465,3 +465,71 @@ Still required on the physical Debian PC:
 Recovery is documented in [INSTALL.md](../INSTALL.md#recover-only-the-previous-sddm-theme):
 `./uninstall.sh --sddm-only` restores the previous login theme from its private
 system backup, including from a TTY, without restoring personal desktop files.
+
+## Physical keyboard and login transition follow-up — October 26, 2026
+
+The physical PC's SDDM/UWSM journals were requested but were not available during
+this follow-up. The accessible terminal is still Windows/WSL. Its actual
+`journalctl -b -u sddm` has no entries, `graphical-session.target` is inactive,
+and the normal user's Hyprixe target is absent. These facts describe WSL, not
+the affected PC; no definitive cause of that machine's white flash is claimed.
+
+Confirmed source findings:
+
+- The theme does not instantiate `InputPanel` or import Qt Virtual Keyboard,
+  and does not call `Qt.inputMethod.show()`. Password focus remains a normal
+  Qt Quick TextField. The installed snippet now explicitly writes
+  `[General] InputMethod=`. Higher-priority overrides are backed up/neutralized
+  and restored through the existing transaction system.
+- SDDM's Debian greeter source closes its view on `loginSucceeded`; the theme's
+  handler only clears the password. No extra greeter-hide window, artificial
+  delay, backend change or PAM/session change was added.
+- Hyprland 0.56.2's upstream default clear color is `0xff111111`, not white.
+  Hyprixe now explicitly uses the matching SDDM navy `rgb(122434)` and disables
+  the built-in splash before the wallpaper layer is present. This is a palette
+  choice, not proof that the previous clear color caused the reported flash.
+- The old wallpaper helper imposed a one-second fade while visible services
+  could start in parallel with it. The static image is now requested without
+  that animation. Waybar/SwayNC pull in the wallpaper oneshot and wait for it;
+  the oneshot requires the persistent awww daemon and the active UWSM target.
+  The user unit reload precedes UWSM finalization, including for an already
+  enabled Debian Waybar unit. Early monitor callbacks defer to the managed unit.
+- No fullscreen application is launched by the repository startup graph.
+  User/system XDG autostarts and transient fullscreen clients on the physical
+  PC remain possible sources requiring its journals and observations.
+
+Validation actually executed:
+
+| Command / scenario | Observed result |
+| --- | --- |
+| `./verify.sh` with the previously built graphical binaries in PATH | **101 tests OK**, zero failed checks; 133 Bash scripts, both ShellCheck levels, 83 Lua files, required shortcuts/four workspaces, Qt 6 QML, Rofi parses, original asset hashes and native/secret scans pass |
+| New SDDM tests | Explicit empty input method despite top-level/later overrides; exact restoration of old values and unrelated settings; reenabled input method detected; forced QML keyboard import/panel/show call detected |
+| Qt 6 runtime smoke test | A keyboard key event enters the password field normally; existing login, selected session, failure/password clearing, power and responsive-layout cases still pass with the mock SDDM proxy |
+| Wallpaper/runtime regressions | No startup fade; inactive early UWSM target starts no daemon; an initially empty monitor query is retried only until ready; bounded IPC failure remains nonzero; one daemon, all outputs, no forced restart |
+| Unit/read-only checks | Source dependencies and installed drop-ins checked; missing loaded ordering and premature activation timestamps fail; a later manual wallpaper restart skips original chronology instead of producing a false failure |
+| Actual packaged UWSM/systemd integration in a disposable account | `systemd-analyze --user verify` passes using Debian vendor Waybar/Hypridle/SwayNC units; normal and already-enabled Waybar startup both pass; actual `uwsm stop` deactivates the target/services and terminates all process fixtures |
+| Already-enabled Waybar monotonic timestamps, in microseconds from the isolated test | Wallpaper oneshot active at **3553488**, SwayNC began activation at **3555370**, Waybar at **3555847**. This establishes request/service ordering, not physical monitor presentation |
+| `python3 scripts/session_diagnostics.py` in WSL | Report completes without traceback; unavailable compositor/awww IPC and inactive/missing units are explicit; no services or processes changed |
+| `./verify.sh --dependencies` in WSL | All 101 repository tests pass; **4 expected failed check groups** for absent installed SDDM theme, SDDM runtime, deployed user units and desktop runtime dependencies. Exit 1 without traceback; not presented as validation of the physical PC |
+| `git diff --check` and source review | No whitespace findings, caches, logs, secrets or temporary fixtures added; no commit made |
+
+The integration harness uses real UWSM, systemd, D-Bus and vendor unit
+dependencies with explicit compositor/application stand-ins. It does not start
+SDDM, authenticate through PAM, render a real Hyprland frame, test a physical
+keyboard/VT transition, or prove that the white flash disappeared. The existing
+100 ms / at most 5 s polling is solely for IPC/output readiness and was tested
+to stop after readiness; no new unconditional sleep was introduced. The unit's
+15 s startup timeout bounds failures rather than delaying a successful start.
+
+On the PC, apply [the documented update](../INSTALL.md#login-transition--white-flash-diagnosis),
+reboot, test password focus/typing, then run
+`./verify.sh --dependencies --session --diagnostics` inside the managed session.
+If the flash persists, correlate the physical SDDM/user monotonic journals,
+startup-hook log, current clients/layers and autostarts with its appearance.
+An after-the-fact snapshot cannot identify an already disappeared window or its
+pixel color. Visual confirmation on the affected hardware is still required.
+
+Primary references: [Debian SDDM InputMethod and configuration precedence](https://manpages.debian.org/trixie/sddm/sddm.conf.5.en.html),
+[Debian greeter revision](https://github.com/sddm/sddm/blob/4fe234b/src/greeter/GreeterApp.cpp),
+[Hyprland 0.56.2 clear color/configuration](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/config/values/ConfigValues.cpp),
+[Hyprland background renderer](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/render/Renderer.cpp).

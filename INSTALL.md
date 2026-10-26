@@ -238,8 +238,9 @@ APT. Log out and back in after restoring or changing profiles.
 `./install.sh native` and `./install.sh vmware` install the same original
 `hyprixe-frosted` theme. SDDM must already be installed; Qt 6 runtime modules are
 installed from `packages-sddm.txt` unless `--no-packages` was requested. The
-installer does not change SDDM's greeter display-server backend, PAM, autologin,
-session commands, session desktop files, UWSM or the Hyprixe session services.
+installer preserves SDDM's greeter display-server backend, PAM, autologin,
+session commands, session desktop files and UWSM. It disables the greeter's
+virtual keyboard and orders the desktop services after the wallpaper request.
 The last selected user/session comes from SDDM's own models. Choose
 **Hyprland (uwsm-managed)**; selecting plain Hyprland still starts the plain
 session and is diagnosed by `./verify.sh --session`.
@@ -254,11 +255,12 @@ System paths managed through `sudo`:
 | `/usr/share/sddm/themes/hyprixe-frosted/metadata.desktop` | Theme metadata selecting Qt 6 |
 | `/usr/share/sddm/themes/hyprixe-frosted/theme.conf` | Wallpaper name and font |
 | `/usr/share/sddm/themes/hyprixe-frosted/min_forest.jpg` | Exact copy of `wallpapers/min_forest.jpg`; no second source copy in Git and no dependency on a user's home permissions |
-| `/etc/sddm.conf.d/zz-hyprixe-theme.conf` | `[Theme]` with `Current=hyprixe-frosted` and `ThemeDir=/usr/share/sddm/themes` |
+| `/etc/sddm.conf.d/zz-hyprixe-theme.conf` | `[Theme]` with `Current=hyprixe-frosted` and `ThemeDir=/usr/share/sddm/themes`; `[General]` with empty `InputMethod=` |
 | `/var/lib/hyprixe/sddm/backups/UTC-sddm-ID/` | Private root-owned manifest and originals, including modes/owners and hashes |
 
 SDDM reads `/etc/sddm.conf` **after** the configuration snippets. If it, or an
-alphabetically later local snippet, sets `[Theme] Current` or `ThemeDir`, the
+alphabetically later local snippet, sets `[Theme] Current` / `ThemeDir` or
+`[General] InputMethod`, the
 installer backs up that file and replaces only those overriding lines with
 comments. All other settings and comments remain. The dedicated snippet becomes
 the effective selection, verified after installation. Earlier and vendor snippets
@@ -289,6 +291,14 @@ checks the repository theme without requiring a system deployment. Optional
 `qt6-declarative-dev-tools` enables `qmllint`; `python3-pyqt6.qtquick` enables the
 isolated Qt interaction test. Missing optional validators report **SKIPPED**.
 The interaction test uses a mocked SDDM proxy; it never authenticates or reboots.
+
+The desktop greeter uses `[General] InputMethod=` to disable Qt Virtual Keyboard
+without changing password focus, the physical keyboard, layouts or PAM. No
+`InputPanel`, Qt Virtual Keyboard import or `Qt.inputMethod.show()` is present
+in the theme. Installation and verification reject a theme that forces such a
+panel. Higher-priority input-method settings are backed up with the theme;
+ordinary restore, or `./uninstall.sh --sddm-only`, restores their previous values.
+No shared Qt keyboard packages are removed.
 
 The wide layout places the clock on the left and the glass form on the right;
 smaller widths stack them. Short screens can scroll the form to reach the
@@ -439,6 +449,93 @@ Dolphin's embedded terminal panel depends on the optional KonsolePart;
 the “open terminal” command uses Alacritty.
 
 ## Troubleshooting and limitations
+
+### Login transition / white flash diagnosis
+
+The managed startup sequence is:
+
+```text
+Hyprland starts with the Frosted Glass base color (#122434), without its splash
+  -> SessionStartup reloads the user unit definitions
+  -> uwsm finalize activates the UWSM graphical lifecycle
+  -> graphical-session.target
+  -> hyprixe-awww.service (persistent daemon)
+  -> hyprixe-wallpaper.service (bounded IPC/output readiness, immediate image)
+  -> Waybar / SwayNC and the other Hyprixe session services
+```
+
+The Waybar and SwayNC drop-ins pull in the wallpaper service with `Wants=` and
+wait for its oneshot with `After=`, including when Debian's Waybar was already
+enabled independently. The wallpaper unit is also ordered before Hypridle,
+the authentication agent and clipboard watcher in the Hyprixe startup transaction.
+UWSM still owns `graphical-session.target`; no manual graphical-target start or
+Waybar dependency removal is used. A wallpaper failure is logged and does not
+prevent Waybar from running after the failed job completes.
+
+`awww img --transition-type none` replaces the old one-second startup fade.
+The only polling interval is the existing 100 ms readiness retry, bounded at
+5 seconds; it stops immediately when IPC and all current outputs are ready.
+An initially empty Hyprland monitor query is retried, not treated as a completed
+startup. There is no unconditional sleep or greeter-closing delay. An early
+monitor-added callback before UWSM finalization leaves initial application to the
+session unit instead of starting a daemon outside the session ordering.
+
+These changes address a known parallel/fading wallpaper startup, but do **not**
+prove the origin of a white flash on another machine. Hyprland 0.56.2's upstream
+default clear color is dark, and the theme's root is dark as well. A greeter/VT
+handoff, driver issue, previous wallpaper buffer or autostarted fullscreen client
+requires the physical machine's evidence. Do not classify a fullscreen window as
+white from its class or state alone. The original login theme remains visible
+until SDDM closes its view; the theme does not add an authentication-success hide
+animation or attempt to delay SDDM/UWSM.
+
+To apply these configuration changes to an already prepared Debian PC:
+
+```bash
+cd ~/hyprixe-debian
+git pull
+./install.sh native --no-packages
+./verify.sh --dependencies
+# Save your work, then reboot so SDDM rereads InputMethod.
+sudo reboot
+```
+
+Use `./install.sh native` if dependencies need installation. At SDDM, confirm that
+clicking the password field no longer opens a virtual keyboard; type normally,
+then select **Hyprland (uwsm-managed)** and log in. Inside that session:
+
+```bash
+cd ~/hyprixe-debian
+./verify.sh --dependencies --session
+./verify.sh --session --diagnostics
+```
+
+`--session` checks loaded unit ordering and monotonic activation times. Completion
+of the wallpaper request before service activation is checked; this is not proof
+that a particular frame reached the monitor. A later manual wallpaper-service
+restart makes the original chronology **SKIPPED**, rather than a false failure.
+
+`--diagnostics` is read-only: SDDM and user journals, UWSM/unit state and timings,
+the critical chain, current client classes/fullscreen flags, layers, awww IPC and
+XDG autostart program names. It never restarts SDDM, starts/stops services, kills
+windows or uses sudo. Window titles, full command arguments and complete process
+environments are not requested. A snapshot cannot identify a transient window
+that disappeared before collection. If system journal access is restricted, run
+the SDDM query explicitly:
+
+```bash
+sudo journalctl -b -u sddm --no-pager -o short-monotonic
+journalctl --user -b --no-pager -o short-monotonic
+systemctl --user status graphical-session.target hyprixe-session.target \
+  hyprixe-awww.service hyprixe-wallpaper.service waybar.service --no-pager
+```
+
+Run diagnostics just after an affected login and note whether the flash covered
+the whole display or a client window, and approximately when/how long it appeared.
+The absence of a visible flash, actual keyboard behavior, PAM authentication and
+GPU/VT transition still require observation on the physical PC.
+
+### Other component diagnostics
 
 - Startup/finalization log: `~/.local/state/hyprixe/session.log`.
   Managed services log to the user journal, for example

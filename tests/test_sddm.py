@@ -71,6 +71,35 @@ class SystemThemeTests(unittest.TestCase):
         self.assertEqual(top.stat().st_mode & 0o777, 0o640)
         self.assertEqual(late.read_bytes(), late_before)
 
+    def test_virtual_keyboard_is_disabled_despite_higher_priority_overrides_and_restores(self):
+        original = '[General]\nInputMethod=qtvirtualkeyboard\nDisplayServer=x11\n[Users]\nRememberLastSession=true\n'
+        top = self.write('/etc/sddm.conf', original)
+        late = self.write('/etc/sddm.conf.d/zzz-keyboard.conf', '[General]\nInputMethod=ibus\nNumlock=on\n')
+        late_before = late.read_bytes()
+        identifier = self.theme.install()
+        self.assertEqual(self.theme.configuration().get('General', 'InputMethod'), '')
+        self.assertIn('InputMethod=\n', self.theme.path(sddm.CONFIG).read_text())
+        self.assertIn('DisplayServer=x11', top.read_text())
+        self.assertIn('Numlock=on', late.read_text())
+        self.assertEqual(self.theme.check_installed(), [])
+        self.assertIsNone(self.theme.install())
+        self.theme.restore(identifier)
+        self.assertEqual(top.read_text(), original)
+        self.assertEqual(late.read_bytes(), late_before)
+
+    def test_reenabled_virtual_keyboard_is_reported(self):
+        self.theme.install()
+        self.write('/etc/sddm.conf', '[General]\nInputMethod=qtvirtualkeyboard\n')
+        self.assertIn('InputMethod', '\n'.join(self.theme.check_installed()))
+
+    def test_theme_does_not_force_a_keyboard_and_detector_rejects_a_panel(self):
+        self.assertEqual(sddm.virtual_keyboard_sources(ROOT / 'sddm/themes' / sddm.THEME), [])
+        qml = self.root / 'Injected.qml'
+        for code in ('import QtQuick.VirtualKeyboard\nInputPanel {}',
+                     'Item { Component.onCompleted: Qt.inputMethod.show() }'):
+            qml.write_text(code)
+            self.assertEqual(sddm.virtual_keyboard_sources(self.root), ['Injected.qml'])
+
     def test_changed_file_blocks_entire_restore(self):
         identifier = self.theme.install()
         main = self.theme.path(sddm.THEME_DIR + '/Main.qml')
