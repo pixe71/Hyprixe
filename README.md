@@ -11,9 +11,8 @@ toolbar are preserved byte for byte.
 
 ![Frosted Glass wallpaper](wallpapers/min_forest.jpg)
 
-Screenshots of a session on physical hardware should be added to
-[`docs/screenshots/`](docs/screenshots/README.md). The image above is the wallpaper,
-not a screenshot of a validated session.
+## Preview
+![Frosted Glass wallpaper](docs/screenshots/screenshot.png).
 
 ## Quick installation
 
