@@ -10,7 +10,7 @@
 }
 window#waybar {
     background: rgba(18, 36, 52, 0.76);
-    border-radius: 0 0 14px 14px;
+    border-radius: 14px;
     border-bottom: 1px solid rgba(126, 214, 255, 0.20);
 }
 #workspaces, #mpris, #tray, #submap, #idle_inhibitor, #clock,

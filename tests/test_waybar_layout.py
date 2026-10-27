@@ -114,6 +114,9 @@ class LayoutTests(unittest.TestCase):
         original = css_rules((ROOT / 'tests/fixtures/waybar-frosted-original.css').read_text())
         current = css_rules((ROOT / '.config/hypr/waybar/style/Frosted-Glass.css').read_text())
         for selectors, declarations in original:
+            if selectors == {'window#waybar'}:
+                # The only requested change to the historical Frosted CSS.
+                declarations['border-radius'] = '14px'
             self.assertTrue(any(selectors <= found and values == declarations for found, values in current), selectors)
 
     def test_source_contract_and_no_duplicate_modules(self):
