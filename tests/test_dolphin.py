@@ -1,10 +1,12 @@
 import base64
 import contextlib
 import errno
+import hashlib
 import io
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -339,6 +341,16 @@ class DolphinChecksTests(unittest.TestCase):
             for key, value in old.items(section):
                 if section != 'GeneralColors' and not key.endswith('.color') and key not in ('author', 'comment'):
                     self.assertEqual(new[section][key], value, (section, key))
+
+    def test_light_palette_preserves_all_existing_svg_geometry_and_alpha(self):
+        # Frozen from the visually accepted blue variant in 0a92888 after
+        # masking RGB colors only. Any opacity, path or size change must fail.
+        svg = (ROOT / '.config' / THEME_FILES[1]).read_text()
+        without_rgb = re.sub(r'#[0-9a-fA-F]{6}\b', '#COLOR', svg)
+        self.assertEqual(hashlib.sha256(without_rgb.encode()).hexdigest(),
+                         'b0506b92b5149510aa8e0a847019ccbf3a4a4b15ef3ab05a19fd1b6191a9228d')
+        palette = read_ini(ROOT / '.config' / THEME_FILES[0])['GeneralColors']
+        self.assertTrue(all(palette[key].endswith('d1') for key in ('base.color', 'alt.base.color')))
 
     def test_running_dolphin_is_refused_without_killing_it(self):
         from dolphin_config import ensure_closed

@@ -21,13 +21,24 @@ def assert_theme(config, svg):
             raise ValueError('Kvantum option must be enabled: ' + key)
     if not settings.getboolean('Hacks', 'transparent_dolphin_view'):
         raise ValueError('Kvantum transparent_dolphin_view must be enabled')
-    if settings['GeneralColors']['window.color'] != '#203f52' or settings['GeneralColors']['text.color'] != '#e2eff5':
-        raise ValueError('Dolphin must use the cold blue background and light text palette')
+    if settings['GeneralColors']['window.color'] != '#e7e9e8' or settings['GeneralColors']['text.color'] != '#2d3437':
+        raise ValueError('Dolphin must use the neutral off-white background and dark text palette')
     elements = {element.get('id'): element for element in ET.parse(svg).iter() if element.get('id')}
-    for name, color, alpha in (('window-normal', '#203f52', '.78'), ('dock-normal', '#102b3b', '.38')):
+    for name, color, alpha in (('window-normal', '#e7e9e8', '.78'), ('dock-normal', '#d5d9d8', '.38')):
         style = dict(part.split(':', 1) for part in elements[name].get('style', '').split(';') if ':' in part)
         if style.get('fill') != color or style.get('fill-opacity') != alpha:
-            raise ValueError(name + ': expected translucent blue SVG paint')
+            raise ValueError(name + ': expected neutral light SVG paint with unchanged alpha')
+
+
+def assert_color_scheme(path):
+    settings = read_ini(path)
+    if settings['General']['Name'] != SCHEME_NAME:
+        raise ValueError('Matching Dolphin KDE color scheme missing')
+    for section, key, color in (('Colors:Window', 'BackgroundNormal', '231,233,232'),
+                                ('Colors:Window', 'ForegroundNormal', '45,52,55'),
+                                ('Colors:Selection', 'BackgroundNormal', '196,220,226')):
+        if settings[section][key] != color:
+            raise ValueError('Dolphin KDE palette does not match Kvantum: ' + section + '/' + key)
 
 
 def check_source(report, root):
@@ -42,14 +53,13 @@ def check_source(report, root):
                 raise ValueError('Rejected interface preset reintroduced: ' + name)
     def theme():
         assert_theme(*(root / '.config' / name for name in THEME_FILES))
-        if read_ini(root / '.local/share' / SCHEME_FILE)['General']['Name'] != SCHEME_NAME:
-            raise ValueError('Matching Dolphin KDE color scheme missing')
+        assert_color_scheme(root / '.local/share' / SCHEME_FILE)
     def association():
         settings = read_ini(root / '.config/Kvantum/kvantum.kvconfig')
         if settings['Applications'][THEME] != 'dolphin' or settings['General']['theme'] != 'Frosted-Glass':
-            raise ValueError('Only Dolphin should use the blue variant; global Frosted-Glass stays selected')
+            raise ValueError('Only Dolphin should use the light variant; global Frosted-Glass stays selected')
     for label, function in (('Dolphin interface: exact pre-9259fa5 files; no forced view/dock preset', interface),
-                            ('Dolphin Kvantum: translucent SVG paint, transparent views and light text', theme),
+                            ('Dolphin Kvantum: neutral light SVG paint, transparent views and dark text', theme),
                             ('Kvantum application association: Dolphin-only paint', association)):
         try:
             function()
@@ -90,8 +100,7 @@ def check_installed(report, environ=None):
         assert_theme(*(config / name for name in THEME_FILES))
         if read_ini(config / 'dolphinrc').get('UiSettings', 'ColorScheme', fallback=None) != SCHEME_NAME:
             raise ValueError('Dolphin per-application color scheme is not selected')
-        if read_ini(data / SCHEME_FILE)['General']['Name'] != SCHEME_NAME:
-            raise ValueError('Matching Dolphin KDE color scheme missing')
+        assert_color_scheme(data / SCHEME_FILE)
         settings = read_ini(config / 'Kvantum/kvantum.kvconfig')
         if settings['Applications'][THEME] != 'dolphin':
             raise ValueError('Dolphin-specific Kvantum association missing')
@@ -130,7 +139,7 @@ print(json.dumps({'style':a.style().objectName(),'window':p.color(QPalette.Color
             print('SKIPPED: Qt style/palette instantiation (optional python3-pyqt6 unavailable)')
         else:
             actual = json.loads(result.stdout) if result.returncode == 0 else {}
-            ok = actual.get('style') == 'kvantum' and actual.get('window') == '#203f52' and actual.get('text') == '#e2eff5'
+            ok = actual.get('style') == 'kvantum' and actual.get('window') == '#e7e9e8' and actual.get('text') == '#2d3437'
             report(ok, 'Actual Qt 6 Kvantum style and theme palette for Dolphin: ' + (str(actual) if actual else result.stderr.strip()))
     except (OSError, ValueError, subprocess.TimeoutExpired) as exc:
         report(False, 'Qt 6 style/palette instantiation: ' + str(exc))

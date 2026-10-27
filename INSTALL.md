@@ -524,8 +524,8 @@ inhibitor can pause idle handling.
 
 Dolphin 25.04 / Qt 6 retains its previous interface. Its original toolbar and
 `dolphinrc` are restored in the repository; the 96 px/right-column preset from
-`9259fa5` is removed. The **Frosted-Glass-Dolphin** Kvantum variant paints blue/cyan
-translucent surfaces. A matching KDE color scheme selected only in Dolphin
+`9259fa5` is removed. The **Frosted-Glass-Dolphin** Kvantum variant paints neutral off-white
+translucent surfaces with restrained cyan accents. A matching KDE color scheme selected only in Dolphin
 prevents KDE from restoring a light palette over it. Other Qt applications keep
 the global Frosted-Glass theme; Breeze Dark icons are unchanged.
 

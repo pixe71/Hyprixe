@@ -8,7 +8,7 @@ The theme preserves the `min_forest.jpg` wallpaper, translucent blue/cyan glass,
 blur, 13 px rounded corners, blue/purple borders, a top Waybar and the
 Frosted-Glass Kvantum theme. The original SVG/Kvantum files and wallpaper are
 preserved byte for byte. Dolphin retains its original interface and inherited toolbar. A Dolphin-only
-Kvantum variant adds blue/cyan translucent paint and matching KDE colors.
+Kvantum variant adds neutral off-white translucent paint and matching KDE colors.
 <!-- ![Frosted Glass wallpaper](wallpapers/min_forest.jpg)
 -->
 ## Preview

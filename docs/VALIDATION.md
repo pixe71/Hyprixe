@@ -880,3 +880,36 @@ This environment is Windows with Debian WSL, not the user's physical PC. Its
 Hyprland GPU backend cannot run here; no live physical blur, UWSM environment or
 physical mouse/keyboard test is claimed. Other desktop components were covered
 by their existing regression checks, not relaunched as a physical desktop.
+
+## Dolphin neutral light palette — October 27, 2026
+
+Palette-only follow-up to the accepted blue variant in `0a92888`. Dolphin uses
+neutral off-white `#e7e9e8`, gray panels `#d5d9d8`, dark text `#2d3437`, secondary
+gray `#697477`, pale-blue selection `#c4dce2` and muted cyan links `#528a98`.
+The existing application association and color-scheme name remain unchanged.
+
+- Comparing the SVG with HEAD after masking RGB values yields identical bytes:
+  every alpha/opacity, path, size and rendering parameter is retained. A frozen
+  regression hash now enforces this contract. Palette base/alternate alpha stays
+  `d1`; all non-color Kvantum settings match HEAD. No Hyprland, compositor,
+  layout, toolbar, icon-size, dock-state or installer code was changed.
+- `python3 -m unittest discover -s tests -p test_dolphin.py -v`: **33 tests OK**.
+- `./verify.sh` with the prepared validation runtime on PATH: **167 tests OK**,
+  **RESULT: 0 failed check(s), exit 0**. Includes the existing Bash, ShellCheck,
+  Lua, Waybar, SDDM, references, original-theme hashes and secret checks.
+- The actual component installer (`native --dolphin-only --no-packages`) was
+  run on an isolated Debian 13 Wayland fixture containing the accepted blue
+  release. Existing interface/state files remain byte-identical before/after
+  the palette update. Real Dolphin reports `Kvantum::Style`, off-white window,
+  dark text and pale-blue selection; the screenshot and native menu were
+  inspected. A separate Qt application retains its original palette. The
+  component verifier passes. Uninstall restores the previous blue paint while
+  retaining the current interface.
+- Rendered intermediate-alpha pixels remain **832,906 / 986,348**, with minimum
+  alpha **198/255**, matching the accepted blue run. The wallpaper remains
+  visible. This is an isolated Sway test in Debian WSL, not the physical
+  Hyprland compositor; physical blur is not claimed as visually retested.
+- `git diff --check`: passed. No generated test artifacts or caches are tracked.
+
+Apply after closing Dolphin with `./install.sh native --dolphin-only`; the
+legacy interface-restoration flag is not part of this palette update.

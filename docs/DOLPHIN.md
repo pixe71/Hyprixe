@@ -1,4 +1,4 @@
-# Dolphin: original interface, blue Frosted Glass paint
+# Dolphin: original interface, neutral light Frosted Glass paint
 
 Target tested: Debian 13 Dolphin 25.04.3, Qt 6.8.2, KF6 6.13 and Kvantum 1.1.4.
 
@@ -40,14 +40,15 @@ to modify configuration while Dolphin runs; it never kills it.
 ```bash
 cd ~/hyprixe-debian
 git pull
-./install.sh native --dolphin-only --restore-dolphin-interface
+./install.sh native --dolphin-only
 ./verify.sh --dolphin
 uwsm app -- dolphin
 ./verify.sh --dolphin --session
 ```
 
-If you never installed the rejected layout, omit `--restore-dolphin-interface`.
-For all subsequent paint updates use only `--dolphin-only`. Add `--dry-run` for
+The current palette update uses only `--dolphin-only` and preserves the accepted
+interface. The separate `--restore-dolphin-interface` flag is reserved for
+recovering the rejected legacy layout from a backup. Add `--dry-run` for
 a preview; missing dependencies are checked before configuration writes. Use
 `--interface-backup=ID` with both restoration flags to select a matching backup
 from `./uninstall.sh --list` explicitly.
@@ -56,18 +57,20 @@ from `./uninstall.sh --list` explicitly.
 
 | Paint | Color | SVG alpha / opacity |
 | --- | --- | --- |
-| Main window | `#203f52` | 78% |
-| Dock interior | `#102b3b` | 38% over the existing window, where Qt draws dock interiors |
-| Menubar interior | `#153244` | 40% |
-| Menus | `#102f40` | 94% |
-| Tooltips | `#102f40` | 96% |
-| Selection | `#237e98` | 88% |
-| Focus/hover accent | `#43bdd0` | 24% focus wash |
-| Main text | `#e2eff5` | opaque before compositor opacity |
-| Secondary/disabled text | `#91b1c1` | opaque before compositor opacity |
-| Links | `#62cfda` | opaque before compositor opacity |
+| Main window | `#e7e9e8` | 78% |
+| Dock interior | `#d5d9d8` | 38% over the existing window, where Qt draws dock interiors |
+| Menubar interior | `#dde1df` | 40% |
+| Menus | `#e8ebe9` | 94% |
+| Tooltips | `#edf0ee` | 96% |
+| Selection | `#c4dce2` | 88% |
+| Focus/hover accent | `#cadbdd` | 24% focus wash |
+| Main text | `#2d3437` | opaque before compositor opacity |
+| Secondary/disabled text | `#697477` | opaque before compositor opacity |
+| Links | `#528a98` | opaque before compositor opacity |
 
-The palette follows the cold blue/turquoise forest wallpaper. The variant changes
+The palette uses neutral off-white glass, pale gray panels and dark text, with
+small cyan accents. Every SVG opacity and the existing blur/transparency settings
+are identical to the previously accepted blue variant (`0a92888`). The variant changes
 paint and text colors only: SVG paths, dimensions, margins, icon metrics and
 widget geometry remain identical to the original theme. Dock interiors apply
 where requested by Qt; the theme does not insert extra panels or overlays.
