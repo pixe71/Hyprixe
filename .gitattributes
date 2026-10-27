@@ -4,7 +4,8 @@
 *.webp binary
 *.svg text eol=lf
 *.sh text eol=lf
-# Preserve these original assets byte for byte, including their line endings.
+# Preserve the original Kvantum pair byte for byte, including line endings.
 .config/Kvantum/Frosted-Glass/Frosted-Glass.svg -text whitespace=trailing-space,space-before-tab,cr-at-eol
 .config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig -text whitespace=trailing-space,space-before-tab,cr-at-eol
+# Keep the inherited toolbar's CRLF format so layout edits have a focused diff.
 .local/share/kxmlgui5/dolphin/dolphinui.rc -text whitespace=trailing-space,space-before-tab,cr-at-eol

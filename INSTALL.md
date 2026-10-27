@@ -139,8 +139,9 @@ in place. No `curl | sh` command is used.
 
 ## Modified files and backups
 
-The installer copies files from `.config/`, the toolbar under
-`.local/share/kxmlgui5/dolphin/` and the wallpaper to
+The installer copies files from `.config/`, the Dolphin toolbar/global view
+properties under `.local/share/`, the dock preset into
+`$XDG_STATE_HOME/dolphinstaterc` (normally `~/.local/state/dolphinstaterc`), and the wallpaper to
 `~/.local/share/hyprixe/wallpapers/min_forest.jpg`. It never copies `extras/`.
 It selects `profile.lua` and `profile.env` from the requested profile.
 
@@ -225,6 +226,10 @@ If an installed file has since been edited, restoration refuses the entire
 operation and lists the affected paths. Copy your edits elsewhere, return those
 files to their installed state, then try again. No destructive `--force` option
 is provided. Backup hashes are verified before restoration.
+For Dolphin's expected runtime writes, `--save-dolphin-changes` first preserves
+the changed managed Dolphin files/view xattr in the chosen backup, then restores
+their originals. Unrelated-file conflicts still block the whole operation. See
+[the Dolphin restore procedure](docs/DOLPHIN.md#restore-the-previous-layout).
 To return to the state before several installations, undo transactions from
 newest to oldest; do not delete intermediate backups. An interrupted restore
 can be run again.
@@ -512,12 +517,41 @@ unlocking before using suspend. Hypridle locks after 10 minutes and turns
 outputs off after 12 minutes. There is no automatic suspend; Waybar's idle
 inhibitor can pause idle handling.
 
-Dolphin retains the minimal toolbar, Places/InformationPanel settings and
-preview plugins. `F9` shows Places, `F11` Information, and `F12` previews.
-On the first KDE launch without an existing window state, show the information
-panel with F11 if needed: no binary VM window-geometry state is distributed.
-Dolphin's embedded terminal panel depends on the optional KonsolePart;
-the “open terminal” command uses Alacritty.
+### Dolphin layout
+
+Dolphin 25.04 / Qt 6 uses 96 px icons, a global icon view with previews, and a
+264 logical-pixel right column: Places (including Devices) above Information.
+The toolbar contains Back, Forward, Up, a compact location navigator, Search and
+the hamburger menu. The classic menu/status bars, Folders and Terminal panels
+are hidden. The ordinary Dolphin actions remain available in the menu/shortcuts.
+
+The dock preset is a standard Qt `saveState(0)` value generated for this layout;
+it contains no VM/user/screen geometry. Existing window-size preferences are
+retained. `kio-extras` supplies the real image-preview plugins, `udisks2` the
+device backend. Qt 6 Kvantum Frosted-Glass and Breeze Dark icons are retained.
+
+For an already installed Hyprixe PC, **close all Dolphin windows first**:
+
+```bash
+cd ~/hyprixe-debian
+git pull
+./install.sh native --dolphin-only
+./verify.sh --dolphin
+uwsm app -- dolphin
+```
+
+The component installer installs missing dependencies from
+`packages-dolphin.txt` when needed. Add `--no-packages` to require them already
+installed, or `--dry-run` to preview file changes. This mode does not deploy
+Hyprland, keybinds, UWSM, Waybar, SDDM or other applications. A normal
+`./install.sh native` also includes the new Dolphin setup.
+
+`F9` toggles Places and `F11` Information. Use **Ctrl+1** for icon mode and
+**Ctrl+M** for the classic menu when needed. Panels can be unlocked through
+their context menu. Dolphin's optional terminal panel still requires
+KonsolePart; the open-terminal action uses Alacritty. Detailed file paths,
+native view-property migration, hardware/visual limits and rollback commands
+are in [docs/DOLPHIN.md](docs/DOLPHIN.md).
 
 ## Troubleshooting and limitations
 
@@ -655,8 +689,10 @@ The tracked `hypr/waybar/style.css` is a regular CSS file containing a relative
 import. It must not be a symbolic link whose target is CSS text. Source checks
 include dangling symlinks before filtering readable files, and a broken source
 tree fails validation before deployment tests run. Git attributes preserve the
-exact original bytes of the two Frosted Glass Kvantum files and Dolphin toolbar;
-their SHA256 checks do not depend on the checkout platform or line-ending settings.
+exact original bytes of the two Frosted Glass Kvantum files; their SHA256 checks
+do not depend on the checkout platform or line-ending settings. The Dolphin
+toolbar is intentionally adapted and validated by its XML/action contract,
+while retaining its inherited CRLF format and attribution.
 
 Primary references: [Hyprland Lua 0.56.2](https://github.com/hyprwm/Hyprland/blob/v0.56.2/example/hyprland.lua),
 [Debian backports package](https://packages.debian.org/source/trixie-backports/hyprland),

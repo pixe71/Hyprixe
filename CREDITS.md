@@ -17,6 +17,7 @@ reassign rights to the wallpaper, icons or illustrations.
 | [LinuxBeginnings / KoolDots](https://github.com/LinuxBeginnings/Hyprland-Dots) | Base configuration, scripts and Lua modules, optional library |
 | [JaKooLit](https://github.com/JaKooLit/Hyprland-Dots) | Origin of KoolDots and many scripts/themes |
 | Senshi | Frosted Glass theme and Dolphin adaptations according to the original repository's author; exact URL/version/license absent from the received repository |
+| [KDE Dolphin](https://invent.kde.org/system/dolphin), [Baloo Widgets](https://invent.kde.org/libraries/baloo-widgets), [KIO](https://invent.kde.org/frameworks/kio), [Qt](https://doc.qt.io/qt-6/qmainwindow.html) | Native file manager, metadata/previews, Places/Devices model and dock-state format. Hyprixe adapts the inherited Dolphin toolbar and preferences; the layout preset is generated with standard Qt APIs. The original toolbar remains documented in the inventory rather than presented as unmodified. |
 | [adi1090x/rofi](https://github.com/adi1090x/rofi) | Rofi style 4 layout, attribution preserved |
 | [Alexays/Waybar](https://github.com/Alexays/Waybar) | MIT-licensed Waybar; optional 0.12 build with a local adaptation of workspace requests to the Lua API, using the same dispatchers as the recent upstream Lua backend |
 | [Vladimir-csp/UWSM](https://github.com/Vladimir-csp/uwsm) | Session lifecycle, environment finalization and application scopes; uses Debian's packaged UWSM and Hyprland session entry |

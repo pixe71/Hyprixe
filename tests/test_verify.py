@@ -133,7 +133,7 @@ class OriginalAssetTests(unittest.TestCase):
     def test_original_bytes_pass(self):
         failures, output = self.check_assets()
         self.assertEqual(failures, 0, output)
-        self.assertEqual(output.count('PASS:'), 4)
+        self.assertEqual(output.count('PASS:'), 3)
 
     def test_changed_asset_reports_its_path_and_hashes(self):
         path = self.root / '.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig'
@@ -149,7 +149,7 @@ class OriginalAssetTests(unittest.TestCase):
         failures, output = self.check_assets()
         self.assertEqual(failures, 1)
         self.assertIn('FAIL: Original asset: wallpapers/min_forest.jpg:', output)
-        self.assertEqual(output.count('PASS:'), 3)
+        self.assertEqual(output.count('PASS:'), 2)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,46 @@
+# Information panel: keep useful file metadata without tag/rating editors.
+[Misc]
+# Baloo Widgets 25.04 resets [Show] when its initialization version is absent.
+version=13
+
+[Show]
+# Native Baloo Widgets v13 blacklist, retained when bypassing initialization.
+channels=false
+comment=false
+contentCreated=false
+contentSize=false
+created=false
+depends=false
+embeddedRating=false
+fileName=false
+fileSize=false
+height=false
+kfileitem#group=false
+kfileitem#owner=false
+kfileitem#permissions=false
+lastModified=false
+lyrics=false
+mimeType=false
+photoGpsLatitude=false
+photoGpsLongitude=false
+photoMeteringMode=false
+photoPixelXDimension=false
+photoPixelYDimension=false
+photoSaturation=false
+photoSharpness=false
+photoWhiteBalance=false
+replayGainAlbumGain=false
+replayGainAlbumPeak=false
+replayGainTrackGain=false
+replayGainTrackPeak=false
+url=false
+width=false
+# Hyprixe's compact Information panel.
+kfileitem#type=true
+kfileitem#size=true
+kfileitem#modified=true
+kfileitem#accessed=false
+kfileitem#created=false
+tags=false
+rating=false
+userComment=false

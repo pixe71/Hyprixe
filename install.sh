@@ -5,14 +5,16 @@ profile=native
 export PATH="$HOME/.local/bin:$PATH"
 packages=true
 dry_run=false
+dolphin_only=false
 usage() {
-    printf 'Usage: %s [native|vmware] [--no-packages] [--dry-run]\n' "$0"
+    printf 'Usage: %s [native|vmware] [--no-packages] [--dry-run] [--dolphin-only]\n' "$0"
 }
 for arg in "$@"; do
     case "$arg" in
         native|vmware) profile=$arg ;;
         --no-packages) packages=false ;;
         --dry-run) dry_run=true ;;
+        --dolphin-only) dolphin_only=true ;;
         --help|-h) usage; exit 0 ;;
         *) usage >&2; exit 2 ;;
     esac
@@ -25,6 +27,36 @@ source /etc/os-release
 trap 'printf "ERROR: installation failed (line %s). No session was started.\n" "$LINENO" >&2' ERR
 runtime=$(mktemp -d -t hyprixe-runtime.XXXXXXXX)
 trap 'rm -rf -- "$runtime"' EXIT
+if ! $dry_run && command -v pgrep >/dev/null && pgrep -u "$UID" -x dolphin >/dev/null; then
+    echo 'ERROR: Close all Dolphin windows/processes before installing its preferences and dock layout.' >&2
+    exit 1
+fi
+if $dolphin_only; then
+    command -v python3 >/dev/null || { echo 'ERROR: python3 is required.' >&2; exit 1; }
+    args=(install --profile "$profile" --dolphin-only)
+    if $dry_run; then
+        args+=(--dry-run)
+    else
+        if ! python3 "$repo/scripts/dolphin_checks.py" --dependencies >"$runtime/dolphin-deps.log" 2>&1; then
+            if ! $packages; then cat "$runtime/dolphin-deps.log" >&2; exit 1; fi
+            command -v sudo >/dev/null || { echo 'ERROR: sudo is required to install missing Dolphin dependencies.' >&2; exit 1; }
+            echo 'Installing Dolphin Qt 6, preview and device dependencies from Debian stable.'
+            mapfile -t dolphin_packages < <(sed -e 's/#.*//' -e '/^[[:space:]]*$/d' "$repo/packages-dolphin.txt")
+            sudo apt-get update
+            sudo apt-get install --no-remove --no-install-recommends -y "${dolphin_packages[@]}"
+            python3 "$repo/scripts/dolphin_checks.py" --dependencies
+        else
+            cat "$runtime/dolphin-deps.log"
+        fi
+    fi
+    python3 "$repo/scripts/deploy.py" "${args[@]}"
+    if $dry_run; then
+        echo 'Dolphin-only preview complete; no configuration changed.'
+    else
+        echo 'Dolphin layout installed. Start Dolphin again; other desktop/session configuration was not deployed.'
+    fi
+    exit 0
+fi
 if $dry_run; then
     command -v python3 >/dev/null || { echo 'Install python3 to preview the deployment.' >&2; exit 1; }
     python3 "$repo/scripts/deploy.py" install --profile "$profile" --dry-run --sddm

@@ -3,6 +3,7 @@ import importlib.util
 import io
 import json
 import os
+import sys
 from pathlib import Path
 import tempfile
 import unittest
@@ -11,7 +12,8 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('deploy', ROOT / 'scripts/deploy.py')
 deploy = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(deploy)
+with patch.object(sys, 'path', [str(ROOT / 'scripts'), *sys.path]):
+    spec.loader.exec_module(deploy)
 
 
 class DeploymentTests(unittest.TestCase):

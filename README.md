@@ -6,8 +6,9 @@ preserves the software-rendering adjustments needed during earlier testing.
 
 The theme preserves the `min_forest.jpg` wallpaper, translucent blue/cyan glass,
 blur, 13 px rounded corners, blue/purple borders, a top Waybar and the
-Frosted-Glass Kvantum theme. The original SVG/Kvantum files, wallpaper and Dolphin
-toolbar are preserved byte for byte.
+Frosted-Glass Kvantum theme. The original SVG/Kvantum files and wallpaper are
+preserved byte for byte. Dolphin's inherited toolbar is adapted to a minimal
+navigation layout, with Places/Devices above Information in a narrow right column.
 <!-- ![Frosted Glass wallpaper](wallpapers/min_forest.jpg)
 -->
 ## Preview
@@ -88,6 +89,19 @@ Alacritty, Dolphin, Kvantum/Qt6, Waybar,
 Rofi Wayland, Hyprlock, Hypridle, awww, PipeWire/WirePlumber, NetworkManager,
 Blueman, SwayNC and cliphist. Icons use Breeze and FontAwesome; the
 JetBrains Mono font is available in Debian.
+
+Dolphin uses a 96 px icon grid, file previews, a compact toolbar and a locked
+right-hand panel layout. Breeze Dark icons and Kvantum Frosted-Glass stay selected.
+On an existing Hyprixe desktop, close Dolphin and apply only this component:
+
+```bash
+./install.sh native --dolphin-only
+./verify.sh --dolphin
+```
+
+Missing Dolphin preview/device dependencies are installed as needed. Other
+desktop configuration is not deployed by this option. See
+[Dolphin layout, validation and restore](docs/DOLPHIN.md).
 
 ## Keybindings
 

@@ -6,6 +6,7 @@ import subprocess
 import sys
 from waybar_compat import has_lua_workspace_ipc, has_wlr_taskbar
 from rofi_compat import has_wayland_support
+from dolphin_checks import runtime_errors as dolphin_runtime_errors
 
 commands = ('Hyprland', 'hyprctl', 'uwsm', 'hyprlock', 'hypridle', 'alacritty', 'dolphin',
             'waybar', 'rofi', 'awww', 'awww-daemon', 'jq', 'flock', 'wpctl',
@@ -34,6 +35,7 @@ if shutil.which('rofi') and not has_wayland_support():
 kvantum = list(__import__('pathlib').Path('/usr/lib').glob('**/qt6/plugins/styles/libkvantum.so'))
 if not kvantum:
     errors.append('Qt6 Kvantum plugin not found; install qt6-style-kvantum.')
+errors.extend(dolphin_runtime_errors())
 for error in errors:
     print('ERROR: ' + error, file=sys.stderr)
 if errors:

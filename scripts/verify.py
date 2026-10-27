@@ -19,6 +19,7 @@ from session_checks import check_session, check_source_order
 from keybind_checks import check_native_config, check_session_keybinds
 from sddm_theme import SystemTheme, source_payload as sddm_payload, FILES as SDDM_FILES, THEME as SDDM_THEME
 from session_diagnostics import collect as collect_session_diagnostics
+from dolphin_checks import check_source as check_dolphin_source, check_installed as check_dolphin_installed, check_runtime as check_dolphin_runtime
 
 ROOT = Path(__file__).resolve().parents[1]
 failed = 0
@@ -83,8 +84,7 @@ def check_original_assets(root):
         return
     assets = ('wallpapers/min_forest.jpg',
               '.config/Kvantum/Frosted-Glass/Frosted-Glass.svg',
-              '.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig',
-              '.local/share/kxmlgui5/dolphin/dolphinui.rc')
+              '.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig')
     for name in assets:
         try:
             expected = manifest[name]
@@ -159,7 +159,16 @@ def main():
     parser.add_argument('--dependencies', action='store_true', help='Require installed runtime dependencies')
     parser.add_argument('--sddm', action='store_true', help='Also check installed SDDM theme, configuration and UWSM entry')
     parser.add_argument('--diagnostics', action='store_true', help='Print read-only login journals, service timings, clients, layers and autostarts')
+    parser.add_argument('--dolphin', action='store_true', help='Check only Dolphin source, deployed preferences and Qt/Kvantum runtime')
     args = parser.parse_args()
+    if args.dolphin:
+        if args.session or args.sddm or args.diagnostics:
+            parser.error('--dolphin is a component-only check; run session/SDDM/diagnostic checks separately')
+        check_dolphin_source(report, ROOT)
+        check_dolphin_installed(report)
+        check_dolphin_runtime(report)
+        print(f'RESULT: {failed} failed check(s)')
+        return 1 if failed else 0
     entries = [p for p in ROOT.rglob('*') if not any(x in p.relative_to(ROOT).parts for x in ('.git', '.validation', '__pycache__'))]
     sources_ok = check_source_tree(ROOT, entries)
     files = [p for p in entries if p.is_file()]
@@ -218,6 +227,7 @@ def main():
         if not (config / 'scripts' / name).is_file(): missing.append(name)
     report(not missing, 'Entry modules, keybind scripts and Rofi theme imports resolve' + (': ' + ', '.join(missing) if missing else ''))
     check_configuration_formats(ROOT)
+    check_dolphin_source(report, ROOT)
     check_taskbar(ROOT)
     check_sddm(ROOT, installed=args.sddm or args.dependencies)
     ordering = check_source_order(ROOT / '.config/systemd/user')
@@ -264,6 +274,8 @@ def main():
         report(index.returncode == 0 and modes.get(waybar_css) == '100644', 'Waybar style.css recorded as a regular file in Git (not a CSS-text symlink)')
     if args.dependencies:
         run(['python3', 'scripts/check-deps.py'], 'Installed runtime dependencies')
+        check_dolphin_installed(report)
+        check_dolphin_runtime(report)
     else:
         print('SKIPPED: installed graphical dependencies (use --dependencies on target)')
     if args.session:

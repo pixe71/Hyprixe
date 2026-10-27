@@ -1,0 +1,12 @@
+# Minimal component dependencies for ./install.sh --dolphin-only.
+# These are also required by the normal packages.txt installation.
+dolphin
+kio-extras
+udisks2
+qt6-style-kvantum
+qt6ct
+qt6-wayland
+libqt6svg6
+breeze-icon-theme
+kdegraphics-thumbnailers
+ffmpegthumbs

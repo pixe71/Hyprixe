@@ -718,3 +718,86 @@ the user's actual loaded registry still require testing on the PC**. The
 algorithm defect is established; it does not prove the cause of a chord that
 never triggers. Run the application/session procedure in KEYBINDS.md and collect
 `./verify.sh --session --diagnostics` from the affected physical session.
+
+## Dolphin layout — October 26–27, 2026
+
+Implemented the native layout documented in [DOLPHIN.md](DOLPHIN.md): 96 px icon
+view, a 264 logical-pixel right column with Places/Devices above Information,
+large previews and compact metadata, minimal toolbar, hidden classic menu/status
+bar and hidden Folders/Terminal docks. The existing Breeze Dark icon theme and
+original Kvantum theme remain. The inherited Dolphin toolbar is intentionally
+adapted; its original hash remains in the historical inventory, while its current
+XML/action contract replaces the previous byte-identity assertion. The original
+wallpaper and Kvantum pair still pass their unchanged SHA256 checks.
+
+Real compatibility findings, not just file-format assumptions:
+
+- Debian 13's Dolphin is **25.04.3** (`4:25.04.3-1+deb13u1`), Qt **6.8.2**,
+  KF6 XMLGUI **6.13.0**. Its statusbar setting is an enum (`Disabled`), and
+  `dolphinstaterc [State]` controls dock placement. Without a saved state, the old
+  preset left Folders and the optional Terminal panel visible alongside Places
+  and Information. Merely changing Kvantum would not fix that layout.
+- Baloo Widgets **25.04.0** resets metadata visibility if its version-13 marker
+  is absent. Native KConfig geometry keys contain colons (`screen: Width` and
+  `screen: Height`); parsing must use `=` as the only delimiter. Real GUI tests
+  exposed both issues and the final checks handle them, including omitted
+  default-true metadata values.
+- Dolphin may migrate view properties from `.directory` into the containing
+  directory's `user.kde.fm.viewproperties#1` attribute, omitting default fields.
+  Deployment/restore now snapshots that exact attribute; strict restore detects
+  changes, and the explicit preservation option saves current Dolphin files/
+  metadata before restoring originals. Other xattrs and unrelated edits remain
+  protected. The verifier accepts native default storage semantics and still
+  rejects a real Details-mode override.
+- `kdegraphics-thumbnailers` alone did not provide JPEG/image previews in the
+  minimal test installation. Installing **kio-extras** made real thumbnails work
+  in both the grid and Information panel. **udisks2** enabled normal Solid device
+  enumeration and visible device rows. These are now explicit full/component
+  dependencies. Version preflight uses Qt's offscreen platform so it also works
+  before a Wayland display exists.
+
+Commands actually run in Debian 13 WSL (not on the user's physical PC):
+
+- `./verify.sh`: **157 tests OK**, **0 failed checks / exit 0**. This includes
+  **133** Bash syntax checks, both ShellCheck levels, **83** Lua syntax checks,
+  the unchanged 67-binding/four-workspace load regression, source format checks,
+  Rofi parsing, SDDM QML lint, Waybar capabilities and original theme hashes.
+- `python3 -m unittest discover -s tests -p test_dolphin.py -v`:
+  **23 tests OK**. Covers source contracts, real Qt dock-state restoration at
+  three window sizes, scoped deployment and idempotence, custom XDG roots/spaces,
+  preserving geometry/bookmarks/other metadata, malformed XML, closed-app
+  preflight, strict restore, saved runtime edits and native xattr migration.
+  Mock-APT tests exercise missing component dependencies, repeat installation,
+  `--no-packages`, and critical APT failure before any configuration write.
+- Real `./install.sh native --dolphin-only`, then **actual Dolphin** on a private
+  Sway headless Wayland compositor/session bus under UID 65534, then
+  `./verify.sh --dolphin`, then
+  `./uninstall.sh --save-dolphin-changes`: **all exit 0** in each final scenario.
+  Original preference/state/toolbar bytes were restored after Dolphin's real
+  runtime writes; no mock application was presented as Dolphin.
+- Actual widget inspection records **`Kvantum::Style` / `kvantum`**, right-area
+  visible Places and Information docks, hidden Folders/Terminal, icon-only
+  toolbar with exactly Back/Forward/Up/location/Search/menu, a hidden menu bar,
+  and icon-grid item geometry. Captures were inspected, including a selected
+  JPEG rendered as an actual image preview with Type/Size/Modified metadata.
+- Final real scenarios: **1920×1080**, a **1100×680** floating window on
+  **1366×768**, and **3840×2160 at scale 2**. The latter reports native device
+  pixel ratio **2**; dock widths remain **264 logical pixels**. Places scrolls
+  when a smaller window cannot fit all bookmark/device rows.
+- `git diff --check`: passed. Changes reviewed; no inspector binary, fixture,
+  screenshot, cache or log added to Git. The test instrumentation only observes
+  widgets/captures inside the disposable process and is not installed by Hyprixe.
+  No Hyprland, keybind, UWSM, Waybar, SDDM, Rofi, lock or profile file changed.
+  No commit made.
+
+The component installer can install missing dependencies with narrowly scoped
+APT commands; it uses no sudo when they already exist. Full installation still
+includes Dolphin. Backups keep their normal conflict protection, with
+`--save-dolphin-changes` limited to managed Dolphin paths/its view xattr.
+
+The requested reference screenshot is not present in this conversation; the
+repository's existing desktop screenshot shows a terminal rather than Dolphin.
+The requested layout was implemented and tested, but pixel-identical reference
+comparison, the real Hyprland blur/transparency and the user's monitor/font/DPI
+combination still need observation on the physical PC. No physical device was
+mounted, ejected, unmounted or formatted during these tests.

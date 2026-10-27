@@ -5,6 +5,8 @@ are refused rather than followed. The manifest records every file, including
 merged MIME/KDE/Qt settings, so restore never recursively deletes config dirs.
 """
 import argparse
+import base64
+import configparser
 from datetime import datetime, timezone
 import fcntl
 import hashlib
@@ -16,6 +18,7 @@ import stat
 import subprocess
 import sys
 import uuid
+import dolphin_config
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -90,7 +93,9 @@ def merge_ini(old, updates):
     return ''.join(lines)
 
 
-def payload(roots, profile, runtime=None):
+def payload(roots, profile, runtime=None, dolphin_only=False):
+    if dolphin_only:
+        return dolphin_config.payload(REPO, roots, merge_ini)
     for relative in ('configs/Frosted-Glass', 'style.css', 'style/Frosted-Glass.css'):
         source = REPO / '.config/hypr/waybar' / relative
         if not source.is_file():
@@ -139,6 +144,7 @@ def payload(roots, profile, runtime=None):
             source = Path(runtime) / name
             if source.is_file():
                 result[Path(os.environ['HOME']) / '.local/bin' / name] = (source.read_bytes(), 0o755)
+    result.update(dolphin_config.payload(REPO, roots, merge_ini))
     return result
 
 
@@ -149,25 +155,46 @@ def read_manifest(path):
     return data
 
 
-def restore(backup, home, dry=False, rollback=False):
+def restore(backup, home, dry=False, rollback=False, save_dolphin_changes=False):
     manifest = read_manifest(backup)
     if manifest.get('home') != str(home):
         raise ValueError('Backup belongs to a different HOME')
     if manifest.get('restored'):
         raise ValueError('This backup has already been restored')
     entries = manifest['files']
-    conflicts = []
+    conflicts, preserve = [], []
+    dolphin_targets = set(manifest.get('dolphin_targets', []))
     for entry in entries:
         p = Path(entry['target'])
         guard(p, home)
         current = digest(p)
         if current not in (entry['after'], entry['before']):
-            conflicts.append(str(p))
+            if save_dolphin_changes and str(p) in dolphin_targets and current != 'directory':
+                preserve.append(p)
+            else:
+                conflicts.append(str(p))
         saved = entry.get('backup')
         if saved is not None:
             source = backup / 'files' / saved
             if Path(saved).name != saved or saved in ('.', '..') or digest(source) != entry['before']:
                 raise ValueError(f'Backup is missing or corrupt: {saved}')
+    view = manifest.get('dolphin_view_xattr')
+    changed_view = None
+    if view:
+        directory = Path(view['path'])
+        if str(directory / '.directory') not in dolphin_targets or view['name'] != dolphin_config.VIEW_XATTR:
+            raise ValueError('Invalid Dolphin view-metadata record')
+        guard(directory / '.metadata-path-check', home)
+        if view['before'] is not None:
+            base64.b64decode(view['before'], validate=True)
+        current_view = dolphin_config.view_metadata(directory)
+        if not current_view['supported'] and view['before'] is not None:
+            raise ValueError('Filesystem no longer supports the saved Dolphin view metadata')
+        if current_view['value'] != view['before']:
+            if save_dolphin_changes:
+                changed_view = {'path': str(directory), 'name': view['name'], 'value': current_view['value']}
+            else:
+                conflicts.append(str(directory) + ' (' + view['name'] + ')')
     if conflicts:
         raise ValueError('Files changed since installation; save your edits first. Nothing restored:\n' + '\n'.join(conflicts))
     system_backup = manifest.get('sddm_backup')
@@ -175,8 +202,22 @@ def restore(backup, home, dry=False, rollback=False):
         # Check both transactions before either is changed. Root restoration is
         # resumable if a later user write fails or power is interrupted.
         system_theme('restore', '--backup', system_backup, '--dry-run')
+    if preserve or changed_view:
+        print('SAVE current Dolphin changes before restore:', ', '.join(map(str, preserve)))
         if not dry:
-            system_theme('restore', '--backup', system_backup)
+            saved = backup / ('preserved-dolphin-' + uuid.uuid4().hex)
+            saved.mkdir(mode=0o700)
+            records = []
+            for i, path in enumerate(preserve):
+                record = {'path': str(path), 'sha256_or_link': digest(path), 'saved': None}
+                if record['sha256_or_link'] is not None:
+                    shutil.copy2(path, saved / str(i), follow_symlinks=False)
+                    record['saved'] = str(i)
+                records.append(record)
+            atomic(saved / 'manifest.json', (json.dumps({'files': records, 'view_xattr': changed_view}, indent=2) + '\n').encode())
+            print('Current Dolphin files/metadata preserved in:', saved)
+    if system_backup and not dry:
+        system_theme('restore', '--backup', system_backup)
     for entry in reversed(entries):
         target = Path(entry['target'])
         print('RESTORE', target)
@@ -198,6 +239,8 @@ def restore(backup, home, dry=False, rollback=False):
             else:
                 atomic(target, source.read_bytes(), entry['mode'])
     if not dry:
+        if view:
+            dolphin_config.restore_view_metadata(Path(view['path']), view['before'])
         manifest['restored'] = True
         atomic(backup / 'manifest.json', (json.dumps(manifest, indent=2) + '\n').encode())
         # Only empty directories created by this transaction can be removed.
@@ -211,11 +254,11 @@ def restore(backup, home, dry=False, rollback=False):
         (backup / ('rolled-back' if rollback else 'restored')).touch()
 
 
-def install(home, roots, profile, dry=False, runtime=None):
+def install(home, roots, profile, dry=False, runtime=None, dolphin_only=False):
     # Refuse symlinked parents even during preview, before reading merge targets.
     for root in roots.values():
         guard(root / '.hyprixe-path-check', home)
-    content = payload(roots, profile, runtime)
+    content = payload(roots, profile, runtime, dolphin_only=dolphin_only)
     changes = []
     for path, (data, mode) in content.items():
         guard(path, home)
@@ -233,10 +276,19 @@ def install(home, roots, profile, dry=False, runtime=None):
     if not changes:
         print('Already up to date; no additional backup created.')
         return
-    identifier = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S.%fZ') + '-' + profile
+    identifier = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S.%fZ') + '-' + profile + ('-dolphin' if dolphin_only else '')
     backup = roots['state'] / 'hyprixe/backups' / identifier
     backup.mkdir(parents=True, mode=0o700)
     manifest = {'format': 1, 'id': identifier, 'home': str(home), 'profile': profile, 'files': [], 'directories': []}
+    manifest['scope'] = 'dolphin' if dolphin_only else 'full'
+    dolphin_candidates = set(dolphin_config.payload(REPO, roots, merge_ini))
+    manifest['dolphin_targets'] = [str(path) for path, _, _ in changes if path in dolphin_candidates]
+    view_directory = roots['data'] / 'dolphin/view_properties/global'
+    if str(view_directory / '.directory') in manifest['dolphin_targets']:
+        guard(view_directory / '.metadata-path-check', home)
+        metadata = dolphin_config.view_metadata(view_directory)
+        manifest['dolphin_view_xattr'] = {'path': str(view_directory), 'name': dolphin_config.VIEW_XATTR,
+                                         'before': metadata['value']}
     # Back up EVERY target before the first mutation.
     for i, (target, data, mode) in enumerate(changes):
         old = digest(target)
@@ -333,24 +385,32 @@ def main():
     ins.add_argument('--dry-run', action='store_true')
     ins.add_argument('--runtime', help='Internal: directory containing staged runtime binaries')
     ins.add_argument('--sddm', action='store_true', help='Also deploy the system SDDM theme through sudo')
+    ins.add_argument('--dolphin-only', action='store_true', help='Only deploy Dolphin preferences, docks, toolbar and view properties')
     res = sub.add_parser('restore')
     res.add_argument('--backup', help='Backup ID (default: most recent unrestored transaction)')
     res.add_argument('--list', action='store_true')
     res.add_argument('--dry-run', action='store_true')
+    res.add_argument('--save-dolphin-changes', action='store_true', help='Preserve changed Dolphin files/view metadata before restoring their originals')
     args = parser.parse_args()
+    if args.action == 'install' and args.dolphin_only and args.sddm:
+        raise ValueError('--dolphin-only cannot deploy SDDM')
     home, roots = locations()
     state = roots['state'] / 'hyprixe'
     guard(state / 'deployment.lock', home)
     if args.action == 'install' and args.dry_run:
         function = install_with_sddm if args.sddm else install
-        function(home, roots, args.profile, dry=True, runtime=args.runtime)
+        options = {'dolphin_only': True} if args.dolphin_only else {}
+        function(home, roots, args.profile, dry=True, runtime=args.runtime, **options)
         return
+    if args.action == 'install':
+        dolphin_config.ensure_closed()
     state.mkdir(parents=True, exist_ok=True)
     with (state / 'deployment.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         if args.action == 'install':
             function = install_with_sddm if args.sddm else install
-            function(home, roots, args.profile, runtime=args.runtime)
+            options = {'dolphin_only': True} if args.dolphin_only else {}
+            function(home, roots, args.profile, runtime=args.runtime, **options)
         else:
             backups = sorted((state / 'backups').glob('*'), reverse=True)
             backups = [p for p in backups if (p / 'manifest.json').is_file()]
@@ -370,12 +430,14 @@ def main():
                 backup = available[0]
             else:
                 raise ValueError('No unrestored backup found')
-            restore(backup, home, dry=args.dry_run)
+            if not args.dry_run and any(Path(e['target']).name in ('dolphinrc', 'dolphinstaterc') for e in read_manifest(backup)['files']):
+                dolphin_config.ensure_closed()
+            restore(backup, home, dry=args.dry_run, save_dolphin_changes=args.save_dolphin_changes)
 
 
 if __name__ == '__main__':
     try:
         main()
-    except (ValueError, OSError, KeyError, subprocess.CalledProcessError) as exc:
+    except (ValueError, OSError, KeyError, configparser.Error, subprocess.CalledProcessError) as exc:
         print('ERROR:', exc, file=sys.stderr)
         sys.exit(1)
