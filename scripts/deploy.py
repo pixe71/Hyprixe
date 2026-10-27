@@ -93,7 +93,18 @@ def merge_ini(old, updates):
     return ''.join(lines)
 
 
-def payload(roots, profile, runtime=None, dolphin_only=False):
+def payload(roots, profile, runtime=None, dolphin_only=False, waybar_only=False):
+    if waybar_only:
+        result = {}
+        # Explicit source list: missing active assets fail before any write;
+        # caches and unrelated files can never enter the deployment.
+        for name in ('configs/Frosted-Glass', 'style.css', 'style/Frosted-Glass.css', 'scripts/temperature.py'):
+            source = REPO / '.config/hypr/waybar' / name
+            result[roots['config'] / 'hypr/waybar' / name] = (source.read_bytes(), 0o644)
+        for name in ('HyprixeDebian.ttf', 'LICENSE.txt', 'README.md'):
+            source = REPO / '.local/share/fonts/hyprixe' / name
+            result[roots['data'] / 'fonts/hyprixe' / name] = (source.read_bytes(), 0o644)
+        return result
     if dolphin_only:
         return dolphin_config.payload(REPO, roots, merge_ini)
     for relative in ('configs/Frosted-Glass', 'style.css', 'style/Frosted-Glass.css'):
@@ -274,11 +285,11 @@ def restore(backup, home, dry=False, rollback=False, save_dolphin_changes=False)
 
 
 def install(home, roots, profile, dry=False, runtime=None, dolphin_only=False,
-            custom_files=None, view_xattr_after=None, scope=None):
+            custom_files=None, view_xattr_after=None, scope=None, waybar_only=False):
     # Refuse symlinked parents even during preview, before reading merge targets.
     for root in roots.values():
         guard(root / '.hyprixe-path-check', home)
-    content = custom_files if custom_files is not None else payload(roots, profile, runtime, dolphin_only=dolphin_only)
+    content = custom_files if custom_files is not None else payload(roots, profile, runtime, dolphin_only=dolphin_only, waybar_only=waybar_only)
     view_directory = roots['data'] / 'dolphin/view_properties/global'
     if view_xattr_after is not None:
         guard(view_directory / '.metadata-path-check', home)
@@ -303,11 +314,11 @@ def install(home, roots, profile, dry=False, runtime=None, dolphin_only=False,
     if not changes and not attribute_changed:
         print('Already up to date; no additional backup created.')
         return
-    identifier = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S.%fZ') + '-' + profile + ('-' + scope if scope else '-dolphin' if dolphin_only else '')
+    identifier = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S.%fZ') + '-' + profile + ('-' + scope if scope else '-dolphin' if dolphin_only else '-waybar' if waybar_only else '')
     backup = roots['state'] / 'hyprixe/backups' / identifier
     backup.mkdir(parents=True, mode=0o700)
     manifest = {'format': 1, 'id': identifier, 'home': str(home), 'profile': profile, 'files': [], 'directories': []}
-    manifest['scope'] = scope or ('dolphin-style' if dolphin_only else 'full')
+    manifest['scope'] = scope or ('dolphin-style' if dolphin_only else 'waybar' if waybar_only else 'full')
     if dolphin_only:
         rc = roots['config'] / 'dolphinrc'
         previous = dolphin_config.read_ini(rc).get('UiSettings', 'ColorScheme', fallback=None) if rc.is_file() else None
@@ -422,6 +433,7 @@ def main():
     ins.add_argument('--runtime', help='Internal: directory containing staged runtime binaries')
     ins.add_argument('--sddm', action='store_true', help='Also deploy the system SDDM theme through sudo')
     ins.add_argument('--dolphin-only', action='store_true', help='Only deploy Dolphin-specific Kvantum paint, association and KDE color selection')
+    ins.add_argument('--waybar-only', action='store_true', help='Only deploy Waybar configuration, helper and Debian logo glyph')
     interface = sub.add_parser('restore-dolphin-interface', help='Restore only interface changes introduced by 9259fa5 from an existing backup')
     interface.add_argument('--backup')
     interface.add_argument('--dry-run', action='store_true')
@@ -431,8 +443,8 @@ def main():
     res.add_argument('--dry-run', action='store_true')
     res.add_argument('--save-dolphin-changes', action='store_true', help='Preserve changed Dolphin files/view metadata before restoring their originals')
     args = parser.parse_args()
-    if args.action == 'install' and args.dolphin_only and args.sddm:
-        raise ValueError('--dolphin-only cannot deploy SDDM')
+    if args.action == 'install' and sum((args.dolphin_only, args.waybar_only, args.sddm)) > 1:
+        raise ValueError('Component-only installation cannot deploy another component or SDDM')
     home, roots = locations()
     state = roots['state'] / 'hyprixe'
     guard(state / 'deployment.lock', home)
@@ -452,17 +464,17 @@ def main():
         return
     if args.action == 'install' and args.dry_run:
         function = install_with_sddm if args.sddm else install
-        options = {'dolphin_only': True} if args.dolphin_only else {}
+        options = {'dolphin_only': True} if args.dolphin_only else {'waybar_only': True} if args.waybar_only else {}
         function(home, roots, args.profile, dry=True, runtime=args.runtime, **options)
         return
-    if args.action == 'install':
+    if args.action == 'install' and not args.waybar_only:
         dolphin_config.ensure_closed()
     state.mkdir(parents=True, exist_ok=True)
     with (state / 'deployment.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         if args.action == 'install':
             function = install_with_sddm if args.sddm else install
-            options = {'dolphin_only': True} if args.dolphin_only else {}
+            options = {'dolphin_only': True} if args.dolphin_only else {'waybar_only': True} if args.waybar_only else {}
             function(home, roots, args.profile, runtime=args.runtime, **options)
         else:
             backups = sorted((state / 'backups').glob('*'), reverse=True)

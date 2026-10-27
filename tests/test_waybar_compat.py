@@ -12,6 +12,15 @@ spec.loader.exec_module(compat)
 
 
 class CapabilityTests(unittest.TestCase):
+    def test_native_click_drawer_capability(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            binary = Path(tmp) / 'waybar'
+            binary.write_bytes(b'old group drawer')
+            self.assertFalse(compat.has_click_drawer(binary))
+            binary.write_bytes(b'click-to-reveal')
+            self.assertTrue(compat.has_click_drawer(binary))
+            self.assertFalse(compat.has_click_drawer(Path(tmp) / 'missing'))
+
     def test_legacy_and_lua_capabilities(self):
         with tempfile.TemporaryDirectory() as tmp:
             binary = Path(tmp) / 'waybar'

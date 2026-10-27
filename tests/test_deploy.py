@@ -64,7 +64,7 @@ class DeploymentTests(unittest.TestCase):
         bar = json.loads((hypr / 'waybar/configs/Frosted-Glass').read_text())
         self.assertEqual(bar['hyprland/workspaces']['persistent-workspaces'], {'*': [1, 2, 3, 4]})
         self.assertEqual(bar['hyprland/workspaces']['sort-by'], 'number')
-        self.assertEqual(bar['modules-left'][0], 'hyprland/workspaces')
+        self.assertEqual(bar['modules-left'][:2], ['group/traygroup', 'hyprland/workspaces'])
         self.assertTrue((hypr / 'lua/workspaces.lua').is_file())
         self.assertIn('lua/workspaces.lua', (hypr / 'hyprland.lua').read_text())
         if shutil.which('lua'):

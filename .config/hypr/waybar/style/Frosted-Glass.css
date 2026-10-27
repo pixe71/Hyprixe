@@ -14,7 +14,8 @@ window#waybar {
     border-bottom: 1px solid rgba(126, 214, 255, 0.20);
 }
 #workspaces, #mpris, #tray, #submap, #idle_inhibitor, #clock,
-#window, #pulseaudio, #cpu, #memory, #network, #bluetooth, #custom-power {
+#window, #pulseaudio, #cpu, #memory, #network, #bluetooth, #custom-power,
+#custom-traylauncher, #custom-temperature, #custom-distro, #battery {
     background: rgba(126, 214, 255, 0.32);
     color: #e6f1f4;
     margin: 4px 2px;
@@ -22,7 +23,8 @@ window#waybar {
     border-radius: 10px;
     border: 1px solid rgba(230, 241, 244, 0.20);
 }
-#cpu, #memory, #network, #bluetooth, #custom-power {
+#cpu, #memory, #network, #bluetooth, #custom-power,
+#custom-traylauncher, #custom-temperature, #custom-distro, #battery {
     background: rgba(30, 76, 132, 0.45);
     border-color: rgba(126, 214, 255, 0.18);
 }
@@ -71,3 +73,20 @@ tooltip {
 }
 tooltip label { color: #e6f1f4; }
 #network.disconnected { color: #ff6b81; }
+
+/* Equal-width pairs keep the Debian logo at the actual bar midpoint.
+   Existing font, padding, margins and Frosted Glass paints are retained. */
+#custom-temperature, #idle_inhibitor { min-width: 60px; }
+#memory, #clock.date { min-width: 80px; }
+#cpu, #clock.time { min-width: 60px; }
+#custom-distro {
+    font-family: "Hyprixe Debian";
+    font-size: 14px;
+    color: #7ed6ff;
+}
+#battery.charging, #battery.plugged, #battery.full { color: #b4f9f8; }
+#battery.warning:not(.charging):not(.plugged) { color: #7ed6ff; }
+#battery.critical:not(.charging):not(.plugged) {
+    color: #ff6b81;
+    border-color: #ff6b81;
+}

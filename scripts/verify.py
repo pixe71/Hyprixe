@@ -14,6 +14,7 @@ import tempfile
 import tomllib
 import xml.etree.ElementTree as ET
 from waybar_compat import has_lua_workspace_ipc, has_wlr_taskbar
+from waybar_checks import check_source as check_waybar_source, check_installed as check_waybar_installed
 from rofi_compat import has_wayland_support
 from session_checks import check_session, check_source_order
 from keybind_checks import check_native_config, check_session_keybinds
@@ -160,7 +161,18 @@ def main():
     parser.add_argument('--sddm', action='store_true', help='Also check installed SDDM theme, configuration and UWSM entry')
     parser.add_argument('--diagnostics', action='store_true', help='Print read-only login journals, service timings, clients, layers and autostarts')
     parser.add_argument('--dolphin', action='store_true', help='Check only Dolphin source, deployed paint and Qt/Kvantum runtime')
+    parser.add_argument('--waybar', action='store_true', help='Check only Waybar source and installed layout/runtime')
     args = parser.parse_args()
+    if args.waybar:
+        if args.dolphin or args.sddm or args.diagnostics:
+            parser.error('--waybar cannot check another component')
+        check_waybar_source(report, ROOT)
+        check_taskbar(ROOT)
+        check_waybar_installed(report)
+        if args.session:
+            check_session(report)
+        print(f'RESULT: {failed} failed check(s)')
+        return 1 if failed else 0
     if args.dolphin:
         if args.sddm or args.diagnostics:
             parser.error('--dolphin is a component-only check; run session/SDDM/diagnostic checks separately')
@@ -232,6 +244,7 @@ def main():
     check_configuration_formats(ROOT)
     check_dolphin_source(report, ROOT)
     check_taskbar(ROOT)
+    check_waybar_source(report, ROOT)
     check_sddm(ROOT, installed=args.sddm or args.dependencies)
     ordering = check_source_order(ROOT / '.config/systemd/user')
     report(not ordering, 'UWSM service ordering: wallpaper before Waybar/notifications' +
@@ -277,6 +290,7 @@ def main():
         report(index.returncode == 0 and modes.get(waybar_css) == '100644', 'Waybar style.css recorded as a regular file in Git (not a CSS-text symlink)')
     if args.dependencies:
         run(['python3', 'scripts/check-deps.py'], 'Installed runtime dependencies')
+        check_waybar_installed(report)
         check_dolphin_installed(report)
         check_dolphin_runtime(report)
     else:

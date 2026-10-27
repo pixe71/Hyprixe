@@ -413,6 +413,38 @@ a new session, even if reloading reports no errors.
 
 ## Checking components
 
+### Waybar module layout
+
+The organization is inspired by Hyprladus' module grouping; its theme, colors,
+Powerline separators, Arch scripts and 10-workspace preset are not imported.
+Hyprixe keeps its existing Frosted Glass CSS. The native click drawer precedes
+workspaces 1–4 and the unchanged icon taskbar. The Debian logo is centered between
+temperature/storage, RAM, CPU and time, date, idle inhibitor. Network, Bluetooth,
+audio, optional battery percentage and the existing power menu sit on the right.
+
+Update only Waybar on an existing installation, without closing Dolphin:
+
+```bash
+cd ~/hyprixe-debian
+git pull
+./install.sh native --waybar-only --no-packages
+systemctl --user restart waybar.service
+systemctl --user status waybar.service --no-pager
+./verify.sh --waybar --session
+```
+
+Run this inside the existing **Hyprland (uwsm-managed)** session. Scoped mode uses
+the installed compatible Waybar and fontconfig; it performs no APT/system writes,
+changes no other component, and creates a dated `*-native-waybar` backup. It
+updates Waybar JSON/CSS, the adaptive sensor helper and the tiny isolated Debian
+glyph font. A normal full installation also includes these assets.
+
+Missing native drawer/taskbar/Lua support is a clear preflight failure; use the
+normal full installer to prepare the pinned Waybar build. `--dry-run` previews
+changes. Existing strict restore (`./uninstall.sh --backup ID`) restores this
+transaction without touching unrelated files. See [docs/WAYBAR.md](docs/WAYBAR.md)
+for detection rules, font provenance, calendar locale and hardware limits.
+
 ### Waybar application icons
 
 `wlr/taskbar` uses Wayland's foreign-toplevel protocol, supported by Hyprland
@@ -431,9 +463,9 @@ For an existing working Hyprixe installation, apply the update without rebooting
 ```bash
 cd ~/hyprixe-debian
 git pull
-./install.sh native --no-packages
+./install.sh native --waybar-only --no-packages
 systemctl --user restart waybar.service
-./verify.sh --dependencies --session
+./verify.sh --waybar --session
 ```
 
 Run those commands inside **Hyprland (uwsm-managed)**. If dependency preflight

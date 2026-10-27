@@ -47,6 +47,16 @@ def has_wlr_taskbar(executable=None):
     return b'wlr/taskbar' in data and b'zwlr_foreign_toplevel_manager_v1' in data
 
 
+def has_click_drawer(executable=None):
+    executable = executable or shutil.which('waybar')
+    if not executable:
+        return False
+    try:
+        return b'click-to-reveal' in Path(executable).read_bytes()
+    except OSError:
+        return False
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--patch', metavar='SOURCE')
@@ -54,4 +64,4 @@ if __name__ == '__main__':
     if args.patch:
         patch_source(args.patch)
     else:
-        sys.exit(0 if has_lua_workspace_ipc() and has_wlr_taskbar() else 1)
+        sys.exit(0 if has_lua_workspace_ipc() and has_wlr_taskbar() and has_click_drawer() else 1)

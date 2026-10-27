@@ -913,3 +913,78 @@ The existing application association and color-scheme name remain unchanged.
 
 Apply after closing Dolphin with `./install.sh native --dolphin-only`; the
 legacy interface-restoration flag is not part of this palette update.
+
+## Waybar organization — October 27, 2026
+
+The actual Hyprladus `config/waybar/config.jsonc` and CPU script were inspected.
+Only functional grouping informs Hyprixe; no upstream CSS, separators, colors,
+Arch commands, personal paths or 10-workspace definition are imported. The
+original Frosted Glass CSS rules remain verbatim in their declaration values;
+new selectors reuse them, with matched-width pairs centering the Debian logo.
+Height remains 31 px; no Hyprland/blur/opacity/font-global setting changes.
+
+Commands and actual results in Debian 13 WSL:
+
+- `./verify.sh` with the prepared compatible runtime on PATH: **182 tests OK**,
+  **RESULT: 0 failed check(s), exit 0**. Includes **133 Bash** syntax checks,
+  both ShellCheck levels, **83 Lua** syntax checks, existing keybind/workspace,
+  SDDM QML, Rofi, Waybar protocol, original-asset and secret checks.
+- New tests exercise CPU hwmon discovery on arbitrary indices, Intel/AMD/CPU
+  thermal zones, exclusion of GPU/NVMe/ambiguous ACPI, invalid/disappearing data,
+  root `/` storage fallback, both readings unavailable, JSON/markup escaping,
+  preserved CSS rules, exact module order/no duplicates, workspace filtering,
+  scoped XDG paths with spaces, backup/restore/idempotence/dry-run and missing
+  active assets failing before any configuration write.
+- Actual `./install.sh native --waybar-only --no-packages` executed under an
+  unprivileged disposable desktop account, with an existing bar and XDG paths
+  containing spaces. A dated Waybar-only transaction is created; no SDDM/Dolphin
+  or other component is deployed. Fontconfig resolves the bundled Debian glyph.
+- Actual `systemd-analyze --user verify` passes for the existing vendor and
+  rendered Hyprixe units. Starting Waybar outside a graphical session is
+  deliberately refused by the existing dependency, as expected. No target is
+  manually activated and no `Requisite` is removed.
+- A real UWSM session owns a real headless Sway compositor, Waybar 0.12 with the
+  existing Lua compatibility build, awww-daemon and wallpaper application.
+  Hyprland IPC responses and unrelated notification/idle/polkit/clipboard
+  processes are explicit fixtures. This is **not physical Hyprland testing**.
+- Actual `systemctl --user restart waybar.service` and
+  `systemctl --user status waybar.service`: **active (running)** before/after,
+  different MainPID. Actual `./verify.sh --waybar --session`: **0 failed checks**.
+  UWSM, graphical/session targets and wallpaper ordering all pass. Actual
+  `uwsm stop` deactivates the target and all session services.
+- A GTK inspector inside the real Waybar observes the native drawer states
+  **closed/open/closed**, with a real D-Bus SNI fixture icon mapped only while
+  open. Two real Wayland GTK windows appear separately in the native taskbar;
+  delivering the native button-release handler changes actual compositor focus
+  and the active taskbar class. No polling/window-switching script is involved.
+- Output mode changes from **1920x1080 to 1366x768**. Measured bar dimensions
+  are **1900x31** and **1346x31** (the unchanged 10 px side margins). The logo's
+  midpoint is **949.5 / 672.5**, versus bar midpoint **950 / 673**: within the
+  expected half-pixel rounding, for both drawer states. Native battery widgets
+  are unmapped with no battery. A fifth IPC fixture workspace is excluded;
+  buttons **1,2,3,4** remain present. Captures were inspected.
+- No CPU sensor is exposed in this WSL fixture, so the actual module displays
+  root storage usage. Temperature branches are tested using independent sysfs
+  fixtures, not claimed as physical measurements. Bluetooth/battery absence
+  emits native warnings and does not stop Waybar. Existing FontAwesome/playerctl
+  dependencies were installed in the validation environment to reproduce the
+  intended glyph/media behavior; no new runtime package requirement was added.
+- Diagnostic logs were inspected, not suppressed. Waybar 0.12's Sway headless
+  output-description parser emits a nonfatal `basic_string::_M_create`; a throw
+  backtrace identifies `Client::handleOutputDescription`. The test-only SNI
+  producer can emit an initial missing-icon message before properties arrive.
+  Neither is a new Hyprixe configuration error, and both real icon rendering
+  and service operation are separately verified. No patch or graphics workaround
+  was added to production to hide these fixture limitations.
+- `git diff --check`: passed. The only active config changes are Waybar and its
+  isolated glyph font. No test account HOME, inspector, screenshots, logs,
+  caches, binaries or fixture session configuration are added to Git. The
+  deliberately bundled one-glyph TTF and its license/provenance are source assets.
+
+Still requiring the physical PC: real Hyprland 0.56.2 workspace clicks/output
+hotplug, monitor/HiDPI visual balance, long expanded drawer content/many windows,
+actual CPU sensors and battery charging/low/critical states, Bluetooth/network
+changes, the eye's idle behavior, calendar and real tray-app interactions. The
+weekday follows the session locale (French when the locale is French). No
+physical compositor blur test or destructive power action was performed.
+See [WAYBAR.md](WAYBAR.md) for the scoped application/restore commands.

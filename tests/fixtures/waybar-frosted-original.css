@@ -1,0 +1,73 @@
+/* Frosted Glass — original Senshi-inspired palette and translucent top bar. */
+* {
+    border: none;
+    box-shadow: none;
+    text-shadow: none;
+    font-family: "JetBrains Mono", "FontAwesome", sans-serif;
+    font-weight: bold;
+    font-size: 11px;
+    min-height: 0;
+}
+window#waybar {
+    background: rgba(18, 36, 52, 0.76);
+    border-radius: 0 0 14px 14px;
+    border-bottom: 1px solid rgba(126, 214, 255, 0.20);
+}
+#workspaces, #mpris, #tray, #submap, #idle_inhibitor, #clock,
+#window, #pulseaudio, #cpu, #memory, #network, #bluetooth, #custom-power {
+    background: rgba(126, 214, 255, 0.32);
+    color: #e6f1f4;
+    margin: 4px 2px;
+    padding: 0 8px;
+    border-radius: 10px;
+    border: 1px solid rgba(230, 241, 244, 0.20);
+}
+#cpu, #memory, #network, #bluetooth, #custom-power {
+    background: rgba(30, 76, 132, 0.45);
+    border-color: rgba(126, 214, 255, 0.18);
+}
+#cpu, #network { color: #7ed6ff; }
+#memory, #bluetooth { color: #b4f9f8; }
+#workspaces { padding: 0 4px; }
+#workspaces button {
+    background: transparent;
+    color: #e6f1f4;
+    padding: 0 5px;
+    margin: 2px 1px;
+    border-radius: 7px;
+    transition: all 0.25s ease;
+}
+#workspaces button.active {
+    background: #a44185;
+    padding: 0 11px;
+}
+#workspaces button:hover { background: #7ed6ff; color: #1e4c84; }
+/* One compact icon per window; focus is reported by the toplevel protocol. */
+#taskbar {
+    background: rgba(30, 76, 132, 0.45);
+    margin: 4px 2px;
+    padding: 0 3px;
+    border-radius: 10px;
+    border: 1px solid rgba(126, 214, 255, 0.18);
+}
+#taskbar button {
+    background: transparent;
+    padding: 0 4px;
+    margin: 1px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+}
+#taskbar button:hover { background: rgba(126, 214, 255, 0.25); }
+#taskbar button.active {
+    background: rgba(39, 112, 192, 0.68);
+    border-color: #7ed6ff;
+}
+#taskbar.empty { background: transparent; border: none; padding: 0; margin: 0; }
+
+tooltip {
+    background: rgba(30, 76, 132, 0.92);
+    border: 1px solid rgba(126, 214, 255, 0.45);
+    border-radius: 10px;
+}
+tooltip label { color: #e6f1f4; }
+#network.disconnected { color: #ff6b81; }

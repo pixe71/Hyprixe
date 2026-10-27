@@ -5,17 +5,49 @@
   "margin-left": 10,
   "margin-right": 10,
   "margin-top": 5,
-  "modules-left": ["hyprland/workspaces", "wlr/taskbar", "mpris", "tray"],
-  "modules-center": ["hyprland/submap", "idle_inhibitor", "clock"],
-  "modules-right": ["hyprland/window", "cpu", "memory", "network", "bluetooth", "pulseaudio", "custom/power"],
+  "modules-left": [
+    "group/traygroup",
+    "hyprland/workspaces",
+    "wlr/taskbar"
+  ],
+  "modules-center": [
+    "custom/temperature",
+    "memory",
+    "cpu",
+    "custom/distro",
+    "clock#time",
+    "clock#date",
+    "idle_inhibitor"
+  ],
+  "modules-right": [
+    "network",
+    "bluetooth",
+    "pulseaudio",
+    "battery",
+    "custom/power"
+  ],
   "hyprland/workspaces": {
     "format": "{name}",
     "on-click": "activate",
     "all-outputs": false,
     "sort-by": "number",
-    "persistent-workspaces": {"*": [1, 2, 3, 4]}
+    "persistent-workspaces": {
+      "*": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "ignore-workspaces": [
+      "^(?![1-4]$).*$"
+    ]
   },
-  "hyprland/window": {"format": "{}", "max-length": 32, "separate-outputs": true},
+  "hyprland/window": {
+    "format": "{}",
+    "max-length": 32,
+    "separate-outputs": true
+  },
   "wlr/taskbar": {
     "format": "{icon}",
     "icon-size": 16,
@@ -25,24 +57,58 @@
     "tooltip-format": "{title}",
     "on-click": "activate"
   },
-  "hyprland/submap": {"format": "{}"},
-  "mpris": {"format": "{title}", "max-length": 22},
-  "tray": {"icon-size": 16, "spacing": 6},
-  "idle_inhibitor": {"format": "{icon}", "format-icons": {"activated": "", "deactivated": ""}},
-  "clock": {"format": "{:%H:%M}", "tooltip-format": "{:%A %d %B %Y}"},
-  "cpu": {"format": "CPU {usage}%", "interval": 3},
-  "memory": {"format": "RAM {percentage}%", "interval": 5},
+  "hyprland/submap": {
+    "format": "{}"
+  },
+  "mpris": {
+    "format": "{title}",
+    "max-length": 22
+  },
+  "tray": {
+    "icon-size": 16,
+    "spacing": 6
+  },
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": "",
+      "deactivated": ""
+    },
+    "tooltip-format-activated": "Presentation mode — verrouillage / veille automatiques inhibés",
+    "tooltip-format-deactivated": "Idle enabled — verrouillage / veille automatiques actifs",
+    "start-activated": false
+  },
+  "cpu": {
+    "format": "CPU {usage}%",
+    "interval": 3,
+    "tooltip-format": "CPU: {usage}%",
+    "max-length": 8,
+    "align": 0.5
+  },
+  "memory": {
+    "format": "RAM {used:.1f}G",
+    "interval": 5,
+    "max-length": 11,
+    "align": 0.5,
+    "tooltip-format": "RAM: {used:.1f} / {total:.1f} GiB ({percentage}%)"
+  },
   "network": {
-    "format-wifi": " {essid}",
-    "format-ethernet": " {ipaddr}",
-    "format-disconnected": "Réseau hors ligne",
+    "format-wifi": "",
+    "format-ethernet": "",
+    "format-disconnected": "",
     "tooltip-format": "{ifname} · ↓ {bandwidthDownBytes} ↑ {bandwidthUpBytes}",
-    "on-click": "nm-connection-editor"
+    "on-click": "nm-connection-editor",
+    "tooltip-format-wifi": "{essid} · {ipaddr}\n{ifname} · ↓ {bandwidthDownBytes} ↑ {bandwidthUpBytes}",
+    "tooltip-format-ethernet": "{ifname} · {ipaddr}\n↓ {bandwidthDownBytes} ↑ {bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Réseau hors ligne"
   },
   "bluetooth": {
-    "format": " {status}",
-    "format-connected": " {num_connections}",
-    "on-click": "blueman-manager"
+    "format": "",
+    "format-connected": "",
+    "on-click": "blueman-manager",
+    "format-disabled": "",
+    "tooltip-format": "Bluetooth: {status}",
+    "tooltip-format-connected": "Bluetooth: {num_connections} connecté(s)\n{device_enumerate}"
   },
   "pulseaudio": {
     "format": " {volume}%",
@@ -54,5 +120,80 @@
     "format": "",
     "tooltip-format": "Session",
     "on-click": "\"${XDG_CONFIG_HOME:-$HOME/.config}/hypr/scripts/PowerMenu.sh\""
+  },
+  "fixed-center": true,
+  "group/traygroup": {
+    "orientation": "horizontal",
+    "drawer": {
+      "click-to-reveal": true,
+      "transition-duration": 200,
+      "transition-left-to-right": true
+    },
+    "modules": [
+      "custom/traylauncher",
+      "tray",
+      "mpris",
+      "hyprland/window",
+      "hyprland/submap"
+    ]
+  },
+  "custom/traylauncher": {
+    "format": "☰",
+    "tooltip-format": "Afficher / masquer le tray",
+    "tooltip": true
+  },
+  "custom/temperature": {
+    "exec": "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/hypr/waybar/scripts/temperature.py\"",
+    "return-type": "json",
+    "format": "{}",
+    "interval": 5,
+    "max-length": 8,
+    "align": 0.5
+  },
+  "custom/distro": {
+    "format": "",
+    "tooltip-format": "Debian",
+    "tooltip": true
+  },
+  "clock#time": {
+    "format": "{:%H:%M}",
+    "tooltip-format": "{:%A %d %B %Y}",
+    "max-length": 5,
+    "align": 0.5
+  },
+  "clock#date": {
+    "format": "{:L%a %d/%m}",
+    "tooltip-format": "{calendar}",
+    "max-length": 11,
+    "align": 0.5,
+    "calendar": {
+      "mode": "month",
+      "format": {
+        "today": "<b><u>{}</u></b>"
+      }
+    },
+    "actions": {
+      "on-click": "mode"
+    }
+  },
+  "battery": {
+    "interval": 30,
+    "states": {
+      "warning": 20,
+      "critical": 10
+    },
+    "format": "{icon} {capacity}%",
+    "format-charging": " {capacity}%",
+    "format-plugged": " {capacity}%",
+    "format-full": " {capacity}%",
+    "format-icons": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "tooltip-format": "Batterie: {capacity}% · {time}",
+    "tooltip-format-charging": "Charge: {capacity}% · {time}"
   }
 }

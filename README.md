@@ -109,12 +109,22 @@ the backup is missing. See [Dolphin appearance and restoration](docs/DOLPHIN.md)
 ## Keybindings
 
 Workspaces **1–4** are persistent in Hyprland and always shown on Waybar's left
-side, without a fixed monitor name. Workspaces 5–10 remain available dynamically.
+side, without a fixed monitor name. The bar displays only 1–4; other Hyprland
+workspaces remain usable with the existing shortcuts.
 
 A compact native `wlr/taskbar` sits beside the workspace buttons: one 16 px icon
 per open window, including multiple windows of the same app and other workspaces.
 Click to focus that window; its button uses a cyan outline and blue active fill.
-Hover shows the window title. The other Waybar modules and keybindings are unchanged.
+Hover shows the window title. The Waybar now groups modules as follows:
+
+- Left: click-to-expand tray, workspaces 1–4, application icons.
+- Center: CPU temperature (or root storage), used RAM, CPU, Debian logo,
+  time, weekday/date and idle inhibitor. Equal-width pairs center the logo.
+- Right: network, Bluetooth, volume, battery percentage when present, power.
+
+Music, active-window information and submap status remain inside the tray drawer.
+The Frosted Glass CSS palette, typography, 31 px height and effects are retained.
+See [Waybar layout, scoped update and validation](docs/WAYBAR.md).
 
 Default keyboard layout: French AZERTY `fr/latin9`. Workspace bindings use
 physical keycodes on the top row, regardless of the AZERTY number symbols.

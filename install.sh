@@ -6,10 +6,11 @@ export PATH="$HOME/.local/bin:$PATH"
 packages=true
 dry_run=false
 dolphin_only=false
+waybar_only=false
 restore_interface=false
 interface_backup=
 usage() {
-    printf 'Usage: %s [native|vmware] [--no-packages] [--dry-run] [--dolphin-only [--restore-dolphin-interface] [--interface-backup=ID]]\n' "$0"
+    printf 'Usage: %s [native|vmware] [--no-packages] [--dry-run] [--waybar-only | --dolphin-only [--restore-dolphin-interface] [--interface-backup=ID]]\n' "$0"
 }
 for arg in "$@"; do
     case "$arg" in
@@ -17,12 +18,17 @@ for arg in "$@"; do
         --no-packages) packages=false ;;
         --dry-run) dry_run=true ;;
         --dolphin-only) dolphin_only=true ;;
+        --waybar-only) waybar_only=true ;;
         --restore-dolphin-interface) restore_interface=true ;;
         --interface-backup=*) interface_backup=${arg#*=} ;;
         --help|-h) usage; exit 0 ;;
         *) usage >&2; exit 2 ;;
     esac
 done
+if $waybar_only && { $dolphin_only || $restore_interface || [[ -n $interface_backup ]]; }; then
+    echo 'ERROR: --waybar-only cannot change or restore Dolphin.' >&2
+    exit 2
+fi
 if { $restore_interface && ! $dolphin_only; } || { [[ -n $interface_backup ]] && ! $restore_interface; }; then
     echo 'ERROR: interface restoration requires --dolphin-only --restore-dolphin-interface.' >&2
     exit 2
@@ -35,9 +41,28 @@ source /etc/os-release
 trap 'printf "ERROR: installation failed (line %s). No session was started.\n" "$LINENO" >&2' ERR
 runtime=$(mktemp -d -t hyprixe-runtime.XXXXXXXX)
 trap 'rm -rf -- "$runtime"' EXIT
-if ! $dry_run && command -v pgrep >/dev/null && pgrep -u "$UID" -x dolphin >/dev/null; then
+if ! $waybar_only && ! $dry_run && command -v pgrep >/dev/null && pgrep -u "$UID" -x dolphin >/dev/null; then
     echo 'ERROR: Close all Dolphin windows/processes before updating its theme or restoring its interface.' >&2
     exit 1
+fi
+if $waybar_only; then
+    command -v python3 >/dev/null || { echo 'ERROR: python3 is required.' >&2; exit 1; }
+    args=(install --profile "$profile" --waybar-only)
+    if $dry_run; then
+        args+=(--dry-run)
+    else
+        python3 "$repo/scripts/waybar_compat.py" || {
+            echo 'ERROR: Compatible Waybar with Lua IPC, taskbar and click drawer required; run the full ./install.sh native to prepare it.' >&2
+            exit 1
+        }
+        command -v fc-cache >/dev/null || { echo 'ERROR: fontconfig (fc-cache) is required.' >&2; exit 1; }
+    fi
+    python3 "$repo/scripts/deploy.py" "${args[@]}"
+    if ! $dry_run; then
+        fc-cache -f "${XDG_DATA_HOME:-$HOME/.local/share}/fonts/hyprixe"
+        echo 'Waybar files installed; restart waybar.service from the active UWSM session.'
+    fi
+    exit 0
 fi
 if $dolphin_only; then
     command -v python3 >/dev/null || { echo 'ERROR: python3 is required.' >&2; exit 1; }
