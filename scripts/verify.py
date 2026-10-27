@@ -19,7 +19,7 @@ from session_checks import check_session, check_source_order
 from keybind_checks import check_native_config, check_session_keybinds
 from sddm_theme import SystemTheme, source_payload as sddm_payload, FILES as SDDM_FILES, THEME as SDDM_THEME
 from session_diagnostics import collect as collect_session_diagnostics
-from dolphin_checks import check_source as check_dolphin_source, check_installed as check_dolphin_installed, check_runtime as check_dolphin_runtime
+from dolphin_checks import check_source as check_dolphin_source, check_installed as check_dolphin_installed, check_runtime as check_dolphin_runtime, check_session as check_dolphin_session
 
 ROOT = Path(__file__).resolve().parents[1]
 failed = 0
@@ -159,14 +159,17 @@ def main():
     parser.add_argument('--dependencies', action='store_true', help='Require installed runtime dependencies')
     parser.add_argument('--sddm', action='store_true', help='Also check installed SDDM theme, configuration and UWSM entry')
     parser.add_argument('--diagnostics', action='store_true', help='Print read-only login journals, service timings, clients, layers and autostarts')
-    parser.add_argument('--dolphin', action='store_true', help='Check only Dolphin source, deployed preferences and Qt/Kvantum runtime')
+    parser.add_argument('--dolphin', action='store_true', help='Check only Dolphin source, deployed paint and Qt/Kvantum runtime')
     args = parser.parse_args()
     if args.dolphin:
-        if args.session or args.sddm or args.diagnostics:
+        if args.sddm or args.diagnostics:
             parser.error('--dolphin is a component-only check; run session/SDDM/diagnostic checks separately')
         check_dolphin_source(report, ROOT)
         check_dolphin_installed(report)
         check_dolphin_runtime(report)
+        if args.session:
+            check_session(report)
+            check_dolphin_session(report)
         print(f'RESULT: {failed} failed check(s)')
         return 1 if failed else 0
     entries = [p for p in ROOT.rglob('*') if not any(x in p.relative_to(ROOT).parts for x in ('.git', '.validation', '__pycache__'))]
@@ -280,6 +283,7 @@ def main():
         print('SKIPPED: installed graphical dependencies (use --dependencies on target)')
     if args.session:
         check_session(report)
+        check_dolphin_session(report)
         check_session_keybinds(report, ROOT)
         if shutil.which('hyprctl') and os.environ.get('HYPRLAND_INSTANCE_SIGNATURE'):
             run(['hyprctl', 'monitors', '-j'], 'hyprctl monitors')

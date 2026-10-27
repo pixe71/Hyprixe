@@ -1,0 +1,12 @@
+{
+  "baseline_commit": "5d87b34",
+  "rejected_layout_commit": "9259fa5",
+  "bad_toolbar_sha256": [
+    "49aa53632f97b21cef61f3d91455a4ba587b9311a2181519bd99366b76d0b14d",
+    "d9ee3e7ce0e7814c09b118ff52ef5a4f2e11592fec6dc266db02b82a70ccd3f9"
+  ],
+  "baseline_files": {
+    ".config/dolphinrc": "c005f782e720b028f815a3dd76a2f25f8988b35576a944c7f5a80aa5bf906a05",
+    ".local/share/kxmlgui5/dolphin/dolphinui.rc": "c1f59f07ce4a729b3d4226c4f12fa91e69fe0d90ddcc0ce2426ba0fa08e22766"
+  }
+}

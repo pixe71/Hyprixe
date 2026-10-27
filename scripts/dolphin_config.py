@@ -1,4 +1,4 @@
-"""Standard Dolphin/KDE configuration payload; no runtime window manipulation."""
+"""Dolphin-only paint and color selection; layout keys are never changed."""
 import configparser
 import base64
 import errno
@@ -6,12 +6,11 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
-from xml.dom import minidom
-from xml.parsers.expat import ExpatError
 
-CONFIG_FILES = ('dolphinrc', 'baloofileinformationrc')
-DATA_FILES = ('kxmlgui5/dolphin/dolphinui.rc', 'dolphin/view_properties/global/.directory')
-VISIBLE_GROUPS = ('Places', 'Devices', 'RemovableDevices')
+THEME = 'Frosted-Glass-Dolphin'
+THEME_FILES = tuple(f'Kvantum/{THEME}/{THEME}.{suffix}' for suffix in ('kvconfig', 'svg'))
+SCHEME_FILE = 'color-schemes/HyprixeFrostedDolphin.colors'
+SCHEME_NAME = 'Hyprixe Frosted Dolphin'
 VIEW_XATTR = 'user.kde.fm.viewproperties#1'
 
 
@@ -19,46 +18,11 @@ def read_ini(path):
     # KConfig uses '=' only; ':' belongs to keys such as "screen: Width".
     parser = configparser.ConfigParser(interpolation=None, strict=True, delimiters=('=',))
     parser.optionxform = str
-    parser.read_string(Path(path).read_text())
+    text = Path(path).read_text()
+    first = next((line.strip() for line in text.splitlines() if line.strip() and not line.lstrip().startswith(('#', ';'))), '')
+    # Older Dolphin KConfig files have entries before the first named group.
+    parser.read_string(('[__root__]\n' if first and not first.startswith('[') else '') + text)
     return parser
-
-
-def show_places_groups(data):
-    """Unhide the requested existing groups, retaining bookmarks and metadata.
-
-Do not create an XBEL on fresh installs: KDE populates the standard locations
-and unhides these groups itself. No home URL, device UUID or mount is invented.
-"""
-    try:
-        document = minidom.parseString(data)
-    except ExpatError as exc:
-        raise ValueError(f'Cannot read user-places.xbel: {exc}') from exc
-    root = document.documentElement
-    if root.tagName != 'xbel':
-        raise ValueError('Invalid user-places.xbel: expected xbel root')
-
-    def child(parent, name, **attributes):
-        for node in parent.childNodes:
-            if node.nodeType == node.ELEMENT_NODE and node.tagName == name and all(
-                    node.getAttribute(key) == value for key, value in attributes.items()):
-                return node
-        node = document.createElement(name)
-        for key, value in attributes.items():
-            node.setAttribute(key, value)
-        parent.appendChild(node)
-        return node
-
-    metadata = child(child(root, 'info'), 'metadata', owner='http://www.kde.org')
-    changed = False
-    for group in VISIBLE_GROUPS:
-        node = child(metadata, f'GroupState-{group}-IsHidden')
-        text = ''.join(part.data for part in node.childNodes if part.nodeType == part.TEXT_NODE)
-        if text != 'false':
-            for part in list(node.childNodes):
-                node.removeChild(part)
-            node.appendChild(document.createTextNode('false'))
-            changed = True
-    return document.toxml(encoding='UTF-8') if changed else data
 
 
 def view_metadata(directory):
@@ -89,31 +53,43 @@ def restore_view_metadata(directory, value):
 def ensure_closed():
     if shutil.which('pgrep') and subprocess.run(['pgrep', '-u', str(os.getuid()), '-x', 'dolphin'],
                                                stdout=subprocess.DEVNULL, check=False).returncode == 0:
-        raise ValueError('Close all Dolphin windows/processes before installing or restoring its layout; otherwise Dolphin may overwrite it on exit.')
+        raise ValueError('Close all Dolphin windows/processes before updating its theme or restoring its interface; otherwise Dolphin may overwrite preferences on exit.')
 
 
-def payload(repo, roots, merge_ini):
+def remove_key(text, section, key):
+    current, output = '', []
+    for line in text.splitlines(keepends=True):
+        if line.strip().startswith('[') and line.strip().endswith(']'):
+            current = line.strip()[1:-1]
+        if current == section and line.split('=', 1)[0].strip() == key:
+            continue
+        output.append(line)
+    return ''.join(output)
+
+
+def payload(repo, roots, merge_ini, default_theme=None):
     repo = Path(repo)
-    result = {}
-    for name in CONFIG_FILES:
-        source = repo / '.config' / name
-        data = source.read_bytes()
-        target = roots['config'] / name
-        if name == 'baloofileinformationrc':
-            desired = read_ini(source)
-            old = target.read_text() if target.is_file() else ''
-            current = configparser.ConfigParser(interpolation=None, delimiters=('=',), strict=False)
-            current.read_string(old)
-            desired['Misc']['version'] = str(max(13, current.getint('Misc', 'version', fallback=0)))
-            data = merge_ini(old, {section: dict(desired[section]) for section in desired.sections()}).encode()
-        result[target] = (data, 0o644)
-    for name in DATA_FILES:
-        result[roots['data'] / name] = ((repo / '.local/share' / name).read_bytes(), 0o644)
-    preset = read_ini(repo / 'dolphin/dock-layout.ini')
-    target = roots['state'] / 'dolphinstaterc'
+    result = {roots['config'] / name: ((repo / '.config' / name).read_bytes(), 0o644) for name in THEME_FILES}
+    target = roots['config'] / 'Kvantum/kvantum.kvconfig'
     old = target.read_text() if target.is_file() else ''
-    result[target] = (merge_ini(old, {'State': {'State': preset['State']['State']}}).encode(), 0o644)
-    places = roots['data'] / 'user-places.xbel'
-    if places.is_file():
-        result[places] = (show_places_groups(places.read_bytes()), 0o644)
+    settings = read_ini(target) if target.is_file() else configparser.ConfigParser(interpolation=None)
+    updates = {}
+    if settings.has_section('Applications'):
+        for theme, applications in settings.items('Applications'):
+            names = [name.strip() for name in applications.split(',') if name.strip()]
+            if any(name.lower() == 'dolphin' for name in names):
+                old = remove_key(old, 'Applications', theme)
+                names = [name for name in names if name.lower() != 'dolphin']
+                if names:
+                    updates[theme] = ','.join(names)
+    updates[THEME] = 'dolphin'
+    if not target.exists() and default_theme:
+        old = merge_ini(old, {'General': {'theme': default_theme}})
+    result[target] = (merge_ini(old, {'Applications': updates}).encode(), 0o644)
+    # KDE's per-application color manager can replace Kvantum's palette with
+    # Breeze Light after startup. Select matching colors for Dolphin only.
+    result[roots['data'] / SCHEME_FILE] = ((repo / '.local/share' / SCHEME_FILE).read_bytes(), 0o644)
+    target = roots['config'] / 'dolphinrc'
+    old = target.read_text() if target.is_file() else (repo / '.config/dolphinrc').read_text() if default_theme else ''
+    result[target] = (merge_ini(old, {'UiSettings': {'ColorScheme': SCHEME_NAME}}).encode(), 0o644)
     return result

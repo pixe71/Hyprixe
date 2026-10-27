@@ -7,8 +7,8 @@ preserves the software-rendering adjustments needed during earlier testing.
 The theme preserves the `min_forest.jpg` wallpaper, translucent blue/cyan glass,
 blur, 13 px rounded corners, blue/purple borders, a top Waybar and the
 Frosted-Glass Kvantum theme. The original SVG/Kvantum files and wallpaper are
-preserved byte for byte. Dolphin's inherited toolbar is adapted to a minimal
-navigation layout, with Places/Devices above Information in a narrow right column.
+preserved byte for byte. Dolphin retains its original interface and inherited toolbar. A Dolphin-only
+Kvantum variant adds blue/cyan translucent paint and matching KDE colors.
 <!-- ![Frosted Glass wallpaper](wallpapers/min_forest.jpg)
 -->
 ## Preview
@@ -90,18 +90,21 @@ Rofi Wayland, Hyprlock, Hypridle, awww, PipeWire/WirePlumber, NetworkManager,
 Blueman, SwayNC and cliphist. Icons use Breeze and FontAwesome; the
 JetBrains Mono font is available in Debian.
 
-Dolphin uses a 96 px icon grid, file previews, a compact toolbar and a locked
-right-hand panel layout. Breeze Dark icons and Kvantum Frosted-Glass stay selected.
-On an existing Hyprixe desktop, close Dolphin and apply only this component:
+Dolphin keeps its existing layout, icon sizes, panels, view and navigation.
+The **Frosted-Glass-Dolphin** Kvantum association changes only Dolphin's paint;
+the global Frosted-Glass theme and other Qt applications retain their settings.
+Close Dolphin and apply the visual update:
 
 ```bash
 ./install.sh native --dolphin-only
 ./verify.sh --dolphin
 ```
 
-Missing Dolphin preview/device dependencies are installed as needed. Other
-desktop configuration is not deployed by this option. See
-[Dolphin layout, validation and restore](docs/DOLPHIN.md).
+If you installed the rejected `9259fa5` layout, restore its saved original
+interface first with `--dolphin-only --restore-dolphin-interface`. The installer
+selects the matching dated backup and restores only Dolphin interface files;
+other desktop changes and new bookmarks are retained. No layout is guessed if
+the backup is missing. See [Dolphin appearance and restoration](docs/DOLPHIN.md).
 
 ## Keybindings
 

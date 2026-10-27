@@ -6,8 +6,10 @@ export PATH="$HOME/.local/bin:$PATH"
 packages=true
 dry_run=false
 dolphin_only=false
+restore_interface=false
+interface_backup=
 usage() {
-    printf 'Usage: %s [native|vmware] [--no-packages] [--dry-run] [--dolphin-only]\n' "$0"
+    printf 'Usage: %s [native|vmware] [--no-packages] [--dry-run] [--dolphin-only [--restore-dolphin-interface] [--interface-backup=ID]]\n' "$0"
 }
 for arg in "$@"; do
     case "$arg" in
@@ -15,10 +17,16 @@ for arg in "$@"; do
         --no-packages) packages=false ;;
         --dry-run) dry_run=true ;;
         --dolphin-only) dolphin_only=true ;;
+        --restore-dolphin-interface) restore_interface=true ;;
+        --interface-backup=*) interface_backup=${arg#*=} ;;
         --help|-h) usage; exit 0 ;;
         *) usage >&2; exit 2 ;;
     esac
 done
+if { $restore_interface && ! $dolphin_only; } || { [[ -n $interface_backup ]] && ! $restore_interface; }; then
+    echo 'ERROR: interface restoration requires --dolphin-only --restore-dolphin-interface.' >&2
+    exit 2
+fi
 [[ $(uname -s) == Linux && -r /etc/os-release ]] || { echo 'ERROR: Debian 13 Linux required.' >&2; exit 1; }
 # shellcheck source=/dev/null
 source /etc/os-release
@@ -28,7 +36,7 @@ trap 'printf "ERROR: installation failed (line %s). No session was started.\n" "
 runtime=$(mktemp -d -t hyprixe-runtime.XXXXXXXX)
 trap 'rm -rf -- "$runtime"' EXIT
 if ! $dry_run && command -v pgrep >/dev/null && pgrep -u "$UID" -x dolphin >/dev/null; then
-    echo 'ERROR: Close all Dolphin windows/processes before installing its preferences and dock layout.' >&2
+    echo 'ERROR: Close all Dolphin windows/processes before updating its theme or restoring its interface.' >&2
     exit 1
 fi
 if $dolphin_only; then
@@ -49,11 +57,17 @@ if $dolphin_only; then
             cat "$runtime/dolphin-deps.log"
         fi
     fi
+    if $restore_interface; then
+        restore_args=(restore-dolphin-interface)
+        $dry_run && restore_args+=(--dry-run)
+        [[ -n $interface_backup ]] && restore_args+=(--backup "$interface_backup")
+        python3 "$repo/scripts/deploy.py" "${restore_args[@]}"
+    fi
     python3 "$repo/scripts/deploy.py" "${args[@]}"
     if $dry_run; then
         echo 'Dolphin-only preview complete; no configuration changed.'
     else
-        echo 'Dolphin layout installed. Start Dolphin again; other desktop/session configuration was not deployed.'
+        echo 'Dolphin Kvantum paint installed. Interface, other Qt themes and desktop/session configuration were preserved.'
     fi
     exit 0
 fi

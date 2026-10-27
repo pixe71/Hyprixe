@@ -1,89 +1,59 @@
-"""Dolphin-only source, installed configuration and Qt 6 runtime checks."""
+"""Dolphin paint checks. Never enforce a dock layout, icon size or view mode."""
 import argparse
-import base64
 import configparser
+import hashlib
+import json
 import os
-import re
 from pathlib import Path
 import shutil
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
-from dolphin_config import DATA_FILES, VISIBLE_GROUPS, read_ini, view_metadata
+from dolphin_config import THEME, THEME_FILES, SCHEME_NAME, SCHEME_FILE, read_ini
 
-TOOLBAR = ['go_back', 'go_forward', 'go_up', 'url_navigators', 'edit_find', 'hamburger_menu']
-PREFERENCES = {
-    'General': {'GlobalViewProps': 'true', 'ShowStatusBar': 'Disabled', 'LockPanels': 'true', 'SplitView': 'false'},
-    'IconsMode': {'IconSize': '96', 'PreviewSize': '96', 'MaximumTextLines': '2', 'TextWidthIndex': '2'},
-    'InformationPanel': {'previewsShown': 'true', 'previewsAutoPlay': 'false', 'showHovered': 'false'},
-    'MainWindow': {'MenuBar': 'Disabled'},
-    'MainWindow][Toolbar mainToolBar': {'ToolButtonStyle': 'IconOnly'},
-}
-VIEW = {'Version': '4', 'ViewMode': '0', 'PreviewsShown': 'true', 'SortFoldersFirst': 'true'}
+ERRORS = (OSError, ValueError, KeyError, configparser.Error, ET.ParseError)
 
 
-def assert_preferences(path):
-    config = read_ini(path)
-    for section, keys in PREFERENCES.items():
-        for key, value in keys.items():
-            if config.get(section, key, fallback=None) != value:
-                raise ValueError(f'{path.name}: [{section}] {key} must be {value}')
-
-
-def assert_toolbar(path):
-    root = ET.parse(path).getroot()
-    toolbar = root.find("ToolBar[@name='mainToolBar']")
-    if toolbar is None or [a.get('name') for a in toolbar.findall('Action')] != TOOLBAR:
-        raise ValueError('Dolphin toolbar must contain only navigation, location, search and menu')
-
-
-def assert_view(config, native_defaults=False):
-    for key, value in VIEW.items():
-        # Dolphin omits default fields when saving to xattrs, and may remove
-        # both storage forms when the entire global view uses native defaults.
-        if config.get('Dolphin', key, fallback=value if native_defaults else None) != value:
-            raise ValueError(f'Global view: {key} must be {value}')
-
-
-def assert_information(config):
-    if config.getint('Misc', 'version', fallback=0) < 13:
-        raise ValueError('Baloo metadata initialization version must be at least 13')
-    for key in ('kfileitem#type', 'kfileitem#size', 'kfileitem#modified'):
-        # Baloo omits stored true values because true is its default.
-        if not config.getboolean('Show', key, fallback=True):
-            raise ValueError('Information panel property hidden: ' + key)
-    for key in ('tags', 'rating', 'userComment'):
-        if config.getboolean('Show', key, fallback=True):
-            raise ValueError('Information-panel editor should be hidden: ' + key)
-
-
-def layout_bytes(path):
-    value = read_ini(path)['State']['State']
-    state = base64.b64decode(value, validate=True)
-    if not state.startswith(b'\x00\x00\x00\xff\x00\x00\x00\x00'):
-        raise ValueError('Unsupported Qt dock-state header/version')
-    for name in ('placesDock', 'infoDock'):
-        if name.encode('utf-16-be') not in state:
-            raise ValueError(f'Dock state missing {name}')
-    return state
+def assert_theme(config, svg):
+    settings = read_ini(config)
+    for key in ('composite', 'translucent_windows', 'blurring', 'popup_blurring'):
+        if not settings.getboolean('%General', key):
+            raise ValueError('Kvantum option must be enabled: ' + key)
+    if not settings.getboolean('Hacks', 'transparent_dolphin_view'):
+        raise ValueError('Kvantum transparent_dolphin_view must be enabled')
+    if settings['GeneralColors']['window.color'] != '#203f52' or settings['GeneralColors']['text.color'] != '#e2eff5':
+        raise ValueError('Dolphin must use the cold blue background and light text palette')
+    elements = {element.get('id'): element for element in ET.parse(svg).iter() if element.get('id')}
+    for name, color, alpha in (('window-normal', '#203f52', '.78'), ('dock-normal', '#102b3b', '.38')):
+        style = dict(part.split(':', 1) for part in elements[name].get('style', '').split(';') if ':' in part)
+        if style.get('fill') != color or style.get('fill-opacity') != alpha:
+            raise ValueError(name + ': expected translucent blue SVG paint')
 
 
 def check_source(report, root):
     root = Path(root)
-    checks = (
-        ('Dolphin preferences: 96 px icons, global icon view, locked panels, no menu/status bar',
-         lambda: assert_preferences(root / '.config/dolphinrc')),
-        ('Dolphin minimal navigation toolbar XML', lambda: assert_toolbar(root / '.local/share' / DATA_FILES[0])),
-        ('Dolphin global view properties: icon mode, previews and folders first',
-         lambda: assert_view(read_ini(root / '.local/share' / DATA_FILES[1]))),
-        ('Dolphin standard Qt 6 dock preset', lambda: layout_bytes(root / 'dolphin/dock-layout.ini')),
-        ('Dolphin information properties: type, size, modified; no tag/rating editors',
-         lambda: assert_information(read_ini(root / '.config/baloofileinformationrc'))),
-    )
-    for label, function in checks:
+    def interface():
+        spec = json.loads((root / 'dolphin/interface-baseline.json').read_text())
+        for name, digest in spec['baseline_files'].items():
+            if hashlib.sha256((root / name).read_bytes()).hexdigest() != digest:
+                raise ValueError('Pre-9259fa5 interface changed: ' + name)
+        for name in ('.config/baloofileinformationrc', '.local/share/dolphin/view_properties/global/.directory', 'dolphin/dock-layout.ini'):
+            if (root / name).exists():
+                raise ValueError('Rejected interface preset reintroduced: ' + name)
+    def theme():
+        assert_theme(*(root / '.config' / name for name in THEME_FILES))
+        if read_ini(root / '.local/share' / SCHEME_FILE)['General']['Name'] != SCHEME_NAME:
+            raise ValueError('Matching Dolphin KDE color scheme missing')
+    def association():
+        settings = read_ini(root / '.config/Kvantum/kvantum.kvconfig')
+        if settings['Applications'][THEME] != 'dolphin' or settings['General']['theme'] != 'Frosted-Glass':
+            raise ValueError('Only Dolphin should use the blue variant; global Frosted-Glass stays selected')
+    for label, function in (('Dolphin interface: exact pre-9259fa5 files; no forced view/dock preset', interface),
+                            ('Dolphin Kvantum: translucent SVG paint, transparent views and light text', theme),
+                            ('Kvantum application association: Dolphin-only paint', association)):
         try:
             function()
-        except (OSError, ValueError, KeyError, configparser.Error, ET.ParseError) as exc:
+        except ERRORS as exc:
             report(False, label + ': ' + str(exc))
         else:
             report(True, label)
@@ -96,12 +66,6 @@ def runtime_errors():
         errors.append('Dolphin is missing; install the Debian dolphin package')
     else:
         try:
-            # Preflight must also work from a TTY before any Wayland display.
-            version = subprocess.run([binary, '--version'], env=dict(os.environ, QT_QPA_PLATFORM='offscreen'),
-                                     capture_output=True, text=True, timeout=10)
-            match = re.search(r'dolphin\s+(\d+)\.(\d+)', version.stdout, re.I)
-            if version.returncode or not match or tuple(map(int, match.groups())) < (25, 4):
-                errors.append('Dolphin >= 25.04 (Debian 13) is required for the separate State dock layout')
             links = subprocess.run(['ldd', binary], capture_output=True, text=True, timeout=10)
             if links.returncode or 'libQt6Widgets.so' not in links.stdout or 'libQt5Widgets.so' in links.stdout:
                 errors.append('Dolphin must link to Qt 6 Widgets (Debian 13 package)')
@@ -122,83 +86,80 @@ def check_installed(report, environ=None):
     home = Path(environ.get('HOME', Path.home()))
     config = Path(environ.get('XDG_CONFIG_HOME', home / '.config'))
     data = Path(environ.get('XDG_DATA_HOME', home / '.local/share'))
-    state = Path(environ.get('XDG_STATE_HOME', home / '.local/state'))
     try:
-        assert_preferences(config / 'dolphinrc')
-        assert_toolbar(data / DATA_FILES[0])
-        layout_bytes(state / 'dolphinstaterc')
-        directory = data / 'dolphin/view_properties/global'
-        if (directory / '.directory').is_file():
-            view = read_ini(directory / '.directory')
-        else:
-            metadata = view_metadata(directory)
-            view = configparser.ConfigParser(interpolation=None, delimiters=('=',))
-            view.optionxform = str
-            if metadata['value'] is not None:
-                view.read_string(base64.b64decode(metadata['value']).decode())
-        assert_view(view, native_defaults=True)
-        assert_information(read_ini(config / 'baloofileinformationrc'))
-    except (OSError, ValueError, KeyError, configparser.Error, ET.ParseError) as exc:
-        report(False, 'Installed Dolphin preferences, toolbar, state and view properties: ' + str(exc))
-    else:
-        report(True, 'Installed Dolphin preferences, toolbar, state and global view properties (.directory, native xattr or native defaults)')
-    try:
-        if (data / 'user-places.xbel').is_file():
-            root = ET.parse(data / 'user-places.xbel').getroot()
-            for group in VISIBLE_GROUPS:
-                node = root.find(f"info/metadata[@owner='http://www.kde.org']/GroupState-{group}-IsHidden")
-                if node is not None and node.text == 'true':
-                    raise ValueError(group + ' group is hidden')
-        # With no XBEL, KDE creates the default bookmarks and visible groups.
-        report(True, 'Places/Devices groups are not hidden; device rows depend on real hardware')
-    except (OSError, ValueError, ET.ParseError) as exc:
-        report(False, 'Places/Devices visibility: ' + str(exc))
-    try:
-        theme = read_ini(config / 'Kvantum/kvantum.kvconfig')
-        kde = read_ini(config / 'kdeglobals')
-        qt = read_ini(config / 'qt6ct/qt6ct.conf')
-        if theme['General']['theme'] != 'Frosted-Glass' or kde['KDE']['widgetStyle'].lower() != 'kvantum' or qt['Appearance']['style'].lower() != 'kvantum':
-            raise ValueError('Kvantum Frosted-Glass must be selected in Kvantum/KDE/qt6ct')
-        if kde['Icons']['Theme'] != 'breeze-dark':
-            raise ValueError('Expected existing Breeze Dark icons')
+        assert_theme(*(config / name for name in THEME_FILES))
+        if read_ini(config / 'dolphinrc').get('UiSettings', 'ColorScheme', fallback=None) != SCHEME_NAME:
+            raise ValueError('Dolphin per-application color scheme is not selected')
+        if read_ini(data / SCHEME_FILE)['General']['Name'] != SCHEME_NAME:
+            raise ValueError('Matching Dolphin KDE color scheme missing')
+        settings = read_ini(config / 'Kvantum/kvantum.kvconfig')
+        if settings['Applications'][THEME] != 'dolphin':
+            raise ValueError('Dolphin-specific Kvantum association missing')
+        for theme, apps in settings.items('Applications'):
+            if theme != THEME and 'dolphin' in [name.strip().lower() for name in apps.split(',')]:
+                raise ValueError('Conflicting Kvantum association: ' + theme)
+        for name, section, key in (('kdeglobals', 'KDE', 'widgetStyle'), ('qt6ct/qt6ct.conf', 'Appearance', 'style')):
+            path = config / name
+            if path.is_file() and read_ini(path).get(section, key, fallback='kvantum').lower() != 'kvantum':
+                raise ValueError('Conflicting Qt style in ' + name)
         override = environ.get('QT_STYLE_OVERRIDE', '')
         if override and override.lower() != 'kvantum':
             raise ValueError('Conflicting QT_STYLE_OVERRIDE=' + override)
-    except (OSError, ValueError, KeyError, configparser.Error) as exc:
-        report(False, 'Installed Dolphin Qt/Kvantum/Breeze integration: ' + str(exc))
+    except ERRORS as exc:
+        report(False, 'Installed Dolphin-only Kvantum paint: ' + str(exc))
     else:
-        report(True, 'Installed Frosted-Glass Kvantum, Qt/KDE style and Breeze icons; no conflicting style override')
+        report(True, 'Installed Dolphin-only Kvantum paint; no conflicting Qt style (interface not prescribed)')
 
 
 def check_runtime(report):
     errors = runtime_errors()
-    report(not errors, 'Dolphin Qt 6 linkage and Kvantum plugin' + (': ' + '; '.join(errors) if errors else ''))
-    # Optional bindings give an actual style instantiation without a GUI window.
-    probe = "from PyQt6.QtWidgets import QApplication; a=QApplication([]); print(a.style().objectName())"
+    report(not errors, 'Dolphin Qt 6 linkage, previews and Kvantum plugin' + (': ' + '; '.join(errors) if errors else ''))
+    probe = '''from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtGui import QPalette
+from PyQt6.QtWidgets import QApplication
+import json
+QCoreApplication.setApplicationName('dolphin')
+a=QApplication(['dolphin'])
+p=a.style().standardPalette()
+print(json.dumps({'style':a.style().objectName(),'window':p.color(QPalette.ColorRole.Window).name(),'text':p.color(QPalette.ColorRole.Text).name()}))
+'''
     try:
         result = subprocess.run([sys.executable, '-c', probe], env=dict(os.environ, QT_QPA_PLATFORM='offscreen'),
                                 capture_output=True, text=True, timeout=15)
-    except (OSError, subprocess.TimeoutExpired) as exc:
-        report(False, 'Qt 6 style instantiation: ' + str(exc))
-        return
-    if 'No module named' in result.stderr:
-        print('SKIPPED: Qt style instantiation (optional python3-pyqt6 unavailable)')
-    else:
-        report(result.returncode == 0 and result.stdout.strip().lower() == 'kvantum',
-               'Actual Qt 6 style instantiation: ' + (result.stdout.strip() or result.stderr.strip()))
-    if shutil.which('udisksctl'):
-        try:
-            devices = subprocess.run(['udisksctl', 'status'], capture_output=True, text=True, timeout=15)
-            report(devices.returncode == 0, 'UDisks2 device enumeration' +
-                   (': ' + devices.stderr.strip() if devices.returncode else ': available'))
-        except (OSError, subprocess.TimeoutExpired) as exc:
-            report(False, 'UDisks2 device enumeration: ' + str(exc))
-    print('SKIPPED: active Dolphin widget positions, mounted-device rows and compositor blur require a visual session check')
+        if 'No module named' in result.stderr:
+            print('SKIPPED: Qt style/palette instantiation (optional python3-pyqt6 unavailable)')
+        else:
+            actual = json.loads(result.stdout) if result.returncode == 0 else {}
+            ok = actual.get('style') == 'kvantum' and actual.get('window') == '#203f52' and actual.get('text') == '#e2eff5'
+            report(ok, 'Actual Qt 6 Kvantum style and theme palette for Dolphin: ' + (str(actual) if actual else result.stderr.strip()))
+    except (OSError, ValueError, subprocess.TimeoutExpired) as exc:
+        report(False, 'Qt 6 style/palette instantiation: ' + str(exc))
+    print('SKIPPED: visible transparency, compositor blur and unchanged on-screen interface require a real desktop check')
+
+
+def check_session(report):
+    """Inspect the UWSM manager and compositor; never dispatch changes."""
+    try:
+        result = subprocess.run(['systemctl', '--user', 'show-environment'], capture_output=True, text=True, timeout=10)
+        env = dict(line.split('=', 1) for line in result.stdout.splitlines() if '=' in line)
+        report(result.returncode == 0 and env.get('QT_STYLE_OVERRIDE', '').lower() == 'kvantum',
+               'UWSM/systemd user manager exports QT_STYLE_OVERRIDE=kvantum')
+        blur = subprocess.run(['hyprctl', '-j', 'getoption', 'decoration:blur:enabled'], capture_output=True, text=True, timeout=10)
+        enabled = json.loads(blur.stdout).get('int') if blur.returncode == 0 else None
+        report(enabled == 1, 'Active Hyprland compositor blur enabled')
+        pids = subprocess.run(['pgrep', '-u', str(os.getuid()), '-x', 'dolphin'], capture_output=True, text=True, timeout=10)
+        for pid in pids.stdout.split():
+            values = (Path('/proc') / pid / 'environ').read_bytes().split(b'\0')
+            report(b'QT_STYLE_OVERRIDE=kvantum' in values, 'Running Dolphin exports QT_STYLE_OVERRIDE=kvantum (PID ' + pid + ')')
+        if not pids.stdout.strip():
+            print('SKIPPED: no running Dolphin process to inspect; open Dolphin and repeat --dolphin --session')
+    except (OSError, ValueError, subprocess.TimeoutExpired) as exc:
+        report(False, 'Live Dolphin/UWSM style chain: ' + str(exc))
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--dependencies', action='store_true', help='Check only Qt 6 Dolphin and Kvantum runtime before deployment')
+    parser.add_argument('--dependencies', action='store_true', help='Check Qt 6 Dolphin and Kvantum runtime before deployment')
     args = parser.parse_args()
     if args.dependencies:
         errors = runtime_errors()
@@ -207,7 +168,7 @@ def main():
         if not errors:
             print('PASS: Dolphin Qt 6 and Kvantum runtime dependencies')
         return bool(errors)
-    parser.error('Use verify.sh --dolphin to check deployed configuration')
+    parser.error('Use verify.sh --dolphin [--session] to check deployed configuration')
 
 
 if __name__ == '__main__':

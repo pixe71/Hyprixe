@@ -37,8 +37,10 @@ examples and generated VM state.
 ## Preserved features
 
 The original wallpaper and Kvantum files are verified by SHA256. The Dolphin
-toolbar was subsequently adapted for the requested minimal layout; its action
-contract is verified instead of requiring its old bytes. See [DOLPHIN.md](DOLPHIN.md).
+toolbar and interface defaults are restored byte for byte from pre-9259fa5 Git
+history and checked against saved hashes. A separate Dolphin-only Kvantum paint
+variant and per-application KDE color scheme leave other Qt apps unchanged.
+See [DOLPHIN.md](DOLPHIN.md).
 Decoration values are unchanged: rounding 13, active opacity 0.78 /
 inactive 0.72, blur size 4 / 3 passes, gaps 4/10, 2 px borders and the same
 colors. Rofi retains its KoolDots/adi1090x layout and translucent palette.

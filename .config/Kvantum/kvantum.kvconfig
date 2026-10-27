@@ -1,2 +1,5 @@
 [General]
 theme=Frosted-Glass
+
+[Applications]
+Frosted-Glass-Dolphin=dolphin

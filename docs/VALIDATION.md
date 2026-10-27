@@ -721,6 +721,10 @@ never triggers. Run the application/session procedure in KEYBINDS.md and collect
 
 ## Dolphin layout — October 26–27, 2026
 
+**Historical result: this layout was rejected and is superseded by the
+interface-restoration/paint-only update below.** Its layout-enforcing checks
+no longer apply.
+
 Implemented the native layout documented in [DOLPHIN.md](DOLPHIN.md): 96 px icon
 view, a 264 logical-pixel right column with Places/Devices above Information,
 large previews and compact metadata, minimal toolbar, hidden classic menu/status
@@ -801,3 +805,78 @@ The requested layout was implemented and tested, but pixel-identical reference
 comparison, the real Hyprland blur/transparency and the user's monitor/font/DPI
 combination still need observation on the physical PC. No physical device was
 mounted, ejected, unmounted or formatted during these tests.
+
+## Dolphin interface restoration and translucent paint — October 27, 2026
+
+Supersedes the rejected `9259fa5` layout above. Git parent `5d87b34` provides the
+exact original tracked `dolphinrc` and `dolphinui.rc`; their hashes now pass the
+source verifier. The view/dock/Baloo presets and Qt layout generator are removed.
+The PC's own former state is restored from its installer backup, never replaced
+by another generated layout. Only native color selection is then merged into
+`dolphinrc`. Other Hyprixe configuration and original wallpaper/Kvantum hashes
+remain unchanged. No Hyprland rule or graphics workaround was added.
+
+Two actual causes of the white/light appearance were reproduced:
+
+1. The original Kvantum SVG paints white opaque window interiors even with
+   translucency flags enabled. The Dolphin-only SVG now paints blue with alpha.
+2. KDE's application color manager reapplies a light palette after Kvantum starts.
+   In the first real run the widget style was already `Kvantum::Style`, yet the
+   application palette was `window=#eff0f1, text=#232629`. Selecting the matching
+   per-application KDE scheme yields `window=#203f52, text=#e2eff5,
+   highlight=#237e98` without changing the global color scheme.
+
+Commands actually executed in Debian 13 WSL:
+
+- `python3 -m unittest discover -s tests -p test_dolphin.py -v`:
+  **32 tests, OK, exit 0**. Includes XDG paths with spaces, style-only installation
+  and repeat, preservation of interface/state/xattrs/bookmarks, restored baseline
+  defaults on fresh installs, backup-based UI rollback, missing/corrupt backups,
+  rollback after a simulated disk failure, repeated-migration marker, native
+  color-key-only uninstall preserving later UI edits, manual color conflicts,
+  preview/device runtime and mock APT failure handling. Source tests compare all
+  non-paint Kvantum options and SVG geometry with the original theme.
+- `./verify.sh`, with the prepared native validation runtime on PATH:
+  **166 integration tests OK; RESULT: 0 failed check(s), exit 0**.
+  Bash syntax: **133 scripts**. ShellCheck: all scripts at error severity and
+  active scripts at warning severity. Lua syntax: **83 files**. Existing
+  keybindings/workspaces load test, Waybar/taskbar compatibility, SDDM QML lint,
+  Rofi parsing, references, original-asset hashes and secret scan all pass.
+  Actual Hyprland parser/live checks remain SKIPPED in this root WSL run.
+- `./verify.sh --dolphin` in each isolated deployed desktop fixture:
+  **0 failed checks, exit 0**. The actual Qt6 style probe instantiates Kvantum
+  and resolves the Dolphin variant palette, with no forced fallback.
+- External disposable GUI harness `hyprixe-dolphin-style-gui.py`: starts real
+  **Dolphin 25.04.3 / Qt 6.8.2 / Kvantum 1.1.4** on private Sway headless Wayland
+  and a private session bus as UID 65534. First observes the old interface, runs
+  the actual archived `9259fa5` component installer, then runs the corrected
+  `./install.sh native --dolphin-only --restore-dolphin-interface --no-packages`.
+  Original UI files match their saved bytes before the paint step, apart from
+  the new native ColorScheme key. The real widget inspection retains dock
+  areas/visibility, toolbar actions and icon-grid metrics. Qt save/restore can
+  round split heights by a few pixels; no dock geometry is imposed by the theme.
+- The complete GUI install/verify/uninstall sequence passes at **1920x1080**,
+  a **1100x680** window on **1366x768**, and **3840x2160 at scale 2** with an actual
+  JPEG preview. Each phase launches the real application, not a mocked Dolphin.
+  The native hamburger menu opens with **22 actions** and light text; its capture
+  was inspected. A separate Qt application reports the identical original palette
+  before/after. Paint uninstall restores the previous theme association and
+  ColorScheme without changing the recovered interface or later runtime state.
+- Alpha evidence at 1920x1080: `WA_TranslucentBackground=true`, minimum rendered
+  alpha **198/255**, and **832,906 of 986,348** window pixels have intermediate
+  alpha. The composited capture visibly shows `min_forest.jpg` through Dolphin.
+  At scale 2, **3,528,448 of 3,945,392** pixels have intermediate alpha. Qt's raster
+  Wayland window reports an unspecified GL alpha-buffer size (-1); no GL buffer
+  depth is inferred from that value. Actual pixels/composited output establish
+  translucency. The Sway harness does not provide Hyprland blur.
+- `git diff --check`: passed. No fixture HOME, inspector, compiled binary,
+  screenshot, log, cache or backup is added to Git. No commit made.
+
+Remaining physical checks: run `./verify.sh --dolphin --session` inside the actual
+UWSM Hyprland session, confirm its manager and running Dolphin export
+`QT_STYLE_OVERRIDE=kvantum`, then inspect the exact restored personal layout,
+blur, active/inactive opacity, contrast, context menus and monitor scaling.
+This environment is Windows with Debian WSL, not the user's physical PC. Its
+Hyprland GPU backend cannot run here; no live physical blur, UWSM environment or
+physical mouse/keyboard test is claimed. Other desktop components were covered
+by their existing regression checks, not relaunched as a physical desktop.

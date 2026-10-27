@@ -103,9 +103,13 @@ def payload(roots, profile, runtime=None, dolphin_only=False):
     result = {}
     for p in sorted((REPO / '.config').rglob('*')):
         if p.is_file():
+            if p.relative_to(REPO / '.config') == Path('dolphinrc') and (roots['config'] / 'dolphinrc').exists():
+                continue  # Existing interface belongs to the user, not the paint theme.
             result[roots['config'] / p.relative_to(REPO / '.config')] = (p.read_bytes(), 0o755 if p.suffix == '.sh' else 0o644)
     for p in sorted((REPO / '.local/share').rglob('*')):
         if p.is_file():
+            if p.relative_to(REPO / '.local/share') == Path('kxmlgui5/dolphin/dolphinui.rc') and (roots['data'] / 'kxmlgui5/dolphin/dolphinui.rc').exists():
+                continue
             result[roots['data'] / p.relative_to(REPO / '.local/share')] = (p.read_bytes(), 0o644)
     result[roots['data'] / 'hyprixe/wallpapers/min_forest.jpg'] = ((REPO / 'wallpapers/min_forest.jpg').read_bytes(), 0o644)
     hypr = roots['config'] / 'hypr'
@@ -144,7 +148,7 @@ def payload(roots, profile, runtime=None, dolphin_only=False):
             source = Path(runtime) / name
             if source.is_file():
                 result[Path(os.environ['HOME']) / '.local/bin' / name] = (source.read_bytes(), 0o755)
-    result.update(dolphin_config.payload(REPO, roots, merge_ini))
+    result.update(dolphin_config.payload(REPO, roots, merge_ini, default_theme='Frosted-Glass'))
     return result
 
 
@@ -162,14 +166,24 @@ def restore(backup, home, dry=False, rollback=False, save_dolphin_changes=False)
     if manifest.get('restored'):
         raise ValueError('This backup has already been restored')
     entries = manifest['files']
-    conflicts, preserve = [], []
+    conflicts, preserve, selective = [], [], {}
+    color = manifest.get('dolphin_color_scheme')
     dolphin_targets = set(manifest.get('dolphin_targets', []))
     for entry in entries:
         p = Path(entry['target'])
         guard(p, home)
         current = digest(p)
         if current not in (entry['after'], entry['before']):
-            if save_dolphin_changes and str(p) in dolphin_targets and current != 'directory':
+            if color and str(p) == color['path'] and p.is_file() and not p.is_symlink():
+                current_color = dolphin_config.read_ini(p).get('UiSettings', 'ColorScheme', fallback=None)
+                if current_color not in (color['before'], color['after']):
+                    conflicts.append(str(p) + ' (ColorScheme changed)')
+                else:
+                    text = dolphin_config.remove_key(p.read_text(), 'UiSettings', 'ColorScheme')
+                    if color['before'] is not None:
+                        text = merge_ini(text, {'UiSettings': {'ColorScheme': color['before']}})
+                    selective[p] = text.encode()
+            elif save_dolphin_changes and str(p) in dolphin_targets and current != 'directory':
                 preserve.append(p)
             else:
                 conflicts.append(str(p))
@@ -190,7 +204,7 @@ def restore(backup, home, dry=False, rollback=False, save_dolphin_changes=False)
         current_view = dolphin_config.view_metadata(directory)
         if not current_view['supported'] and view['before'] is not None:
             raise ValueError('Filesystem no longer supports the saved Dolphin view metadata')
-        if current_view['value'] != view['before']:
+        if current_view['value'] not in (view['before'], view.get('after', view['before'])):
             if save_dolphin_changes:
                 changed_view = {'path': str(directory), 'name': view['name'], 'value': current_view['value']}
             else:
@@ -223,6 +237,11 @@ def restore(backup, home, dry=False, rollback=False, save_dolphin_changes=False)
         print('RESTORE', target)
         if dry:
             continue
+        if target in selective:
+            # Dolphin saves window preferences on exit. Revert only our color
+            # selection while retaining every later interface preference.
+            atomic(target, selective[target], stat.S_IMODE(target.stat().st_mode))
+            continue
         if digest(target) == entry['before'] and (not target.is_file() or target.is_symlink()
                 or stat.S_IMODE(target.stat().st_mode) == entry['mode']):
             continue
@@ -254,11 +273,16 @@ def restore(backup, home, dry=False, rollback=False, save_dolphin_changes=False)
         (backup / ('rolled-back' if rollback else 'restored')).touch()
 
 
-def install(home, roots, profile, dry=False, runtime=None, dolphin_only=False):
+def install(home, roots, profile, dry=False, runtime=None, dolphin_only=False,
+            custom_files=None, view_xattr_after=None, scope=None):
     # Refuse symlinked parents even during preview, before reading merge targets.
     for root in roots.values():
         guard(root / '.hyprixe-path-check', home)
-    content = payload(roots, profile, runtime, dolphin_only=dolphin_only)
+    content = custom_files if custom_files is not None else payload(roots, profile, runtime, dolphin_only=dolphin_only)
+    view_directory = roots['data'] / 'dolphin/view_properties/global'
+    if view_xattr_after is not None:
+        guard(view_directory / '.metadata-path-check', home)
+        view_before = dolphin_config.view_metadata(view_directory)['value']
     changes = []
     for path, (data, mode) in content.items():
         guard(path, home)
@@ -272,23 +296,33 @@ def install(home, roots, profile, dry=False, runtime=None, dolphin_only=False):
     if dry:
         for p, data, _ in changes:
             print('REMOVE (backed up)' if data is None else 'INSTALL (backed up)', p)
+        if view_xattr_after is not None and view_xattr_after['value'] != view_before:
+            print('RESTORE (backed up) Dolphin view metadata:', view_directory)
         return
-    if not changes:
+    attribute_changed = view_xattr_after is not None and view_xattr_after['value'] != view_before
+    if not changes and not attribute_changed:
         print('Already up to date; no additional backup created.')
         return
-    identifier = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S.%fZ') + '-' + profile + ('-dolphin' if dolphin_only else '')
+    identifier = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S.%fZ') + '-' + profile + ('-' + scope if scope else '-dolphin' if dolphin_only else '')
     backup = roots['state'] / 'hyprixe/backups' / identifier
     backup.mkdir(parents=True, mode=0o700)
     manifest = {'format': 1, 'id': identifier, 'home': str(home), 'profile': profile, 'files': [], 'directories': []}
-    manifest['scope'] = 'dolphin' if dolphin_only else 'full'
-    dolphin_candidates = set(dolphin_config.payload(REPO, roots, merge_ini))
+    manifest['scope'] = scope or ('dolphin-style' if dolphin_only else 'full')
+    if dolphin_only:
+        rc = roots['config'] / 'dolphinrc'
+        previous = dolphin_config.read_ini(rc).get('UiSettings', 'ColorScheme', fallback=None) if rc.is_file() else None
+        manifest['dolphin_color_scheme'] = {'path': str(rc), 'before': previous, 'after': dolphin_config.SCHEME_NAME}
+    dolphin_candidates = set(custom_files) if custom_files is not None else {roots['config'] / name for name in dolphin_config.THEME_FILES}
     manifest['dolphin_targets'] = [str(path) for path, _, _ in changes if path in dolphin_candidates]
-    view_directory = roots['data'] / 'dolphin/view_properties/global'
-    if str(view_directory / '.directory') in manifest['dolphin_targets']:
+    if str(view_directory / '.directory') in manifest['dolphin_targets'] or view_xattr_after is not None:
         guard(view_directory / '.metadata-path-check', home)
         metadata = dolphin_config.view_metadata(view_directory)
         manifest['dolphin_view_xattr'] = {'path': str(view_directory), 'name': dolphin_config.VIEW_XATTR,
                                          'before': metadata['value']}
+        if view_xattr_after is not None:
+            manifest['dolphin_view_xattr']['after'] = view_xattr_after['value']
+            if str(view_directory / '.directory') not in manifest['dolphin_targets']:
+                manifest['dolphin_targets'].append(str(view_directory / '.directory'))
     # Back up EVERY target before the first mutation.
     for i, (target, data, mode) in enumerate(changes):
         old = digest(target)
@@ -321,6 +355,8 @@ def install(home, roots, profile, dry=False, runtime=None, dolphin_only=False):
             applied.append(entry)
             save()
             print('INSTALLED', target)
+        if view_xattr_after is not None:
+            dolphin_config.restore_view_metadata(view_directory, view_xattr_after['value'])
     except BaseException:
         # Roll back only successful writes; never overwrite the failing target.
         manifest['files'] = applied
@@ -385,7 +421,10 @@ def main():
     ins.add_argument('--dry-run', action='store_true')
     ins.add_argument('--runtime', help='Internal: directory containing staged runtime binaries')
     ins.add_argument('--sddm', action='store_true', help='Also deploy the system SDDM theme through sudo')
-    ins.add_argument('--dolphin-only', action='store_true', help='Only deploy Dolphin preferences, docks, toolbar and view properties')
+    ins.add_argument('--dolphin-only', action='store_true', help='Only deploy Dolphin-specific Kvantum paint, association and KDE color selection')
+    interface = sub.add_parser('restore-dolphin-interface', help='Restore only interface changes introduced by 9259fa5 from an existing backup')
+    interface.add_argument('--backup')
+    interface.add_argument('--dry-run', action='store_true')
     res = sub.add_parser('restore')
     res.add_argument('--backup', help='Backup ID (default: most recent unrestored transaction)')
     res.add_argument('--list', action='store_true')
@@ -397,6 +436,20 @@ def main():
     home, roots = locations()
     state = roots['state'] / 'hyprixe'
     guard(state / 'deployment.lock', home)
+    if args.action == 'restore-dolphin-interface':
+        import dolphin_interface
+        if not args.dry_run:
+            dolphin_config.ensure_closed()
+        if args.dry_run:
+            files, attribute = dolphin_interface.plan(REPO, roots, home, read_manifest, digest, guard, args.backup)
+            install(home, roots, 'native', dry=True, custom_files=files, view_xattr_after=attribute, scope='dolphin-interface')
+        else:
+            state.mkdir(parents=True, exist_ok=True)
+            with (state / 'deployment.lock').open('a') as lock:
+                fcntl.flock(lock, fcntl.LOCK_EX)
+                files, attribute = dolphin_interface.plan(REPO, roots, home, read_manifest, digest, guard, args.backup)
+                install(home, roots, 'native', custom_files=files, view_xattr_after=attribute, scope='dolphin-interface')
+        return
     if args.action == 'install' and args.dry_run:
         function = install_with_sddm if args.sddm else install
         options = {'dolphin_only': True} if args.dolphin_only else {}

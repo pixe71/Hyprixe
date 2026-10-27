@@ -1,35 +1,30 @@
-# Hyprixe: Dolphin 25.04 / Qt 6, Frosted Glass.
-# The right-hand dock layout is installed separately in XDG_STATE_HOME.
+MenuBar=Disabled
+
+[$Version]
+update_info=dolphin_detailsmodesettings.upd:rename-leading-padding
+
 [General]
-EditableUrl=false
-GlobalViewProps=true
-LockPanels=true
-ShowFullPath=false
 ShowSelectionToggle=false
-ShowStatusBar=Disabled
-ShowZoomSlider=false
-SplitView=false
-FilterBar=false
+ShowStatusBar=false
 Version=202
+ViewPropsTimestamp=2023,4,26,16,58,48.324
 
 [IconsMode]
-IconSize=96
-PreviewSize=96
-TextWidthIndex=2
-MaximumTextLines=2
+MaximumTextLines=1
+PreviewSize=112
 
 [InformationPanel]
 dateFormat=ShortFormat
-previewsShown=true
-previewsAutoPlay=false
-showHovered=false
+
+[KFileDialog Settings]
+Places Icons Auto-resize=false
+Places Icons Static Size=16
 
 [MainWindow]
 MenuBar=Disabled
-StatusBar=Disabled
 
 [MainWindow][Toolbar mainToolBar]
-IconSize=20
+IconSize=16
 ToolButtonStyle=IconOnly
 
 [PlacesPanel]
@@ -37,3 +32,6 @@ IconSize=16
 
 [PreviewSettings]
 Plugins=appimagethumbnail,audiothumbnail,comicbookthumbnail,cursorthumbnail,djvuthumbnail,ebookthumbnail,exrthumbnail,imagethumbnail,jpegthumbnail,kraorathumbnail,windowsexethumbnail,windowsimagethumbnail,opendocumentthumbnail,svgthumbnail,ffmpegthumbs
+
+[Toolbar mainToolBar]
+ToolButtonStyle=IconOnly

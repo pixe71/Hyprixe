@@ -1,152 +1,160 @@
-# Dolphin: minimal Frosted Glass layout
+# Dolphin: original interface, blue Frosted Glass paint
 
-Target: Debian 13 Dolphin **25.04.3**, KDE Frameworks 6.13, Qt **6.8.2**.
-The reference screenshot mentioned in the request is not attached to this
-conversation context. The layout implements the requested arrangement; no
-pixel-identical comparison with that screenshot is claimed.
+Target tested: Debian 13 Dolphin 25.04.3, Qt 6.8.2, KF6 6.13 and Kvantum 1.1.4.
 
-## Result
+## Interface restoration
 
-- Main area: icon mode, **96 logical-pixel** icons/previews, wider item cells,
-  up to two text lines, folders first, no extra metadata columns.
-- Right column: **Places above Information**, initially 264 logical pixels wide.
-  Devices/removable devices are normal groups inside Places, not separate docks.
-  A group with no devices may be absent. Long bookmark/device lists scroll.
-- Large selected-item preview/icon with Type, Size and Modified information.
-  Hover does not replace the selection preview. Tag/rating/comment editors and
-  noisy duplicate metadata fields are hidden; file contents/tags are not deleted.
-- Back, Forward, Up, compact breadcrumb/location navigator, Search and menu.
-  Icon-only buttons; no classic menu/status bar, Folders tree or terminal panel.
-- Existing **Breeze Dark** folder icons and **Kvantum Frosted-Glass**. No new
-  icon theme, global palette or Fusion fallback is introduced. The original
-  Kvantum SVG/config and all Hyprland opacity/blur/rounding values are unchanged.
+Commit `9259fa5` introduced unwanted UI changes: forced 96 px icons, global icon
+view, a narrow locked right column with Places above Information, new navigation
+buttons, hidden Folders/Terminal, changed metadata filters and view properties.
+Those changes are removed. Repository `dolphinrc` and `dolphinui.rc` match parent
+`5d87b34` byte for byte, checked against `dolphin/interface-baseline.json`.
+The generated dock preset, global `.directory`, Baloo filter preset and layout
+generator are removed. No replacement layout is introduced.
 
-The breadcrumb and hamburger menu retain navigation/settings access. Ctrl+1
-selects icon mode, Ctrl+M toggles the menu, F9 toggles Places and F11 Information.
-Panels can be unlocked in their context menu and resized using the splitter.
-Windows/tabs, terminal integration and Dolphin's ordinary actions remain usable.
+The PC's actual old panel positions are runtime state, not recoverable from Git
+alone. `--restore-dolphin-interface` therefore uses the original dated installer
+backup. It selects the earliest intact deployment whose installed toolbar hash
+matches the rejected release and whose original toolbar differs. An explicit
+backup ID can also be selected. The restoration includes only entries from:
 
-## Apply only Dolphin
+- `$XDG_CONFIG_HOME/dolphinrc` and `baloofileinformationrc`;
+- `$XDG_DATA_HOME/kxmlgui5/dolphin/dolphinui.rc`;
+- `$XDG_DATA_HOME/dolphin/view_properties/global/.directory` and its directory's
+  exact `user.kde.fm.viewproperties#1` attribute;
+- `$XDG_STATE_HOME/dolphinstaterc`;
+- the previous Places/Devices/RemovableDevices visibility flags, when recorded,
+  while retaining current bookmarks and other group settings.
 
-Close Dolphin normally and finish any file operation before installing. The
-installer refuses to write while a Dolphin process belonging to the user is
-running; it never kills the process.
+No other files from a full-desktop backup are restored. Current interface files
+are saved in a new `*-native-dolphin-interface` transaction first. A private
+state marker prevents later repetitions from reverting personal adjustments.
+Missing/corrupt backups stop the operation clearly; another layout is never
+guessed. The restore does not require Git history on the installed machine.
 
-Run inside the existing Hyprland/UWSM session:
+## Apply
+
+Close Dolphin normally and finish file operations first. The installer refuses
+to modify configuration while Dolphin runs; it never kills it.
 
 ```bash
 cd ~/hyprixe-debian
 git pull
-./install.sh native --dolphin-only
+./install.sh native --dolphin-only --restore-dolphin-interface
 ./verify.sh --dolphin
 uwsm app -- dolphin
+./verify.sh --dolphin --session
 ```
 
-Missing Qt 6 Dolphin/Kvantum, thumbnail and device dependencies are prepared from
-Debian stable using sudo only for APT. If already available, no sudo/APT is used.
-`--no-packages` fails clearly instead of installing dependencies. `--dry-run`
-previews changes without writing configuration/backups. A normal full install
-also deploys these settings; `--dolphin-only` applies the same shared Dolphin
-configuration without switching native/VMware profiles or redeploying the desktop.
+If you never installed the rejected layout, omit `--restore-dolphin-interface`.
+For all subsequent paint updates use only `--dolphin-only`. Add `--dry-run` for
+a preview; missing dependencies are checked before configuration writes. Use
+`--interface-backup=ID` with both restoration flags to select a matching backup
+from `./uninstall.sh --list` explicitly.
 
-An identical repeat is a no-op before Dolphin writes further state. Reapplying
-after Dolphin changes its preferences/window state can create another backup;
-this deliberately preserves the intervening configuration.
+## Paint and transparency
 
-## Files and native behavior
+| Paint | Color | SVG alpha / opacity |
+| --- | --- | --- |
+| Main window | `#203f52` | 78% |
+| Dock interior | `#102b3b` | 38% over the existing window, where Qt draws dock interiors |
+| Menubar interior | `#153244` | 40% |
+| Menus | `#102f40` | 94% |
+| Tooltips | `#102f40` | 96% |
+| Selection | `#237e98` | 88% |
+| Focus/hover accent | `#43bdd0` | 24% focus wash |
+| Main text | `#e2eff5` | opaque before compositor opacity |
+| Secondary/disabled text | `#91b1c1` | opaque before compositor opacity |
+| Links | `#62cfda` | opaque before compositor opacity |
 
-| Repository file | Installed destination / purpose |
+The palette follows the cold blue/turquoise forest wallpaper. The variant changes
+paint and text colors only: SVG paths, dimensions, margins, icon metrics and
+widget geometry remain identical to the original theme. Dock interiors apply
+where requested by Qt; the theme does not insert extra panels or overlays.
+`transparent_dolphin_view=true` removes the opaque view background;
+`composite=true` and `translucent_windows=true` let Kvantum create translucent
+Qt surfaces. A translucent SVG is essential: the old white SVG was opaque despite
+those flags. `reduce_window_opacity` remains zero; this is alpha in the surface,
+not a new global window-opacity workaround.
+
+Dolphin's KDE color manager can reapply a light palette after Kvantum startup.
+The matching KDE scheme is therefore selected through Dolphin's own
+`[UiSettings] ColorScheme=Hyprixe Frosted Dolphin`. This is the only style key
+merged into its preferences; no layout setting is changed. Other Qt apps keep
+their existing global theme. The installed color scheme is available in KDE's
+color menu but is not selected globally.
+
+No Hyprland rule is added. Existing native blur is enabled (size 4, three passes)
+and rounds windows to 13 px; existing active/inactive opacity remains 0.78/0.72.
+Kvantum's blur flags are retained, but they do not replace compositor blur.
+Transparency and text opacity also depend on these pre-existing Hyprland values.
+
+## Files deployed by the paint-only installer
+
+| Source | Destination |
 | --- | --- |
-| `.config/dolphinrc` | `$XDG_CONFIG_HOME/dolphinrc`: icon sizing, global view policy, toolbar style, hidden menu/status, panel lock/previews |
-| `.config/baloofileinformationrc` | `$XDG_CONFIG_HOME/baloofileinformationrc`: managed metadata visibility, merged with other preferences |
-| `.local/share/kxmlgui5/dolphin/dolphinui.rc` | `$XDG_DATA_HOME/kxmlgui5/dolphin/dolphinui.rc`: toolbar actions; KF6 still uses this path |
-| `.local/share/dolphin/view_properties/global/.directory` | Initial global icon/preview/sorting properties |
-| `dolphin/dock-layout.ini` | `[State] State` merged into `$XDG_STATE_HOME/dolphinstaterc`; preserves other entries, including window sizes |
-| `tools/generate-dolphin-layout.py` | Optional maintainer tool using real Qt 6 `QMainWindow.saveState(0)`; not installed/run at login |
-| `packages-dolphin.txt` | Component dependencies, also present in the normal package manifest |
+| `.config/Kvantum/Frosted-Glass-Dolphin/*` | `$XDG_CONFIG_HOME/Kvantum/Frosted-Glass-Dolphin/` |
+| Dolphin association merged into `Kvantum/kvantum.kvconfig` | `$XDG_CONFIG_HOME/Kvantum/kvantum.kvconfig` |
+| `.local/share/color-schemes/HyprixeFrostedDolphin.colors` | `$XDG_DATA_HOME/color-schemes/HyprixeFrostedDolphin.colors` |
+| Only Dolphin's `UiSettings/ColorScheme` | `$XDG_CONFIG_HOME/dolphinrc` |
 
-Default XDG roots are `~/.config`, `~/.local/share`, `~/.local/state`; custom roots
-and spaces are supported. There is no username, monitor name, mount point,
-device UUID, maximized-screen flag or saved VM window placement in the preset.
-Its reference widget size is used to compute the dock split, not to force the
-application's window geometry. Qt adapts the layout to the actual window and DPI.
+These are five files with dated private backups. The shared Kvantum master keeps
+its existing global theme and other application associations. An existing
+explicit Dolphin association is replaced without removing its other apps.
+Normal full installation preserves existing Dolphin interface files; fresh
+installs seed the restored original interface plus the color selection.
+Custom XDG roots and spaces are supported. No system theme/session file is
+written by the component installer. Sudo is used only if APT needs to install
+missing packages. `kio-extras` and `udisks2` remain useful preview/device runtime
+dependencies; Breeze Dark icons stay unchanged.
 
-Three compatibility details matter:
+`tools/build-dolphin-theme.py` reproducibly derives the variant from the original
+Frosted-Glass pair. It is a maintainer tool, not a startup program. Original
+SVG/config and wallpaper hashes remain unchanged. Credits remain Vince/Liuice,
+KvAdapta/Tsu Jan, Senshi and the inherited KoolDots integration.
 
-1. Dolphin 25.04's status setting is the enum **`Disabled`**, not boolean `false`.
-   Its dock state is stored separately in **`dolphinstaterc [State]`**. Updating
-   only `dolphinrc` cannot reliably place/show the panels.
-2. Baloo Widgets initializes its metadata filter at schema version **13** and
-   resets the Show group if the marker is missing. The preset includes the
-   native blacklist, marker and the requested additional hiding. A newer existing
-   marker is retained. Native default-true entries may disappear when KDE saves.
-3. Dolphin can migrate global `.directory` properties to
-   **`user.kde.fm.viewproperties#1` on its containing directory**. Default fields
-   or both storage forms can disappear when the view uses native defaults.
-   The verifier checks effective values and rejects an explicit Details-mode
-   override; it does not recreate a legacy file merely to satisfy a test.
+## Restore
 
-The installer snapshots that one view-property xattr for restoration. Other
-xattrs are not changed. Existing `user-places.xbel` bookmarks are retained; only
-the Places/Devices/RemovableDevices group-hidden flags are set false. No bookmark
-file or device entry is invented on a fresh installation: KDE generates its
-usual locations. Other groups retain their existing visibility. This is KDE's
-shared Places metadata, so those three group visibility flags can also affect
-KDE file dialogs; no other application's layout/style is changed.
-
-`kio-extras` provides the Qt 6 thumbnail worker and JPEG/image creators;
-`kdegraphics-thumbnailers` alone does not provide them. `udisks2` supplies the
-Solid device backend. Existing preview plugin selections, including video and
-Windows-format thumbnails, are retained.
-
-## Restore the previous layout
-
-Close Dolphin, select the dated `*-native-dolphin` backup printed at install:
+Close Dolphin, then choose the transaction printed during installation:
 
 ```bash
 ./uninstall.sh --list
-./uninstall.sh --backup ID_FROM_LIST --dry-run --save-dolphin-changes
-./uninstall.sh --backup ID_FROM_LIST --save-dolphin-changes
-uwsm app -- dolphin
+./uninstall.sh --backup PAINT_BACKUP_ID --dry-run
+./uninstall.sh --backup PAINT_BACKUP_ID
 ```
 
-Backups live under `$XDG_STATE_HOME/hyprixe/backups/` and are private. Ordinary
-restore still refuses any file edited since deployment. Dolphin normally writes
-its preferences/state itself, so the explicit `--save-dolphin-changes` option
-preserves changed **managed Dolphin files and its view xattr** in
-`BACKUP/preserved-dolphin-…/` with a manifest before restoring their originals.
-Unrelated-file conflicts and corrupt backups still block the operation before
-any restoration. The option never authorizes overwriting another application's
-edits. Newly created personal files/bookmarks outside the transaction remain.
-When no previous Dolphin configuration existed, only the installed managed files
-and newly introduced view xattr are removed. Old backups without the new metadata
-records retain their existing strict restore behavior.
+The `*-native-dolphin` paint transaction restores the prior theme association and
+color selection. If Dolphin has since saved other preferences, restoration
+merges only the old `ColorScheme` key back and retains those interface changes.
+A conflicting manual color-scheme or shared Kvantum edit blocks restoration;
+no silent overwrite occurs. The separate `*-native-dolphin-interface` transaction
+can undo the one-off interface rollback if explicitly requested. Do not restore
+an entire old full-desktop transaction just to recover Dolphin.
 
-## Validation and limits
+Legacy backups retain strict conflict checking; `--save-dolphin-changes` can
+preserve their changed managed Dolphin files and exact view xattr before restoring
+originals. It does not authorize overwriting another application's settings.
+Backups are under `$XDG_STATE_HOME/hyprixe/backups/`, normally
+`~/.local/state/hyprixe/backups/`.
 
-`./verify.sh --dolphin` checks source/deployed KConfig and XML, toolbar actions,
-effective global view properties (file/xattr/defaults), dock-state format, metadata
-visibility, Qt 6 linkage, Kvantum plugin/config, conflicting `QT_STYLE_OVERRIDE`,
-thumbnail plugins and UDisks2 enumeration. Optional `python3-pyqt6` allows a real
-offscreen Qt style instantiation; without it that probe is **SKIPPED**. It does
-not attach to an active Dolphin window or pretend to inspect its live widgets.
+## Verification and limits
 
-Actual Dolphin was separately launched and its widget tree/screenshots inspected
-on an isolated Wayland compositor in Debian 13 WSL. The real installer, component
-verifier and restore all passed. Tests cover 1920×1080, a 1100×680 window on
-1366×768, and a 3840×2160 output at scale 2. Places/Information are right-aligned
-and vertically stacked; Folders/Terminal are hidden. Actual JPEG thumbnails and
-selected-item metadata work, and UDisks2 exposes device rows in that environment.
+`./verify.sh --dolphin` checks source interface hashes, KConfig/XML, actual
+translucent SVG paints, the app association and installed color selection,
+Dolphin Qt6 linkage, Kvantum and thumbnail plugins. Optional PyQt6 instantiates
+the real Kvantum style and its Dolphin theme palette; without the bindings that
+probe is SKIPPED. It never treats a particular dock layout or icon size as a
+validation requirement. `--dolphin --session` additionally checks UWSM services,
+the manager's `QT_STYLE_OVERRIDE=kvantum`, the live compositor blur option and
+running Dolphin processes' style override. It prints no process environment.
 
-This is not the user's physical Hyprland session. Exact visual comparison with
-the missing reference, Hyprland's blur/opacity, the real monitor scaling and
-mounting/ejecting physical removable drives still require validation on the PC.
-No device was mounted, unmounted or formatted during validation.
+Actual GUI validation and its limits are recorded in [VALIDATION.md](VALIDATION.md).
+The isolated Wayland test can demonstrate an alpha surface and wallpaper showing
+through it. It cannot validate the user's physical Hyprland blur, monitor scaling
+or interactive mouse/keyboard experience. On the PC, confirm unchanged panels,
+view and buttons, readable text/selection, context menus, and blur over the forest.
 
-Primary references: [Debian Dolphin package](https://packages.debian.org/trixie/dolphin),
-[Dolphin general settings](https://github.com/KDE/dolphin/blob/v25.04.3/src/settings/dolphin_generalsettings.kcfg),
-[Dolphin dock setup](https://github.com/KDE/dolphin/blob/v25.04.3/src/dolphinmainwindow.cpp),
-[view-property migration](https://github.com/KDE/dolphin/blob/v25.04.3/src/views/viewproperties.cpp),
-[Baloo metadata defaults](https://github.com/KDE/baloo-widgets/blob/v25.04.0/src/metadatafilter.cpp),
-[KF6 window-state storage](https://github.com/KDE/kxmlgui/blob/v6.13.0/src/kmainwindow.cpp),
-[Debian thumbnail plugin files](https://packages.debian.org/trixie/amd64/kio-extras/filelist).
+Primary references:
+[Kvantum theme configuration](https://github.com/tsujan/Kvantum/blob/master/Kvantum/doc/Theme-Config),
+[Kvantum per-application theme selection](https://github.com/tsujan/Kvantum/blob/master/Kvantum/style/Kvantum.cpp),
+[KDE per-application palette selection](https://github.com/KDE/kcolorscheme/blob/v6.13.0/src/kcolorschememanager.cpp).

@@ -16,8 +16,9 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import deploy
-from dolphin_config import VIEW_XATTR, show_places_groups
-from dolphin_checks import check_source
+import dolphin_interface
+from dolphin_config import THEME, THEME_FILES, VIEW_XATTR, SCHEME_NAME, read_ini
+from dolphin_checks import check_source, check_installed, check_session
 
 
 class DolphinDeploymentTests(unittest.TestCase):
@@ -28,13 +29,11 @@ class DolphinDeploymentTests(unittest.TestCase):
         self.home.mkdir()
         self.roots = {key: self.home / name for key, name in
                       (('config', 'settings with spaces'), ('data', 'application data'), ('state', 'session state'))}
-        self.env = patch.dict(os.environ, {'HOME': str(self.home),
+        env = patch.dict(os.environ, {'HOME': str(self.home),
             **{'XDG_' + key.upper() + '_HOME': str(path) for key, path in self.roots.items()}})
-        self.env.start()
-        self.addCleanup(self.env.stop)
+        env.start(); self.addCleanup(env.stop)
         output = contextlib.redirect_stdout(io.StringIO())
-        output.__enter__()
-        self.addCleanup(output.__exit__, None, None, None)
+        output.__enter__(); self.addCleanup(output.__exit__, None, None, None)
 
     def install(self, **kwargs):
         return deploy.install(self.home, self.roots, 'native', dolphin_only=True, **kwargs)
@@ -46,6 +45,7 @@ class DolphinDeploymentTests(unittest.TestCase):
         return path
 
     def xattr(self, path, value):
+        path.mkdir(parents=True, exist_ok=True)
         try:
             os.setxattr(path, VIEW_XATTR, value)
         except OSError as exc:
@@ -53,181 +53,239 @@ class DolphinDeploymentTests(unittest.TestCase):
                 self.skipTest('Filesystem does not support view-property xattrs')
             raise
 
-    def test_dolphin_only_installs_defaults_without_touching_desktop_or_profile(self):
-        files = [self.write('config', 'hypr/hyprland.lua', 'personal Hyprland'),
-                 self.write('config', 'hypr/profile.lua', 'current profile'),
-                 self.write('config', 'kdeglobals', 'current Qt settings')]
+    def test_style_only_changes_five_paint_files_never_creates_layout(self):
         backup = self.install()
         manifest = deploy.read_manifest(backup)
-        self.assertEqual(manifest['scope'], 'dolphin')
+        self.assertEqual(manifest['scope'], 'dolphin-style')
         self.assertEqual(len(manifest['files']), 5)
-        self.assertEqual([p.read_text() for p in files], ['personal Hyprland', 'current profile', 'current Qt settings'])
-        self.assertTrue((self.roots['data'] / 'dolphin/view_properties/global/.directory').is_file())
-        state = (self.roots['state'] / 'dolphinstaterc').read_text()
-        self.assertIn('State=AAAA', state)
-        self.assertNotIn(str(self.home), state)
-        self.assertNotIn('screen:', state)
-        self.assertIsNone(self.install(), 'Repeat must be a no-op before the application changes its state')
+        self.assertEqual(read_ini(self.roots['config'] / 'dolphinrc').sections(), ['UiSettings'])
+        self.assertFalse((self.roots['data'] / 'kxmlgui5').exists())
+        self.assertNotIn('dolphin_view_xattr', manifest)
+        self.assertIsNone(self.install())
 
-    def test_preserves_existing_geometry_and_unrelated_information_preferences(self):
-        state = self.write('state', 'dolphinstaterc', '[State]\nState=old\n1920x1080 screen: Width=1234\n[Other]\nvalue=keep\n')
-        info = self.write('config', 'baloofileinformationrc', '[Show]\ncustomProperty=true\nrating=true\n[Other]\nvalue=keep\n[Misc]\nversion=42\n')
+    def test_interface_is_byte_identical_except_native_color_scheme_selection(self):
+        files = [self.write(key, name, '[General]\nPersonal=' + name + '\n') for key, name in dolphin_interface.FILES]
+        files += [self.write('data', 'user-places.xbel', '<not-even-parsed-by-paint>'),
+                  self.write('config', 'hypr/profile.lua', 'personal profile'),
+                  self.write('config', 'kdeglobals', 'existing Qt integration')]
+        directory = self.roots['data'] / 'dolphin/view_properties/global'
+        self.xattr(directory, b'personal view')
+        before = {p: p.read_bytes() for p in files}
         backup = self.install()
-        self.assertIn('Width=1234', state.read_text())
-        self.assertIn('value=keep', state.read_text())
-        self.assertIn('customProperty=true', info.read_text())
-        self.assertIn('rating=false', info.read_text())
-        self.assertIn('version=42', info.read_text())
+        styled = before.copy()
+        rc = self.roots['config'] / 'dolphinrc'
+        styled[rc] = deploy.merge_ini(before[rc].decode(), {'UiSettings': {'ColorScheme': SCHEME_NAME}}).encode()
+        self.assertEqual({p: p.read_bytes() for p in files}, styled)
+        self.assertEqual(os.getxattr(directory, VIEW_XATTR), b'personal view')
         deploy.restore(backup, self.home)
-        self.assertIn('State=old', state.read_text())
-        self.assertIn('rating=true', info.read_text())
+        self.assertEqual({p: p.read_bytes() for p in files}, before)
+        self.assertEqual(os.getxattr(directory, VIEW_XATTR), b'personal view')
 
-    def test_existing_places_groups_are_unhidden_without_losing_bookmarks(self):
-        places = self.write('data', 'user-places.xbel', '''<?xml version="1.0"?><!DOCTYPE xbel>
-<xbel><info><metadata owner="http://www.kde.org"><GroupState-Devices-IsHidden>true</GroupState-Devices-IsHidden>
-<GroupState-Remote-IsHidden>true</GroupState-Remote-IsHidden></metadata></info>
-<bookmark href="file:///personal-folder"><title>Personal bookmark</title></bookmark></xbel>''')
-        original = places.read_bytes()
+    def test_global_theme_and_other_application_associations_are_preserved(self):
+        master = self.write('config', 'Kvantum/kvantum.kvconfig',
+            '[General]\ntheme=MyOtherTheme\n[Applications]\nOld=Dolphin,okular\nAnother=kate\n')
         backup = self.install()
-        root = ET.fromstring(places.read_bytes())
-        self.assertEqual(root.find('bookmark').get('href'), 'file:///personal-folder')
-        self.assertEqual(root.findtext('info/metadata/GroupState-Devices-IsHidden'), 'false')
-        self.assertEqual(root.findtext('info/metadata/GroupState-Remote-IsHidden'), 'true')
-        self.assertEqual(show_places_groups(places.read_bytes()), places.read_bytes())
+        settings = read_ini(master)
+        self.assertEqual(settings['General']['theme'], 'MyOtherTheme')
+        self.assertEqual(dict(settings['Applications']), {'Old': 'okular', 'Another': 'kate', THEME: 'dolphin'})
+        self.assertIsNone(self.install())
         deploy.restore(backup, self.home)
-        self.assertEqual(places.read_bytes(), original)
+        self.assertIn('Old=Dolphin,okular', master.read_text())
 
-    def test_invalid_places_abort_before_any_configuration_write(self):
-        places = self.write('data', 'user-places.xbel', '<broken')
-        with self.assertRaisesRegex(ValueError, 'Cannot read user-places'):
-            self.install()
-        self.assertEqual(places.read_text(), '<broken')
-        self.assertFalse(self.roots['config'].exists())
-        self.assertFalse(self.roots['state'].exists())
+    def test_full_install_preserves_existing_interface(self):
+        rc = self.write('config', 'dolphinrc', '[General]\nPersonal=true\n')
+        toolbar = self.write('data', 'kxmlgui5/dolphin/dolphinui.rc', '<personal/>')
+        deploy.install(self.home, self.roots, 'native')
+        self.assertEqual(rc.read_text(), '[General]\nPersonal=true\n\n[UiSettings]\nColorScheme=' + SCHEME_NAME + '\n')
+        self.assertEqual(toolbar.read_text(), '<personal/>')
+        self.assertFalse((self.roots['state'] / 'dolphinstaterc').exists())
 
-    def test_dry_run_does_not_create_configs_or_backups(self):
+    def test_fresh_full_install_seeds_exact_git_baseline_without_view_preset(self):
+        deploy.install(self.home, self.roots, 'native')
+        for root, path, source in (
+            ('config', 'dolphinrc', '.config/dolphinrc'),
+            ('data', 'kxmlgui5/dolphin/dolphinui.rc', '.local/share/kxmlgui5/dolphin/dolphinui.rc')):
+            expected = (ROOT / source).read_bytes()
+            if root == 'config':
+                expected = deploy.merge_ini(expected.decode(), {'UiSettings': {'ColorScheme': SCHEME_NAME}}).encode()
+            self.assertEqual((self.roots[root] / path).read_bytes(), expected)
+        self.assertFalse((self.roots['data'] / 'dolphin/view_properties/global/.directory').exists())
+
+    def test_dry_run_creates_nothing(self):
         self.install(dry=True)
         self.assertEqual(list(self.home.iterdir()), [])
 
-    def test_baloo_omitted_true_defaults_are_accepted_after_real_app_saves(self):
-        from dolphin_checks import check_installed
+    def legacy(self, include_unrelated=False):
+        """Reproduce the rejected deployment using its actual tracked toolbar."""
+        bad_toolbar = b'rejected toolbar fixture'
+        self.fixture_repo = self.home / 'fixture repository'
+        spec = json.loads((ROOT / 'dolphin/interface-baseline.json').read_text())
+        import hashlib
+        spec['bad_toolbar_sha256'] = [hashlib.sha256(bad_toolbar).hexdigest()]
+        spec_path = self.fixture_repo / 'dolphin/interface-baseline.json'
+        spec_path.parent.mkdir(parents=True)
+        spec_path.write_text(json.dumps(spec))
+        self.originals = {}
+        content = {}
+        for key, name in dolphin_interface.FILES:
+            path = self.write(key, name, '[General]\nOriginal=' + name + '\n')
+            self.originals[path] = path.read_bytes()
+            content[path] = (bad_toolbar if name.endswith('dolphinui.rc') else b'rejected layout', 0o644)
+        if include_unrelated:
+            content[self.write('config', 'hypr/waybar/configs/Frosted-Glass', 'old Waybar')] = (b'intermediate Waybar', 0o644)
+        directory = self.roots['data'] / 'dolphin/view_properties/global'
+        self.xattr(directory, b'original attribute')
+        original = deploy.install(self.home, self.roots, 'native', custom_files=content, scope='legacy-fixture')
+        self.xattr(directory, b'rejected view')
+        return original
+
+    def migration(self, **kw):
+        return dolphin_interface.plan(getattr(self, 'fixture_repo', ROOT), self.roots, self.home,
+                                     deploy.read_manifest, deploy.digest, deploy.guard, **kw)
+
+    def apply_migration(self):
+        files, attribute = self.migration()
+        return deploy.install(self.home, self.roots, 'native', custom_files=files,
+                              view_xattr_after=attribute, scope='dolphin-interface')
+
+    def test_migration_restores_exact_original_interface_not_other_desktop_changes(self):
+        self.legacy(include_unrelated=True)
+        waybar = self.roots['config'] / 'hypr/waybar/configs/Frosted-Glass'
+        waybar.write_text('newer working Waybar')
+        migration = self.apply_migration()
+        self.assertEqual({p: p.read_bytes() for p in self.originals}, self.originals)
+        self.assertEqual(waybar.read_text(), 'newer working Waybar')
+        self.assertEqual(os.getxattr(self.roots['data'] / 'dolphin/view_properties/global', VIEW_XATTR), b'original attribute')
+        self.assertEqual(self.migration(), ({}, None))
+        paint = self.install()
+        deploy.restore(paint, self.home)
+        self.assertEqual({p: p.read_bytes() for p in self.originals}, self.originals)
+        deploy.restore(migration, self.home)
+        self.assertIn('rejected layout', (self.roots['config'] / 'dolphinrc').read_text())
+        self.assertFalse((self.roots['state'] / dolphin_interface.MARKER).exists())
+
+    def test_migration_no_backup_fails_without_guessing_interface(self):
+        with self.assertRaisesRegex(ValueError, 'No intact'):
+            self.migration()
+        self.assertEqual(list(self.home.iterdir()), [])
+
+    def test_corrupt_original_aborts_before_any_write(self):
+        original = self.legacy()
+        manifest = deploy.read_manifest(original)
+        first = manifest['files'][0]
+        (original / 'files' / first['backup']).write_bytes(b'corrupt')
+        current = {p: p.read_bytes() for p in self.originals}
+        with self.assertRaisesRegex(ValueError, 'corrupt'):
+            self.migration()
+        self.assertEqual({p: p.read_bytes() for p in self.originals}, current)
+        self.assertFalse((self.roots['state'] / dolphin_interface.MARKER).exists())
+
+    def test_migration_dry_run_creates_no_transaction(self):
+        self.legacy()
+        files, attribute = self.migration()
+        before = {p: p.read_bytes() for p in self.originals}
+        deploy.install(self.home, self.roots, 'native', dry=True, custom_files=files, view_xattr_after=attribute)
+        self.assertEqual({p: p.read_bytes() for p in self.originals}, before)
+        self.assertFalse((self.roots['state'] / dolphin_interface.MARKER).exists())
+
+    def test_migration_invalid_backup_path_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, 'backup ID'):
+            self.migration(backup_id='../escape')
+
+    def test_migration_removes_only_previously_absent_view_file_and_attribute(self):
+        props = self.roots['data'] / 'dolphin/view_properties/global/.directory'
+        toolbar = self.write('data', 'kxmlgui5/dolphin/dolphinui.rc', '<original/>')
+        import hashlib
+        spec = json.loads((ROOT / 'dolphin/interface-baseline.json').read_text())
+        spec['bad_toolbar_sha256'] = [hashlib.sha256(b'bad toolbar').hexdigest()]
+        self.fixture_repo = self.home / 'fixture repository'
+        path = self.fixture_repo / 'dolphin/interface-baseline.json'
+        path.parent.mkdir(parents=True); path.write_text(json.dumps(spec))
+        deploy.install(self.home, self.roots, 'native', custom_files={
+            toolbar: (b'bad toolbar', 0o644), props: (b'rejected view file', 0o644)}, scope='legacy')
+        self.xattr(props.parent, b'rejected migrated attribute')
+        os.setxattr(props.parent, 'user.hyprixe-unrelated', b'keep')
+        self.apply_migration()
+        self.assertFalse(props.exists())
+        with self.assertRaises(OSError):
+            os.getxattr(props.parent, VIEW_XATTR)
+        self.assertEqual(os.getxattr(props.parent, 'user.hyprixe-unrelated'), b'keep')
+        self.assertEqual(toolbar.read_bytes(), b'<original/>')
+
+    def test_failed_migration_rolls_back_interface_and_keeps_original_attribute(self):
+        self.legacy()
+        before = {p: p.read_bytes() for p in self.originals}
+        real_atomic = deploy.atomic
+        def fail_marker(path, *args):
+            if str(path).endswith(dolphin_interface.MARKER):
+                raise OSError('fixture disk failure')
+            return real_atomic(path, *args)
+        with patch('deploy.atomic', side_effect=fail_marker):
+            with self.assertRaisesRegex(OSError, 'fixture disk failure'):
+                self.apply_migration()
+        self.assertEqual({p: p.read_bytes() for p in self.originals}, before)
+        self.assertEqual(os.getxattr(self.roots['data'] / 'dolphin/view_properties/global', VIEW_XATTR), b'rejected view')
+
+    def test_bookmark_reversion_keeps_new_bookmarks_and_unrelated_groups(self):
+        old = b'<xbel><info><metadata owner="http://www.kde.org"><GroupState-Devices-IsHidden>true</GroupState-Devices-IsHidden></metadata></info></xbel>'
+        now = b'<xbel><info><metadata owner="http://www.kde.org"><GroupState-Devices-IsHidden>false</GroupState-Devices-IsHidden><GroupState-Remote-IsHidden>true</GroupState-Remote-IsHidden></metadata></info><bookmark href="file:///new"/></xbel>'
+        root = ET.fromstring(dolphin_interface.bookmark_flags(now, old))
+        self.assertEqual(root.find('bookmark').get('href'), 'file:///new')
+        self.assertEqual(root.findtext('info/metadata/GroupState-Devices-IsHidden'), 'true')
+        self.assertEqual(root.findtext('info/metadata/GroupState-Remote-IsHidden'), 'true')
+
+    def test_legacy_restore_saves_native_dolphin_changes_and_xattr(self):
+        original = self.legacy()
+        rc = self.roots['config'] / 'dolphinrc'; rc.write_text('runtime edit')
+        with self.assertRaisesRegex(ValueError, 'Nothing restored'):
+            deploy.restore(original, self.home)
+        deploy.restore(original, self.home, save_dolphin_changes=True)
+        self.assertEqual({p: p.read_bytes() for p in self.originals}, self.originals)
+        saved = next(original.glob('preserved-dolphin-*'))
+        metadata = json.loads((saved / 'manifest.json').read_text())
+        self.assertEqual(base64.b64decode(metadata['view_xattr']['value']), b'rejected view')
+
+    def test_shared_kvantum_master_edits_cannot_be_overwritten_by_save_option(self):
+        backup = self.install()
+        master = self.roots['config'] / 'Kvantum/kvantum.kvconfig'
+        master.write_text('personal global theme change')
+        with self.assertRaisesRegex(ValueError, 'Nothing restored'):
+            deploy.restore(backup, self.home, save_dolphin_changes=True)
+        self.assertEqual(master.read_text(), 'personal global theme change')
+
+    def test_installed_check_does_not_enforce_interface_and_detects_fusion(self):
         self.install()
-        for name in ('Kvantum', 'qt6ct'):
-            shutil.copytree(ROOT / '.config' / name, self.roots['config'] / name)
-        shutil.copyfile(ROOT / '.config/kdeglobals', self.roots['config'] / 'kdeglobals')
-        self.write('config', 'baloofileinformationrc', '[Misc]\nversion=13\n[Show]\ntags=false\nrating=false\nuserComment=false\n')
+        self.write('config', 'dolphinrc', '[General]\nViewMode=anything the user wants\n[UiSettings]\nColorScheme=' + SCHEME_NAME + '\n')
         results = []
         check_installed(lambda ok, label: results.append((ok, label)))
         self.assertTrue(all(ok for ok, _ in results), results)
-
-    def test_native_view_defaults_survive_directory_to_xattr_migration(self):
-        from dolphin_checks import check_installed
-        self.install()
-        for name in ('Kvantum', 'qt6ct'):
-            shutil.copytree(ROOT / '.config' / name, self.roots['config'] / name)
-        shutil.copyfile(ROOT / '.config/kdeglobals', self.roots['config'] / 'kdeglobals')
-        directory = self.roots['data'] / 'dolphin/view_properties/global'
-        (directory / '.directory').unlink()
-        for value in (None, b'[Dolphin]\nVersion=4\nVisibleRoles=Icons_text\n'):
-            if value:
-                self.xattr(directory, value)
-            results = []
-            check_installed(lambda ok, label: results.append((ok, label)))
-            self.assertTrue(all(ok for ok, _ in results), results)
-        self.xattr(directory, b'[Dolphin]\nVersion=4\nViewMode=1\n')
+        self.write('config', 'qt6ct/qt6ct.conf', '[Appearance]\nstyle=Fusion\n')
         results = []
         check_installed(lambda ok, label: results.append((ok, label)))
-        self.assertTrue(any(not ok for ok, _ in results), 'A real Details-mode override must still fail')
+        self.assertTrue(any(not ok for ok, _ in results))
 
-    def test_restore_can_save_dolphin_runtime_edits_before_restoring_originals(self):
-        config = self.write('config', 'dolphinrc', '[General]\nOriginal=true\n')
-        personal = self.write('data', 'personal.txt', 'not managed')
+    def test_style_restore_does_not_touch_later_personal_interface_changes(self):
         backup = self.install()
-        config.write_text(config.read_text() + '\n[Runtime]\nChanged=true\n')
-        current = config.read_bytes()
-        with self.assertRaisesRegex(ValueError, 'Nothing restored'):
-            deploy.restore(backup, self.home)
-        deploy.restore(backup, self.home, save_dolphin_changes=True)
-        self.assertEqual(config.read_text(), '[General]\nOriginal=true\n')
-        self.assertEqual(personal.read_text(), 'not managed')
-        saved = next(backup.glob('preserved-dolphin-*'))
-        records = json.loads((saved / 'manifest.json').read_text())['files']
-        entry = next(e for e in records if e['path'] == str(config))
-        self.assertEqual((saved / entry['saved']).read_bytes(), current)
-
-    def test_restore_accounts_for_native_migration_to_directory_xattr(self):
-        directory = self.roots['data'] / 'dolphin/view_properties/global'
-        directory.mkdir(parents=True)
-        self.xattr(directory, b'original view preferences')
-        os.setxattr(directory, 'user.hyprixe-test-unrelated', b'keep')
-        backup = self.install()
-        props = directory / '.directory'
-        after = props.read_bytes()
-        self.xattr(directory, after)
-        props.unlink()  # Native Dolphin migration removes the legacy file.
-        with self.assertRaisesRegex(ValueError, 'Nothing restored'):
-            deploy.restore(backup, self.home)
-        deploy.restore(backup, self.home, save_dolphin_changes=True)
-        self.assertEqual(os.getxattr(directory, VIEW_XATTR), b'original view preferences')
-        self.assertEqual(os.getxattr(directory, 'user.hyprixe-test-unrelated'), b'keep')
-        self.assertFalse(props.exists())
-        saved = next(backup.glob('preserved-dolphin-*'))
-        metadata = json.loads((saved / 'manifest.json').read_text())['view_xattr']
-        self.assertEqual(base64.b64decode(metadata['value']), after)
-
-    def test_fresh_install_restore_removes_only_new_view_metadata(self):
-        backup = self.install()
-        directory = self.roots['data'] / 'dolphin/view_properties/global'
-        self.xattr(directory, b'view preferences written by Dolphin')
-        deploy.restore(backup, self.home, save_dolphin_changes=True)
-        self.assertFalse((directory / '.directory').exists())
-        if directory.exists():
-            with self.assertRaises(OSError):
-                os.getxattr(directory, VIEW_XATTR)
-
-    def test_restore_recreates_an_original_attribute_only_directory_if_removed(self):
-        directory = self.roots['data'] / 'dolphin/view_properties/global'
-        directory.mkdir(parents=True)
-        self.xattr(directory, b'original attribute-only preferences')
-        backup = self.install()
-        (directory / '.directory').unlink()
-        directory.rmdir()
-        deploy.restore(backup, self.home, save_dolphin_changes=True)
-        self.assertEqual(os.getxattr(directory, VIEW_XATTR), b'original attribute-only preferences')
-
-    def test_save_dolphin_changes_never_allows_unrelated_conflicts(self):
-        backup = deploy.install(self.home, self.roots, 'native')
-        unrelated = self.roots['config'] / 'hypr/hyprland.lua'
-        unrelated.write_text('personal edit')
-        config = self.roots['config'] / 'dolphinrc'
-        config.write_text('changed Dolphin settings')
-        with self.assertRaisesRegex(ValueError, 'Nothing restored'):
-            deploy.restore(backup, self.home, save_dolphin_changes=True)
-        self.assertEqual(unrelated.read_text(), 'personal edit')
-        self.assertEqual(config.read_text(), 'changed Dolphin settings')
-        self.assertEqual(list(backup.glob('preserved-dolphin-*')), [])
-
-    def test_unrelated_transaction_does_not_own_or_restore_dolphin_metadata(self):
-        deploy.install(self.home, self.roots, 'native')
-        hypr = self.roots['config'] / 'hypr/hyprland.lua'
-        hypr.write_text('before unrelated update')
-        backup = deploy.install(self.home, self.roots, 'native')
-        manifest = deploy.read_manifest(backup)
-        self.assertEqual(manifest['dolphin_targets'], [])
-        self.assertNotIn('dolphin_view_xattr', manifest)
-        directory = self.roots['data'] / 'dolphin/view_properties/global'
-        self.xattr(directory, b'new personal view preferences')
+        rc = self.write('config', 'dolphinrc', '[General]\nUserChanged=true\n[UiSettings]\nColorScheme=' + SCHEME_NAME + '\n')
         deploy.restore(backup, self.home)
-        self.assertEqual(hypr.read_text(), 'before unrelated update')
-        self.assertEqual(os.getxattr(directory, VIEW_XATTR), b'new personal view preferences')
+        self.assertIn('UserChanged=true', rc.read_text())
+        self.assertNotIn('ColorScheme=', rc.read_text())
 
-    def test_restore_preview_does_not_copy_or_modify_runtime_changes(self):
+    def test_style_restore_rejects_a_later_manual_color_change(self):
         backup = self.install()
-        config = self.roots['config'] / 'dolphinrc'
-        config.write_text('runtime changed')
-        deploy.restore(backup, self.home, dry=True, save_dolphin_changes=True)
-        self.assertEqual(config.read_text(), 'runtime changed')
-        self.assertEqual(list(backup.glob('preserved-dolphin-*')), [])
+        rc = self.roots['config'] / 'dolphinrc'
+        rc.write_text('[UiSettings]\nColorScheme=My chosen theme\n')
+        with self.assertRaisesRegex(ValueError, 'ColorScheme changed'):
+            deploy.restore(backup, self.home, save_dolphin_changes=True)
+        self.assertIn('My chosen theme', rc.read_text())
+
+    def test_marker_prevents_a_second_rollback_of_personal_interface_edits(self):
+        self.legacy()
+        self.apply_migration()
+        rc = self.roots['config'] / 'dolphinrc'
+        rc.write_text('[General]\nMyLaterInterface=true\n')
+        self.assertEqual(self.migration(), ({}, None))
+        self.assertIn('MyLaterInterface=true', rc.read_text())
 
 
 class DolphinChecksTests(unittest.TestCase):
@@ -238,14 +296,14 @@ class DolphinChecksTests(unittest.TestCase):
         self.assertTrue({'dolphin', 'kio-extras', 'udisks2', 'qt6-style-kvantum'} <= component)
         self.assertTrue(component <= packages(ROOT / 'packages.txt'))
 
-    def test_kconfig_geometry_keys_with_colons_remain_distinct(self):
-        from dolphin_config import read_ini
+    def test_kconfig_geometry_keys_and_headerless_baseline_parse(self):
         with tempfile.TemporaryDirectory() as temp:
-            state = Path(temp) / 'dolphinstaterc'
-            state.write_text('[State]\n1920x1080 screen: Width=1280\n1920x1080 screen: Height=800\n')
-            parsed = read_ini(state)
+            path = Path(temp) / 'state'
+            path.write_text('MenuBar=Disabled\n[State]\n1920x1080 screen: Width=1280\n1920x1080 screen: Height=800\n')
+            parsed = read_ini(path)
             self.assertEqual(parsed['State']['1920x1080 screen: Width'], '1280')
             self.assertEqual(parsed['State']['1920x1080 screen: Height'], '800')
+            self.assertEqual(parsed['__root__']['MenuBar'], 'Disabled')
 
     def test_source_contract(self):
         results = []
@@ -256,8 +314,31 @@ class DolphinChecksTests(unittest.TestCase):
         results = []
         with tempfile.TemporaryDirectory() as temp:
             check_source(lambda ok, label: results.append((ok, label)), Path(temp))
-        self.assertEqual(len(results), 5)
+        self.assertEqual(len(results), 3)
         self.assertFalse(any(ok for ok, _ in results))
+
+    def test_svg_geometry_is_identical_to_original_theme(self):
+        def geometry(path):
+            tree = ET.parse(path)
+            for element in tree.iter():
+                for name in list(element.attrib):
+                    if element.attrib[name].startswith('#') or name in ('fill', 'stroke', 'opacity', 'fill-opacity', 'stroke-opacity', 'stop-color'):
+                        del element.attrib[name]
+                    elif name == 'style':
+                        styles = [part for part in element.attrib[name].split(';') if ':' in part
+                                  and part.split(':', 1)[0] not in ('fill', 'fill-opacity', 'stroke', 'stroke-opacity', 'opacity', 'stop-color', 'stop-opacity')]
+                        element.attrib[name] = ';'.join(styles)
+            return ET.tostring(tree.getroot())
+        self.assertEqual(geometry(ROOT / '.config/Kvantum/Frosted-Glass/Frosted-Glass.svg'),
+                         geometry(ROOT / '.config' / THEME_FILES[1]))
+
+    def test_kvantum_geometry_options_are_unchanged(self):
+        old = read_ini(ROOT / '.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig')
+        new = read_ini(ROOT / '.config' / THEME_FILES[0])
+        for section in old.sections():
+            for key, value in old.items(section):
+                if section != 'GeneralColors' and not key.endswith('.color') and key not in ('author', 'comment'):
+                    self.assertEqual(new[section][key], value, (section, key))
 
     def test_running_dolphin_is_refused_without_killing_it(self):
         from dolphin_config import ensure_closed
@@ -267,33 +348,26 @@ class DolphinChecksTests(unittest.TestCase):
                 ensure_closed()
         self.assertEqual(run.call_args.args[0], ['pgrep', '-u', str(os.getuid()), '-x', 'dolphin'])
 
-    @unittest.skipUnless(subprocess.run([sys.executable, '-c', 'import PyQt6.QtWidgets'], capture_output=True).returncode == 0,
-                         'optional python3-pyqt6 needed for real Qt dock-state restore')
-    def test_real_qt_restores_right_stacked_docks_at_multiple_window_sizes(self):
-        code = '''import sys,json
-from PyQt6.QtCore import Qt,QByteArray
-from PyQt6.QtWidgets import QApplication,QMainWindow,QDockWidget,QToolBar,QWidget
-app=QApplication([]); state=QByteArray.fromBase64(sys.argv[1].encode())
-for width,height in [(1280,800),(1100,680),(960,640)]:
- w=QMainWindow(); w.setCentralWidget(QWidget()); bar=QToolBar(); bar.setObjectName('mainToolBar');w.addToolBar(bar)
- docks={}
- for name in ('placesDock','infoDock','foldersDock','terminalDock'):
-  d=QDockWidget();d.setObjectName(name);d.setWidget(QWidget());w.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea,d);docks[name]=d
- w.resize(width,height);w.show();assert w.restoreState(state);app.processEvents()
- p,i=docks['placesDock'],docks['infoDock']
- assert p.isVisible() and i.isVisible()
- assert w.dockWidgetArea(p)==Qt.DockWidgetArea.RightDockWidgetArea and w.dockWidgetArea(i)==Qt.DockWidgetArea.RightDockWidgetArea
- assert p.geometry().x()==i.geometry().x() and p.geometry().bottom()<i.geometry().top()
- assert not docks['foldersDock'].isVisible() and not docks['terminalDock'].isVisible()
- assert p.width()<width/3, (width,p.width())
- w.close()
-print('Three native Qt dock restores passed')
-'''
-        from dolphin_config import read_ini
-        state = read_ini(ROOT / 'dolphin/dock-layout.ini')['State']['State']
-        result = subprocess.run([sys.executable, '-c', code, state], capture_output=True, text=True,
-                                env=dict(os.environ, QT_QPA_PLATFORM='offscreen'), timeout=15)
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+    def test_session_inspects_manager_blur_and_actual_dolphin_override(self):
+        replies = [subprocess.CompletedProcess([], 0, 'QT_STYLE_OVERRIDE=kvantum\n', ''),
+                   subprocess.CompletedProcess([], 0, '{"int":1}', ''),
+                   subprocess.CompletedProcess([], 0, '123\n', '')]
+        results = []
+        with patch('dolphin_checks.subprocess.run', side_effect=replies), \
+             patch('dolphin_checks.Path.read_bytes', return_value=b'HOME=private\0QT_STYLE_OVERRIDE=kvantum\0'):
+            check_session(lambda ok, label: results.append((ok, label)))
+        self.assertEqual(len(results), 3)
+        self.assertTrue(all(ok for ok, _ in results), results)
+        self.assertFalse(any('private' in label for _, label in results))
+
+    def test_session_rejects_missing_environment_and_disabled_blur(self):
+        replies = [subprocess.CompletedProcess([], 0, 'QT_STYLE_OVERRIDE=Fusion\n', ''),
+                   subprocess.CompletedProcess([], 0, '{"int":0}', ''),
+                   subprocess.CompletedProcess([], 1, '', '')]
+        results = []
+        with patch('dolphin_checks.subprocess.run', side_effect=replies):
+            check_session(lambda ok, label: results.append((ok, label)))
+        self.assertFalse(any(ok for ok, _ in results))
 
 
 @unittest.skipUnless(os.geteuid() == 0 and shutil.which('setpriv'), 'root/setpriv needed for unprivileged installer fixture')
@@ -345,7 +419,8 @@ if sys.argv[2]=='install':(home/'dependencies-ready').touch()
         self.assertIn('udisks2', calls[1])
         self.assertNotIn('Hyprland', calls[1])
         self.assertNotIn('sddm', calls[1])
-        self.assertTrue((self.home / '.config/dolphinrc').is_file())
+        self.assertEqual(read_ini(self.home / '.config/dolphinrc').sections(), ['UiSettings'])
+        self.assertTrue((self.home / '.config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg').is_file())
         self.assertFalse((self.home / '.config/hypr').exists())
         backups = list((self.home / '.local/state/hyprixe/backups').iterdir())
         result = self.run_installer()
