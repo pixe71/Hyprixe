@@ -381,6 +381,46 @@ class DolphinChecksTests(unittest.TestCase):
             check_session(lambda ok, label: results.append((ok, label)))
         self.assertFalse(any(ok for ok, _ in results))
 
+    def test_session_blur_accepts_current_bool_and_legacy_int_without_false_positives(self):
+        cases = (
+            ('{"option":"decoration:blur:enabled","bool":true,"set":true}', 0, True),
+            ('{"bool":true,"set":false}', 0, True),
+            ('{"bool":"true"}', 0, True),
+            ('bool: true\nset: true\n', 0, True),
+            ('  bool: TRUE  \nset: false\n', 0, True),
+            ('{"int":1,"set":true}', 0, True),
+            ('int: 1\nset: true\n', 0, True),
+            ('{"bool":false,"set":true}', 0, False),
+            ('{"bool":"false","set":true}', 0, False),
+            ('bool: false\nset: true\n', 0, False),
+            ('{"bool":false,"int":1}', 0, False),
+            ('{"int":0,"set":true}', 0, False),
+            ('int: 0\nset: true\n', 0, False),
+            ('{"set":true}', 0, False),
+            ('set: true\n', 0, False),
+            ('{"bool":"unknown"}', 0, False),
+            ('[]', 0, False),
+            ('invalid JSON', 0, False),
+            ('', 0, False),
+            ('{"bool":true}', 1, False),
+        )
+        for output, returncode, expected in cases:
+            with self.subTest(output=output, returncode=returncode):
+                replies = [subprocess.CompletedProcess([], 0, 'QT_STYLE_OVERRIDE=kvantum\n', ''),
+                           subprocess.CompletedProcess([], returncode, output, ''),
+                           subprocess.CompletedProcess([], 1, '', '')]
+                results = []
+                with patch('dolphin_checks.subprocess.run', side_effect=replies) as run, \
+                     contextlib.redirect_stdout(io.StringIO()):
+                    check_session(lambda ok, label: results.append((ok, label)))
+                self.assertEqual(results, [
+                    (True, 'UWSM/systemd user manager exports QT_STYLE_OVERRIDE=kvantum'),
+                    (expected, 'Active Hyprland compositor blur enabled'),
+                ])
+                self.assertEqual(run.call_args_list[1].args[0],
+                                 ['hyprctl', '-j', 'getoption', 'decoration:blur:enabled'])
+                self.assertEqual(run.call_count, 3)  # Bad output must not skip remaining checks.
+
 
 @unittest.skipUnless(os.geteuid() == 0 and shutil.which('setpriv'), 'root/setpriv needed for unprivileged installer fixture')
 class DolphinInstallerTests(unittest.TestCase):

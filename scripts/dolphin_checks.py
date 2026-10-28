@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -146,6 +147,23 @@ print(json.dumps({'style':a.style().objectName(),'window':p.color(QPalette.Color
     print('SKIPPED: visible transparency, compositor blur and unchanged on-screen interface require a real desktop check')
 
 
+def blur_option_enabled(output):
+    """Read current bool and legacy int getoption values, never the set flag."""
+    try:
+        values = json.loads(output)
+    except ValueError:
+        # Keep the JSON query, but also accept hyprctl's normal text output.
+        values = {key.lower(): value.strip().lower() for key, value in re.findall(
+            r'^\s*(bool|int)\s*:\s*([^\r\n]*)', output, re.MULTILINE | re.IGNORECASE)}
+    if not isinstance(values, dict):
+        return False
+    if 'bool' in values:
+        value = values['bool']
+        return value is True or (isinstance(value, str) and value.strip().lower() == 'true')
+    value = values.get('int')
+    return (type(value) is int and value == 1) or (isinstance(value, str) and value.strip() == '1')
+
+
 def check_session(report):
     """Inspect the UWSM manager and compositor; never dispatch changes."""
     try:
@@ -154,8 +172,8 @@ def check_session(report):
         report(result.returncode == 0 and env.get('QT_STYLE_OVERRIDE', '').lower() == 'kvantum',
                'UWSM/systemd user manager exports QT_STYLE_OVERRIDE=kvantum')
         blur = subprocess.run(['hyprctl', '-j', 'getoption', 'decoration:blur:enabled'], capture_output=True, text=True, timeout=10)
-        enabled = json.loads(blur.stdout).get('int') if blur.returncode == 0 else None
-        report(enabled == 1, 'Active Hyprland compositor blur enabled')
+        report(blur.returncode == 0 and blur_option_enabled(blur.stdout),
+               'Active Hyprland compositor blur enabled')
         pids = subprocess.run(['pgrep', '-u', str(os.getuid()), '-x', 'dolphin'], capture_output=True, text=True, timeout=10)
         for pid in pids.stdout.split():
             values = (Path('/proc') / pid / 'environ').read_bytes().split(b'\0')
