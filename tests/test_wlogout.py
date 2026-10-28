@@ -142,6 +142,8 @@ class WlogoutDeploymentTests(unittest.TestCase):
             for path, data in before.items():
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(data)
+            # Fixtures inherit the caller's umask; restore must keep their actual original modes.
+            before_modes = {path: path.stat().st_mode & 0o777 for path in before}
             personal = roots['config'] / 'wlogout/personal-notes'
             personal.write_text('keep me')
             with patch.dict(os.environ, HOME=str(home)), contextlib.redirect_stdout(io.StringIO()):
@@ -157,7 +159,7 @@ class WlogoutDeploymentTests(unittest.TestCase):
                 deploy.restore(backups[0], home)
             for path, data in before.items():
                 self.assertEqual(path.read_bytes(), data)
-            self.assertEqual((home / '.local/bin/hyprixe-session').stat().st_mode & 0o777, 0o644)
+                self.assertEqual(path.stat().st_mode & 0o777, before_modes[path])
             self.assertEqual(personal.read_text(), 'keep me')
             self.assertFalse((roots['config'] / 'wlogout/icons/lock.svg').exists())
 
