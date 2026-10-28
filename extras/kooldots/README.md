@@ -13,7 +13,7 @@ the full KoolDots ecosystem; a feature must be ported and verified before
 being reintegrated. SSH scripts, system repairs, updates and downloads are
 examples to read, not steps in our installation.
 
-Tokyo Night, Kitty, Thunar and other names still present here are generic
+Tokyo Night, Alacritty, Thunar and other alternative names still present here are generic
 upstream choices or compatibility branches. They do not affect the default
 applications or Frosted Glass. The Kitty theme collections, dedicated Thunar
 launcher and Ubuntu TUI binary were removed from the original set because

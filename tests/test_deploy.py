@@ -101,7 +101,7 @@ class DeploymentTests(unittest.TestCase):
     def test_changed_file_blocks_restore_without_partial_changes(self):
         self.install()
         target = self.write('hypr/hyprland.lua', 'personal edit')
-        other = self.roots['config'] / 'alacritty/alacritty.toml'
+        other = self.roots['config'] / 'kitty/kitty.conf'
         before = other.read_bytes()
         with self.assertRaisesRegex(ValueError, 'Nothing restored'):
             deploy.restore(self.backups()[0], self.home)
@@ -141,6 +141,26 @@ class DeploymentTests(unittest.TestCase):
         self.assertIn('inode/directory=org.kde.dolphin.desktop;', (self.roots['config'] / 'mimeapps.list').read_text())
         self.assertIn('Keep=yes', (self.roots['config'] / 'kdeglobals').read_text())
         self.assertIn('Keep=font', (self.roots['config'] / 'qt6ct/qt6ct.conf').read_text())
+
+    def test_kitty_migration_backs_up_existing_config_and_preserves_alacritty(self):
+        # Existing personal terminal settings are not deleted by this migration.
+        self.roots['config'] = self.home / 'custom settings with spaces'
+        kitty = self.write('kitty/kitty.conf', 'font_size 17\n')
+        old = self.write('alacritty/alacritty.toml', '# personal legacy settings\n')
+        kde = self.write('kdeglobals', '[General]\nTerminalApplication=alacritty\nTerminalService=Alacritty.desktop\nUnrelated=keep\n')
+        self.install()
+        self.assertEqual(kitty.read_bytes(), (ROOT / '.config/kitty/kitty.conf').read_bytes())
+        self.assertIn('TerminalApplication=kitty\n', kde.read_text())
+        self.assertIn('TerminalService=kitty.desktop\n', kde.read_text())
+        self.assertIn('Unrelated=keep', kde.read_text())
+        self.assertEqual(old.read_text(), '# personal legacy settings\n')
+        before = self.backups()
+        self.install()
+        self.assertEqual(self.backups(), before)
+        deploy.restore(before[0], self.home)
+        self.assertEqual(kitty.read_text(), 'font_size 17\n')
+        self.assertIn('TerminalApplication=alacritty\n', kde.read_text())
+        self.assertEqual(old.read_text(), '# personal legacy settings\n')
 
     def test_io_error_rolls_back_successful_writes(self):
         old = self.write('hypr/hyprland.lua', 'old config')

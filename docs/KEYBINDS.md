@@ -58,7 +58,7 @@ graphical selector across workspaces.
 
 | Shortcut | Action |
 | --- | --- |
-| SUPER + Return | Alacritty through UWSM |
+| SUPER + Return | Kitty through UWSM |
 | SUPER + E | Dolphin through UWSM |
 | SUPER + Space | Frosted Glass Rofi launcher through UWSM |
 | SUPER + Q | Close active window |

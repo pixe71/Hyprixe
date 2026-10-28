@@ -189,17 +189,20 @@ class SessionAuditTests(unittest.TestCase):
     @unittest.skipUnless(shutil.which('lua'), 'Lua needed to exercise read-only handle assertions')
     def test_handle_probe_reads_real_fields_and_rejects_disabled_removed_or_filtered_fixtures(self):
         for damage in ('', 'KOOLDOTS_BINDS["ALT + Tab"].enabled=false',
+                       'KOOLDOTS_DEFAULTS.term="alacritty"',
+                       'KOOLDOTS_BINDS["SUPER + Return"].description="Hyprixe | SUPER + Return | Alacritty"',
                        'KOOLDOTS_BINDS["ALT + Tab"]=nil',
                        'KOOLDOTS_BINDS["ALT + Tab"].devices={"excluded"}',
                        '''KOOLDOTS_BINDS["ALT + Tab"]=setmetatable({}, {
 __tostring=function() return 'HL.Keybind(expired)' end,
 __index=function() error('UNSAFE_EXPIRED_HANDLE_ACCESS') end})'''):
             with self.subTest(damage=damage):
-                lines = ['HYPRIXE_KEYBINDS_REVISION=1; KOOLDOTS_BINDS={}']
+                lines = ['HYPRIXE_KEYBINDS_REVISION=1; KOOLDOTS_BINDS={}; KOOLDOTS_DEFAULTS={term="kitty"}',
+                         'local original_getenv=os.getenv; os.getenv=function(key) if key=="TERMINAL" then return "kitty" end return original_getenv(key) end']
                 for spec in EXPECTED:
                     chord = json.dumps(spec.chord)
                     lines.append(f'KOOLDOTS_BINDS[{chord}]={{enabled=true,display_key={chord},modmask={spec.mask},'
-                                 f'submap="",description={json.dumps(PREFIX + spec.chord)},devices={{}},'
+                                 f'submap="",description={json.dumps(PREFIX + spec.chord + (" | Kitty" if spec.chord == "SUPER + Return" else ""))},devices={{}},'
                                  'is_enabled=function(self) return self.enabled end}')
                 code = '\n'.join([*lines, damage, handle_probe()])
                 result = subprocess.run(['lua', '-'], input=code, capture_output=True, text=True)

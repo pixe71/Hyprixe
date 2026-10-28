@@ -1,6 +1,6 @@
 # Debian 13: packages installed from stable by install.sh.
 # Hyprland ecosystem and awww are handled separately (packages-backports.txt).
-alacritty
+kitty
 dolphin
 kio-extras
 udisks2

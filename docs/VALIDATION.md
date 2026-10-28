@@ -988,3 +988,64 @@ changes, the eye's idle behavior, calendar and real tray-app interactions. The
 weekday follows the session locale (French when the locale is French). No
 physical compositor blur test or destructive power action was performed.
 See [WAYBAR.md](WAYBAR.md) for the scoped application/restore commands.
+
+
+## Kitty terminal migration (2026-10-28)
+
+The current terminal is Kitty. Earlier dated sections mentioning Alacritty
+record tests performed before this migration; they are retained as history.
+No Waybar, SDDM, Dolphin, Kvantum, wallpaper, service-ordering or compositor
+blur/opacity rules were changed for this migration.
+
+Commands actually executed in Debian 13 WSL:
+
+- `apt-get install --no-remove --no-install-recommends -y kitty`: installed
+  Debian `kitty`, `kitty-shell-integration` and `kitty-terminfo`
+  **0.41.1-2+deb13u2**, with no removals or upgrades.
+- `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p test_terminal.py -v`:
+  **7 tests passed**, including the real Kitty parser, invalid values,
+  unknown options, unavailable parser and stale terminal integration.
+- `./verify.sh`, with the prepared Waybar/Rofi/awww binaries first in PATH:
+  **exit 0, 190 tests passed, RESULT: 0 failed check(s)**. This includes
+  Bash syntax for 133 scripts, ShellCheck, syntax for 83 Lua files, the full
+  native Lua load mock, Rofi parsing, deployment/rollback, custom XDG paths
+  containing spaces, original asset hashes and the source security scan.
+- An additional unprivileged call to `check_native_config()` used the actual
+  installed **Hyprland 0.55.2** parser in an isolated temporary HOME:
+  **passed**, including all 67 retained handles and dispatcher constructors.
+  This is not an interactive Hyprland 0.56.2 session test.
+- `git diff --check`: **passed**.
+
+A native integration fixture outside the repository was also executed:
+`/mnt/c/Users/lucto/AppData/Local/Temp/hyprixe-test-kitty-native.py`.
+It uses a temporary user, real UWSM/systemd, headless Sway, real Waybar and
+awww, and the **installed** `LaunchTerminal.sh` to run Debian Kitty. Results:
+
+- A real native Wayland Kitty window was created, with `TERM=xterm-kitty`,
+  `TERMINAL=kitty`, a valid `KITTY_WINDOW_ID` and the correct Wayland display.
+- Passing `--directory` preserved a working directory containing spaces.
+- The Kitty parent ran in an `app-uwsm-kitty-*.scope`; Kitty placed its child
+  in its own `kitty-*-0.scope` under `app-graphical.slice` as expected.
+- Waybar remained `active (running)` before/after a real service restart.
+  Existing tray, taskbar, four workspace buttons and output resizing passed.
+- `uwsm stop` stopped the graphical session, its services and the terminal
+  child. No manual graphical target activation or sleep was added to Hyprixe.
+
+The fixture uses simulated Hyprland IPC and stand-ins for unrelated desktop
+helpers. Its Sway output-description warning and absent battery/Bluetooth
+warnings are the existing fixture limitations described above. It cannot
+validate Hyprland GPU blur, physical keyboard input or the final appearance
+on the user's PC. The live `hyprctl binds` check on that PC remains pending.
+
+The standalone `scripts/check-deps.py` preflight was also executed with the
+prepared runtime PATH. Kitty and its font/parser checks passed, but the whole
+preflight returned **1** because WSL lacks these other desktop commands:
+`hyprlock`, `hypridle`, `wpctl`, `cliphist`, `swaync`, `nm-connection-editor`,
+`blueman-manager`, `pavucontrol`, `brightnessctl`. A complete
+`./verify.sh --dependencies --session` pass is therefore **not claimed** for
+WSL or the user's physical PC. Run it after installation and a fresh
+**Hyprland (uwsm-managed)** login on Debian.
+
+Local evidence (outside Git):
+`/root/.cache/hyprixe-validation/kitty-verify.log`, `kitty-session.log`,
+and `kitty.png`.

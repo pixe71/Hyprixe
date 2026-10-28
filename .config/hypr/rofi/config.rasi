@@ -1,6 +1,6 @@
 /* KoolDots / adi1090x layout, preserved with the Frosted Glass palette. */
 configuration {
-    terminal: "alacritty";
+    terminal: "kitty";
     run-command: "uwsm app -- {cmd}";
     icon-theme: "breeze-dark";
 }

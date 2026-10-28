@@ -111,6 +111,8 @@ def payload(roots, profile, runtime=None, dolphin_only=False, waybar_only=False)
         source = REPO / '.config/hypr/waybar' / relative
         if not source.is_file():
             raise FileNotFoundError(f'Required Waybar file missing: {source}')
+    if not (REPO / '.config/kitty/kitty.conf').is_file():
+        raise FileNotFoundError('Required Kitty configuration missing: .config/kitty/kitty.conf')
     result = {}
     for p in sorted((REPO / '.config').rglob('*')):
         if p.is_file():
@@ -145,7 +147,7 @@ def payload(roots, profile, runtime=None, dolphin_only=False, waybar_only=False)
     merged = {
         'mimeapps.list': {'Default Applications': {'inode/directory': 'org.kde.dolphin.desktop;'}},
         'hyprland-mimeapps.list': {'Default Applications': {'inode/directory': 'org.kde.dolphin.desktop;'}},
-        'kdeglobals': {'General': {'TerminalApplication': 'alacritty', 'TerminalService': 'Alacritty.desktop'}, 'Icons': {'Theme': 'breeze-dark'}, 'KDE': {'widgetStyle': 'kvantum'}},
+        'kdeglobals': {'General': {'TerminalApplication': 'kitty', 'TerminalService': 'kitty.desktop'}, 'Icons': {'Theme': 'breeze-dark'}, 'KDE': {'widgetStyle': 'kvantum'}},
         'qt6ct/qt6ct.conf': {'Appearance': {'style': 'kvantum', 'icon_theme': 'breeze-dark'}},
     }
     for name, values in merged.items():

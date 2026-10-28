@@ -7,8 +7,9 @@ import sys
 from waybar_compat import has_lua_workspace_ipc, has_wlr_taskbar, has_click_drawer
 from rofi_compat import has_wayland_support
 from dolphin_checks import runtime_errors as dolphin_runtime_errors
+from terminal_checks import runtime_errors as terminal_runtime_errors, config_errors as terminal_config_errors
 
-commands = ('Hyprland', 'hyprctl', 'uwsm', 'hyprlock', 'hypridle', 'alacritty', 'dolphin',
+commands = ('Hyprland', 'hyprctl', 'uwsm', 'hyprlock', 'hypridle', 'kitty', 'dolphin',
             'waybar', 'rofi', 'awww', 'awww-daemon', 'jq', 'flock', 'wpctl',
             'wl-paste', 'wl-copy', 'cliphist', 'swaync', 'nm-connection-editor',
             'blueman-manager', 'pavucontrol', 'playerctl', 'brightnessctl',
@@ -38,6 +39,9 @@ kvantum = list(__import__('pathlib').Path('/usr/lib').glob('**/qt6/plugins/style
 if not kvantum:
     errors.append('Qt6 Kvantum plugin not found; install qt6-style-kvantum.')
 errors.extend(dolphin_runtime_errors())
+errors.extend(terminal_runtime_errors())
+if shutil.which('kitty'):
+    errors.extend(terminal_config_errors(Path(__file__).resolve().parents[1] / '.config/kitty/kitty.conf'))
 for error in errors:
     print('ERROR: ' + error, file=sys.stderr)
 if errors:

@@ -35,7 +35,7 @@ exit
 
 ## Installation
 
-Close Dolphin, Alacritty and configuration editors to prevent them from
+Close Dolphin and configuration editors to prevent them from
 rewriting their preferences while files are being copied.
 
 ```bash
@@ -152,8 +152,17 @@ The relevant values in `mimeapps.list`, `kdeglobals` and `qt6ct.conf` are
 merged: other MIME associations, groups and preferences are preserved.
 The session-specific `hyprland-mimeapps.list` also receives the directory
 association so an older session-specific choice cannot take priority.
-Dolphin becomes the application for `inode/directory`. Alacritty is the
+Dolphin becomes the application for `inode/directory`. Kitty is the
 terminal for Hyprland, Rofi and KDE. Qt Widgets uses Kvantum; Qt Quick uses Basic.
+
+Kitty is installed from Debian stable and configured through
+`$XDG_CONFIG_HOME/kitty/kitty.conf` (normally `~/.config/kitty/kitty.conf`).
+Existing Kitty settings are backed up before replacement. Alacritty is no
+longer required; its installed package and personal settings are left intact.
+After migrating, log out and select **Hyprland (uwsm-managed)** again so
+`TERMINAL=kitty` is imported into the fresh session. Details and restore steps:
+[Kitty Frosted Glass](docs/TERMINAL.md).
+
 A `systemd/user/waybar.service.d/hyprixe.conf` drop-in supplies the selected
 Waybar executable and configuration paths to Debian's Waybar service. Its
 `PartOf=`, `After=` and `Requisite=graphical-session.target` dependencies are
@@ -450,7 +459,7 @@ for detection rules, font provenance, calendar locale and hardware limits.
 `wlr/taskbar` uses Wayland's foreign-toplevel protocol, supported by Hyprland
 0.56.2 and the prepared Waybar 0.12 build. Focus requests use that protocol
 directly; they do not depend on legacy Hyprland dispatch strings or a polling
-script. Each window gets its own button, so two Dolphin or Alacritty windows
+script. Each window gets its own button, so two Dolphin or Kitty windows
 remain independently accessible. All outputs/workspaces are included without
 a hardcoded monitor, and activating a window can switch to its workspace.
 
@@ -530,16 +539,16 @@ awww query
 ~/.config/hypr/scripts/LockScreen.sh
 
 # Applications
-alacritty
+kitty
 dolphin
 ~/.config/hypr/scripts/RofiLauncher.sh
 xdg-mime query default inode/directory
 ```
 
-Alacritty, Dolphin, the Rofi launcher and Hyprlock use `uwsm app --`, as
+Kitty, Dolphin, the Rofi launcher and Hyprlock use `uwsm app --`, as
 recommended for applications in a systemd-managed compositor session.
 Rofi's `run-command` also prefixes selected applications with `uwsm app --`.
-The keyboard combinations and applications are unchanged. Short control
+Existing keyboard combinations and other applications are unchanged. Short control
 commands such as focus, volume and brightness remain direct commands.
 The power menu's logout action calls `uwsm stop` for ordered session teardown.
 

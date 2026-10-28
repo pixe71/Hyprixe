@@ -1,6 +1,6 @@
 [General]
-TerminalApplication=alacritty
-TerminalService=Alacritty.desktop
+TerminalApplication=kitty
+TerminalService=kitty.desktop
 
 [Icons]
 Theme=breeze-dark

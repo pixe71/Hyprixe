@@ -11,13 +11,13 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import tomllib
 import xml.etree.ElementTree as ET
 from waybar_compat import has_lua_workspace_ipc, has_wlr_taskbar
 from waybar_checks import check_source as check_waybar_source, check_installed as check_waybar_installed
 from rofi_compat import has_wayland_support
 from session_checks import check_session, check_source_order
 from keybind_checks import check_native_config, check_session_keybinds
+from terminal_checks import check_source as check_terminal_source, check_installed as check_terminal_installed
 from sddm_theme import SystemTheme, source_payload as sddm_payload, FILES as SDDM_FILES, THEME as SDDM_THEME
 from session_diagnostics import collect as collect_session_diagnostics
 from dolphin_checks import check_source as check_dolphin_source, check_installed as check_dolphin_installed, check_runtime as check_dolphin_runtime, check_session as check_dolphin_session
@@ -48,7 +48,6 @@ def check_configuration_formats(root):
     # Check the files actually used by the launchers, not a legacy Waybar
     # include wrapper. Report each missing/invalid file and keep checking.
     formats = (
-        ('.config/alacritty/alacritty.toml', 'Alacritty TOML', tomllib.loads),
         ('.config/hypr/waybar/configs/Frosted-Glass', 'Waybar JSON', json.loads),
         ('.config/Kvantum/Frosted-Glass/Frosted-Glass.svg', 'Kvantum SVG', ET.fromstring),
         ('.local/share/kxmlgui5/dolphin/dolphinui.rc', 'Dolphin XML', ET.fromstring),
@@ -223,7 +222,7 @@ def main():
     else:
         print('SKIPPED: integration tests require intact source files; repair the source failures reported above first')
     active_files = [p for p in files if p.relative_to(ROOT).parts[0] in ('.config', '.local') or p.is_relative_to(ROOT / 'profiles/native')]
-    forbidden = re.compile(r'VMware|vmwgfx|llvmpipe|Virtual-1|LIBGL_ALWAYS_SOFTWARE|MESA_LOADER_DRIVER_OVERRIDE|GALLIUM_DRIVER|WLR_RENDERER_ALLOW_SOFTWARE|/home/luc|Tokyo|\bkitty\b|\bthunar\b', re.I)
+    forbidden = re.compile(r'VMware|vmwgfx|llvmpipe|Virtual-1|LIBGL_ALWAYS_SOFTWARE|MESA_LOADER_DRIVER_OVERRIDE|GALLIUM_DRIVER|WLR_RENDERER_ALLOW_SOFTWARE|/home/luc|Tokyo|\balacritty\b|\bthunar\b', re.I)
     hits = []
     for p in active_files:
         try:
@@ -242,6 +241,7 @@ def main():
         if not (config / 'scripts' / name).is_file(): missing.append(name)
     report(not missing, 'Entry modules, keybind scripts and Rofi theme imports resolve' + (': ' + ', '.join(missing) if missing else ''))
     check_configuration_formats(ROOT)
+    check_terminal_source(report, ROOT)
     check_dolphin_source(report, ROOT)
     check_taskbar(ROOT)
     check_waybar_source(report, ROOT)
@@ -290,12 +290,15 @@ def main():
         report(index.returncode == 0 and modes.get(waybar_css) == '100644', 'Waybar style.css recorded as a regular file in Git (not a CSS-text symlink)')
     if args.dependencies:
         run(['python3', 'scripts/check-deps.py'], 'Installed runtime dependencies')
+        check_terminal_installed(report)
         check_waybar_installed(report)
         check_dolphin_installed(report)
         check_dolphin_runtime(report)
     else:
         print('SKIPPED: installed graphical dependencies (use --dependencies on target)')
     if args.session:
+        if not args.dependencies:
+            check_terminal_installed(report)
         check_session(report)
         check_dolphin_session(report)
         check_session_keybinds(report, ROOT)

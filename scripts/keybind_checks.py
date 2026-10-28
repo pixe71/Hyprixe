@@ -56,7 +56,7 @@ def expected_bindings():
 EXPECTED = expected_bindings()
 SCRIPTS = ('LaunchTerminal.sh', 'LaunchApp.sh', 'RofiLauncher.sh', 'LockScreen.sh',
            'WindowSwitcher.sh', 'PowerMenu.sh', 'ClipManager.sh', 'ScreenShot.sh')
-COMMANDS = ('hyprctl', 'jq', 'rofi', 'uwsm', 'alacritty', 'dolphin', 'hyprlock',
+COMMANDS = ('hyprctl', 'jq', 'rofi', 'uwsm', 'kitty', 'dolphin', 'hyprlock',
             'flock', 'pgrep', 'cliphist', 'wl-copy', 'grim', 'slurp', 'wpctl',
             'playerctl', 'brightnessctl', 'systemctl', 'xdg-user-dir', 'notify-send')
 
@@ -130,7 +130,9 @@ conflict-free and are reported rather than silently accepted.
 def handle_probe():
     """Read retained real HL.Keybind objects, including later disable/unbind."""
     expected = ','.join(f'[{json.dumps(spec.chord)}]={spec.mask}' for spec in EXPECTED)
-    return '''assert(HYPRIXE_KEYBINDS_REVISION == 1, 'Old/missing Hyprixe keybind audit metadata; reinstall and reload')
+    return '''assert(KOOLDOTS_DEFAULTS and KOOLDOTS_DEFAULTS.term == 'kitty', 'Terminal default is not Kitty; reinstall and log in again')
+assert(os.getenv('TERMINAL') == 'kitty', 'Compositor TERMINAL is not kitty; log in again')
+assert(HYPRIXE_KEYBINDS_REVISION == 1, 'Old/missing Hyprixe keybind audit metadata; reinstall and reload')
 assert(type(KOOLDOTS_BINDS) == 'table', 'KOOLDOTS_BINDS is not loaded')
 for chord, mask in pairs({''' + expected + '''}) do
 local b = assert(KOOLDOTS_BINDS[chord], 'Missing ' .. chord)
@@ -144,6 +146,9 @@ assert(not b.ignore_mods and not b.transparent and not b.non_consuming and not b
  and not b.dont_inhibit and not b.device_inclusive and #b.devices == 0, 'Unexpected flags/device filter ' .. chord)
 local identity = 'Hyprixe | ' .. chord
 assert(b.description and (b.description == identity or b.description:sub(1, #identity+3) == identity .. ' | '), 'Changed identity ' .. chord)
+if chord == 'SUPER + Return' then
+ assert(b.description == identity .. ' | Kitty', 'Stale terminal binding; reinstall and reload')
+end
 end'''
 
 
@@ -289,7 +294,7 @@ def check_session_keybinds(report, root, environ=None, runner=None, which=None):
                if not (config / 'scripts' / name).is_file() or not os.access(config / 'scripts' / name, os.X_OK)]
     report(not missing, 'Installed keybind scripts exist and are executable' + (': ' + ', '.join(missing) if missing else ''))
     drift = []
-    for relative in ('hyprland.lua', 'lua/keybinds.lua', *('scripts/' + name for name in SCRIPTS)):
+    for relative in ('hyprland.lua', 'lua/keybinds.lua', 'UserConfigs/user_defaults.lua', *('scripts/' + name for name in SCRIPTS)):
         try:
             if (config / relative).read_bytes() != (Path(root) / '.config/hypr' / relative).read_bytes():
                 drift.append(relative)

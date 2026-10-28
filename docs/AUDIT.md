@@ -30,7 +30,7 @@ examples and generated VM state.
 | Qt Widgets tested as a QML module, unjustified Fusion fallback | Kvantum for Widgets, Basic for Qt Quick, Qt6 plugin checked |
 | NVIDIA variables and software cursor forced for all GPUs | No forced driver in native; software cursor limited to the VM profile |
 | Quickshell/overview/Kitty autostarts without associated files | Removed from active startup; optional examples preserved separately |
-| Tokyo Night palette in Alacritty | Aligned with Frosted Glass blue/cyan colors; opacity/padding preserved |
+| Tokyo Night palette in Alacritty | Initially aligned with Frosted Glass; later replaced by the Kitty migration, preserving the palette, 0.92 background opacity and 10 px padding |
 | Duplicate Waybar CSS, power button defined twice, once in pink | A single Frosted-Glass stylesheet, shared colors for the power button |
 | Package list taken from the VM | Active dependencies, backports, optional packages and guest integration separated |
 
@@ -47,7 +47,7 @@ colors. Rofi retains its KoolDots/adi1090x layout and translucent palette.
 Waybar retains its colors/background and top position; MPRIS, the tray and
 idle inhibitor are also preserved.
 
-The active applications are Alacritty/Dolphin; audio, media, brightness,
+The active applications are Kitty/Dolphin; audio, media, brightness,
 screenshots, notifications, clipboard, gestures and window/workspace
 management remain accessible. Alt+F10 remains a graphical switcher.
 The primary Alt+Tab navigation uses the official Lua dispatcher, without
@@ -67,15 +67,16 @@ guarantee that they work in Hyprixe.
   original remains in `wallpapers/min_forest.jpg`.
 - Old `SetFrostedWallpaper.sh` script: replaced by `Wallpaper.sh`, with
   output detection and no native graphics overrides.
-- Kitty themes and dedicated Thunar launcher: applications replaced;
+- Old Kitty theme collection and dedicated Thunar launcher: unused files removed;
   generic upstream selection scripts remain as optional references.
 - Precompiled `dots-tui-ubuntu-2404` binary (~17.7 MB): a tool for another
   distribution, not launched by the target configuration, without bundled source.
 - Old Senshi-Tokyo-Night names: replaced by Frosted-Glass.
 
-Any remaining Kitty/Thunar/Tokyo references are confined to generic examples
-and audit documents. No active default, keybinding, script or installer launches
-these applications. VM monitor examples are kept only under
+Thunar/Tokyo references remain only in generic examples and historical audit
+documents. Kitty was subsequently restored as the active terminal with one
+minimal Frosted Glass configuration, without the old theme collection. See
+[TERMINAL.md](TERMINAL.md). VM monitor examples are kept only under
 `profiles/vmware/monitor-examples` and are never applied automatically.
 
 ## Security and limitations

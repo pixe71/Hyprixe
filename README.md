@@ -1,6 +1,6 @@
 # Hyprixe Debian — Frosted Glass
 
-Debian 13 / Hyprland configuration based on KoolDots, adapted for Alacritty and Dolphin.
+Debian 13 / Hyprland configuration based on KoolDots, adapted for Kitty and Dolphin.
 The main profile uses the PC's graphics drivers. A separate VMware profile
 preserves the software-rendering adjustments needed during earlier testing.
 
@@ -85,10 +85,13 @@ See the 0.56.2 compatibility review in `docs/VALIDATION.md`.
 ## Components
 
 SDDM with the Hyprixe Qt 6 theme, Hyprland with UWSM and KoolDots Lua modules,
-Alacritty, Dolphin, Kvantum/Qt6, Waybar,
+Kitty, Dolphin, Kvantum/Qt6, Waybar,
 Rofi Wayland, Hyprlock, Hypridle, awww, PipeWire/WirePlumber, NetworkManager,
 Blueman, SwayNC and cliphist. Icons use Breeze and FontAwesome; the
 JetBrains Mono font is available in Debian.
+
+Kitty uses the existing dark Frosted Glass palette, 0.92 background opacity
+and native UWSM application scopes. See [terminal configuration and migration](docs/TERMINAL.md).
 
 Dolphin keeps its existing layout, icon sizes, panels, view and navigation.
 The **Frosted-Glass-Dolphin** Kvantum association changes only Dolphin's paint;
@@ -131,7 +134,7 @@ physical keycodes on the top row, regardless of the AZERTY number symbols.
 
 | Shortcut | Action |
 | --- | --- |
-| SUPER + Return | Alacritty |
+| SUPER + Return | Kitty |
 | SUPER + E | Dolphin |
 | SUPER + Space | Rofi |
 | SUPER + Q | Close the window |
@@ -210,7 +213,7 @@ environment.
   [UWSM](https://github.com/Vladimir-csp/uwsm),
   [SDDM](https://github.com/sddm/sddm) and [Qt Quick](https://doc.qt.io/qt-6/qtquick-index.html),
   [Rofi](https://github.com/davatorium/rofi), [awww](https://codeberg.org/LGFae/awww),
-  [Alacritty](https://github.com/alacritty/alacritty), [Dolphin](https://invent.kde.org/system/dolphin).
+  [Kitty](https://sw.kovidgoyal.net/kitty/), [Dolphin](https://invent.kde.org/system/dolphin).
 
 This project adapts and integrates those works. References and provenance
 limitations are documented in [CREDITS.md](CREDITS.md) and

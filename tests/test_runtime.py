@@ -20,7 +20,7 @@ if name=='hyprctl':
             print('[]')
         else: print('[{"name":"DP-3"},{"name":"eDP-2"}]')
     elif sys.argv[1]=='clients':
-        print(os.environ.get('MOCK_CLIENTS', '[{"mapped":true,"address":"0xabc","class":"Alacritty","title":"Example"}]'))
+        print(os.environ.get('MOCK_CLIENTS', '[{"mapped":true,"address":"0xabc","class":"kitty","title":"Example"}]'))
     elif sys.argv[1]=='dispatch':
         print(os.environ.get('MOCK_DISPATCH_RESULT', 'ok'))
 elif name=='awww' and sys.argv[1]=='query':
@@ -136,8 +136,8 @@ class RuntimeTests(unittest.TestCase):
     def test_switcher_selects_one_of_multiple_windows_of_same_application(self):
         self.env['MOCK_CLIENTS'] = json.dumps([
             {'mapped': True, 'hidden': True, 'address': '0x000', 'class': 'Hidden', 'title': 'skip'},
-            {'mapped': True, 'address': '0xabc', 'class': 'Alacritty', 'title': 'first'},
-            {'mapped': True, 'address': '0xdef', 'class': 'Alacritty', 'title': 'second\nline'},
+            {'mapped': True, 'address': '0xabc', 'class': 'kitty', 'title': 'first'},
+            {'mapped': True, 'address': '0xdef', 'class': 'kitty', 'title': 'second\nline'},
         ])
         self.env['MOCK_INDEX'] = '1'
         result = self.run_script('WindowSwitcher.sh')
@@ -239,8 +239,8 @@ class RuntimeTests(unittest.TestCase):
 
     def test_gui_launchers_use_uwsm_scopes_and_preserve_arguments(self):
         cases = [('LaunchApp.sh', ['dolphin', '/folder with spaces'], ['dolphin', '/folder with spaces']),
-                 ('LaunchTerminal.sh', ['--working-directory', '/folder with spaces'],
-                  ['alacritty', '--working-directory', '/folder with spaces']),
+                 ('LaunchTerminal.sh', ['--directory', '/folder with spaces'],
+                  ['kitty', '--directory', '/folder with spaces']),
                  ('RofiLauncher.sh', [], ['rofi', '-config', str(ROOT / '.config/hypr/rofi/config.rasi'), '-show', 'drun'])]
         for name, args, expected in cases:
             with self.subTest(name=name):

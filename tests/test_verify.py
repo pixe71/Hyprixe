@@ -21,7 +21,6 @@ class ConfigurationFormatTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         for relative in (
-            '.config/alacritty/alacritty.toml',
             '.config/hypr/waybar/configs/Frosted-Glass',
             '.config/Kvantum/Frosted-Glass/Frosted-Glass.svg',
             '.local/share/kxmlgui5/dolphin/dolphinui.rc',
@@ -41,14 +40,14 @@ class ConfigurationFormatTests(unittest.TestCase):
         self.assertFalse((self.root / '.config/hypr/waybar/config').exists())
         failures, output = self.check_formats()
         self.assertEqual(failures, 0, output)
-        self.assertEqual(output.count('PASS:'), 4)
+        self.assertEqual(output.count('PASS:'), 3)
 
     def test_missing_active_waybar_config_reports_failure_and_continues(self):
         (self.root / '.config/hypr/waybar/configs/Frosted-Glass').unlink()
         failures, output = self.check_formats()
         self.assertEqual(failures, 1)
         self.assertIn('FAIL: Waybar JSON: .config/hypr/waybar/configs/Frosted-Glass', output)
-        self.assertEqual(output.count('PASS:'), 3)
+        self.assertEqual(output.count('PASS:'), 2)
         self.assertIn('PASS: Dolphin XML:', output)
 
     def test_invalid_active_waybar_json_reports_failure_and_continues(self):
@@ -56,14 +55,12 @@ class ConfigurationFormatTests(unittest.TestCase):
         failures, output = self.check_formats()
         self.assertEqual(failures, 1)
         self.assertIn('FAIL: Waybar JSON:', output)
-        self.assertEqual(output.count('PASS:'), 3)
+        self.assertEqual(output.count('PASS:'), 2)
 
-    def test_invalid_toml_and_xml_are_reported_without_aborting(self):
-        (self.root / '.config/alacritty/alacritty.toml').write_text('broken = [')
+    def test_invalid_xml_is_reported_without_aborting(self):
         (self.root / '.config/Kvantum/Frosted-Glass/Frosted-Glass.svg').write_text('<svg>')
         failures, output = self.check_formats()
-        self.assertEqual(failures, 2)
-        self.assertIn('FAIL: Alacritty TOML:', output)
+        self.assertEqual(failures, 1)
         self.assertIn('FAIL: Kvantum SVG:', output)
         self.assertEqual(output.count('PASS:'), 2)
         self.assertIn('PASS: Dolphin XML:', output)

@@ -93,7 +93,9 @@ for chord, binding in pairs(binds) do
   assert(binding.options.description:sub(1, 10) == "Hyprixe | ", "Missing live-audit identity: " .. chord)
 end
 assert(binds["super + e"].fn.opts:find('LaunchApp.sh" dolphin', 1, true))
-assert(KOOLDOTS_DEFAULTS.term == "alacritty")
+assert(KOOLDOTS_DEFAULTS.term == "kitty")
+assert(binds["super + return"].fn.opts:find('LaunchTerminal.sh"', 1, true))
+assert(binds["super + return"].options.description == "Hyprixe | SUPER + Return | Kitty")
 window_snapshot = {
   {address="0xa", stable_id=1, accepts_input=true},
   {address="0xb", stable_id=2, accepts_input=true, floating=true},
