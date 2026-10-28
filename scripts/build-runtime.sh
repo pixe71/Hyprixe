@@ -44,10 +44,11 @@ if ! python3 "$script_dir/waybar_compat.py"; then
     meson compile -C "$build/waybar/build" -j 2
     install -m755 "$build/waybar/build/waybar" "$output/waybar"
 fi
-if ! python3 "$script_dir/rofi_compat.py"; then
-    echo 'Building Rofi 2.0.0 with its native Wayland backend (Debian stable has X11 Rofi).'
+if ! python3 "$script_dir/rofi_compat.py" --launcher; then
+    echo 'Building Rofi 2.0.0 with native Wayland and scoped Hyprixe launcher buttons.'
     install_build_dependencies rofi
     checkout https://github.com/davatorium/rofi.git 0b6aa8ba8b4879f00c3cc96f2e47a13c079fe814 rofi
+    python3 "$script_dir/rofi_launcher.py" --patch "$build/rofi"
     meson setup "$build/rofi/build" "$build/rofi" --buildtype=release \
         -Dwayland=enabled -Dxcb=disabled -Dimdkit=false -Dcheck=disabled
     meson compile -C "$build/rofi/build"

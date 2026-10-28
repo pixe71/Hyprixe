@@ -1,0 +1,9 @@
+/* SUPER + Space only. Other menus retain config.rasi and its original layout. */
+@import "config.rasi"
+@import "themes/Frosted-Glass-Launcher.rasi"
+
+configuration {
+    kb-custom-17: "";
+    kb-custom-18: "";
+    kb-custom-19: "";
+}

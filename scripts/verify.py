@@ -15,6 +15,8 @@ import xml.etree.ElementTree as ET
 from waybar_compat import has_lua_workspace_ipc, has_wlr_taskbar
 from waybar_checks import check_source as check_waybar_source, check_installed as check_waybar_installed
 from rofi_compat import has_wayland_support
+from rofi_launcher import has_launcher_actions
+from rofi_checks import check_source as check_rofi_source, check_installed as check_rofi_installed
 from session_checks import check_session, check_source_order
 from keybind_checks import check_native_config, check_session_keybinds
 from terminal_checks import check_source as check_terminal_source, check_installed as check_terminal_installed
@@ -242,6 +244,7 @@ def main():
         if not (config / 'scripts' / name).is_file(): missing.append(name)
     report(not missing, 'Entry modules, keybind scripts and Rofi theme imports resolve' + (': ' + ', '.join(missing) if missing else ''))
     check_configuration_formats(ROOT)
+    check_rofi_source(report, ROOT)
     check_terminal_source(report, ROOT)
     check_wlogout_source(report, ROOT)
     check_dolphin_source(report, ROOT)
@@ -258,6 +261,7 @@ def main():
                (': ' + '; '.join(ordering) if ordering else ''))
     rofi = shutil.which('rofi')
     if rofi and has_wayland_support(rofi):
+        report(has_launcher_actions(rofi), 'Rofi includes scoped Hyprixe launcher button actions (./install.sh native to prepare)')
         for p in sorted((config / 'rofi').rglob('*.rasi')):
             # Rofi 2.0.0's early -rasi-validate path segfaults upstream, including
             # on minimal themes. -dump-theme uses the fully initialized parser
@@ -293,6 +297,7 @@ def main():
     if args.dependencies:
         run(['python3', 'scripts/check-deps.py'], 'Installed runtime dependencies')
         check_terminal_installed(report)
+        check_rofi_installed(report)
         check_wlogout_installed(report, ROOT)
         check_waybar_installed(report)
         check_dolphin_installed(report)

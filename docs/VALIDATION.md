@@ -1125,3 +1125,99 @@ unlock and actual logout/shutdown/reboot still require interactive validation.
 Evidence outside Git: `/root/.cache/hyprixe-validation/wlogout-verify.log`,
 `wlogout-dependencies.log`, `wlogout-session-verify.log`, `wlogout-session.log`,
 `wlogout-report.json` and `wlogout.png`.
+
+## Rofi wallpaper sidebar — 2026-10-28
+
+The application launcher now uses a dedicated Rasi extension. Git confirms no
+changes to the shared `config.rasi`, `0-shared-fonts.rasi`, Frosted Glass theme
+or palette, or to Hyprland/layer rules, Waybar, Wlogout, Kitty, Dolphin/Kvantum,
+SDDM, profiles or the wallpaper asset. The centered window is 60% × 58%; the
+wallpaper box is about 44% of content width, with four vertical icon buttons.
+
+The pinned Rofi 2.0.0 source at commit
+`0b6aa8ba8b4879f00c3cc96f2e47a13c079fe814` was checked out, submodules fetched,
+and the guarded adaptation applied with:
+
+```bash
+python3 scripts/rofi_launcher.py --patch /path/to/validation/rofi-source
+meson setup /path/to/validation/rofi-source/build /path/to/validation/rofi-source \
+  --buildtype=release -Dwayland=enabled -Dxcb=disabled -Dimdkit=false -Dcheck=disabled
+meson compile -C /path/to/validation/rofi-source/build
+```
+
+These are the build arguments actually used; paths above stand for the external
+validation checkout, not files generated inside this repository. Compilation
+completed successfully. Preparation is idempotent and rejects unknown source
+before writes. The private `-hyprixe-launcher` argument gates both button return
+codes and hover handling; it cannot leak through application environments.
+
+An external fixture deployed the actual files for a temporary unprivileged user
+with a HOME containing spaces, real UWSM/systemd, the prepared Wayland Rofi and
+headless Sway. A persistent native virtual keyboard/pointer sent real input.
+Harmless application executables and Hyprland IPC replies were test stand-ins;
+no physical Hyprland session was used.
+
+Results from that fixture:
+
+- Immediate typing and Enter selected and launched a real native `drun` desktop
+  entry through UWSM. Escape closed the launcher.
+- Files and Terminal mouse clicks closed Rofi, then invoked the existing helpers
+  in real UWSM scopes with `dolphin` and `kitty` respectively (safe executables).
+- Applications returned from Run to `drun` in the same Rofi PID, retaining search
+  focus. Windows opened the unchanged switcher after the first view closed;
+  Enter produced its validated Lua focus request from one client snapshot.
+- A normal Rofi `dmenu` invocation without the private argument returned upstream
+  code 26 for custom action 17. Other menus are not opted into the extension.
+- Screenshots were inspected at 1920×1080, 1366×768, 2560×1440 scale 2,
+  3440×1440 and 5120×1440 scale 2: four round buttons inside the panel, blue/cyan
+  hover, a covered proportionate wallpaper and rounded external corners.
+- `uwsm stop` shut the temporary session down normally.
+
+Earlier experimental fixture runs exposed Rasi's same-line string parsing and
+font-driven text-button height; both were corrected before the final runs. A
+Wayland media-query variant was discarded after it changed geometry between
+opens; the final proportional layout uses no such conditional. Temporary
+`wtype` devices also emitted nkutils keymap notices, so the final input tests
+used one persistent virtual device. None of those fixture tools or experimental
+files is deployed or added as a dependency.
+
+Repository regression coverage includes native Rasi action/icon parsing, exact
+source-patch guards and idempotence, fixed action dispatch, cancellation/errors,
+custom XDG paths with spaces, installation/reinstallation, restored permissions
+and missing installed assets without a traceback. The final runs used the
+prepared binaries in PATH and `PYTHONDONTWRITEBYTECODE=1`:
+
+| Command | Actual result |
+| --- | --- |
+| `./verify.sh` | Exit 0; **217 tests OK**, `RESULT: 0 failed check(s)` |
+| `./verify.sh --dependencies` | 217 tests OK; exit 1, **12 environment checks fail** in the undeployed WSL root HOME |
+| `./verify.sh --dependencies --session` | 217 tests OK; exit 1, **16 environment checks fail**, including no current Hyprland session |
+| Native Rofi `-config FILE -dump-theme` | All eight Rasi files accepted, including the two new launcher files |
+| Bash / ShellCheck | `bash -n` on 133 scripts, all-script error check and active-script warning check pass |
+| Lua | 83 files parse; required shortcut/duplicate audit passes |
+| `git diff --check`, `git diff --cached --check` | Pass |
+
+The complete dependency/session commands were not made green by hiding their
+failures. This WSL HOME lacks deployed Hyprixe configs (including the new Rofi
+file), the system SDDM theme/greeter, several desktop executables and a live
+Hyprland environment. The installed-file check adds one expected failure to the
+previous environment totals. Native launcher tests used the separate correctly
+deployed temporary user. Run the full commands on the physical PC after installing.
+
+Changed existing files: `.config/hypr/scripts/RofiLauncher.sh`,
+`scripts/build-runtime.sh`, `scripts/check-deps.py`, `scripts/rofi_compat.py`,
+`scripts/verify.py`, `tests/test_runtime.py`, `README.md`, `INSTALL.md` and this
+validation report. Added files: `.config/hypr/rofi/config-launcher.rasi`,
+`.config/hypr/rofi/themes/Frosted-Glass-Launcher.rasi`, `scripts/rofi_launcher.py`,
+`scripts/rofi_checks.py`, `tests/test_rofi_launcher.py` and `docs/ROFI.md`.
+No tracked file was deleted and no commit was created.
+
+Evidence outside Git: `/root/.cache/hyprixe-validation/rofi-launcher-build.log`,
+`rofi-launcher-verify.log`, `rofi-launcher-dependencies.log`,
+`rofi-launcher-session-verify.log`, `rofi-launcher-session.log` and the
+`rofi-launcher-*.png` native screenshots. The build directory is
+`/root/.cache/hyprixe-validation/rofi-launcher-source`.
+
+Physical Hyprland 0.56.2 GPU blur, the final composited colours, real application
+startup and physical keyboard/mouse interaction still require target-machine
+validation. No compositor configuration or keybinding was changed.

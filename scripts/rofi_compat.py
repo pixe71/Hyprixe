@@ -24,4 +24,10 @@ def has_wayland_support(executable=None):
 
 
 if __name__ == '__main__':
-    sys.exit(0 if has_wayland_support() else 1)
+    import argparse
+    from rofi_launcher import has_launcher_actions
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--launcher', action='store_true', help='also require Hyprixe launcher button actions')
+    args = parser.parse_args()
+    sys.exit(0 if has_wayland_support() and
+             (not args.launcher or has_launcher_actions(shutil.which('rofi'))) else 1)

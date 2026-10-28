@@ -61,7 +61,7 @@ the repository, run `chmod +x install.sh uninstall.sh verify.sh scripts/build-ru
 The `--dry-run` mode shows which paths would change, without running APT or
 copying files. It does not guarantee that dependencies are already installed.
 It also previews SDDM paths without `sudo` or system changes.
-`--no-packages` checks commands, the Hyprland version, Rofi's Wayland backend
+`--no-packages` checks commands, the Hyprland version, Rofi's Wayland/button capabilities
 and the Qt6 Kvantum plugin; it fails before touching configuration files if
 any requirement is missing.
 It also requires the SDDM Qt 6 modules in `packages-sddm.txt` and the existing
@@ -104,6 +104,12 @@ privileges in a temporary directory that is removed afterwards.
 The resulting executables are deployed to `~/.local/bin` using the same backup
 system as the configuration files. Existing versions with the required
 capabilities are reused.
+The application launcher's sidebar also requires the scoped button support in
+`scripts/rofi_launcher.py`. The installer applies it to the pinned Rofi source
+before building. A previously installed Wayland build without this capability is
+rebuilt automatically; use `./install.sh native` without `--no-packages` for this
+update. No new launcher framework or runtime package is added. Other Rofi menus
+keep upstream behaviour. Details: [Rofi application launcher](docs/ROFI.md).
 Waybar support is detected by checking for its compiled Lua IPC commands,
 without sending actions to the compositor. Stable Waybar 0.12 lacks this
 support: the prepared build converts only workspace changes to
@@ -551,6 +557,35 @@ Rofi's `run-command` also prefixes selected applications with `uwsm app --`.
 Existing keyboard combinations and other applications are unchanged. Short control
 commands such as focus, volume and brightness remain direct commands.
 The power menu's logout action calls `uwsm stop` for ordered session teardown.
+
+### Rofi application launcher
+
+`SUPER + Space` retains native `drun` search, application icons, typing, arrows,
+Enter and Escape. Its dedicated `config-launcher.rasi` imports the existing theme
+and adds a centered 60% × 58% layout. The left panel occupies approximately 44%
+of the content and displays the already installed `min_forest.jpg`; the right
+panel keeps the search field and application list. No wallpaper copy is added.
+
+The four vertical buttons are Applications (return to native `drun` in the same
+instance), Files (Dolphin), Windows (the existing `WindowSwitcher.sh`) and Terminal
+(Kitty). The launcher explicitly uses `uwsm app -t scope --` to wait for its return
+code even if `UWSM_APP_UNIT_TYPE` is overridden elsewhere. After Rofi closes,
+Files and Terminal delegate to the existing UWSM helpers; Windows reuses the
+existing switcher. No global environment variable or Hyprland rule is changed.
+
+Apply and check the update:
+
+```bash
+git pull
+./install.sh native
+./verify.sh --dependencies --session
+```
+
+No logout or keybinding reload is required: the existing binding calls the updated
+script. Test `SUPER + Space`, immediate typing, Enter/Escape and all four buttons.
+Visual blur and the final appearance must be checked in the physical Hyprland
+session. Use the existing `./uninstall.sh --list` / dated restore mechanism to
+restore the previous configuration and any Rofi binary replaced by this update.
 
 ### Wlogout session menu
 

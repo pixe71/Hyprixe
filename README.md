@@ -93,6 +93,11 @@ JetBrains Mono font is available in Debian.
 Kitty uses the existing dark Frosted Glass palette, 0.92 background opacity
 and native UWSM application scopes. See [terminal configuration and migration](docs/TERMINAL.md).
 
+`SUPER + Space` opens the native Rofi application search in a larger two-panel
+layout: the existing wallpaper and four round shortcuts on the left, applications
+on the right. The shared Frosted Glass palette, fonts and other Rofi menus stay
+unchanged. See [launcher buttons, installation and validation](docs/ROFI.md).
+
 Wlogout adds **Lock | Logout | Shutdown | Reboot** through `SUPER + Backspace`,
 with the current Frosted Glass palette and confirmation for destructive actions.
 See [session menu, keyboard navigation and restore](docs/WLOGOUT.md).

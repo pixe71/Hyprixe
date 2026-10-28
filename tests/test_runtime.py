@@ -32,6 +32,8 @@ elif name=='rofi':
     if os.environ.get('MOCK_ROFI_FAILURE'): sys.exit(17)
     print(os.environ.get('MOCK_CHOICE',os.environ.get('MOCK_INDEX','0')))
 elif name=='uwsm':
+    if '-hyprixe-launcher' in sys.argv:
+        sys.exit(int(os.environ.get('MOCK_LAUNCHER_STATUS', '0')))
     if sys.argv[1:]==['check','is-active','compositor-only']:
         sys.exit(0 if os.environ.get('MOCK_UWSM')=='1' else 1)
 elif name=='systemctl':
@@ -241,13 +243,56 @@ class RuntimeTests(unittest.TestCase):
         cases = [('LaunchApp.sh', ['dolphin', '/folder with spaces'], ['dolphin', '/folder with spaces']),
                  ('LaunchTerminal.sh', ['--directory', '/folder with spaces'],
                   ['kitty', '--directory', '/folder with spaces']),
-                 ('RofiLauncher.sh', [], ['rofi', '-config', str(ROOT / '.config/hypr/rofi/config.rasi'), '-show', 'drun'])]
+                 ('RofiLauncher.sh', [], ['rofi', '-hyprixe-launcher', '-config',
+                                         str(ROOT / '.config/hypr/rofi/config-launcher.rasi'), '-show', 'drun'])]
         for name, args, expected in cases:
             with self.subTest(name=name):
                 (self.root / 'calls').write_text('')
                 r = self.run_script(name, *args)
                 self.assertEqual(r.returncode, 0, r.stderr)
-                self.assertIn(['uwsm', 'app', '--', *expected], self.calls())
+                prefix = ['uwsm', 'app', '-t', 'scope', '--'] if name == 'RofiLauncher.sh' else ['uwsm', 'app', '--']
+                self.assertIn([*prefix, *expected], self.calls())
+
+    def test_launcher_sidebar_delegates_files_and_terminal_to_existing_uwsm_helpers(self):
+        for status, command in ((10, 'dolphin'), (12, 'kitty')):
+            with self.subTest(status=status):
+                (self.root / 'calls').write_text('')
+                self.env['MOCK_LAUNCHER_STATUS'] = str(status)
+                result = self.run_script('RofiLauncher.sh')
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(self.calls()[-1], ['uwsm', 'app', '--', command])
+                self.assertEqual(sum('-hyprixe-launcher' in c for c in self.calls()), 1)
+
+    def test_launcher_sidebar_windows_reuses_switcher_snapshot_and_dispatch(self):
+        self.env['MOCK_LAUNCHER_STATUS'] = '11'
+        result = self.run_script('RofiLauncher.sh')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        calls = self.calls()
+        self.assertEqual(sum(c[:2] == ['hyprctl', 'clients'] for c in calls), 1)
+        rofi = next(c for c in calls if c[0] == 'rofi')
+        self.assertIn('-dmenu', rofi)
+        self.assertIn(str(ROOT / '.config/hypr/rofi/config.rasi'), rofi)
+        self.assertTrue(any(c[:2] == ['hyprctl', 'dispatch'] for c in calls))
+
+    def test_launcher_accept_cancel_and_errors_never_launch_sidebar_apps(self):
+        for status, expected in ((0, 0), (1, 0), (17, 17), (127, 127)):
+            with self.subTest(status=status):
+                (self.root / 'calls').write_text('')
+                self.env['MOCK_LAUNCHER_STATUS'] = str(status)
+                result = self.run_script('RofiLauncher.sh')
+                self.assertEqual(result.returncode, expected)
+                self.assertEqual(len(self.calls()), 1)
+                if expected:
+                    self.assertIn('Rofi launcher failed', result.stderr)
+
+    def test_launcher_sidebar_works_with_custom_xdg_paths_containing_spaces(self):
+        settings = self.root / 'settings with spaces'
+        shutil.copytree(ROOT / '.config/hypr', settings / 'hypr')
+        self.env.update(XDG_CONFIG_HOME=str(settings), MOCK_LAUNCHER_STATUS='12')
+        result = self.run_script('RofiLauncher.sh')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn(str(settings / 'hypr/rofi/config-launcher.rasi'), self.calls()[0])
+        self.assertEqual(self.calls()[-1], ['uwsm', 'app', '--', 'kitty'])
 
     def test_logout_uses_uwsm_stop(self):
         self.env['MOCK_CHOICE'] = 'Déconnexion'
