@@ -1,0 +1,51 @@
+/* Hyprixe Frosted Glass. Four equal zones, no permanently active button. */
+@binding-set hyprixe-session-navigation {
+    bind "Left" { "move-focus" (tab-backward) };
+    bind "Right" { "move-focus" (tab-forward) };
+    bind "Up" { "move-focus" (tab-backward) };
+    bind "Down" { "move-focus" (tab-forward) };
+    bind "Return" { "activate-focus" () };
+    bind "KP_Enter" { "activate-focus" () };
+}
+* {
+    font-family: "JetBrains Mono", "FontAwesome", sans-serif;
+    font-size: 14px;
+    color: #e6f1f4;
+    box-shadow: none;
+    text-shadow: none;
+}
+window {
+    background: rgba(18, 36, 52, 0.12);
+    -gtk-key-bindings: hyprixe-session-navigation;
+}
+grid {
+    background: rgba(18, 36, 52, 0.76);
+    border: 1px solid rgba(126, 214, 255, 0.20);
+    border-radius: 28px;
+}
+button {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center 38%;
+    background-size: 58px;
+    border: none;
+    border-radius: 20px;
+    margin: 8px 4px;
+    padding: 0 8px 20px;
+    min-width: 80px;
+    min-height: 0;
+    outline-color: #7ed6ff;
+    outline-offset: -2px;
+    outline-width: 2px;
+    transition: background-color 120ms ease;
+}
+button + button { border-left: 1px solid rgba(126, 214, 255, 0.12); }
+button:hover, button:focus {
+    background-color: rgba(126, 214, 255, 0.16);
+    color: #b4f9f8;
+}
+button:active { background-color: rgba(126, 214, 255, 0.25); }
+#lock { background-image: url("icons/lock.svg"); }
+#logout { background-image: url("icons/logout.svg"); }
+#shutdown { background-image: url("icons/shutdown.svg"); }
+#reboot { background-image: url("icons/reboot.svg"); }

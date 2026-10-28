@@ -35,7 +35,7 @@ class Binding:
 def expected_bindings():
     """Independent contract for all shipped shortcuts, including physical keys."""
     result = [Binding('SUPER + ' + key) for key in
-              ('Return', 'E', 'Space', 'Q', 'L', 'F', 'SHIFT + F', 'V', 'P', 'J',
+              ('Return', 'Backspace', 'E', 'Space', 'Q', 'L', 'F', 'SHIFT + F', 'V', 'P', 'J',
                'mouse:272', 'mouse:273')]
     for direction in ('left', 'right', 'up', 'down'):
         result += [Binding('SUPER + ' + direction), Binding('SUPER + SHIFT + ' + direction),
@@ -56,7 +56,7 @@ def expected_bindings():
 EXPECTED = expected_bindings()
 SCRIPTS = ('LaunchTerminal.sh', 'LaunchApp.sh', 'RofiLauncher.sh', 'LockScreen.sh',
            'WindowSwitcher.sh', 'PowerMenu.sh', 'ClipManager.sh', 'ScreenShot.sh')
-COMMANDS = ('hyprctl', 'jq', 'rofi', 'uwsm', 'kitty', 'dolphin', 'hyprlock',
+COMMANDS = ('hyprctl', 'jq', 'rofi', 'uwsm', 'kitty', 'dolphin', 'hyprlock', 'wlogout', 'hyprixe-session',
             'flock', 'pgrep', 'cliphist', 'wl-copy', 'grim', 'slurp', 'wpctl',
             'playerctl', 'brightnessctl', 'systemctl', 'xdg-user-dir', 'notify-send')
 
@@ -219,7 +219,7 @@ The native handle checks complement, rather than replace, the recording mock.
                    'PATH': os.environ.get('PATH', '/usr/bin:/bin')}
             result = subprocess.run([binary, '--verify-config', '-c', str(entry)],
                                     env=env, capture_output=True, text=True, timeout=30)
-            report(result.returncode == 0, 'Real Hyprland parser: isolated native config, 67 retained handles and dispatcher constructors')
+            report(result.returncode == 0, f'Real Hyprland parser: isolated native config, {len(EXPECTED)} retained handles and dispatcher constructors')
             if result.returncode:
                 print(result.stdout + result.stderr)
     except (OSError, subprocess.TimeoutExpired) as exc:

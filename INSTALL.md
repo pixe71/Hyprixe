@@ -552,6 +552,21 @@ Existing keyboard combinations and other applications are unchanged. Short contr
 commands such as focus, volume and brightness remain direct commands.
 The power menu's logout action calls `uwsm stop` for ordered session teardown.
 
+### Wlogout session menu
+
+The full installer also installs Debian's `wlogout` and SVG loader
+`librsvg2-common`, deploys `wlogout/layout`, `style.css`, four local icons and
+the `~/.local/bin/hyprixe-session` helper, and backs up their previous versions.
+`SUPER + Backspace` opens/closes the four-button horizontal Frosted Glass menu:
+**Lock | Logout | Shutdown | Reboot**. The existing Waybar power menu is retained.
+
+After updating, run `hyprctl reload`, then `hyprctl configerrors` and
+`./verify.sh --dependencies --session` inside your managed Hyprland session.
+No SDDM restart is needed for Wlogout. Test arrows, Enter and Escape; Logout,
+Shutdown and Reboot ask for confirmation with Cancel selected by default.
+Logout uses `uwsm stop`. To revert, restore the matching dated transaction
+with `uninstall.sh` and reload Hyprland. Details: [Wlogout](docs/WLOGOUT.md).
+
 If XDG_CONFIG_HOME is customized, replace `~/.config` in these manual commands.
 Session scripts already use the XDG variables.
 

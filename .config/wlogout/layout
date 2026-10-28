@@ -1,0 +1,24 @@
+{
+    "label": "lock",
+    "action": "hyprixe-session lock",
+    "text": "Lock",
+    "keybind": "l"
+}
+{
+    "label": "logout",
+    "action": "hyprixe-session logout",
+    "text": "Logout",
+    "keybind": "e"
+}
+{
+    "label": "shutdown",
+    "action": "hyprixe-session shutdown",
+    "text": "Shutdown",
+    "keybind": "s"
+}
+{
+    "label": "reboot",
+    "action": "hyprixe-session reboot",
+    "text": "Reboot",
+    "keybind": "r"
+}

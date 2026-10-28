@@ -8,9 +8,10 @@ from waybar_compat import has_lua_workspace_ipc, has_wlr_taskbar, has_click_draw
 from rofi_compat import has_wayland_support
 from dolphin_checks import runtime_errors as dolphin_runtime_errors
 from terminal_checks import runtime_errors as terminal_runtime_errors, config_errors as terminal_config_errors
+from wlogout_checks import runtime_errors as wlogout_runtime_errors
 
 commands = ('Hyprland', 'hyprctl', 'uwsm', 'hyprlock', 'hypridle', 'kitty', 'dolphin',
-            'waybar', 'rofi', 'awww', 'awww-daemon', 'jq', 'flock', 'wpctl',
+            'waybar', 'wlogout', 'rofi', 'awww', 'awww-daemon', 'jq', 'flock', 'wpctl',
             'wl-paste', 'wl-copy', 'cliphist', 'swaync', 'nm-connection-editor',
             'blueman-manager', 'pavucontrol', 'playerctl', 'brightnessctl',
             'grim', 'slurp', 'xdg-user-dir', 'dbus-update-activation-environment')
@@ -40,6 +41,7 @@ if not kvantum:
     errors.append('Qt6 Kvantum plugin not found; install qt6-style-kvantum.')
 errors.extend(dolphin_runtime_errors())
 errors.extend(terminal_runtime_errors())
+errors.extend(wlogout_runtime_errors())
 if shutil.which('kitty'):
     errors.extend(terminal_config_errors(Path(__file__).resolve().parents[1] / '.config/kitty/kitty.conf'))
 for error in errors:

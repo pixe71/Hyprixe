@@ -15,6 +15,7 @@ local function script(name, args)
   return d.exec_cmd(scripts .. name .. '"' .. (args and (" " .. args) or ""))
 end
 bind("SUPER + Return", script("LaunchTerminal.sh"), { description = "Kitty" })
+bind("SUPER + Backspace", d.exec_cmd("hyprixe-session"), { description = "Wlogout session menu" })
 bind("SUPER + E", script("LaunchApp.sh", KOOLDOTS_DEFAULTS.files), { description = "Dolphin" })
 bind("SUPER + Space", script("RofiLauncher.sh"), { description = "Rofi" })
 bind("SUPER + Q", w.close(), { description = "Close window" })

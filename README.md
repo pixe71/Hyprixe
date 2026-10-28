@@ -87,11 +87,15 @@ See the 0.56.2 compatibility review in `docs/VALIDATION.md`.
 SDDM with the Hyprixe Qt 6 theme, Hyprland with UWSM and KoolDots Lua modules,
 Kitty, Dolphin, Kvantum/Qt6, Waybar,
 Rofi Wayland, Hyprlock, Hypridle, awww, PipeWire/WirePlumber, NetworkManager,
-Blueman, SwayNC and cliphist. Icons use Breeze and FontAwesome; the
+Blueman, SwayNC, cliphist and Wlogout. Icons use Breeze and FontAwesome; the
 JetBrains Mono font is available in Debian.
 
 Kitty uses the existing dark Frosted Glass palette, 0.92 background opacity
 and native UWSM application scopes. See [terminal configuration and migration](docs/TERMINAL.md).
+
+Wlogout adds **Lock | Logout | Shutdown | Reboot** through `SUPER + Backspace`,
+with the current Frosted Glass palette and confirmation for destructive actions.
+See [session menu, keyboard navigation and restore](docs/WLOGOUT.md).
 
 Dolphin keeps its existing layout, icon sizes, panels, view and navigation.
 The **Frosted-Glass-Dolphin** Kvantum association changes only Dolphin's paint;
@@ -135,6 +139,7 @@ physical keycodes on the top row, regardless of the AZERTY number symbols.
 | Shortcut | Action |
 | --- | --- |
 | SUPER + Return | Kitty |
+| SUPER + Backspace | Toggle the horizontal Frosted Glass Wlogout menu |
 | SUPER + E | Dolphin |
 | SUPER + Space | Rofi |
 | SUPER + Q | Close the window |

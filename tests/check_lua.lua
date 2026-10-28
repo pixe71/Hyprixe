@@ -76,7 +76,7 @@ local workspace_count = 0
 for _ in pairs(workspaces) do workspace_count = workspace_count + 1 end
 assert(workspace_count == 4, "Expected persistent workspace IDs 1 to 4")
 for _, chord in ipairs({"super + return", "super + e", "super + space", "super + q", "super + l",
-  "super + mouse:272", "super + mouse:273", "super + left", "super + right", "super + up", "super + down", "alt + tab", "alt + shift + tab"}) do
+  "super + backspace", "super + mouse:272", "super + mouse:273", "super + left", "super + right", "super + up", "super + down", "alt + tab", "alt + shift + tab"}) do
   assert(binds[chord], "Missing chord: " .. chord)
 end
 assert(binds["super + mouse:272"].fn.name == "drag")
@@ -94,6 +94,7 @@ for chord, binding in pairs(binds) do
 end
 assert(binds["super + e"].fn.opts:find('LaunchApp.sh" dolphin', 1, true))
 assert(KOOLDOTS_DEFAULTS.term == "kitty")
+assert(binds["super + backspace"].fn.opts == "hyprixe-session")
 assert(binds["super + return"].fn.opts:find('LaunchTerminal.sh"', 1, true))
 assert(binds["super + return"].options.description == "Hyprixe | SUPER + Return | Kitty")
 window_snapshot = {

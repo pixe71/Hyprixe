@@ -28,8 +28,8 @@ def registry():
 
 class RegistryTests(unittest.TestCase):
     def test_complete_native_registry_and_physical_workspace_codes(self):
-        self.assertEqual(len(EXPECTED), 67)
-        self.assertEqual(len({b.chord for b in EXPECTED}), 67)
+        self.assertEqual(len(EXPECTED), 68)
+        self.assertEqual(len({b.chord for b in EXPECTED}), 68)
         self.assertEqual(registry_errors(registry()), [])
 
     def test_missing_alt_tab_and_legacy_descriptions_fail(self):

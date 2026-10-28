@@ -59,6 +59,7 @@ graphical selector across workspaces.
 | Shortcut | Action |
 | --- | --- |
 | SUPER + Return | Kitty through UWSM |
+| SUPER + Backspace | Toggle Wlogout: Lock, Logout, Shutdown, Reboot |
 | SUPER + E | Dolphin through UWSM |
 | SUPER + Space | Frosted Glass Rofi launcher through UWSM |
 | SUPER + Q | Close active window |

@@ -5,6 +5,8 @@ dolphin
 kio-extras
 udisks2
 waybar
+wlogout
+librsvg2-common
 rofi
 qt6-style-kvantum
 qt6ct

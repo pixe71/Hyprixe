@@ -18,6 +18,7 @@ from rofi_compat import has_wayland_support
 from session_checks import check_session, check_source_order
 from keybind_checks import check_native_config, check_session_keybinds
 from terminal_checks import check_source as check_terminal_source, check_installed as check_terminal_installed
+from wlogout_checks import check_source as check_wlogout_source, check_installed as check_wlogout_installed
 from sddm_theme import SystemTheme, source_payload as sddm_payload, FILES as SDDM_FILES, THEME as SDDM_THEME
 from session_diagnostics import collect as collect_session_diagnostics
 from dolphin_checks import check_source as check_dolphin_source, check_installed as check_dolphin_installed, check_runtime as check_dolphin_runtime, check_session as check_dolphin_session
@@ -209,7 +210,7 @@ def main():
         print('SKIPPED: Lua compiler and load test unavailable')
     check_native_config(report, ROOT)
     for p in files:
-        if p.suffix == '.py':
+        if p.suffix == '.py' or p == ROOT / '.local/bin/hyprixe-session':
             try: ast.parse(p.read_text(), str(p))
             except SyntaxError as exc: report(False, str(exc))
     report(True, 'Python syntax parsed without generating bytecode')
@@ -242,6 +243,7 @@ def main():
     report(not missing, 'Entry modules, keybind scripts and Rofi theme imports resolve' + (': ' + ', '.join(missing) if missing else ''))
     check_configuration_formats(ROOT)
     check_terminal_source(report, ROOT)
+    check_wlogout_source(report, ROOT)
     check_dolphin_source(report, ROOT)
     check_taskbar(ROOT)
     check_waybar_source(report, ROOT)
@@ -280,7 +282,7 @@ def main():
         except UnicodeError: pass
     report(not secret_files, 'Secret-pattern scan (current files): ' + (', '.join(secret_files) if secret_files else 'no matches'))
     if shutil.which('git'):
-        executable_paths = ['install.sh', 'uninstall.sh', 'verify.sh', 'scripts/build-runtime.sh']
+        executable_paths = ['install.sh', 'uninstall.sh', 'verify.sh', 'scripts/build-runtime.sh', '.local/bin/hyprixe-session']
         executable_paths += [str(p.relative_to(ROOT)) for p in (config / 'scripts').glob('*.sh')]
         executable_paths += [str(p.relative_to(ROOT)) for p in (config / 'UserScripts').glob('*.sh')]
         waybar_css = '.config/hypr/waybar/style.css'
@@ -291,6 +293,7 @@ def main():
     if args.dependencies:
         run(['python3', 'scripts/check-deps.py'], 'Installed runtime dependencies')
         check_terminal_installed(report)
+        check_wlogout_installed(report, ROOT)
         check_waybar_installed(report)
         check_dolphin_installed(report)
         check_dolphin_runtime(report)
@@ -299,6 +302,7 @@ def main():
     if args.session:
         if not args.dependencies:
             check_terminal_installed(report)
+            check_wlogout_installed(report, ROOT)
         check_session(report)
         check_dolphin_session(report)
         check_session_keybinds(report, ROOT)

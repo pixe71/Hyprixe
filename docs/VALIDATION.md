@@ -1049,3 +1049,79 @@ WSL or the user's physical PC. Run it after installation and a fresh
 Local evidence (outside Git):
 `/root/.cache/hyprixe-validation/kitty-verify.log`, `kitty-session.log`,
 and `kitty.png`.
+
+
+## Wlogout integration (2026-10-28)
+
+Scope: the four-action menu, one new shortcut and the `logout_dialog` blur
+namespace. The Waybar power menu, global blur, existing shortcuts, profiles,
+Kitty, Dolphin, Kvantum, SDDM, Hypridle and wallpaper configuration are unchanged.
+See [WLOGOUT.md](WLOGOUT.md) for behavior, installation and restore.
+
+Commands actually executed in Debian 13 WSL:
+
+- `apt-get install --no-remove --no-install-recommends -y wlogout` installed
+  official Debian **1.2.2-1**, without removals or upgrades. The existing
+  `librsvg2-common` package supplies `libpixbufloader_svg.so`; a regression test
+  covers the actual underscore filename so detection does not falsely fail.
+- `python3 -m unittest discover -s tests -p test_wlogout.py -v`: **14 passed**.
+  Tests cover logical scale/rotation, named UWSM service toggle, fixed command
+  dispatch, confirmation/cancellation/failure, unmanaged logout rejection,
+  four-object layout validation, missing assets before writes, repeated
+  deployment and exact backup/restore with XDG paths containing spaces.
+  Restore preserves personal files and restores the previous helper mode.
+- `./verify.sh` with prepared runtime binaries in PATH: **205 tests passed,
+  exit 0, RESULT: 0 failed check(s)**. Bash, ShellCheck, 83 Lua files, native
+  GTK 3 CSS parsing, all existing application/theme checks and Git modes pass.
+- `check_native_config()` as an unprivileged user: the real available
+  **Hyprland 0.55.2** parser accepted the isolated config, **68 retained bind
+  handles** and dispatcher constructors. This does not claim an interactive
+  Hyprland 0.56.2 session was tested.
+- `git diff --check` and `git diff --cached --check`: passed.
+
+An external native fixture ran the deployed launcher with real UWSM/systemd,
+Wlogout, awww and headless Sway, using a temporary unprivileged user:
+
+- Exactly four buttons appear horizontally in the requested left-to-right
+  order, with actual GTK widget geometry checked. The panel measures about
+  70% of logical width and 26% of logical height. Native runs covered
+  1366x768, 1920x1080 and 2560x1440 at scale 2; the four button widths differ
+  by at most one pixel after the equal minimum-width adjustment.
+- Actual `hyprixe-wlogout.service` creation and second-invocation stop pass.
+  Escape sent through the Wayland virtual keyboard closes the real menu.
+- SVG icons and translucent panel paint were captured in native screenshots.
+  This Sway fixture does not validate Hyprland GPU blur.
+- Actual `uwsm stop` shuts down the session, including the application slice.
+  No real poweroff, reboot or PAM lock was executed.
+- GTK arrow navigation and Enter were additionally exercised with actual
+  X11 events under a private Xvfb. Right/Left move focus and Enter dispatches
+  the selected Lock action to a harmless stand-in. GTK initially focuses Lock;
+  there is no per-button permanent active CSS. In the Sway virtual-keyboard
+  fixture, arrow events arrived but focus traversal was inconclusive; physical
+  Wayland keyboard navigation remains an explicit target-machine check.
+
+The fixture uses simulated Hyprland IPC and unrelated GUI helper stand-ins.
+Initial Waybar service readiness passed. Repeated earlier runs of the combined
+bar/widget observer fixture hit its existing headless resource/crash behavior;
+final Wlogout input/geometry tests stopped the bar after its readiness check
+rather than changing any production Waybar files. Test-only `wtype`, Xvfb and
+`xdotool` tools are not Hyprixe runtime dependencies.
+
+Both requested complete commands were also executed against the actual WSL
+HOME, with **205 tests passing in each run**:
+
+- `./verify.sh --dependencies`: exit 1, **11 failed environment checks**.
+- `./verify.sh --dependencies --session`: exit 1, **15 failed environment checks**.
+
+These runs correctly report that the WSL root HOME has no deployed Hyprixe
+configs, no installed Hyprixe SDDM theme/greeter, several missing desktop
+commands and no current Hyprland/UWSM session. They are not represented as
+successful target-machine runs. `hyprctl configerrors` reports
+`HYPRLAND_INSTANCE_SIGNATURE not set! (is hyprland running?)`; live compositor
+validation is unavailable here. Run both commands on the physical Debian PC
+after installing and reloading Hyprland. Blur, hover, keyboard input, PAM
+unlock and actual logout/shutdown/reboot still require interactive validation.
+
+Evidence outside Git: `/root/.cache/hyprixe-validation/wlogout-verify.log`,
+`wlogout-dependencies.log`, `wlogout-session-verify.log`, `wlogout-session.log`,
+`wlogout-report.json` and `wlogout.png`.

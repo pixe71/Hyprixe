@@ -19,6 +19,7 @@ import subprocess
 import sys
 import uuid
 import dolphin_config
+from wlogout_checks import validate as validate_wlogout
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -113,7 +114,10 @@ def payload(roots, profile, runtime=None, dolphin_only=False, waybar_only=False)
             raise FileNotFoundError(f'Required Waybar file missing: {source}')
     if not (REPO / '.config/kitty/kitty.conf').is_file():
         raise FileNotFoundError('Required Kitty configuration missing: .config/kitty/kitty.conf')
+    validate_wlogout(REPO / '.config')
     result = {}
+    launcher = REPO / '.local/bin/hyprixe-session'
+    result[Path(os.environ['HOME']) / '.local/bin/hyprixe-session'] = (launcher.read_bytes(), 0o755)
     for p in sorted((REPO / '.config').rglob('*')):
         if p.is_file():
             if p.relative_to(REPO / '.config') == Path('dolphinrc') and (roots['config'] / 'dolphinrc').exists():
