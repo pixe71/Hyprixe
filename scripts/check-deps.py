@@ -6,7 +6,7 @@ import subprocess
 import sys
 from waybar_compat import has_lua_workspace_ipc, has_wlr_taskbar, has_click_drawer
 from rofi_compat import has_wayland_support
-from rofi_launcher import has_launcher_actions
+from rofi_launcher import has_launcher_actions, has_launcher_cover
 from dolphin_checks import runtime_errors as dolphin_runtime_errors
 from terminal_checks import runtime_errors as terminal_runtime_errors, config_errors as terminal_config_errors
 from wlogout_checks import runtime_errors as wlogout_runtime_errors
@@ -39,6 +39,8 @@ if shutil.which('rofi') and not has_wayland_support():
     errors.append('Rofi must include Wayland support (rofi 2.x or rofi-wayland); run ./install.sh native to prepare it.')
 if shutil.which('rofi') and not has_launcher_actions(shutil.which('rofi')):
     errors.append('Rofi lacks Hyprixe launcher button support; run ./install.sh native (without --no-packages) to prepare it.')
+if shutil.which('rofi') and not has_launcher_cover(shutil.which('rofi')):
+    errors.append('Rofi lacks adaptive launcher wallpaper cropping; run ./install.sh native (without --no-packages) to prepare it.')
 kvantum = list(__import__('pathlib').Path('/usr/lib').glob('**/qt6/plugins/styles/libkvantum.so'))
 if not kvantum:
     errors.append('Qt6 Kvantum plugin not found; install qt6-style-kvantum.')

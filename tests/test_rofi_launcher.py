@@ -65,6 +65,18 @@ class RofiPreparationTests(unittest.TestCase):
             self.assertTrue(launcher.has_launcher_actions(binary))
             self.assertFalse(launcher.has_launcher_actions(None))
 
+    def test_actions_only_binary_is_not_mistaken_for_adaptive_wallpaper_support(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            binary = Path(tmp) / 'rofi'
+            self.assertFalse(launcher.has_launcher_cover(binary))
+            binary.write_bytes(b'\x7fELF\0' + launcher.MARKER.encode() + b'\0')
+            self.assertTrue(launcher.has_launcher_actions(binary))
+            self.assertFalse(launcher.has_launcher_cover(binary))
+            binary.write_bytes(binary.read_bytes() + launcher.COVER_MARKER.encode() + b'\0')
+            self.assertTrue(launcher.has_launcher_actions(binary))
+            self.assertTrue(launcher.has_launcher_cover(binary))
+            self.assertFalse(launcher.has_launcher_cover(None))
+
     def test_late_patch_mismatch_does_not_partially_modify_source(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

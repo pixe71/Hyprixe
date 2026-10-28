@@ -1221,3 +1221,76 @@ Evidence outside Git: `/root/.cache/hyprixe-validation/rofi-launcher-build.log`,
 Physical Hyprland 0.56.2 GPU blur, the final composited colours, real application
 startup and physical keyboard/mouse interaction still require target-machine
 validation. No compositor configuration or keybinding was changed.
+
+## Rofi glass paint and wider wallpaper — 2026-10-28
+
+This update changes the dedicated launcher paint and proportions. The shared
+Rasi theme/palette/fonts, launch script, UWSM helpers, four button actions,
+window switcher, keyboard bindings and Hyprland blur rules are unchanged.
+No package, image copy, generated preview or new runtime dependency is added.
+
+- Window width changes from 60% to 70% (**+16.7%**); height remains **58%**.
+- Wallpaper width changes from 25% to 32% of output width, approximately
+  **48% wallpaper / 52% applications** after padding on ordinary desktop outputs.
+- Main paint is Rofi color2 `#284D5B` at alpha **0.82**, drawn once. Previously,
+  the inherited black window/mainbox paints compounded 0.70 alpha to 0.91.
+- Search/messages use color3 `#345461` at **0.40**; normal round buttons use the
+  same RGB at **0.76**. Selection uses color11 `#457081` at **0.92** with light
+  foreground text; hover uses color12 `#4D7A8A` at **0.92**. Borders reuse
+  Waybar/Wlogout cyan `#7ED6FF` at **0.20**. Unselected rows and their child
+  icon/text backgrounds are fully transparent, including alternate states.
+
+The wider wallpaper exposed a real 32:9 image-repeat problem in stock Rofi
+height scaling. The only additional renderer adaptation is activated by
+`hyprixe-preview-cover: true` on the wallpaper box: if the height-scaled image
+is too narrow, Rofi requests the width-scaled variant from its existing image
+cache. Both paths preserve image aspect ratio. Other widgets/menus do not enable
+the property, and launcher action handling is unchanged. A Rasi media-query
+experiment was removed: upstream 2.0.0's Wayland `monitor_active()` is a no-op,
+making its dimensional theme conditions unsuitable for this fallback.
+
+The pinned Rofi build completed with `meson compile -C` after applying the
+updated `scripts/rofi_launcher.py`. The first experimental build exposed that
+upstream widget test binaries do not link `find_arg`; the final implementation
+uses a local theme boolean instead and all build targets link successfully.
+The capability probe distinguishes an older actions-only Rofi from one that
+supports the new image rendering. `./install.sh native` prepares that build
+automatically; `--no-packages` intentionally cannot upgrade an old binary.
+
+Final results with the prepared runtime in PATH:
+
+| Command / check | Actual result |
+| --- | --- |
+| `./verify.sh` | **218 tests OK**, exit 0, `RESULT: 0 failed check(s)` |
+| `./verify.sh --dependencies` | 218 tests OK; 12 unchanged failures in the undeployed WSL environment |
+| `./verify.sh --dependencies --session` | 218 tests OK; 16 unchanged environment/session failures in WSL |
+| Rasi parsing | All eight files parse with real Wayland Rofi |
+| Bash / ShellCheck / Lua | 133 scripts pass syntax, both ShellCheck levels pass; 83 Lua files and shortcut audit pass |
+| Original asset hashes | Wallpaper and original Kvantum assets remain identical |
+| `git diff --check`, `git diff --cached --check` | Pass |
+
+An external temporary-user fixture deployed the files and used actual Rofi
+Wayland, UWSM/systemd and headless Sway. Native virtual pointer/keyboard tests
+passed immediate search, Enter/Escape, all four buttons and the existing switcher.
+Applications stayed in one Rofi process, and ordinary dmenu retained custom-action
+exit code 26. Application launches and Hyprland IPC used harmless stand-ins.
+Screenshots were inspected at 1920×1080, 1366×768, 2560×1440 scale 2,
+3440×1440 and 5120×1440 scale 2: no black row rectangles, translucent blue/grey
+paint, light readable text, round buttons/corners and a continuous proportionate
+wallpaper. The initial 32:9 repetition was corrected and rechecked.
+
+The final binary was rebuilt after removing diagnostic-only image logging;
+the rendering path is the same as in those native input/screenshot tests.
+No physical Hyprland/GPU session was available: final blur strength, colour
+integration against the real desktop and physical input remain manual checks.
+The full dependency/session failures are reported, not suppressed or presented
+as successful physical-PC runs.
+
+Changed files: the dedicated `Frosted-Glass-Launcher.rasi`,
+`scripts/rofi_launcher.py`, `scripts/rofi_compat.py`, `scripts/check-deps.py`,
+`scripts/verify.py`, `tests/test_rofi_launcher.py`, `docs/ROFI.md`, `INSTALL.md`
+and this report. No tracked file was deleted and no commit was created.
+External evidence: `/root/.cache/hyprixe-validation/rofi-glass-build.log`,
+`rofi-glass-verify.log`, `rofi-glass-dependencies.log`,
+`rofi-glass-session-verify.log`, `rofi-glass-session.log` and
+`rofi-glass-*.png` native screenshots.

@@ -562,9 +562,13 @@ The power menu's logout action calls `uwsm stop` for ordered session teardown.
 
 `SUPER + Space` retains native `drun` search, application icons, typing, arrows,
 Enter and Escape. Its dedicated `config-launcher.rasi` imports the existing theme
-and adds a centered 60% × 58% layout. The left panel occupies approximately 44%
+and adds a centered 70% × 58% layout. The left panel occupies approximately 48%
 of the content and displays the already installed `min_forest.jpg`; the right
 panel keeps the search field and application list. No wallpaper copy is added.
+The launcher-only blue/grey paint uses existing Hyprixe colours, with 0.82 main
+opacity and transparent unselected rows. The normal installer prepares Rofi's
+preview cover support so the larger image does not repeat on ultrawide outputs;
+other menus, launch actions and the existing blur rules stay unchanged.
 
 The four vertical buttons are Applications (return to native `drun` in the same
 instance), Files (Dolphin), Windows (the existing `WindowSwitcher.sh`) and Terminal

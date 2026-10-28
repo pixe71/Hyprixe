@@ -15,7 +15,7 @@ import xml.etree.ElementTree as ET
 from waybar_compat import has_lua_workspace_ipc, has_wlr_taskbar
 from waybar_checks import check_source as check_waybar_source, check_installed as check_waybar_installed
 from rofi_compat import has_wayland_support
-from rofi_launcher import has_launcher_actions
+from rofi_launcher import has_launcher_actions, has_launcher_cover
 from rofi_checks import check_source as check_rofi_source, check_installed as check_rofi_installed
 from session_checks import check_session, check_source_order
 from keybind_checks import check_native_config, check_session_keybinds
@@ -262,6 +262,7 @@ def main():
     rofi = shutil.which('rofi')
     if rofi and has_wayland_support(rofi):
         report(has_launcher_actions(rofi), 'Rofi includes scoped Hyprixe launcher button actions (./install.sh native to prepare)')
+        report(has_launcher_cover(rofi), 'Rofi includes adaptive launcher wallpaper cropping (./install.sh native to prepare)')
         for p in sorted((config / 'rofi').rglob('*.rasi')):
             # Rofi 2.0.0's early -rasi-validate path segfaults upstream, including
             # on minimal themes. -dump-theme uses the fully initialized parser

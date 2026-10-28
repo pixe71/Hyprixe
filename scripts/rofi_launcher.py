@@ -1,14 +1,16 @@
-"""Scoped launcher button support for Hyprixe's pinned Rofi 2.0.0 build.
+"""Launcher button and preview rendering support for the pinned Rofi 2.0.0 build.
 
 Stock drun interprets custom actions as mode switches. Reserve three otherwise
 unused actions only when our application launcher explicitly opts in. Other
 Rofi invocations keep upstream behaviour, including dmenu's return codes.
+The preview cover property changes only image sizing, not launcher actions.
 """
 import argparse
 from pathlib import Path
 import sys
 
 MARKER = '-hyprixe-launcher'
+COVER_MARKER = 'hyprixe-preview-cover'
 ORIGINAL = 'ModeMode retv = mode_result(sw, mretv, &input, selected_line);'
 REPLACEMENT = '''ModeMode retv;
     unsigned int hyprixe_action = mretv & MENU_LOWER_MASK;
@@ -72,6 +74,20 @@ LEAVE_REPLACEMENT = '''    wayland->cursor.frame_cb = NULL;
 }
 
 static void wayland_pointer_motion'''
+COVER_ORIGINAL = '''cairo_surface_t *img = rofi_icon_fetcher_get(p->value.image.surface_id);
+
+      if (img != NULL) {'''
+COVER_REPLACEMENT = '''cairo_surface_t *img = rofi_icon_fetcher_get(p->value.image.surface_id);
+
+      /* Keep height cropping, but cover wide launcher previews without tiling. */
+      if (img != NULL && rofi_theme_get_boolean(wid, "hyprixe-preview-cover", FALSE) &&
+          p->value.image.scaling == ROFI_SCALE_HEIGHT &&
+          cairo_image_surface_get_width(img) < wid->w * (int)scale) {
+        img = rofi_icon_fetcher_get(rofi_icon_fetcher_query_advanced(
+            p->value.image.url, wid->w, -1));
+      }
+
+      if (img != NULL) {'''
 PATCHES = (
     ('source/rofi.c', ORIGINAL, REPLACEMENT),
     ('include/view-internal.h', 'box *main_window;', 'box *main_window;\n  widget *hyprixe_hover;'),
@@ -79,6 +95,7 @@ PATCHES = (
     ('source/wayland/display.c', '#include "settings.h"', '#include "settings.h"\n#include "helper.h"'),
     ('source/wayland/display.c', ENTER_ORIGINAL, ENTER_REPLACEMENT),
     ('source/wayland/display.c', LEAVE_ORIGINAL, LEAVE_REPLACEMENT),
+    ('source/theme.c', COVER_ORIGINAL, COVER_REPLACEMENT),
 )
 
 
@@ -103,6 +120,16 @@ def has_launcher_actions(executable):
         return False
     try:
         return MARKER.encode() in Path(executable).read_bytes()
+    except OSError:
+        return False
+
+
+def has_launcher_cover(executable):
+    """Detect the visual-only preview fix without mistaking old actions for it."""
+    if not executable:
+        return False
+    try:
+        return COVER_MARKER.encode() in Path(executable).read_bytes()
     except OSError:
         return False
 

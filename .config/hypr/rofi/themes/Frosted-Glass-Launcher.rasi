@@ -1,21 +1,36 @@
-/* Layout extension: all colours, fonts and list styling come from Frosted-Glass. */
+/* Launcher-only glass paint. RGB values come from the existing Hyprixe palette:
+   Rofi color2 / color3 / color11 / color12 and the Waybar/Wlogout cyan border. */
+* {
+    launcher-glass: rgba(40, 77, 91, 0.82);
+    launcher-input: rgba(52, 84, 97, 0.40);
+    launcher-button: rgba(52, 84, 97, 0.76);
+    launcher-selection: rgba(69, 112, 129, 0.92);
+    launcher-hover: rgba(77, 122, 138, 0.92);
+    launcher-edge: rgba(126, 214, 255, 0.20);
+}
 window {
-    width: 60%;
+    width: 70%;
     height: 58%;
+    background-color: @launcher-glass;
+    border: 1px solid;
+    border-color: @launcher-edge;
 }
 mainbox {
     orientation: horizontal;
     spacing: 20px;
+    /* Paint glass once: inheriting the window background here stacks opacity. */
+    background-color: transparent;
     children: [ wallpaper-panel, application-panel ];
 }
 wallpaper-panel {
     orientation: horizontal;
-    width: 25%;
+    width: 32%;
     expand: false;
     padding: 12px;
     border-radius: 8px;
     background-color: transparent;
     background-image: url("$HOME/.local/share/hyprixe/wallpapers/min_forest.jpg", height);
+    hyprixe-preview-cover: true;
     children: [ launcher-sidebar, wallpaper-space ];
 }
 wallpaper-space { background-color: transparent; }
@@ -33,7 +48,7 @@ button-applications, button-files, button-windows, button-terminal {
     /* Text buttons derive height from font metrics; padding makes them round. */
     padding: 0.75em 0;
     border-radius: 100%;
-    background-color: @background-color;
+    background-color: @launcher-button;
     text-color: @foreground;
     font: "FontAwesome 18";
     horizontal-align: 0.5;
@@ -57,7 +72,7 @@ button-terminal {
     action: "kb-custom-19";
 }
 button-applications hover, button-files hover, button-windows hover, button-terminal hover {
-    background-color: @selected;
+    background-color: @launcher-hover;
     text-color: @foreground;
 }
 application-panel {
@@ -69,4 +84,36 @@ application-panel {
 listview {
     expand: true;
     fixed-height: false;
+    background-color: transparent;
+    border-color: @launcher-edge;
+}
+/* Clear every unselected state, including the inherited black alternate rows. */
+element normal.normal, element normal.active, element normal.urgent,
+element alternate.normal, element alternate.active, element alternate.urgent {
+    background-color: transparent;
+    text-color: @foreground;
+}
+element selected.normal, element selected.active, element selected.urgent {
+    background-color: @launcher-selection;
+    text-color: @foreground;
+}
+element-icon, element-text, element-text selected {
+    background-color: transparent;
+    text-color: inherit;
+}
+inputbar {
+    background-color: @launcher-input;
+    border: 1px solid;
+    border-color: @launcher-edge;
+}
+entry, prompt, textbox-prompt-colon, case-indicator {
+    background-color: transparent;
+    text-color: @foreground;
+}
+textbox {
+    background-color: @launcher-input;
+}
+error-message {
+    background-color: transparent;
+    border-color: @launcher-edge;
 }

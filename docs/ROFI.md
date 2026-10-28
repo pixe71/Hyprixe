@@ -3,19 +3,45 @@
 Only `SUPER + Space` uses `hypr/rofi/config-launcher.rasi`. It imports the unchanged
 `config.rasi`, shared fonts, Frosted Glass theme and palette, then adds
 `themes/Frosted-Glass-Launcher.rasi`. The window remains centered with the same
-outer radius and background paint, at 60% of output width and 58% of output
-height. The sidebar uses approximately 44% of the content width. Dimensions use
+outer radius, at 70% of output width and 58% of output height. This is 16.7%
+wider than the previous 60% layout, with no height increase. The wallpaper box
+uses 32% of output width, approximately 48% of content width; applications use
+the remaining 52%. Dimensions use
 logical output percentages and font-relative button padding, including HiDPI.
 
 The wallpaper is a Rasi `background-image` on the left box only, scaled by height
 with its aspect ratio preserved. Its excess width is cropped by the box's rounded
-clip. Rofi 2.0.0 has no CSS `background-size: cover` equivalent; the panel
-proportions cover the tested landscape and ultrawide outputs without distortion.
-More extreme aspect ratios or very small logical heights need a layout review.
-No image is generated, stretched or
+clip. `hyprixe-preview-cover: true` requests a width-scaled image only when the
+height-scaled image is narrower than the box, avoiding repetition on 32:9 outputs.
+Ordinary output geometry retains the existing height crop. The same asynchronous
+Rofi image cache is used; no script, delay or generated preview is involved.
+No image is stretched or
 copied specifically for Rofi. Deployment renders the existing wallpaper location
 from `XDG_DATA_HOME`, including paths with spaces. The right panel and the area
-around the image retain the existing translucent Frosted Glass paint.
+around the image use the existing Hyprixe blue/grey palette with alpha.
+
+## Launcher-only colours and transparency
+
+The shared Rofi palette and other dialogs are unchanged. This extension reuses
+Rofi `color2`, `color3`, `color11`, `color12` and the cyan border already used by
+Waybar/Wlogout. Values below are opacity (alpha), not percentage transparency:
+
+| Paint | Existing RGB | Alpha |
+| --- | --- | --- |
+| Main glass | `#284D5B`, Rofi color2 | 0.82 |
+| Search/messages | `#345461`, Rofi color3 | 0.40 |
+| Round buttons | `#345461`, Rofi color3 | 0.76 |
+| Selected application | `#457081`, Rofi color11 | 0.92 |
+| Button hover | `#4D7A8A`, Rofi color12 | 0.92 |
+| Subtle borders | `#7ED6FF`, Waybar/Wlogout accent | 0.20 |
+| Text | `#E0F0F5`, shared Rofi foreground | 1.00 |
+
+The mainbox, application box, unselected rows and text/icon backgrounds are
+transparent. Main glass is painted once, so child containers do not compound its
+opacity. The old black alternate-row background and opaque grey search field are
+overridden only here. The search tint overlays the glass; its combined opacity
+is 0.892. The selected row has 0.9856 combined opacity for legibility. The image
+stays opaque. Existing Hyprland Rofi blur rules and all input actions are unchanged.
 
 The four FontAwesome glyphs use the font already installed by Hyprixe; no icon
 asset or additional font is required. Buttons use the shared background/text
@@ -59,7 +85,9 @@ The existing pinned Wayland build therefore has a small local adaptation in
 `build-runtime.sh` verifies the pinned upstream commit, applies exact guarded
 replacements, and builds as the regular user. A mismatched source fails before
 patch writes. `rofi_compat.py --launcher` checks both Wayland and this compiled
-capability. No global compositor setting, layer rule or dependency is added.
+capabilities. Preview sizing is enabled by its Rasi property on the wallpaper box
+only; it does not affect other images or menus. No global compositor setting,
+layer rule or dependency is added.
 The existing Rofi and configuration files are backed up by the normal installer
 transaction and restored through the normal dated restore operation.
 
@@ -73,7 +101,8 @@ git pull
 ./verify.sh --dependencies --session
 ```
 
-The first application of this update may rebuild Rofi; `--no-packages` skips
+The glass update also requires the preview rendering capability. The normal
+installer rebuilds an older prepared Rofi when necessary; `--no-packages` skips
 that preparation and correctly refuses an incompatible existing binary. The
 unchanged `SUPER + Space` binding reads the deployed script immediately.
 
