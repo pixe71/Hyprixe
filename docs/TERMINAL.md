@@ -21,6 +21,11 @@ that variant, you can select its exact family in your local Kitty config;
 The default setup uses the packaged family rather than relying on a missing
 Nerd Font and silently getting a substitute.
 
+The Zsh/Powerlevel10k integration adds only a `symbol_map` and pinned
+**Symbols Nerd Font Mono** for private-use icons, leaving the text family intact.
+Kitty uses its normal account shell; the full installer switches it to Zsh only
+after validation. See [Zsh, prompt versions, history and restore](SHELL.md).
+
 Kitty's default selection, links, tabs, splits and keyboard mappings remain
 available. Copy/paste uses `CTRL + SHIFT + C` / `CTRL + SHIFT + V`; scrollback
 keeps 10,000 lines. No custom Kitty keybindings are installed. See the

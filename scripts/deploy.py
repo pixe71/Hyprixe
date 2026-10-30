@@ -20,6 +20,8 @@ import sys
 import uuid
 import dolphin_config
 from wlogout_checks import validate as validate_wlogout
+import interactive_shell
+import shell_assets
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -116,6 +118,9 @@ def payload(roots, profile, runtime=None, dolphin_only=False, waybar_only=False)
         raise FileNotFoundError('Required Kitty configuration missing: .config/kitty/kitty.conf')
     validate_wlogout(REPO / '.config')
     result = {}
+    for name in ('.zshrc', '.p10k.zsh'):
+        result[Path(os.environ['HOME']) / name] = ((REPO / name).read_bytes(), 0o644)
+    result.update(shell_assets.payload(Path(os.environ['HOME']), roots['data'], runtime))
     launcher = REPO / '.local/bin/hyprixe-session'
     result[Path(os.environ['HOME']) / '.local/bin/hyprixe-session'] = (launcher.read_bytes(), 0o755)
     for p in sorted((REPO / '.config').rglob('*')):
@@ -228,6 +233,9 @@ def restore(backup, home, dry=False, rollback=False, save_dolphin_changes=False)
                 conflicts.append(str(directory) + ' (' + view['name'] + ')')
     if conflicts:
         raise ValueError('Files changed since installation; save your edits first. Nothing restored:\n' + '\n'.join(conflicts))
+    account = manifest.get('login_shell')
+    if account:
+        interactive_shell.preflight(account, home)
     system_backup = manifest.get('sddm_backup')
     if system_backup:
         # Check both transactions before either is changed. Root restoration is
@@ -249,6 +257,10 @@ def restore(backup, home, dry=False, rollback=False, save_dolphin_changes=False)
             print('Current Dolphin files/metadata preserved in:', saved)
     if system_backup and not dry:
         system_theme('restore', '--backup', system_backup)
+    if account:
+        print('RESTORE login shell:', account['before'])
+        if not dry:
+            interactive_shell.change(account, home, restore=True)
     for entry in reversed(entries):
         target = Path(entry['target'])
         print('RESTORE', target)
@@ -430,6 +442,38 @@ def install_with_sddm(home, roots, profile, dry=False, runtime=None):
         raise
 
 
+def install_with_shell(home, roots, profile, runtime=None, sddm=True):
+    account = interactive_shell.plan(home)
+    print(f'Planned interactive shell for {account["username"]}: {account["before"]} -> {account["after"]}. Bash scripts remain Bash.')
+    # All desktop/system installation and startup validation precede chsh.
+    backup = (install_with_sddm if sddm else install)(home, roots, profile, runtime=runtime)
+    try:
+        shell_assets.validate(roots['data'] / 'hyprixe/powerlevel10k')
+        shell_assets.check_daemon(roots['data'] / 'hyprixe/powerlevel10k')
+        subprocess.run(['fc-cache', '-f', str(roots['data'] / 'fonts/hyprixe-symbols')], check=True)
+        interactive_shell.font_ready()
+        interactive_shell.startup(home, roots)
+        if account['before'] != account['after']:
+            if backup is None:
+                identifier = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S.%fZ') + '-' + profile + '-shell'
+                backup = roots['state'] / 'hyprixe/backups' / identifier
+                backup.mkdir(parents=True, mode=0o700)
+                manifest = {'format': 1, 'id': identifier, 'home': str(home), 'profile': profile,
+                            'scope': 'full', 'files': [], 'directories': []}
+            else:
+                manifest = read_manifest(backup)
+            manifest['login_shell'] = account
+            atomic(backup / 'manifest.json', (json.dumps(manifest, indent=2) + '\n').encode())
+            interactive_shell.change(account, home)
+            (backup / 'complete').touch()
+        print('Zsh + Powerlevel10k validated. Reconnect your desktop session to refresh SHELL before opening Kitty.')
+        return backup
+    except BaseException:
+        if backup:
+            restore(backup, home, rollback=True)
+        raise
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='action', required=True)
@@ -438,6 +482,7 @@ def main():
     ins.add_argument('--dry-run', action='store_true')
     ins.add_argument('--runtime', help='Internal: directory containing staged runtime binaries')
     ins.add_argument('--sddm', action='store_true', help='Also deploy the system SDDM theme through sudo')
+    ins.add_argument('--interactive-shell', action='store_true', help='Internal: validate staged Zsh setup and migrate the invoking login shell last')
     ins.add_argument('--dolphin-only', action='store_true', help='Only deploy Dolphin-specific Kvantum paint, association and KDE color selection')
     ins.add_argument('--waybar-only', action='store_true', help='Only deploy Waybar configuration, helper and Debian logo glyph')
     interface = sub.add_parser('restore-dolphin-interface', help='Restore only interface changes introduced by 9259fa5 from an existing backup')
@@ -451,6 +496,8 @@ def main():
     args = parser.parse_args()
     if args.action == 'install' and sum((args.dolphin_only, args.waybar_only, args.sddm)) > 1:
         raise ValueError('Component-only installation cannot deploy another component or SDDM')
+    if args.action == 'install' and args.interactive_shell and (args.dolphin_only or args.waybar_only):
+        raise ValueError('Component-only installation must not change the login shell')
     home, roots = locations()
     state = roots['state'] / 'hyprixe'
     guard(state / 'deployment.lock', home)
@@ -479,8 +526,9 @@ def main():
     with (state / 'deployment.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         if args.action == 'install':
-            function = install_with_sddm if args.sddm else install
-            options = {'dolphin_only': True} if args.dolphin_only else {'waybar_only': True} if args.waybar_only else {}
+            function = install_with_shell if args.interactive_shell else install_with_sddm if args.sddm else install
+            options = ({'sddm': args.sddm} if args.interactive_shell else
+                       {'dolphin_only': True} if args.dolphin_only else {'waybar_only': True} if args.waybar_only else {})
             function(home, roots, args.profile, runtime=args.runtime, **options)
         else:
             backups = sorted((state / 'backups').glob('*'), reverse=True)

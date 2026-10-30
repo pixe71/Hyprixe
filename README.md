@@ -1,6 +1,8 @@
 # Hyprixe Debian — Frosted Glass
 
 Debian 13 / Hyprland configuration based on KoolDots, adapted for Kitty and Dolphin.
+Interactive shell: **Zsh**. Prompt: **Powerlevel10k**. Terminal: **Kitty**.
+Hyprixe/system scripts stay in **Bash**.
 The main profile uses the PC's graphics drivers. A separate VMware profile
 preserves the software-rendering adjustments needed during earlier testing.
 
@@ -54,7 +56,8 @@ power menu. Its Qt 6 QML is written for this project; no downloaded theme is
 substituted. Small displays use a scrollable layout and Qt handles HiDPI scaling.
 The wallpaper stays a single source asset in the repository.
 
-Installation uses `sudo` for APT and the SDDM theme/configuration files, with
+Installation uses `sudo` for APT, SDDM theme/configuration files and the final
+`chsh` for the invoking account, with
 separate system backups. Other themes and session entries are preserved. Reboot
 after installing to load the new SDDM configuration; the installer does not restart
 SDDM or interrupt your session. Select **Hyprland (uwsm-managed)** in the theme's
@@ -89,6 +92,13 @@ Kitty, Dolphin, Kvantum/Qt6, Waybar,
 Rofi Wayland, Hyprlock, Hypridle, awww, PipeWire/WirePlumber, NetworkManager,
 Blueman, SwayNC, cliphist and Wlogout. Icons use Breeze and FontAwesome; the
 JetBrains Mono font is available in Debian.
+
+The full installer adds Debian's Zsh/autosuggestions/syntax-highlighting packages
+and pinned upstream Powerlevel10k v1.20.0. It backs up `.zshrc`/`.p10k.zsh`,
+validates startup, then changes the account shell last. Kitty uses that system
+shell; its text font is kept with a small Nerd symbol font mapping. Reconnect
+after installation. `p10k configure` is optional; the Hyprixe prompt is supplied.
+See [shell installation, history, versions and restore](docs/SHELL.md).
 
 Kitty uses the existing dark Frosted Glass palette, 0.92 background opacity
 and native UWSM application scopes. See [terminal configuration and migration](docs/TERMINAL.md).
@@ -221,6 +231,9 @@ environment.
   original repository and its author. The original repository does not include
   an exact source URL or wallpaper license; see [CREDITS.md](CREDITS.md).
 - [adi1090x/rofi](https://github.com/adi1090x/rofi): Rofi layout, inherited through KoolDots.
+- [Powerlevel10k / romkatv](https://github.com/romkatv/powerlevel10k) and
+  [Nerd Fonts symbols](https://github.com/ryanoasis/nerd-fonts): pinned prompt and
+  terminal glyph assets; upstream licenses are retained during installation.
 - [Kvantum / Tsu Jan](https://github.com/tsujan/Kvantum), KvAdapta and Vince/Liuice:
   authors credited in the supplied Kvantum theme.
 - [Hyprland](https://github.com/hyprwm/Hyprland), [Waybar](https://github.com/Alexays/Waybar),

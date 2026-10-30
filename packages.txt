@@ -1,6 +1,10 @@
 # Debian 13: packages installed from stable by install.sh.
 # Hyprland ecosystem and awww are handled separately (packages-backports.txt).
 kitty
+bash
+zsh
+zsh-autosuggestions
+zsh-syntax-highlighting
 dolphin
 kio-extras
 udisks2

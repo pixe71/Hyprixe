@@ -1,0 +1,18 @@
+{
+  "powerlevel10k": {
+    "tag": "v1.20.0",
+    "commit": "ff0311157d6b24fea21aa70699783f362b0f554f",
+    "url": "https://codeload.github.com/romkatv/powerlevel10k/tar.gz/ff0311157d6b24fea21aa70699783f362b0f554f",
+    "sha256": "cbd5ff7eed4bfa8805f1b1977255b2dfe0aac574b9758ae1a17e99fc135a77d8"
+  },
+  "symbols": {
+    "tag": "v3.4.0",
+    "commit": "fa7b859994228a9c8759f99c55a8d31ee92a1b5e",
+    "url": "https://raw.githubusercontent.com/ryanoasis/nerd-fonts/fa7b859994228a9c8759f99c55a8d31ee92a1b5e/patched-fonts/NerdFontsSymbolsOnly/SymbolsNerdFontMono-Regular.ttf",
+    "sha256": "f0f624d9b474bea1662cf7e862d44aebe1ae1f6c7f9cb7a0ca5d0e5ac9561c60"
+  },
+  "symbols_license": {
+    "url": "https://raw.githubusercontent.com/ryanoasis/nerd-fonts/fa7b859994228a9c8759f99c55a8d31ee92a1b5e/patched-fonts/NerdFontsSymbolsOnly/LICENSE",
+    "sha256": "84a7a98c82140fb12c37fe42b93805baa16024cb3e5acc599b7ffe612c55d847"
+  }
+}

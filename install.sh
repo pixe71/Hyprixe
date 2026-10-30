@@ -99,6 +99,7 @@ fi
 if $dry_run; then
     command -v python3 >/dev/null || { echo 'Install python3 to preview the deployment.' >&2; exit 1; }
     python3 "$repo/scripts/deploy.py" install --profile "$profile" --dry-run --sddm
+    echo 'Full installation also prepares pinned Powerlevel10k/Nerd symbols, validates Zsh, then changes only your account login shell last.'
     exit 0
 fi
 command -v sddm >/dev/null && command -v sddm-greeter-qt6 >/dev/null || {
@@ -139,8 +140,13 @@ if $packages; then
     "$repo/scripts/build-runtime.sh" "$runtime"
 fi
 command -v python3 >/dev/null || { echo 'ERROR: python3 is required.' >&2; exit 1; }
+shell_args=(--runtime "$runtime")
+if ! $packages; then shell_args+=(--offline); fi
+python3 "$repo/scripts/shell_assets.py" "${shell_args[@]}"
 PATH="$runtime:$PATH" python3 "$repo/scripts/check-deps.py"
-python3 "$repo/scripts/deploy.py" install --profile "$profile" --runtime "$runtime" --sddm
+zsh --version
+python3 "$repo/scripts/deploy.py" install --profile "$profile" --runtime "$runtime" --sddm --interactive-shell
+echo 'Kitty uses your system account shell: Zsh with Powerlevel10k. Reconnect the desktop session; all Hyprixe .sh scripts remain Bash.'
 echo 'Kitty is the terminal default for SUPER + Return, Rofi and KDE. Existing Alacritty installations/configs were left untouched.'
 echo 'Wlogout installed: SUPER + Backspace, SUPER + SHIFT + E and Waybar power share Lock | Logout | Shutdown | Reboot. Destructive actions require confirmation.'
 echo 'SDDM Frosted Glass installed with a separate system backup. SDDM was not restarted.'

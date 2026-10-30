@@ -22,6 +22,10 @@ cookies*
 *.sock
 .bash_history
 .zsh_history
+.zcompdump*
+*.zwc
+.local/share/hyprixe/powerlevel10k/
+.local/share/fonts/hyprixe-symbols/
 .local/state/
 .config/hypr/.initial_startup_done
 .config/hypr/rofi/.current_wallpaper*

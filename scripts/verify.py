@@ -21,6 +21,7 @@ from session_checks import check_session, check_source_order
 from keybind_checks import check_native_config, check_session_keybinds
 from terminal_checks import check_source as check_terminal_source, check_installed as check_terminal_installed
 from wlogout_checks import check_source as check_wlogout_source, check_installed as check_wlogout_installed
+from shell_checks import check_source as check_shell_source, check_installed as check_shell_installed
 from sddm_theme import SystemTheme, source_payload as sddm_payload, FILES as SDDM_FILES, THEME as SDDM_THEME
 from session_diagnostics import collect as collect_session_diagnostics
 from dolphin_checks import check_source as check_dolphin_source, check_installed as check_dolphin_installed, check_runtime as check_dolphin_runtime, check_session as check_dolphin_session
@@ -245,6 +246,7 @@ def main():
     report(not missing, 'Entry modules, keybind scripts and Rofi theme imports resolve' + (': ' + ', '.join(missing) if missing else ''))
     check_configuration_formats(ROOT)
     check_rofi_source(report, ROOT)
+    check_shell_source(report, ROOT)
     check_terminal_source(report, ROOT)
     check_wlogout_source(report, ROOT)
     check_dolphin_source(report, ROOT)
@@ -299,6 +301,7 @@ def main():
         run(['python3', 'scripts/check-deps.py'], 'Installed runtime dependencies')
         check_terminal_installed(report)
         check_rofi_installed(report)
+        check_shell_installed(report)
         check_wlogout_installed(report, ROOT)
         check_waybar_installed(report)
         check_dolphin_installed(report)
@@ -308,6 +311,7 @@ def main():
     if args.session:
         if not args.dependencies:
             check_terminal_installed(report)
+            check_shell_installed(report)
             check_wlogout_installed(report, ROOT)
         check_session(report)
         check_dolphin_session(report)

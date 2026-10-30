@@ -1432,3 +1432,101 @@ RofiLauncher.sh, ClipManager.sh, Hyprland/UWSM units and bindings, Wlogout,
 Waybar, Kitty, Dolphin/Kvantum, SDDM, wallpapers and profiles have no diff.
 The actual 0.56.2 Hyprland focus effect, physical shortcut delivery, font
 fallbacks, hardware colours and GPU blur still need checking on the target PC.
+
+## Interactive Zsh / Powerlevel10k migration — 2026-10-30
+
+Only the interactive account shell changes. Existing Bash shebangs and scripts
+remain Bash. The full installer adds official Debian `zsh`,
+`zsh-autosuggestions`, `zsh-syntax-highlighting` and explicitly retains Bash.
+The tested Debian 13 packages were `zsh 5.9-8+b24`, autosuggestions `0.7.1-1`
+and syntax-highlighting `0.8.0-2`. `zsh --version` returned
+`zsh 5.9 (x86_64-debian-linux-gnu)`.
+
+Upstream tags were checked with `git ls-remote` against their official
+repositories. Powerlevel10k is v1.20.0, commit
+`ff0311157d6b24fea21aa70699783f362b0f554f`; its exact archive SHA256 is recorded
+in `scripts/shell-sources.json`. Linux x86_64's gitstatus v1.5.4 binary is
+downloaded from the official release and verified against the checksum from
+the authenticated upstream `install.info`, then checked with `--version`.
+Nerd Fonts Symbols Mono v3.4.0 and its license are also pinned by commit/hash.
+No source compilation of Zsh, plugin manager, unpinned master checkout, insecure
+TLS flag or fallback download mirror is used. Prompt initialization disables
+automatic gitstatus downloads, including before cached Instant Prompt startup.
+
+The repository actually configured Debian's unpatched JetBrains Mono. The
+minimal Kitty change is one private-use `symbol_map` to the installed Symbols
+Nerd Font Mono; text font, size, colours, opacity, padding and shell default
+are preserved. The font's native cmap includes Debian, Git branch and Python
+glyphs, and fontconfig selection with those charsets succeeded in custom XDG
+paths containing spaces. Kitty's own no-window configuration parser and
+`resolved_shell()` confirmed the new account shell.
+
+The deployment transaction includes `.zshrc`, `.p10k.zsh`, the 87 pinned
+upstream files/integrity manifest, the prebuilt daemon and font/license files.
+Changing the account shell happens only after desktop/system deployment,
+daemon/font checks and silent native `zsh -lic` initialization succeed.
+The old shell is persisted before `chsh`, verified afterwards, and included
+in restoration preflight. A changed third shell blocks partial restoration;
+restoring a valid old Bash shell remains possible even if Zsh was removed
+externally. Dotfiles preserve their original contents, symlinks and modes.
+
+Tests actually performed:
+
+| Command/check | Result |
+| --- | --- |
+| `zsh -n .zshrc` and `zsh -n .p10k.zsh` | Passed |
+| `./verify.sh` with the verified native shell stage available to tests | 237 tests passed; `RESULT: 0 failed check(s)`; exit 0 |
+| `./verify.sh --dependencies` | 237 tests passed; 13 installation/environment checks failed; exit 1 |
+| `./verify.sh --dependencies --session` | 237 tests passed; 17 installation/environment/session checks failed; exit 1 |
+| New shell test module under umask 0002 | All 11 tests passed |
+| `bash -n`, ShellCheck | 133 existing scripts parsed; all-script error and active-script warning checks passed |
+| Native Kitty configuration parser | Passed with the symbol map |
+| Checksummed staging / corrupted download / unsafe archive tests | Passed; invalid hashes, traversal and links rejected |
+| `git diff --check`, `git diff --cached --check` | Passed |
+
+The global WSL verification HOME is deliberately not a configured desktop:
+the earlier 12/16 failures remain, plus the new shell check correctly observes
+that root still uses Bash. Root was not migrated. These failures were not
+suppressed or reported as physical-PC success. The optional native upstream
+test uses `HYPRIXE_TEST_SHELL_STAGE` pointing to the external verified stage;
+without it the isolated upstream-startup test reports SKIPPED. Source syntax,
+asset/transaction tests and installed dependency checks still run normally.
+
+A separate end-to-end fixture created a disposable Debian user with an actual
+HOME/XDG paths containing spaces. Native deployment CLI, real `sudo chsh`,
+Powerlevel10k, packaged plugins, fontconfig and Zsh ran as that unprivileged
+user. Its temporary sudo rule allowed changing only its own account between
+the two tested shells and was removed with the account after testing. The
+fixture confirmed:
+
+- Real Bash -> Zsh migration after native initialization, then a second
+  installation with no extra backup or repeated account change.
+- Verified installed assets reused with `--offline` and no initial user cache.
+- Two actual login-interactive PTYs with the real Powerlevel10k prompt and
+  both Debian plugins loaded; the second used the generated Instant Prompt
+  cache without warnings. A noninteractive Zsh did not load `.zshrc`.
+- Real gitstatus results for a clean `main` branch, unstaged/untracked files
+  and a directory outside Git; Python virtualenv, failed command status and
+  a command longer than three seconds displayed their expected prompt states.
+- The installed shell verifier succeeded, including Kitty's native default
+  shell resolution, portable paths, prompt/daemon integrity and the symbol font.
+- The normal restore CLI changed the disposable account back to Bash, restored
+  the original `.zshrc` and mode 0640, and removed the newly installed prompt
+  configuration. Unit tests additionally forced startup/chsh failures before
+  and after account mutation and verified rollback/conflict handling.
+
+This WSL host has an unrelated dangling Docker Desktop completion symlink.
+Only the isolated test HOMEs excluded that vendor-completion directory through
+a test `.zshenv`. No such workaround is shipped: real startup errors remain
+visible and prevent `chsh`. No real user's `.zshenv`/`.zprofile` was modified.
+
+External evidence: `/root/.cache/hyprixe-validation/zsh-verify.log`,
+`zsh-dependencies.log`, `zsh-session-verify.log`,
+`shell/native-account-pty.log`, `shell/umask-0002.log` and verified staged
+upstream assets. Temporary test accounts/sudo rules were removed; root's
+password-database shell remained `/bin/bash`.
+Hyprland, UWSM, Waybar, Rofi, Wlogout, Dolphin/Kvantum, SDDM, wallpaper,
+workspaces, profiles and keyboard bindings have no changes. The real SDDM
+reconnection, inherited SHELL in the physical UWSM session, Kitty glyph
+rendering/spacing and interactive TAB/history/suggestions need checking on
+the target PC. No physical desktop login or Kitty window was claimed tested.

@@ -54,7 +54,8 @@ Equivalent commands and options:
 ```
 
 Do not run `sudo ./install.sh`. Deployment runs under your account;
-only APT and SDDM system installation/restoration use `sudo`.
+only APT, SDDM system installation/restoration and the account's final `chsh`
+use `sudo`.
 If the executable bits were lost when copying
 the repository, run `chmod +x install.sh uninstall.sh verify.sh scripts/build-runtime.sh`.
 
@@ -71,6 +72,15 @@ Use the normal `./install.sh native` command to repair missing awww or an
 incompatible Rofi/Waybar. `--no-packages` also skips runtime builds; it cannot
 prepare those missing capabilities. The installer reuses suitable binaries
 already present in `~/.local/bin` and builds only what is missing or incompatible.
+
+The full installation also installs Debian Zsh and its two plugins, stages pinned
+Powerlevel10k and Nerd symbols, backs up `.zshrc`/`.p10k.zsh`, and validates native
+startup before changing your account login shell. `--no-packages` reuses these
+verified installed shell assets or an existing checksummed download cache offline;
+use the full command for the first shell migration. No script is converted from
+Bash. Reconnect the desktop session after installation so Kitty uses the new
+account shell and `SHELL` value. Detailed versions, order, checks, customization
+and restore: [Zsh + Powerlevel10k](docs/SHELL.md).
 
 ## Dependencies and system changes
 
