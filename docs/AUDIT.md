@@ -1,5 +1,10 @@
 # Technical audit
 
+> Historical audit of the initial cleanup, not the current v1 guide. Version
+> targets, filenames and counts below describe that stage of the project.
+> Use the [documentation index](README.md) and [current release review](release-readiness.md)
+> for the present configuration. This record is retained for provenance.
+
 ## Scope and method
 
 Baseline: commit `f96dfb4`, the original repository with no local changes.
@@ -40,7 +45,7 @@ The original wallpaper and Kvantum files are verified by SHA256. The Dolphin
 toolbar and interface defaults are restored byte for byte from pre-9259fa5 Git
 history and checked against saved hashes. A separate Dolphin-only Kvantum paint
 variant and per-application KDE color scheme leave other Qt apps unchanged.
-See [DOLPHIN.md](DOLPHIN.md).
+See the current [Dolphin guide](dolphin-kvantum.md).
 Decoration values are unchanged: rounding 13, active opacity 0.78 /
 inactive 0.72, blur size 4 / 3 passes, gaps 4/10, 2 px borders and the same
 colors. Rofi retains its KoolDots/adi1090x layout and translucent palette.
@@ -76,7 +81,7 @@ guarantee that they work in Hyprixe.
 Thunar/Tokyo references remain only in generic examples and historical audit
 documents. Kitty was subsequently restored as the active terminal with one
 minimal Frosted Glass configuration, without the old theme collection. See
-[TERMINAL.md](TERMINAL.md). VM monitor examples are kept only under
+[terminal guide](kitty-zsh.md). VM monitor examples are kept only under
 `profiles/vmware/monitor-examples` and are never applied automatically.
 
 ## Security and limitations

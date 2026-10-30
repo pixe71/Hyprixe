@@ -4,7 +4,7 @@ lua5.4
 ripgrep
 btop
 swappy
-qalculate
+qalc
 pamixer
 ddcutil
 hyprsunset

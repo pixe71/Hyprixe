@@ -1,5 +1,21 @@
 # Waybar organization with the existing Frosted Glass style
 
+[Documentation index](README.md)
+
+## Configuration and service
+
+The active JSON is
+[configs/Frosted-Glass](../.config/hypr/waybar/configs/Frosted-Glass).
+[style.css](../.config/hypr/waybar/style.css) imports the single
+[Frosted-Glass.css](../.config/hypr/waybar/style/Frosted-Glass.css).
+There is no legacy `waybar/config` JSON relay. The vendor `waybar.service`
+drop-in passes the config and style explicitly, retaining Debian's graphical
+session requirements. It runs under UWSM; see [session ownership](uwsm.md).
+
+All four outer corners use the same 14 px radius. Module backgrounds do not
+cover the upper corners. Desktop blur is provided by the existing layer rules,
+not by a separate wallpaper or CSS blur implementation.
+
 ## Reference and actual differences
 
 The actual [Hyprladus config.jsonc](https://github.com/sachatrouve1/Hyprladus/blob/main/config/waybar/config.jsonc)
@@ -94,7 +110,7 @@ Absent Bluetooth hardware is also a normal native warning, not a failed bar.
 
 ```bash
 cd ~/hyprixe-debian
-git pull
+git pull --ff-only
 ./install.sh native --waybar-only --no-packages
 systemctl --user restart waybar.service
 systemctl --user status waybar.service --no-pager

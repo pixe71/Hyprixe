@@ -1,5 +1,11 @@
 # Validation performed
 
+> Dated historical test evidence. Each section describes the files and tools
+> available at that time; earlier counts and limitations are not current
+> installation requirements. The [v1 documentation review](release-readiness.md)
+> records the latest documentation-only validation. Start with the
+> [documentation index](README.md) for current usage.
+
 Audit dated October 25, 2026 (Europe/Paris), from Windows with Debian 13 under
 WSL2, x86_64. **No Hyprland session on physical hardware was started.**
 Interactive desktop login is not presented as tested. The later SDDM section
@@ -387,7 +393,7 @@ UWSM/user manager makes `./verify.sh --session` return the expected nonzero
 status with two clear SDDM/graphical-target diagnostics and no traceback.
 `git diff --check` and `git diff --cached --check` both pass.
 
-References: [Hyprland UWSM integration and application scopes](https://wiki.hypr.land/Useful-Utilities/Systemd-start/),
+References: [Hyprland UWSM integration and application scopes](https://wiki.hypr.land/useful-utilities/uwsm/),
 [UWSM startup, environment and shutdown](https://github.com/Vladimir-csp/uwsm),
 and the Debian-packaged unit/desktop files inspected above.
 
@@ -462,7 +468,7 @@ Still required on the physical Debian PC:
 5. Check the greeter's power menu and multi-monitor behavior when convenient.
    A windowed/offscreen preview cannot establish hardware shutdown or seat behavior.
 
-Recovery is documented in [INSTALL.md](../INSTALL.md#recover-only-the-previous-sddm-theme):
+Recovery is documented in [the SDDM guide](sddm.md#restore-only-the-greeter):
 `./uninstall.sh --sddm-only` restores the previous login theme from its private
 system backup, including from a TTY, without restoring personal desktop files.
 
@@ -521,7 +527,7 @@ keyboard/VT transition, or prove that the white flash disappeared. The existing
 to stop after readiness; no new unconditional sleep was introduced. The unit's
 15 s startup timeout bounds failures rather than delaying a successful start.
 
-On the PC, apply [the documented update](../INSTALL.md#login-transition--white-flash-diagnosis),
+On the PC, apply [the documented update](troubleshooting.md#missing-wallpaper--white-transition-after-login),
 reboot, test password focus/typing, then run
 `./verify.sh --dependencies --session --diagnostics` inside the managed session.
 If the flash persists, correlate the physical SDDM/user monotonic journals,
@@ -583,7 +589,7 @@ Validation actually performed under Debian 13 WSL:
 This is a real Waybar/Wayland integration test on a separate headless compositor,
 not a live Hyprland 0.56.2 or physical GPU session. Confirm the actual application
 icons, monitor scaling and native Hyprland focus/workspace behavior on the PC
-using the procedure in [INSTALL.md](../INSTALL.md#waybar-application-icons).
+using the procedure in [the Waybar guide](waybar.md#apply-verify-and-restore).
 
 Primary sources: [Waybar 0.12 taskbar interface](https://github.com/Alexays/Waybar/blob/0.12.0/man/waybar-wlr-taskbar.5.scd),
 [Hyprland 0.56.2 protocol registration](https://github.com/hyprwm/Hyprland/blob/v0.56.2/src/managers/ProtocolManager.cpp),
@@ -633,11 +639,11 @@ The real-tool test validates Wayland capture/clipboard behavior on a separate
 headless compositor. Actual keyboard dispatch under Hyprland 0.56.2, the physical
 Print key (including any laptop Fn behavior), monitor scaling and image pasting
 into the user's applications still require a check on the PC. Apply and reload
-using [the screenshot procedure](../INSTALL.md#screenshots).
+using [the screenshot reference](keybindings.md#screenshots).
 
 ## Native keyboard/mouse audit — October 26, 2026
 
-The report and complete shortcut contract are in [KEYBINDS.md](KEYBINDS.md).
+The current complete shortcut contract is in [keybindings](keybindings.md).
 The physical Debian PC is not accessible through this workspace's terminal;
 the following commands ran in Debian 13 **WSL**, not in the user's session.
 
@@ -725,7 +731,8 @@ never triggers. Run the application/session procedure in KEYBINDS.md and collect
 interface-restoration/paint-only update below.** Its layout-enforcing checks
 no longer apply.
 
-Implemented the native layout documented in [DOLPHIN.md](DOLPHIN.md): 96 px icon
+Implemented the native layout at that stage (the current
+[Dolphin guide](dolphin-kvantum.md) documents its later rollback): 96 px icon
 view, a 264 logical-pixel right column with Places/Devices above Information,
 large previews and compact metadata, minimal toolbar, hidden classic menu/status
 bar and hidden Folders/Terminal docks. The existing Breeze Dark icon theme and
@@ -987,7 +994,7 @@ actual CPU sensors and battery charging/low/critical states, Bluetooth/network
 changes, the eye's idle behavior, calendar and real tray-app interactions. The
 weekday follows the session locale (French when the locale is French). No
 physical compositor blur test or destructive power action was performed.
-See [WAYBAR.md](WAYBAR.md) for the scoped application/restore commands.
+See [Waybar](waybar.md) for the scoped application/restore commands.
 
 
 ## Kitty terminal migration (2026-10-28)
@@ -1056,7 +1063,7 @@ and `kitty.png`.
 Scope: the four-action menu, one new shortcut and the `logout_dialog` blur
 namespace. The Waybar power menu, global blur, existing shortcuts, profiles,
 Kitty, Dolphin, Kvantum, SDDM, Hypridle and wallpaper configuration are unchanged.
-See [WLOGOUT.md](WLOGOUT.md) for behavior, installation and restore.
+See [Wlogout](wlogout.md) for behavior, installation and restore.
 
 Commands actually executed in Debian 13 WSL:
 

@@ -1,10 +1,30 @@
 # Kitty, Zsh and Powerlevel10k
 
+[Documentation index](README.md)
+
 Hyprixe uses **Kitty** as its terminal, **Zsh** as the account's interactive/login
 shell and **Powerlevel10k** as its prompt. All existing Hyprixe scripts continue
 to run with their Bash shebangs. Bash stays installed; `.bashrc`, `.profile`,
 `.bash_aliases` and Bash history are not modified or sourced as Zsh code.
 There is no plugin manager or Oh My Zsh installation.
+
+## Kitty appearance and launch
+
+`SUPER + Return`, `TERMINAL`, the KoolDots defaults, Rofi terminal applications
+and KDE's external-terminal action all use Kitty. The existing
+`LaunchTerminal.sh` helper runs `uwsm app -- kitty "$@"`; there is no terminal
+autostart or extra terminal daemon.
+
+[kitty.conf](../.config/kitty/kitty.conf) uses background `#122434`, foreground
+`#e6f1f4`, cyan selection `#7ed6ff` and pale cyan links. Background opacity is
+0.92, with 12 pt JetBrains Mono and 10 px padding. Existing compositor opacity,
+blur and rounding also affect the window. No graphics override is required by
+the native profile.
+
+Kitty's normal selection, links, tabs, splits and keyboard mappings are retained:
+copy/paste is `CTRL + SHIFT + C` / `CTRL + SHIFT + V`, scrollback is 10,000 lines.
+There are no custom Kitty mappings. Its configuration does not force `shell zsh`;
+the account's default shell remains the authority.
 
 ## Versions and installation
 
@@ -44,7 +64,7 @@ Use the ordinary installer for the first migration:
 
 ```bash
 cd ~/hyprixe-debian
-git pull
+git pull --ff-only
 # Close Dolphin/configuration editors before the existing full deployment.
 ./install.sh native
 ```
@@ -120,6 +140,7 @@ zsh --version
 echo "$SHELL"
 ps -p $$ -o comm=
 getent passwd "$(id -un)" | cut -d: -f7
+zsh -lic 'print -r -- OK'
 cd ~/hyprixe-debian
 ./verify.sh --dependencies --session
 ```
@@ -131,6 +152,9 @@ terminal. Existing Bash syntax/ShellCheck and session tests continue to run.
 Native prompt/Git/Instant Prompt and account-restore validation is recorded in
 [VALIDATION.md](VALIDATION.md). Physical Kitty rendering and the real SDDM login
 still need a target-machine check.
+
+The login-interactive probe should print `OK` without missing-file/plugin or
+Instant Prompt warnings. It is a startup check, not a graphical terminal test.
 
 The supplied configuration works immediately. **`p10k configure` is optional**:
 
@@ -167,7 +191,9 @@ packages and personal shell history/cache files are retained. Upstream-generated
 ## Sources and credits
 
 - [Powerlevel10k v1.20.0](https://github.com/romkatv/powerlevel10k/tree/v1.20.0), MIT,
-  including its gitstatus integration and documented lean configuration API.
+  with its documented lean configuration API. The separately licensed
+  [gitstatus v1.5.4](https://github.com/romkatv/gitstatus/tree/v1.5.4) daemon and
+  integration retain their GNU GPLv3 notice in `gitstatus/LICENSE`.
 - [Instant Prompt setup](https://github.com/romkatv/powerlevel10k#how-do-i-configure-instant-prompt).
 - [Debian Zsh](https://packages.debian.org/trixie/zsh),
   [autosuggestions](https://packages.debian.org/trixie/zsh-autosuggestions) and

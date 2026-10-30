@@ -1,5 +1,4 @@
 """Check actual executable capabilities before changing any user configuration."""
-import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -11,6 +10,7 @@ from dolphin_checks import runtime_errors as dolphin_runtime_errors
 from terminal_checks import runtime_errors as terminal_runtime_errors, config_errors as terminal_config_errors
 from wlogout_checks import runtime_errors as wlogout_runtime_errors
 from interactive_shell import dependencies as shell_dependencies
+from hyprland_version import assess
 
 commands = ('Hyprland', 'hyprctl', 'uwsm', 'hyprlock', 'hypridle', 'kitty', 'dolphin',
             'waybar', 'wlogout', 'rofi', 'awww', 'awww-daemon', 'jq', 'flock', 'wpctl',
@@ -33,9 +33,13 @@ if shutil.which('waybar') and not has_click_drawer():
     errors.append('Waybar lacks native click drawer support; run ./install.sh to prepare the compatible build.')
 if shutil.which('Hyprland'):
     result = subprocess.run(['Hyprland', '--version'], capture_output=True, text=True)
-    match = re.search(r'\b(\d+)\.(\d+)\.(\d+)', result.stdout + result.stderr)
-    if result.returncode or not match or tuple(map(int, match.groups())) < (0, 55, 2):
-        errors.append('Hyprland >= 0.55.2 is required for the Lua configuration.')
+    version = assess(result.stdout + result.stderr, result.returncode)
+    if not version.allowed:
+        errors.append(version.message)
+    else:
+        print('INFO: ' + version.message, flush=True)
+        if version.warning:
+            print('WARNING: ' + version.warning, flush=True)
 if shutil.which('rofi') and not has_wayland_support():
     errors.append('Rofi must include Wayland support (rofi 2.x or rofi-wayland); run ./install.sh native to prepare it.')
 if shutil.which('rofi') and not has_launcher_actions(shutil.which('rofi')):

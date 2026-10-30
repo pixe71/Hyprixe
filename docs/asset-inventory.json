@@ -1,0 +1,190 @@
+{
+  "review_date": "2026-10-30",
+  "scope": "Current image/font assets and their Kvantum configs. Provenance and license decisions are in assets-provenance.md; hashes alone do not establish rights.",
+  "files": [
+    {
+      "path": ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig",
+      "bytes": 10732,
+      "sha256": "c509aa99ff34c4ee626f04a07adcd106d6b4781778f78fab7315db53f196e07c",
+      "license": "GPL-3.0-only",
+      "publication_status": "cleared: Graphite-derived component, GPLv3 plus retained attribution/compatible MIT notice",
+      "notices": [
+        "CREDITS.md",
+        "docs/licenses/Graphite-GPL-3.0.txt",
+        "docs/licenses/Senshi111-MIT.txt"
+      ],
+      "derived_from": ".config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig",
+      "hyprixe_modifications": "Dolphin-specific neutral light palette and Kvantum settings; generator in tools/build-dolphin-theme.py; source and inherited geometry retained."
+    },
+    {
+      "path": ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg",
+      "bytes": 188248,
+      "sha256": "52bd4b8b5ef523093b28f0768c4f8b3af245bb295178375324c0052ae90385f8",
+      "license": "GPL-3.0-only",
+      "publication_status": "cleared: Graphite-derived component, GPLv3 plus retained attribution/compatible MIT notice",
+      "notices": [
+        "CREDITS.md",
+        "docs/licenses/Graphite-GPL-3.0.txt",
+        "docs/licenses/Senshi111-MIT.txt"
+      ],
+      "derived_from": ".config/Kvantum/Frosted-Glass/Frosted-Glass.svg",
+      "hyprixe_modifications": "Dolphin-specific neutral light palette and Kvantum settings; generator in tools/build-dolphin-theme.py; source and inherited geometry retained."
+    },
+    {
+      "path": ".config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig",
+      "bytes": 11257,
+      "sha256": "74083adfc82c03d818f57ee66a914e13de110ce03e11089dd448df1d15850c49",
+      "license": "GPL-3.0-only",
+      "publication_status": "cleared: Graphite-derived component, GPLv3 plus retained attribution/compatible MIT notice",
+      "notices": [
+        "CREDITS.md",
+        "docs/licenses/Graphite-GPL-3.0.txt",
+        "docs/licenses/Senshi111-MIT.txt"
+      ],
+      "matching_distribution_source": {
+        "url": "https://github.com/Senshi111/hyprland-hyprdots-files/blob/c81844d99b835c9bb8bdf1ab8c1ac17b6e2cc448/Theme/Configs/.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig",
+        "commit": "c81844d99b835c9bb8bdf1ab8c1ac17b6e2cc448",
+        "match": "identical after CRLF-to-LF normalization"
+      },
+      "derived_from": {
+        "url": "https://github.com/vinceliuice/Graphite-kde-theme/blob/3a20a557e824ae4a6b19cc5306e24d5d09aee907/Kvantum/Graphite/Graphite.kvconfig",
+        "commit": "3a20a557e824ae4a6b19cc5306e24d5d09aee907",
+        "upstream_sha256": "101060fc99d16c99ab67c4b7af5942b4f1c0192dd7620382fa3d3918c1c9892f"
+      },
+      "hyprixe_modifications": "No semantic change since f96dfb4; 8e60415 changed line endings only. Present LF-normalized content equals the 2023 Senshi copy.",
+      "comparison": {
+        "local_section_key_pairs": 476,
+        "unchanged_from_graphite": 456,
+        "changed_values": 20,
+        "removed_graphite_keys": 6,
+        "added_keys": 0
+      }
+    },
+    {
+      "path": ".config/Kvantum/Frosted-Glass/Frosted-Glass.svg",
+      "bytes": 194875,
+      "sha256": "5ee9ced1d2b6fb8bfe05977adec97047b7b919bcd83540d30f450a1fb188d7f8",
+      "license": "GPL-3.0-only",
+      "publication_status": "cleared: Graphite-derived component, GPLv3 plus retained attribution/compatible MIT notice",
+      "notices": [
+        "CREDITS.md",
+        "docs/licenses/Graphite-GPL-3.0.txt",
+        "docs/licenses/Senshi111-MIT.txt"
+      ],
+      "matching_distribution_source": {
+        "url": "https://github.com/Senshi111/hyprland-hyprdots-files/blob/c81844d99b835c9bb8bdf1ab8c1ac17b6e2cc448/Theme/Configs/.config/Kvantum/Frosted-Glass/Frosted-Glass.svg",
+        "commit": "c81844d99b835c9bb8bdf1ab8c1ac17b6e2cc448",
+        "match": "identical after CRLF-to-LF normalization"
+      },
+      "derived_from": {
+        "url": "https://github.com/vinceliuice/Graphite-kde-theme/blob/3a20a557e824ae4a6b19cc5306e24d5d09aee907/Kvantum/Graphite/Graphite.svg",
+        "commit": "3a20a557e824ae4a6b19cc5306e24d5d09aee907",
+        "upstream_sha256": "ea5d8713ad2fce591aca52928aab75c51460a0b28fabb358cd176eabdc06d2fc"
+      },
+      "hyprixe_modifications": "No semantic change since f96dfb4; 8e60415 changed line endings only. Present LF-normalized content equals the 2023 Senshi copy.",
+      "comparison": {
+        "geometric_shape_records": 710,
+        "matched_graphite_records": 710,
+        "distinct_path_d": 174,
+        "matched_graphite_path_d": 174,
+        "graphite_element_ids_retained": 1139,
+        "added_gradient_or_stop_ids": 55,
+        "embedded_bitmap_images": 0
+      }
+    },
+    {
+      "path": ".config/wlogout/icons/lock.svg",
+      "bytes": 286,
+      "sha256": "c7c0fe4d10e0079f0099d1df5b6d50ec9be2ab3a120aec77aa52c2c6101b41c9"
+    },
+    {
+      "path": ".config/wlogout/icons/logout.svg",
+      "bytes": 264,
+      "sha256": "a3af82c8ce1ce1322ec61e69cd1f5a40af122f49376eef08279f90cca7979be1"
+    },
+    {
+      "path": ".config/wlogout/icons/reboot.svg",
+      "bytes": 232,
+      "sha256": "8041d6b029c6c3b4b6851639fae8e7301da7d6f863f863f3a9e501bef5fd7140"
+    },
+    {
+      "path": ".config/wlogout/icons/shutdown.svg",
+      "bytes": 231,
+      "sha256": "f3df0f5d0f6be31f8df295b40b76107c051c85d819dd4749b676dda698b9095d"
+    },
+    {
+      "path": ".local/share/fonts/hyprixe/HyprixeDebian.ttf",
+      "bytes": 1768,
+      "sha256": "28214849a64be2e1dba1782bcddf45f1d29560760effec387338a0218b557ffe"
+    },
+    {
+      "path": "docs/screenshots/screenshot1.png",
+      "bytes": 497128,
+      "sha256": "c5601a860fa36c5cc07e78b7228fce02b18d50163e10960be094da92502cde63"
+    },
+    {
+      "path": "docs/screenshots/screenshot2.png",
+      "bytes": 633922,
+      "sha256": "dcc330b50f0c5f367a8fcf51b08ea172f04fbe55afc16e54157180317c542dfa"
+    },
+    {
+      "path": "docs/screenshots/screenshot3.png",
+      "bytes": 327079,
+      "sha256": "b3e627a11dad2a217eab76bca94ce619bb1394ee5773748e405492d8e1fa4afa"
+    },
+    {
+      "path": "extras/kooldots/catppuccin-latte-blue/catppuccin-latte-blue.kvconfig",
+      "bytes": 8992,
+      "sha256": "c6dcfcd5be413754e20ee3ed9f7c8965d8f8fa4867949c647ff4317de10f4f88"
+    },
+    {
+      "path": "extras/kooldots/catppuccin-latte-blue/catppuccin-latte-blue.svg",
+      "bytes": 151428,
+      "sha256": "5411772eacbaaf7205215ceb71d980825161a8267d460ea7f0808a9789920b38"
+    },
+    {
+      "path": "extras/kooldots/catppuccin-mocha-blue/catppuccin-mocha-blue.kvconfig",
+      "bytes": 8992,
+      "sha256": "3d31ea6cd86d4289026fc12683d48e8a85a61696a60855cb1501fe01a5048750"
+    },
+    {
+      "path": "extras/kooldots/catppuccin-mocha-blue/catppuccin-mocha-blue.svg",
+      "bytes": 151428,
+      "sha256": "706a75657411478cce1b95f2b89795f932f90c1b63c5f5cbe1f8c7f6d7abe0db"
+    },
+    {
+      "path": "sddm/themes/hyprixe-frosted/assets/user.svg",
+      "bytes": 215,
+      "sha256": "0eb3fafaa1dfcc3dc455817587d77a1ca169cfec9c8e78442fbce8371df40643"
+    },
+    {
+      "path": "wallpapers/min_forest.jpg",
+      "bytes": 148096,
+      "sha256": "9bfb1f796f738ee40a6f072d1cfb5045fb4d46da7af5059de10f405ca284ce30"
+    }
+  ],
+  "kvantum_provenance": {
+    "verdict": "Kvantum cleared for v1.0.0",
+    "component_license": "GPL-3.0-only",
+    "rationale": "Both active files derive from the GPLv3 Graphite light pair. GPLv3 is the conservative component license; do not extrapolate an or-later grant from the Kvantum engine to Vince Liuice's theme. Compatible publisher MIT notices remain retained.",
+    "authors_and_credits": {
+      "Graphite": "Vince Liuice (vinceliuice)",
+      "KvAdapta_credit": "Tsu Jan (Pedram Pourang), as stated in the inherited author line",
+      "Frosted_Glass_credit": "T-Crypt, credited by the Senshi theme README",
+      "Senshi_distribution_notice": "Copyright (c) 2023 Bane; MIT notice retained, not a claim that the GPL base became MIT"
+    },
+    "history": [
+      "Graphite source update 3a20a557, 2022-09-16",
+      "Matching Senshi Frosted Glass introduction c81844d9, 2023-11-22",
+      "Hyprixe initial f96dfb4; original pair content unchanged after line-ending normalization",
+      "Hyprixe 8e60415 changes original-pair line endings only"
+    ],
+    "catppuccin": "Separate MIT-licensed archived pair; 0 of 174 active unique path strings match. No Catppuccin-specific insertion identified in the active pair.",
+    "license_source": {
+      "url": "https://github.com/vinceliuice/Graphite-kde-theme/blob/3a20a557e824ae4a6b19cc5306e24d5d09aee907/LICENSE",
+      "sha256": "fbbdd5ec489ab07265bcd7ea9072ff0a4f9c539294567ed346fe3cbc612a1aaf",
+      "local_file": "docs/licenses/Graphite-GPL-3.0.txt"
+    },
+    "limits": "The exact historical download/fork route is not known; content derivation, applicable GPL family, source availability and retained notices are established. Wallpaper rights are separate."
+  }
+}

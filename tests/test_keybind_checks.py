@@ -111,11 +111,12 @@ class SessionAuditTests(unittest.TestCase):
         self.dispatch_result = 'ok'
         self.configerrors = ''
         self.submap = 'default'
+        self.version = 'Hyprland 0.56.2 built from branch at commit fixture'
 
     def runner(self, command, **kwargs):
         self.commands.append(command)
         output = 'ok'
-        if command[1:] == ['version']: output = 'Hyprland 0.56.2 built from branch at commit fixture'
+        if command[1:] == ['version']: output = self.version
         elif command[1:] == ['configerrors']: output = self.configerrors
         elif command[1:] == ['-j', 'binds']: output = json.dumps(self.rows)
         elif command[1] == 'eval': output = self.eval_result
@@ -143,6 +144,29 @@ class SessionAuditTests(unittest.TestCase):
         self.assertEqual(dispatches, [['hyprctl', 'dispatch', API_PROBE]])
         self.assertIn('return d.no_op()', API_PROBE)
         self.assertNotIn('hl.dispatch', API_PROBE)
+
+    def test_future_version_is_provisional_and_still_requires_real_api_checks(self):
+        self.version = 'Hyprland 0.57.0'
+        output = io.StringIO()
+        results = []
+        with patch('rofi_compat.has_wayland_support', return_value=True), contextlib.redirect_stdout(output):
+            check_session_keybinds(lambda ok, msg: results.append((ok, msg)), ROOT,
+                                  self.env, self.runner, lambda cmd: '/bin/' + cmd)
+        self.assertTrue(all(ok for ok, _ in results), results)
+        self.assertIn('provisional', output.getvalue())
+        self.assertIn(['hyprctl', 'dispatch', API_PROBE], self.commands)
+        self.eval_result = 'Lua error: missing API'
+        self.assertTrue(any('missing API' in msg for ok, msg in self.check() if not ok))
+
+    def test_old_or_unidentified_versions_do_not_attempt_lua_probes(self):
+        for version in ('Hyprland 0.55.1', 'unknown version'):
+            with self.subTest(version=version):
+                self.version = version
+                self.commands.clear()
+                results = self.check()
+                self.assertEqual(len(results), 1)
+                self.assertFalse(results[0][0])
+                self.assertEqual(self.commands, [['hyprctl', 'version']])
 
     def test_disabled_or_removed_handle_and_api_error_fail_even_on_zero_exit(self):
         self.eval_result = 'Lua error: Disabled/removed ALT + Tab'

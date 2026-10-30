@@ -1,6 +1,16 @@
 # Dolphin: original interface, neutral light Frosted Glass paint
 
-Target tested: Debian 13 Dolphin 25.04.3, Qt 6.8.2, KF6 6.13 and Kvantum 1.1.4.
+[Documentation index](README.md)
+
+The recorded component-validation stack used Debian 13 Dolphin 25.04.3,
+Qt 6.8.2, KF6 6.13 and Kvantum 1.1.4. These are validation context, not exact
+APT version pins or a claim of a physical login test.
+
+Normal full installation preserves existing panel positions, toolbar, view mode
+and icon sizing. It applies the Dolphin-specific glass paint and native KDE
+colour selection. A fresh account receives the inherited interface baseline;
+Hyprixe does not impose a new right-side dock layout. The scoped installer
+changes five paint/association files, not navigation or shortcuts.
 
 ## Interface restoration
 
@@ -39,7 +49,7 @@ to modify configuration while Dolphin runs; it never kills it.
 
 ```bash
 cd ~/hyprixe-debian
-git pull
+git pull --ff-only
 ./install.sh native --dolphin-only
 ./verify.sh --dolphin
 uwsm app -- dolphin

@@ -12,6 +12,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+from hyprland_version import assess
 
 PREFIX = 'Hyprixe | '
 MODIFIERS = {'SHIFT': 1, 'CTRL': 4, 'ALT': 8, 'SUPER': 64}
@@ -249,10 +250,12 @@ def check_session_keybinds(report, root, environ=None, runner=None, which=None):
         report(ok, label + ('' if ok else ': ' + (result.stderr or result.stdout).strip()))
 
     version = query('version')
-    match = re.search(r'\b0\.(55|56)\.(\d+)\b', version.stdout)
-    supported = bool(match and (int(match[1]) == 56 or int(match[2]) >= 2))
-    report(version.returncode == 0 and supported,
-           'Live Hyprland API version (audited 0.55.2 / 0.56.x): ' + version.stdout.split('\n')[0])
+    policy = assess(version.stdout + version.stderr, version.returncode)
+    report(policy.allowed, 'Live Hyprland version policy: ' + policy.message)
+    if not policy.allowed:
+        return
+    if policy.warning:
+        print('WARNING: ' + policy.warning)
     # Hyprland eval()/Lua dispatch clear the manager's stored errors upstream.
     # Never use them while existing configuration errors would be hidden.
     configerrors = query('configerrors')

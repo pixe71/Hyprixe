@@ -1,5 +1,7 @@
 # Shared Rofi Frosted Glass menus
 
+[Documentation index](README.md)
+
 `config.rasi` loads the shared fonts and `themes/Frosted-Glass.rasi`. The latter
 imports `themes/Frosted-Glass-Common.rasi`, which owns the glass colours, search,
 selection, row backgrounds, borders and scrollbar paint for every active menu.
@@ -122,17 +124,19 @@ transaction and restored through the normal dated restore operation.
 
 ```bash
 cd ~/hyprixe-debian
-git pull
+git pull --ff-only
+# Close Dolphin before the full deployment.
 ./install.sh native
 ./verify.sh --dependencies
 ./verify.sh --dependencies --session
 ```
 
-This menu unification needs no new native patch, package or dependency. If the
-current two-panel launcher already works with the prepared Rofi, use
+If the two-panel launcher already works with the prepared Rofi, use
 `./install.sh native --no-packages` to deploy the update. The full installer
 remains available for fresh installs or an older incompatible Rofi. Existing
-keybindings read the deployed scripts immediately; no reload/logout is needed.
+keybindings read the deployed scripts immediately; a theme-only update needs
+only closing/reopening the menu. Full installation can also change shell,
+SDDM or session files; follow [updating](update.md) for those changes.
 
 `verify.sh` checks all menu imports, the existing wallpaper, four actions,
 executable helpers, the three original bindings, Wayland/button capabilities and
@@ -148,6 +152,6 @@ clipboard contents, image crop, rounded corners and blur. Headless Wayland tests
 do not validate physical Hyprland GPU blur or the real window focus dispatch.
 
 To restore, list snapshots with `./uninstall.sh --list`, then use the appropriate
-snapshot as documented in [INSTALL.md](../INSTALL.md#restore--uninstall).
+snapshot as documented in [restore](uninstall-restore.md).
 Restoration includes a replaced `~/.local/bin/rofi`; Debian packages installed
 for compilation are not automatically removed.

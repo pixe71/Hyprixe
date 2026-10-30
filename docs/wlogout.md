@@ -1,5 +1,7 @@
 # Wlogout Frosted Glass
 
+[Documentation index](README.md)
+
 `SUPER + Backspace` and `SUPER + SHIFT + E` toggle the same horizontal
 **Lock | Logout | Shutdown | Reboot** menu. Both bind directly to
 `hyprixe-session`. Waybar's power button reaches this same helper through
@@ -67,7 +69,7 @@ active button, and navigation moves the highlight to the current selection.
 
 ```bash
 cd ~/hyprixe-debian
-git pull
+git pull --ff-only
 # Close Dolphin before running the existing full installer.
 ./install.sh native
 hyprctl reload
@@ -80,8 +82,8 @@ loader for its SVG icons. Existing Python 3, Rofi, Hyprlock, UWSM and systemd
 dependencies are reused. No build, backports addition or new session daemon
 is needed for this feature. Open the menu with `SUPER + Backspace`,
 `SUPER + SHIFT + E` or `hyprixe-session`. No SDDM/session restart is required.
-The normal installer backs up and replaces the old `PowerMenu.sh`; restoring
-the matching transaction restores the former script and keybinds together.
+The normal installer backs up replaced managed files; restoring the matching
+transaction restores its previous helper/configuration and bindings together.
 
 The normal file-level deployment transaction backs up the existing Wlogout
 files, helper, keybinds and layer rules. It handles custom XDG paths containing

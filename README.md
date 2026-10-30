@@ -1,247 +1,164 @@
-# Hyprixe Debian — Frosted Glass
+# Hyprixe
 
-Debian 13 / Hyprland configuration based on KoolDots, adapted for Kitty and Dolphin.
-Interactive shell: **Zsh**. Prompt: **Powerlevel10k**. Terminal: **Kitty**.
-Hyprixe/system scripts stay in **Bash**.
-The main profile uses the PC's graphics drivers. A separate VMware profile
-preserves the software-rendering adjustments needed during earlier testing.
+A complete Hyprland desktop configuration for **Debian 13 Trixie**, built on
+KoolDots and a Frosted Glass theme. UWSM manages the session; installation,
+dated backups, restoration and verification are included.
 
-The theme preserves the `min_forest.jpg` wallpaper, translucent blue/cyan glass,
-blur, 13 px rounded corners, blue/purple borders, a top Waybar and the
-Frosted-Glass Kvantum theme. The original SVG/Kvantum files and wallpaper are
-preserved byte for byte. Dolphin retains its original interface and inherited toolbar. A Dolphin-only
-Kvantum variant adds neutral off-white translucent paint and matching KDE colors.
-<!-- ![Frosted Glass wallpaper](wallpapers/min_forest.jpg)
--->
 ## Preview
-![Frosted Glass wallpaper](docs/screenshots/screenshot.png).
 
-## Quick installation
+| Application launcher | Session menu |
+| --- | --- |
+| ![Home](docs/screenshots/screenshot1.png) | ![Rofi launcher](docs/screenshots/screenshot3.png) |
+![Wlogout](docs/screenshots/screenshot2.png) |
 
-Target: **Debian 13**, **Hyprland 0.56.2 with Lua configuration** (the working
-version reported by the user; API checked against the upstream v0.56.2 tag).
-**0.55.2 is the minimum version accepted by the installer**, not a required
-version: 0.56.2 is accepted. Future versions require their own compatibility review.
-Use a regular user account with `sudo`, an existing Debian SDDM installation
-(Qt 6 greeter) and a working GPU driver.
+## Overview
+
+Hyprixe combines a translucent blue/grey desktop, cyan accents, compositor blur
+and rounded surfaces. Waybar, Rofi, Wlogout, Kitty, Dolphin and SDDM share that
+visual direction. Dolphin uses a lighter neutral glass variant.
+
+Native hardware is the default target. VMware compatibility is isolated in an
+optional profile rather than required by the native configuration.
+
+## Features
+
+- UWSM-managed Hyprland with four persistent workspaces and audited Lua bindings.
+- Top Waybar with a collapsible tray, application icons and adaptive CPU-temperature/root-storage reporting.
+- Rofi applications and window menus with wallpaper/sidebar; compact clipboard history.
+- Four-action Wlogout menu: Lock, Logout, Shutdown and Reboot, with confirmations.
+- Kitty with Zsh, pinned upstream Powerlevel10k, autosuggestions and syntax highlighting.
+- Dolphin with Kvantum glass paint, Hyprlock/Hypridle, SwayNC notifications and managed wallpaper startup.
+- Screenshots, file-level deployment backups and source/dependency/live-session checks.
+
+## Components
+
+| Role | Component |
+| --- | --- |
+| Compositor / session | Hyprland Lua, UWSM, systemd user services |
+| Bar / menus | Waybar, Rofi Wayland, Wlogout |
+| Terminal / interactive shell | Kitty, Zsh, Powerlevel10k |
+| File manager / Qt style | Dolphin, Qt6 Kvantum |
+| Login / lock / idle | SDDM Hyprixe Frosted, Hyprlock, Hypridle |
+| Notifications / wallpaper | SwayNC, awww |
+| Clipboard / screenshots | cliphist, wl-clipboard, grim, slurp |
+| Installation / validation | Bash entrypoints, Python helpers and isolated tests |
+
+Hyprixe scripts remain **Bash**, regardless of the interactive shell.
+
+## Requirements
+
+Debian 13 Trixie, a normal sudo-enabled user, Git/Python 3 and **SDDM with its
+Qt 6 greeter already installed** are required. A first install needs network
+access and may build compatible Waybar/Rofi/awww binaries.
+
+The configuration minimum is **Hyprland 0.55.2**. Reference release numbers are
+**0.55.2 and 0.56.2**; newer/unreviewed builds remain provisional and must pass
+the same capability checks. See the [version policy](docs/hyprland-compatibility.md).
+See [requirements](docs/requirements.md) for package sources, architecture
+limits and optional validation tools.
+
+## Installation
 
 ```bash
 git clone https://github.com/pixe71/hyprixe-debian.git
 cd hyprixe-debian
-./install.sh                 # native by default
-# or: ./install.sh vmware
+./install.sh native
 ```
 
-Log out completely, then select **Hyprland (uwsm-managed)** in SDDM and log in.
-The installer installs UWSM from `trixie-backports` and uses Debian's existing
-`hyprland-uwsm.desktop` session entry. Installing it does not convert a running
-plain Hyprland session; a configuration reload is not enough.
+Run as your desktop user, not root,
+sudo is used where necessary. Existing managed files are backed up before
+replacement. The installer also configures SDDM and changes the invoking
+account's login shell to validated Zsh as its final step.
 
-UWSM owns the graphical session lifecycle. Hyprixe starts Waybar and its other
-session services after `graphical-session.target`, preserving Debian Waybar's
-`Requisite=` dependency. Applications use UWSM scopes, and logout uses `uwsm stop`.
-The plain **Hyprland** entry (`start-hyprland`) is not the supported session for
-this setup. See [INSTALL.md](INSTALL.md) for session diagnostics.
+`native` is the default; `vmware`, `--dry-run`, `--no-packages` and scoped
+component modes are documented in [installation](docs/installation.md).
+`--no-packages` requires previously prepared dependencies and assets.
 
-The installer installs Debian dependencies, enables official backports if needed,
-prepares Rofi Wayland 2.0.0 / awww 0.12.1 and a Waybar build with Lua IPC support
-if needed, then backs up and deploys user files. The first build may take several
-minutes and download C/Rust tools. Read [INSTALL.md](INSTALL.md) for prerequisites,
-system changes, backups, restoration and validation steps.
+## First login
 
-The dedicated **Hyprixe Frosted Glass SDDM theme** extends the same wallpaper,
-navy/cyan palette and translucent, blurred panels to the login screen. It includes
-the clock/date, account/avatar, password and error feedback, session selector and
-power menu. Its Qt 6 QML is written for this project; no downloaded theme is
-substituted. Small displays use a scrollable layout and Qt handles HiDPI scaling.
-The wallpaper stays a single source asset in the repository.
+Save your work and reboot after the initial installation. In SDDM select
+**Hyprland (uwsm-managed)**. UWSM owns the graphical-session target and
+environment required by Waybar, notifications and the wallpaper services.
+Follow the [first-login checks](docs/first-start.md).
 
-Installation uses `sudo` for APT, SDDM theme/configuration files and the final
-`chsh` for the invoking account, with
-separate system backups. Other themes and session entries are preserved. Reboot
-after installing to load the new SDDM configuration; the installer does not restart
-SDDM or interrupt your session. Select **Hyprland (uwsm-managed)** in the theme's
-session menu. The theme retains SDDM's last selection rather than forcing one.
-Qt Virtual Keyboard is disabled with `[General] InputMethod=`; physical keyboard
-input and password focus remain normal. The wallpaper request now precedes
-Waybar/notifications, without the previous one-second fade. A matching dark base
-color covers Hyprland's initial background while the wallpaper layer initializes.
-See [SDDM installation and recovery](INSTALL.md#sddm-frosted-glass-login-screen).
-
-Debian's Waybar 0.12 still uses the old IPC for workspace clicks. The installer
-reuses a Waybar build with Lua support or builds the same 0.12 base with a limited
-adaptation of those requests. The bar's layout and theme stay the same.
-See the 0.56.2 compatibility review in `docs/VALIDATION.md`.
-
-```bash
-./install.sh --dry-run       # preview, without APT or configuration copying
-./install.sh --no-packages   # dependencies already installed, checked before copying
-./verify.sh                 # static checks and tests in a temporary HOME
-./verify.sh --sddm          # also check the installed login theme and UWSM entry
-./verify.sh --session --diagnostics # read-only login journals, timings, clients and layers
-./uninstall.sh --list
-./uninstall.sh --dry-run
-./uninstall.sh              # undo the latest transaction that has not been restored
-./uninstall.sh --sddm-only  # restore only the previous login theme, including from a TTY
-```
-
-## Components
-
-SDDM with the Hyprixe Qt 6 theme, Hyprland with UWSM and KoolDots Lua modules,
-Kitty, Dolphin, Kvantum/Qt6, Waybar,
-Rofi Wayland, Hyprlock, Hypridle, awww, PipeWire/WirePlumber, NetworkManager,
-Blueman, SwayNC, cliphist and Wlogout. Icons use Breeze and FontAwesome; the
-JetBrains Mono font is available in Debian.
-
-The full installer adds Debian's Zsh/autosuggestions/syntax-highlighting packages
-and pinned upstream Powerlevel10k v1.20.0. It backs up `.zshrc`/`.p10k.zsh`,
-validates startup, then changes the account shell last. Kitty uses that system
-shell; its text font is kept with a small Nerd symbol font mapping. Reconnect
-after installation. `p10k configure` is optional; the Hyprixe prompt is supplied.
-See [shell installation, history, versions and restore](docs/SHELL.md).
-
-Kitty uses the existing dark Frosted Glass palette, 0.92 background opacity
-and native UWSM application scopes. See [terminal configuration and migration](docs/TERMINAL.md).
-
-`SUPER + Space` opens the native Rofi application search in a larger two-panel
-layout: the existing wallpaper and four round shortcuts on the left, applications
-on the right. `ALT + F10` uses that same shell for open windows, while
-`SUPER + CTRL + V` keeps a compact clipboard layout. Search, selection and
-translucent blue/grey paint come from one shared Frosted Glass theme, also used
-by confirmations and the optional calculator.
-See [Rofi menus, buttons, installation and validation](docs/ROFI.md).
-
-Wlogout adds **Lock | Logout | Shutdown | Reboot** through `SUPER + Backspace`
-or `SUPER + SHIFT + E`, also shared by Waybar's power button,
-with the current Frosted Glass palette and confirmation for destructive actions.
-See [session menu, keyboard navigation and restore](docs/WLOGOUT.md).
-
-Dolphin keeps its existing layout, icon sizes, panels, view and navigation.
-The **Frosted-Glass-Dolphin** Kvantum association changes only Dolphin's paint;
-the global Frosted-Glass theme and other Qt applications retain their settings.
-Close Dolphin and apply the visual update:
-
-```bash
-./install.sh native --dolphin-only
-./verify.sh --dolphin
-```
-
-If you installed the rejected `9259fa5` layout, restore its saved original
-interface first with `--dolphin-only --restore-dolphin-interface`. The installer
-selects the matching dated backup and restores only Dolphin interface files;
-other desktop changes and new bookmarks are retained. No layout is guessed if
-the backup is missing. See [Dolphin appearance and restoration](docs/DOLPHIN.md).
-
-## Keybindings
-
-Workspaces **1–4** are persistent in Hyprland and always shown on Waybar's left
-side, without a fixed monitor name. The bar displays only 1–4; other Hyprland
-workspaces remain usable with the existing shortcuts.
-
-A compact native `wlr/taskbar` sits beside the workspace buttons: one 16 px icon
-per open window, including multiple windows of the same app and other workspaces.
-Click to focus that window; its button uses a cyan outline and blue active fill.
-Hover shows the window title. The Waybar now groups modules as follows:
-
-- Left: click-to-expand tray, workspaces 1–4, application icons.
-- Center: CPU temperature (or root storage), used RAM, CPU, Debian logo,
-  time, weekday/date and idle inhibitor. Equal-width pairs center the logo.
-- Right: network, Bluetooth, volume, battery percentage when present, power.
-
-Music, active-window information and submap status remain inside the tray drawer.
-The Frosted Glass CSS palette, typography, 31 px height and effects are retained.
-See [Waybar layout, scoped update and validation](docs/WAYBAR.md).
-
-Default keyboard layout: French AZERTY `fr/latin9`. Workspace bindings use
-physical keycodes on the top row, regardless of the AZERTY number symbols.
+## Main keybindings
 
 | Shortcut | Action |
 | --- | --- |
-| SUPER + Return | Kitty |
-| SUPER + Backspace | Toggle the horizontal Frosted Glass Wlogout menu |
-| SUPER + E | Dolphin |
-| SUPER + Space | Rofi |
-| SUPER + Q | Close the window |
-| SUPER + L | Hyprlock |
-| SUPER + left / right click | Move / resize |
-| SUPER + arrow keys | Move focus |
-| SUPER + SHIFT + arrow keys | Move the window |
-| SUPER + CTRL + arrow keys | Resize in 50 px steps |
-| SUPER + keys 1–0, physical positions | Workspaces 1–10 |
-| SUPER + SHIFT + keys 1–0 | Send the window to a workspace |
-| SUPER + PageUp / PageDown or scroll wheel | Previous / next workspace |
-| SUPER + F / SHIFT + F | Fullscreen / maximize |
-| SUPER + V | Floating |
-| SUPER + P / J | Pseudo / toggle dwindle split |
-| ALT + Tab / ALT + SHIFT + Tab | Next / previous window on the current workspace |
-| ALT + F10 | Rofi switcher for all windows |
-| SUPER + CTRL + V | Clipboard history |
-| SUPER + SHIFT + S | Select an area and copy its PNG to the clipboard |
-| Print | Save a full-desktop PNG in `~/Pictures/Screenshots/` |
-| SHIFT + Print | Select an area and save its PNG in `~/Pictures/Screenshots/` |
-| SUPER + Print / SUPER + SHIFT + Print | Existing full-screen / area capture: save and copy |
-| SUPER + SHIFT + E | Toggle the same Frosted Glass Wlogout menu as SUPER + Backspace |
+| `SUPER + Return` | Kitty |
+| `SUPER + Space` | Rofi application launcher |
+| `SUPER + E` | Dolphin |
+| `SUPER + Q` | Close focused window |
+| `SUPER + L` | Hyprlock |
+| `SUPER + Backspace` / `SUPER + SHIFT + E` | Same Wlogout menu |
+| `SUPER + CTRL + V` | Clipboard history |
+| `ALT + Tab` / `ALT + SHIFT + Tab` | Next/previous window on current workspace |
+| `ALT + F10` | Graphical window switcher |
+| `SUPER + V` / `SUPER + F` | Floating / fullscreen |
+| `SUPER + left/right click` | Move / resize window |
+| `SUPER + arrows` | Focus window |
+| `SUPER + 1..4` / `SUPER + SHIFT + 1..4` | Focus workspace / move window there |
+| `SUPER + SHIFT + S` | Area screenshot to clipboard |
+| `Print` / `SHIFT + Print` | Save full / area screenshot |
 
-Media and brightness keys are preserved. A horizontal three-finger gesture
-switches workspaces. There is a single source of active keybindings:
-`.config/hypr/lua/keybinds.lua`. Personal additions are loaded afterwards from
-`UserConfigs/user_keybinds.lua`; no file in `extras/` overrides them.
+Workspace digits refer to physical number-row positions, including on the
+default French AZERTY layout. The [complete reference](docs/keybindings.md)
+covers all 68 bindings, workspaces 1–10, media keys and the touchpad gesture.
 
-`./verify.sh --session` audits the 67 bindings actually registered in Hyprland,
-their enabled Lua handles, modifiers, physical workspace codes, conflicts,
-installed scripts and command dependencies. See the [keyboard/mouse audit](docs/KEYBINDS.md)
-for API evidence, limitations and the physical-PC test procedure. A registry
-check does not simulate a key press or prove the resulting focus change.
+## Verification
 
-Saved screenshots use timestamped names such as
-`Screenshot-2026-10-26_21-30-15-a1B2c3.png`. The unique suffix prevents overwrites
-even for captures taken simultaneously. Cancelling a selection leaves the
-clipboard and screenshot directory untouched. See [INSTALL.md](INSTALL.md#screenshots).
-
-## Profiles and layout
-
-```text
-.config/                  active configuration, native by default
-.local/share/kxmlgui5/     Dolphin toolbar (path also used by KF6)
-wallpapers/               single Frosted Glass image
-sddm/themes/hyprixe-frosted/ original Qt 6 login theme; wallpaper copied at install time
-profiles/native/          no forced graphics settings
-profiles/vmware/          explicit software rendering, optional monitor examples
-extras/kooldots/          optional upstream library, never installed
-scripts/                  deployment, dependencies, validation
-tests/                    isolated tests; no mock session presented as a real one
-docs/                     audit, original inventory and validation results
-install.sh / uninstall.sh / verify.sh
-packages*.txt
+```bash
+./verify.sh                              # repository and isolated tests
+./verify.sh --dependencies               # also require installed runtime
+./verify.sh --dependencies --session     # inside the active Hyprixe session
 ```
 
-The profiles share the theme, SUPER keybindings and monitor detection.
-The VMware profile adds Mesa software-rendering variables and a software cursor.
-It does not force a resolution; the `Virtual-1` examples are not installed.
-Switching profiles requires logging out and back in to refresh the application
-environment.
+Successful runs end with `RESULT: 0 failed check(s)`. Optional unavailable tools
+and interactive checks can be `SKIPPED`; they are not claims of success.
+See [verification](docs/verification.md) and [troubleshooting](docs/troubleshooting.md).
 
-## Credits
+## Documentation
 
-- [KoolDots / LinuxBeginnings](https://github.com/LinuxBeginnings/Hyprland-Dots),
-  based on [JaKooLit's dotfiles](https://github.com/JaKooLit/Hyprland-Dots):
-  Lua base, scripts, animations and configuration library. The
-  GPL-3.0-or-later headers are preserved.
-- Senshi: Frosted Glass/Dolphin inspiration and files, as identified by the
-  original repository and its author. The original repository does not include
-  an exact source URL or wallpaper license; see [CREDITS.md](CREDITS.md).
-- [adi1090x/rofi](https://github.com/adi1090x/rofi): Rofi layout, inherited through KoolDots.
-- [Powerlevel10k / romkatv](https://github.com/romkatv/powerlevel10k) and
-  [Nerd Fonts symbols](https://github.com/ryanoasis/nerd-fonts): pinned prompt and
-  terminal glyph assets; upstream licenses are retained during installation.
-- [Kvantum / Tsu Jan](https://github.com/tsujan/Kvantum), KvAdapta and Vince/Liuice:
-  authors credited in the supplied Kvantum theme.
-- [Hyprland](https://github.com/hyprwm/Hyprland), [Waybar](https://github.com/Alexays/Waybar),
-  [UWSM](https://github.com/Vladimir-csp/uwsm),
-  [SDDM](https://github.com/sddm/sddm) and [Qt Quick](https://doc.qt.io/qt-6/qtquick-index.html),
-  [Rofi](https://github.com/davatorium/rofi), [awww](https://codeberg.org/LGFae/awww),
-  [Kitty](https://sw.kovidgoyal.net/kitty/), [Dolphin](https://invent.kde.org/system/dolphin).
+The [documentation index](docs/README.md) links installation, components,
+customization, architecture and recovery. `docs/` is the canonical source;
+[short Wiki pages](docs/wiki/Home.md) link back to it.
 
-This project adapts and integrates those works. References and provenance
-limitations are documented in [CREDITS.md](CREDITS.md) and
-[docs/AUDIT.md](docs/AUDIT.md).
+## Updating
+
+```bash
+git pull --ff-only
+# Close Dolphin before the full deployment.
+./install.sh native
+```
+
+Reconnect when session, environment or shell settings change; reboot when the
+greeter needs refreshing. Then run `./verify.sh --dependencies --session`.
+[Updating](docs/update.md) explains scoped updates and when reload is sufficient.
+
+## Uninstall / restore
+
+```bash
+./uninstall.sh --list
+./uninstall.sh --backup=BACKUP_ID --dry-run
+./uninstall.sh --backup=BACKUP_ID
+```
+
+Restore uses dated transactions and refuses conflicting later edits. Linked
+SDDM and login-shell state are covered where recorded; Debian packages are
+retained. Read [restore](docs/uninstall-restore.md) before selecting a backup.
+
+## Status
+
+The Debian v1 documentation is being reviewed before tagging. Automated checks
+do not replace physical keyboard/mouse, PAM, GPU blur and login-transition
+testing. Asset provenance and the remaining release checklist are tracked in
+[release readiness](docs/release-readiness.md). A NixOS port is a future plan,
+not an installation option for this version.
+
+## License
+
+Hyprixe's integrated configuration and maintenance work use
+[GPL-3.0-or-later](LICENSE), subject to third-party asset licenses. Credits
+include KoolDots/LinuxBeginnings, JaKooLit, Senshi, KDE, Kvantum, Waybar, UWSM,
+Rofi, Wlogout, Powerlevel10k and font authors. See [credits and provenance](CREDITS.md),
+including confirmed Senshi/Graphite sources and unresolved wallpaper rights.

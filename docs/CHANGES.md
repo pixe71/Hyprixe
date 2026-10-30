@@ -1,5 +1,10 @@
 # File change log
 
+> Historical comparison with the original repository, not a list of current
+> active files. Paths below intentionally include removed or renamed files.
+> See the [documentation index](README.md) for current guides and the
+> [release review](release-readiness.md) for this documentation pass.
+
 Comparison against the initial commit `f96dfb4`. Moved library files remain
 available under `extras/`; these are not content deletions.
 Line-ending-only differences are ignored when classifying changes.

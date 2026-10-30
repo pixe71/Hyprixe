@@ -1,0 +1,5 @@
+- [Home](Home)
+- [Installation](Installation)
+- [Keybindings](Keybindings)
+- [Troubleshooting](Troubleshooting)
+- [Full documentation](https://github.com/pixe71/hyprixe-debian/blob/main/docs/README.md)
