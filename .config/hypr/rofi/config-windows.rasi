@@ -1,0 +1,14 @@
+/* Same shell as SUPER + Space; dmenu supplies the current Hyprland windows. */
+@import "config-launcher.rasi"
+
+button-applications {
+    background-color: @launcher-button;
+}
+button-windows {
+    background-color: @launcher-selection;
+    /* Already in this view: an empty native action keeps the same search/PID. */
+    action: "";
+}
+entry {
+    placeholder: "Search windows...";
+}

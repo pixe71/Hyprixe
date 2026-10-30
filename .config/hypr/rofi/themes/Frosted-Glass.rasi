@@ -324,3 +324,6 @@ error-message {
     background-color:            @background-color;
     text-color:                  @foreground-color;
 }
+
+/* Every active dialog shares the application launcher's Frosted Glass paint. */
+@import "Frosted-Glass-Common.rasi"

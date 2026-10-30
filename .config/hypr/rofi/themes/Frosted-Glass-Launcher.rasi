@@ -1,25 +1,12 @@
-/* Launcher-only glass paint. RGB values come from the existing Hyprixe palette:
-   Rofi color2 / color3 / color11 / color12 and the Waybar/Wlogout cyan border. */
-* {
-    launcher-glass: rgba(40, 77, 91, 0.82);
-    launcher-input: rgba(52, 84, 97, 0.40);
-    launcher-button: rgba(52, 84, 97, 0.76);
-    launcher-selection: rgba(69, 112, 129, 0.92);
-    launcher-hover: rgba(77, 122, 138, 0.92);
-    launcher-edge: rgba(126, 214, 255, 0.20);
-}
+/* Shared two-panel shell for applications and the Hyprland window switcher.
+   Paint, search, rows and selection come from Frosted-Glass-Common.rasi. */
 window {
     width: 70%;
     height: 58%;
-    background-color: @launcher-glass;
-    border: 1px solid;
-    border-color: @launcher-edge;
 }
 mainbox {
     orientation: horizontal;
     spacing: 20px;
-    /* Paint glass once: inheriting the window background here stacks opacity. */
-    background-color: transparent;
     children: [ wallpaper-panel, application-panel ];
 }
 wallpaper-panel {
@@ -80,40 +67,4 @@ application-panel {
     spacing: 10px;
     background-color: transparent;
     children: [ inputbar, message, listview ];
-}
-listview {
-    expand: true;
-    fixed-height: false;
-    background-color: transparent;
-    border-color: @launcher-edge;
-}
-/* Clear every unselected state, including the inherited black alternate rows. */
-element normal.normal, element normal.active, element normal.urgent,
-element alternate.normal, element alternate.active, element alternate.urgent {
-    background-color: transparent;
-    text-color: @foreground;
-}
-element selected.normal, element selected.active, element selected.urgent {
-    background-color: @launcher-selection;
-    text-color: @foreground;
-}
-element-icon, element-text, element-text selected {
-    background-color: transparent;
-    text-color: inherit;
-}
-inputbar {
-    background-color: @launcher-input;
-    border: 1px solid;
-    border-color: @launcher-edge;
-}
-entry, prompt, textbox-prompt-colon, case-indicator {
-    background-color: transparent;
-    text-color: @foreground;
-}
-textbox {
-    background-color: @launcher-input;
-}
-error-message {
-    background-color: transparent;
-    border-color: @launcher-edge;
 }

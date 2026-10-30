@@ -1,4 +1,4 @@
-/* SUPER + Space only. Other menus retain config.rasi and its original layout. */
+/* Application layout; the window switcher reuses this shell with its own rows. */
 @import "config.rasi"
 @import "themes/Frosted-Glass-Launcher.rasi"
 
@@ -6,4 +6,7 @@ configuration {
     kb-custom-17: "";
     kb-custom-18: "";
     kb-custom-19: "";
+}
+button-applications {
+    background-color: @launcher-selection;
 }

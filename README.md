@@ -95,8 +95,11 @@ and native UWSM application scopes. See [terminal configuration and migration](d
 
 `SUPER + Space` opens the native Rofi application search in a larger two-panel
 layout: the existing wallpaper and four round shortcuts on the left, applications
-on the right. The shared Frosted Glass palette, fonts and other Rofi menus stay
-unchanged. See [launcher buttons, installation and validation](docs/ROFI.md).
+on the right. `ALT + F10` uses that same shell for open windows, while
+`SUPER + CTRL + V` keeps a compact clipboard layout. Search, selection and
+translucent blue/grey paint come from one shared Frosted Glass theme, also used
+by confirmations and the optional calculator.
+See [Rofi menus, buttons, installation and validation](docs/ROFI.md).
 
 Wlogout adds **Lock | Logout | Shutdown | Reboot** through `SUPER + Backspace`
 or `SUPER + SHIFT + E`, also shared by Waybar's power button,

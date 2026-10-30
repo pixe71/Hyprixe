@@ -1348,3 +1348,87 @@ transaction restores both. On the physical PC, close Dolphin, run
 and `./verify.sh --dependencies --session`. Check both session shortcuts,
 cross-shortcut toggle behavior, Waybar power and the unchanged Rofi launcher.
 Hyprland 0.56.2 live IPC and physical input remain target-machine checks.
+
+## Shared Rofi glass for clipboard and windows — 2026-10-30
+
+The active shortcut audit found `SUPER + CTRL + V` calling `ClipManager.sh`
+with `config-clipboard.rasi`, and `ALT + F10` calling `WindowSwitcher.sh` with
+the generic `config.rasi`. Both inherited the old black/70% background from
+`wallust/colors-rofi.rasi` and the older alternating-row paint. The existing
+session confirmation and optional calculator inherited that theme too. The
+calculator script is deployed but has no shipped shortcut. Historical files
+under `extras/kooldots` are neither loaded nor modified.
+
+`Frosted-Glass-Common.rasi` now contains the paint extracted from the current
+application launcher: glass `#284D5B`/0.82, input `#345461`/0.40, selected entry
+`#457081`/0.92, hover `#4D7A8A`/0.92, cyan edge `#7ED6FF`/0.20 and the existing
+`#E0F0F5` text. Every active menu imports it through `Frosted-Glass.rasi`.
+The generic background palette also uses that same glass instead of black.
+Main containers and unselected rows remain transparent so the tint is painted
+once. No Hyprland rule, blur setting or font configuration changes.
+
+The application launcher keeps its existing 70% x 58% geometry and roughly
+48%/52% wallpaper/list split. `config-windows.rasi` imports its actual shell,
+not a copy, with Windows active. Native dmenu still supplies client rows; the
+existing one-snapshot/index/address/raise/focus path is preserved. Sidebar
+codes only delegate to the existing application helpers. Clicking the active
+Windows button leaves the same view, PID and search intact. The clipboard
+keeps its original script/MIME handling/delete/wipe operations with a compact
+42%-width, eight-row layout and no wallpaper. Applications is visibly active
+in the application shell. The Wlogout layout, helper and bindings are unchanged;
+only its already-existing Rofi confirmation inherits the common paint.
+
+Commands/checks actually performed in Debian 13 WSL with the prepared Rofi
+Wayland binary on PATH:
+
+| Check | Result |
+| --- | --- |
+| `./verify.sh` | 226 integration tests passed; `RESULT: 0 failed check(s)`; exit 0 |
+| `./verify.sh --dependencies` | 226 tests passed; 12 environment failures; exit 1 |
+| `./verify.sh --dependencies --session` | 226 tests passed; 16 environment/session failures; exit 1 |
+| Native `rofi -config FILE -dump-theme` | All ten Rasi files accepted |
+| Native menu `-dump-theme` / `-dump-config` regression | Shared paint, search, selection, fonts, borders and layouts match the intended common contract |
+| `bash -n` / ShellCheck | 133 scripts parsed; all-script error and active-script warning checks passed |
+| `luac -p` / recording Lua load graph | 83 files parsed; 68 unique bindings and four persistent workspaces passed |
+| Unprivileged, isolated Hyprland 0.55.2 native parser | Configuration, 68 retained handles and dispatcher constructors accepted |
+| `hyprctl configerrors` in the current shell | Unavailable: no `HYPRLAND_INSTANCE_SIGNATURE` / current Hyprland session |
+| `git diff --check` / `git diff --cached --check` | Passed |
+
+The 12/16 environment failures are the same undeployed WSL HOME/system/session
+failures documented above, not hidden or replaced with successful checks.
+The verifier now follows installed import graphs, so merely having a common
+theme file without actually loading it fails explicitly. Regression tests
+also cover clipboard text/image MIME copy, Escape/errors, delete/wipe,
+same-app window addresses, sidebar actions, paths with spaces and restore.
+
+An external fixture deployed the actual configuration to a temporary
+unprivileged HOME containing spaces and started real UWSM/systemd with a
+headless Sway Wayland compositor. It used the prepared native Rofi, a
+persistent virtual pointer/keyboard and real `wl-copy`/`wl-paste`. Hyprland
+client queries/focus dispatch, cliphist data and Dolphin/Kitty executables
+were harmless stand-ins, isolated from the user's desktop/clipboard.
+The final fixture completed successfully and tested:
+
+- Native application typing/Enter, Escape, all four sidebar actions and UWSM
+  application scopes; returning from Run to Applications kept the same PID.
+- Native window search, arrows and mouse selection, selecting the second of
+  two Kitty windows from one snapshot, Escape with no focus command, sidebar
+  delegation, and an active Windows button preserving PID/search even when
+  no window matched the query.
+- Native clipboard typing/Enter, arrows and mouse selection copied the correct
+  decoded payload through the actual isolated Wayland clipboard. Escape
+  preserved that clipboard.
+- Ordinary dmenu retained its native custom-action return codes; `uwsm stop`
+  ended the fixture session normally.
+- Screenshots of launcher/window/clipboard at 1920x1080 were inspected. The
+  shared shell also opened/closed at 1366x768, 3440x1440 and HiDPI output modes
+  2560x1440/scale 2 and 5120x1440/scale 2.
+
+Evidence is outside Git under `/root/.cache/hyprixe-validation/rofi-unified-*`.
+No native Rofi patch, dependency or installer/restore implementation change
+was required. Generic deployment includes the new files and dated restoration
+already restores the previous configuration; the custom-XDG restore test passes.
+RofiLauncher.sh, ClipManager.sh, Hyprland/UWSM units and bindings, Wlogout,
+Waybar, Kitty, Dolphin/Kvantum, SDDM, wallpapers and profiles have no diff.
+The actual 0.56.2 Hyprland focus effect, physical shortcut delivery, font
+fallbacks, hardware colours and GPU blur still need checking on the target PC.

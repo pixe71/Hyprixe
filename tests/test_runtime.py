@@ -31,6 +31,7 @@ elif name=='rofi':
     if os.environ.get('MOCK_CANCEL'): sys.exit(1)
     if os.environ.get('MOCK_ROFI_FAILURE'): sys.exit(17)
     print(os.environ.get('MOCK_CHOICE',os.environ.get('MOCK_INDEX','0')))
+    sys.exit(int(os.environ.get('MOCK_ROFI_STATUS', '0')))
 elif name=='uwsm':
     if '-hyprixe-launcher' in sys.argv:
         sys.exit(int(os.environ.get('MOCK_LAUNCHER_STATUS', '0')))
@@ -171,6 +172,31 @@ class RuntimeTests(unittest.TestCase):
         self.assertNotEqual(self.run_script('WindowSwitcher.sh').returncode, 0)
         self.assertFalse(any(c[:2] == ['hyprctl', 'dispatch'] for c in self.calls()))
 
+    def test_switcher_sidebar_closes_before_reusing_existing_app_helpers(self):
+        settings = self.root / 'settings with spaces'
+        shutil.copytree(ROOT / '.config/hypr', settings / 'hypr')
+        self.env['XDG_CONFIG_HOME'] = str(settings)
+        for status, expected in ((26, ['uwsm', 'app', '--', 'dolphin']),
+                                 (28, ['uwsm', 'app', '--', 'kitty']), (10, None)):
+            with self.subTest(status=status):
+                (self.root / 'calls').write_text('')
+                self.env['MOCK_ROFI_STATUS'] = str(status)
+                result = self.run_script('WindowSwitcher.sh')
+                self.assertEqual(result.returncode, 0, result.stderr)
+                calls = self.calls()
+                self.assertFalse(any(c[:2] == ['hyprctl', 'dispatch'] for c in calls))
+                self.assertEqual(sum(c[:2] == ['hyprctl', 'clients'] for c in calls), 1)
+                if expected:
+                    self.assertEqual(calls[-1], expected)
+                else:
+                    self.assertIn(str(settings / 'hypr/rofi/config-launcher.rasi'), calls[-1])
+
+    def test_switcher_unknown_custom_status_does_not_focus_a_window(self):
+        self.env['MOCK_ROFI_STATUS'] = '27'
+        result = self.run_script('WindowSwitcher.sh')
+        self.assertEqual(result.returncode, 27)
+        self.assertFalse(any(c[:2] == ['hyprctl', 'dispatch'] for c in self.calls()))
+
     def test_waybar_uses_vendor_service_even_if_not_enabled(self):
         self.env.update(MOCK_UWSM='1', MOCK_GRAPHICAL='active')
         r = self.run_script('WaybarStartup.sh')
@@ -271,7 +297,7 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(sum(c[:2] == ['hyprctl', 'clients'] for c in calls), 1)
         rofi = next(c for c in calls if c[0] == 'rofi')
         self.assertIn('-dmenu', rofi)
-        self.assertIn(str(ROOT / '.config/hypr/rofi/config.rasi'), rofi)
+        self.assertIn(str(ROOT / '.config/hypr/rofi/config-windows.rasi'), rofi)
         self.assertTrue(any(c[:2] == ['hyprctl', 'dispatch'] for c in calls))
 
     def test_launcher_accept_cancel_and_errors_never_launch_sidebar_apps(self):

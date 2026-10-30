@@ -558,24 +558,35 @@ Existing keyboard combinations and other applications are unchanged. Short contr
 commands such as focus, volume and brightness remain direct commands.
 The power menu's logout action calls `uwsm stop` for ordered session teardown.
 
-### Rofi application launcher
+### Rofi application launcher, clipboard and window switcher
 
 `SUPER + Space` retains native `drun` search, application icons, typing, arrows,
 Enter and Escape. Its dedicated `config-launcher.rasi` imports the existing theme
 and adds a centered 70% × 58% layout. The left panel occupies approximately 48%
 of the content and displays the already installed `min_forest.jpg`; the right
 panel keeps the search field and application list. No wallpaper copy is added.
-The launcher-only blue/grey paint uses existing Hyprixe colours, with 0.82 main
+The shared blue/grey paint uses existing Hyprixe colours, with 0.82 main
 opacity and transparent unselected rows. The normal installer prepares Rofi's
 preview cover support so the larger image does not repeat on ultrawide outputs;
-other menus, launch actions and the existing blur rules stay unchanged.
+launch actions and the existing blur rules stay unchanged.
+
+`ALT + F10` uses `config-windows.rasi`, importing that same wallpaper shell with
+Windows active and open-window rows supplied by the existing switcher. It keeps
+one client snapshot, exact address validation and safe cancellation/error handling.
+`SUPER + CTRL + V` keeps its existing clipboard operations in a compact 42%-width
+layout without a wallpaper. Both inherit `Frosted-Glass-Common.rasi`, as do the
+Rofi confirmations and optional calculator. Colours, input/selection styles,
+fonts, borders and transparency are shared instead of copied. Wlogout remains
+the session menu for both session shortcuts.
 
 The four vertical buttons are Applications (return to native `drun` in the same
 instance), Files (Dolphin), Windows (the existing `WindowSwitcher.sh`) and Terminal
 (Kitty). The launcher explicitly uses `uwsm app -t scope --` to wait for its return
 code even if `UWSM_APP_UNIT_TYPE` is overridden elsewhere. After Rofi closes,
 Files and Terminal delegate to the existing UWSM helpers; Windows reuses the
-existing switcher. No global environment variable or Hyprland rule is changed.
+existing switcher. Its sidebar reuses the same application helpers, and clicking
+the active Windows button leaves that view/search open. No global environment
+variable or Hyprland rule is changed.
 
 Apply and check the update:
 
@@ -586,7 +597,10 @@ git pull
 ```
 
 No logout or keybinding reload is required: the existing binding calls the updated
-script. Test `SUPER + Space`, immediate typing, Enter/Escape and all four buttons.
+script. If the current two-panel launcher already works, the menu unification
+can be deployed with `./install.sh native --no-packages`; it adds no native patch
+or dependency. Test all three Rofi shortcuts, immediate typing, Enter/Escape,
+clipboard copy and all four sidebar buttons.
 Visual blur and the final appearance must be checked in the physical Hyprland
 session. Use the existing `./uninstall.sh --list` / dated restore mechanism to
 restore the previous configuration and any Rofi binary replaced by this update.

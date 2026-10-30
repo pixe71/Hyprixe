@@ -132,9 +132,17 @@ class RofiDeploymentTests(unittest.TestCase):
                 self.assertIn(str(roots['data'] / 'hyprixe/wallpapers/min_forest.jpg'), theme)
                 self.assertNotIn('$HOME', theme)
                 for name in ('config.rasi', '0-shared-fonts.rasi', 'themes/Frosted-Glass.rasi',
-                             'wallust/colors-rofi.rasi'):
+                             checks.COMMON, 'config-windows.rasi', 'config-clipboard.rasi', 'wallust/colors-rofi.rasi'):
                     self.assertEqual((roots['config'] / 'hypr/rofi' / name).read_bytes(),
                                      (ROOT / '.config/hypr/rofi' / name).read_bytes())
+                shared = roots['config'] / 'hypr/rofi/themes/Frosted-Glass.rasi'
+                original = shared.read_text()
+                shared.write_text(original.replace('@import "Frosted-Glass-Common.rasi"', ''))
+                results.clear()
+                checks.check_installed(lambda ok, message: results.append((ok, message)))
+                self.assertFalse(results[0][0])
+                self.assertIn('does not load', results[0][1])
+                shared.write_text(original)
                 (roots['data'] / 'hyprixe/wallpapers/min_forest.jpg').unlink()
                 results.clear()
                 checks.check_installed(lambda ok, message: results.append((ok, message)))

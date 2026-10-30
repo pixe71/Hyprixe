@@ -5,17 +5,25 @@ export PATH="$HOME/.local/bin:$PATH"
 for command in hyprctl jq rofi; do
     command -v "$command" >/dev/null || { echo "Window switcher: missing $command" >&2; exit 1; }
 done
-config="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/rofi/config.rasi"
+hypr="${XDG_CONFIG_HOME:-$HOME/.config}/hypr"
+config="$hypr/rofi/config-windows.rasi"
 [[ -r $config ]] || { echo "Window switcher: missing $config" >&2; exit 1; }
 # One IPC snapshot keeps labels and addresses aligned even if a window closes.
 clients=$(hyprctl clients -j | jq '[.[] | select(.mapped and (.hidden != true))]')
 [[ $(jq length <<<"$clients") -gt 0 ]] || exit 0
 if index=$(jq -r '.[] | "\(.class) — \(.title | gsub("[\\r\\n]"; " "))"' <<<"$clients" |
-    rofi -config "$config" -dmenu -i -p Fenêtres -format i); then
+    rofi -hyprixe-launcher -config "$config" -dmenu -i -p Fenêtres -format i); then
     :
 else
     status=$?
-    [[ $status == 1 ]] && exit 0 # Rofi's Escape/cancel result.
+    # Native dmenu custom actions return 10 + action index (zero-based).
+    # These sidebar requests close Rofi before opening an existing helper.
+    case "$status" in
+        1) exit 0 ;; # Escape/cancel; never focus a window.
+        10) exec "$hypr/scripts/RofiLauncher.sh" ;;
+        26) exec "$hypr/scripts/LaunchApp.sh" dolphin ;;
+        28) exec "$hypr/scripts/LaunchTerminal.sh" ;;
+    esac
     printf 'Window switcher: rofi failed (%s)\n' "$status" >&2
     exit "$status"
 fi
