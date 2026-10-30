@@ -1,4 +1,5 @@
 # Hyprixe
+![linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=white)![debian](https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white)
 
 A complete Hyprland desktop configuration for **Debian 13 Trixie**, built on
 KoolDots and a Frosted Glass theme. UWSM manages the session; installation,
