@@ -98,7 +98,8 @@ layout: the existing wallpaper and four round shortcuts on the left, application
 on the right. The shared Frosted Glass palette, fonts and other Rofi menus stay
 unchanged. See [launcher buttons, installation and validation](docs/ROFI.md).
 
-Wlogout adds **Lock | Logout | Shutdown | Reboot** through `SUPER + Backspace`,
+Wlogout adds **Lock | Logout | Shutdown | Reboot** through `SUPER + Backspace`
+or `SUPER + SHIFT + E`, also shared by Waybar's power button,
 with the current Frosted Glass palette and confirmation for destructive actions.
 See [session menu, keyboard navigation and restore](docs/WLOGOUT.md).
 
@@ -166,7 +167,7 @@ physical keycodes on the top row, regardless of the AZERTY number symbols.
 | Print | Save a full-desktop PNG in `~/Pictures/Screenshots/` |
 | SHIFT + Print | Select an area and save its PNG in `~/Pictures/Screenshots/` |
 | SUPER + Print / SUPER + SHIFT + Print | Existing full-screen / area capture: save and copy |
-| SUPER + SHIFT + E | Session/power menu |
+| SUPER + SHIFT + E | Toggle the same Frosted Glass Wlogout menu as SUPER + Backspace |
 
 Media and brightness keys are preserved. A horizontal three-finger gesture
 switches workspaces. There is a single source of active keybindings:

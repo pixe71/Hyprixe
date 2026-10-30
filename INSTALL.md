@@ -596,8 +596,10 @@ restore the previous configuration and any Rofi binary replaced by this update.
 The full installer also installs Debian's `wlogout` and SVG loader
 `librsvg2-common`, deploys `wlogout/layout`, `style.css`, four local icons and
 the `~/.local/bin/hyprixe-session` helper, and backs up their previous versions.
-`SUPER + Backspace` opens/closes the four-button horizontal Frosted Glass menu:
-**Lock | Logout | Shutdown | Reboot**. The existing Waybar power menu is retained.
+`SUPER + Backspace` and `SUPER + SHIFT + E` open/close the same four-button
+horizontal Frosted Glass menu: **Lock | Logout | Shutdown | Reboot**. Waybar's
+power button uses this same menu through the compatibility `PowerMenu.sh` relay;
+the former Rofi session list is removed. The application launcher is unchanged.
 
 After updating, run `hyprctl reload`, then `hyprctl configerrors` and
 `./verify.sh --dependencies --session` inside your managed Hyprland session.

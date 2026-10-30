@@ -72,8 +72,15 @@ def check_source(report, root):
     try:
         validate(root / '.config')
         binding = (root / '.config/hypr/lua/keybinds.lua').read_text()
-        if binding.count('bind("SUPER + Backspace", d.exec_cmd("hyprixe-session")') != 1:
-            raise ValueError('SUPER + Backspace must launch hyprixe-session exactly once')
+        for chord in ('SUPER + Backspace', 'SUPER + SHIFT + E'):
+            if binding.count('bind("' + chord + '", d.exec_cmd("hyprixe-session")') != 1:
+                raise ValueError(chord + ' must launch hyprixe-session exactly once')
+        if binding.count('bind("SUPER + Space", script("RofiLauncher.sh")') != 1:
+            raise ValueError('SUPER + Space must retain the application launcher')
+        bridge = (root / '.config/hypr/scripts/PowerMenu.sh').read_text()
+        commands = [line.strip() for line in bridge.splitlines() if line.strip() and not line.lstrip().startswith('#')]
+        if commands != ['set -euo pipefail', 'exec hyprixe-session "$@"']:
+            raise ValueError('PowerMenu.sh must only forward to the shared hyprixe-session helper')
         if '"logout_dialog"' not in (root / '.config/hypr/lua/rules.lua').read_text():
             raise ValueError('The Wlogout layer-shell namespace needs the existing Frosted blur rule')
         if not (root / '.local/bin/hyprixe-session').is_file():
@@ -81,7 +88,7 @@ def check_source(report, root):
     except (OSError, ValueError, ET.ParseError) as exc:
         report(False, 'Wlogout source: ' + str(exc))
         return
-    report(True, 'Wlogout source: four ordered actions, local SVGs, SUPER + Backspace and logout_dialog blur')
+    report(True, 'Wlogout source: both session shortcuts and Waybar share hyprixe-session; four actions and logout_dialog blur')
     check_css(report, root / '.config/wlogout/style.css')
     print('SKIPPED: Wlogout physical input, hover, toggle and Hyprland blur need interactive testing')
 
@@ -95,11 +102,14 @@ def check_installed(report, root):
             raise ValueError('Installed hyprixe-session must exist and be executable')
         if launcher.read_bytes() != (Path(root) / '.local/bin/hyprixe-session').read_bytes():
             raise ValueError('Installed hyprixe-session differs from this checkout; reinstall')
-        for name in ('hypr/scripts/LockScreen.sh', 'hypr/rofi/config.rasi'):
+        for name in ('hypr/scripts/LockScreen.sh', 'hypr/rofi/config.rasi', 'hypr/scripts/PowerMenu.sh'):
             if not (config / name).is_file():
                 raise ValueError('Required Wlogout action file missing: ' + name)
         if not os.access(config / 'hypr/scripts/LockScreen.sh', os.X_OK):
             raise ValueError('LockScreen.sh must be executable')
+        bridge = config / 'hypr/scripts/PowerMenu.sh'
+        if not os.access(bridge, os.X_OK) or bridge.read_bytes() != (Path(root) / '.config/hypr/scripts/PowerMenu.sh').read_bytes():
+            raise ValueError('Installed PowerMenu.sh must be the executable shared-menu relay; reinstall')
         missing = [name for name in ('wlogout', 'hyprixe-session', 'hyprctl', 'uwsm', 'rofi', 'systemctl', 'hyprlock', 'python3')
                    if not shutil.which(name)]
         if missing:

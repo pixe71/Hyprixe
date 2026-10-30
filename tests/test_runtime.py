@@ -294,12 +294,17 @@ class RuntimeTests(unittest.TestCase):
         self.assertIn(str(settings / 'hypr/rofi/config-launcher.rasi'), self.calls()[0])
         self.assertEqual(self.calls()[-1], ['uwsm', 'app', '--', 'kitty'])
 
-    def test_logout_uses_uwsm_stop(self):
-        self.env['MOCK_CHOICE'] = 'Déconnexion'
-        r = self.run_script('PowerMenu.sh')
-        self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertIn(['uwsm', 'stop'], self.calls())
-        self.assertFalse(any(c[0] == 'hyprctl' for c in self.calls()))
+    def test_power_menu_only_forwards_to_shared_wlogout_helper(self):
+        helper = self.root / 'bin/hyprixe-session'
+        helper.write_text(MOCK + '\nsys.exit(int(os.environ.get("MOCK_SESSION_STATUS", "0")))\n')
+        helper.chmod(0o755)
+        for status in (0, 17):
+            with self.subTest(status=status):
+                (self.root / 'calls').write_text('')
+                self.env['MOCK_SESSION_STATUS'] = str(status)
+                result = self.run_script('PowerMenu.sh')
+                self.assertEqual(result.returncode, status, result.stderr)
+                self.assertEqual(self.calls(), [['hyprixe-session']])
 
 
 class InstallPreflightTests(unittest.TestCase):

@@ -79,7 +79,7 @@ graphical selector across workspaces.
 | ALT + Tab / ALT + SHIFT + Tab | Next / previous window on current workspace |
 | ALT + F10 | Rofi switcher across workspaces; select with Enter |
 | SUPER + CTRL + V | Clipboard history |
-| SUPER + SHIFT + E | Session/power menu |
+| SUPER + SHIFT + E | Toggle the same Wlogout session menu as SUPER + Backspace |
 | SUPER + SHIFT + S | Select screenshot area and copy PNG |
 | Print / SHIFT + Print | Save full desktop / selected area to `~/Pictures/Screenshots/` |
 | SUPER + Print / SUPER + SHIFT + Print | Existing full/area screenshot, save and copy |

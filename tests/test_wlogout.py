@@ -138,6 +138,7 @@ class WlogoutDeploymentTests(unittest.TestCase):
                 home / '.local/bin/hyprixe-session': b'old personal helper',
                 roots['config'] / 'hypr/lua/keybinds.lua': b'old binds',
                 roots['config'] / 'hypr/lua/rules.lua': b'old rules',
+                roots['config'] / 'hypr/scripts/PowerMenu.sh': b'old personal power menu',
             }
             for path, data in before.items():
                 path.parent.mkdir(parents=True, exist_ok=True)
@@ -154,6 +155,11 @@ class WlogoutDeploymentTests(unittest.TestCase):
                 helper = home / '.local/bin/hyprixe-session'
                 self.assertEqual(helper.stat().st_mode & 0o777, 0o755)
                 self.assertEqual(helper.read_bytes(), (ROOT / '.local/bin/hyprixe-session').read_bytes())
+                bridge = roots['config'] / 'hypr/scripts/PowerMenu.sh'
+                self.assertEqual(bridge.stat().st_mode & 0o777, 0o755)
+                self.assertEqual(bridge.read_bytes(), (ROOT / '.config/hypr/scripts/PowerMenu.sh').read_bytes())
+                self.assertEqual((roots['config'] / 'hypr/scripts/RofiLauncher.sh').read_bytes(),
+                                 (ROOT / '.config/hypr/scripts/RofiLauncher.sh').read_bytes())
                 deploy.install(home, roots, 'native')
                 self.assertEqual(list((roots['state'] / 'hyprixe/backups').iterdir()), backups)
                 deploy.restore(backups[0], home)
@@ -186,6 +192,37 @@ class WlogoutDeploymentTests(unittest.TestCase):
             checks.check_source(lambda ok, msg: results.append((ok, msg)), tmp)
             self.assertEqual(len(results), 1)
             self.assertFalse(results[0][0])
+
+    def test_legacy_menu_shortcuts_or_bridge_and_changed_launcher_are_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp)
+            for relative in ('.config/wlogout', '.config/hypr'):
+                shutil.copytree(ROOT / relative, source / relative)
+            helper = source / '.local/bin/hyprixe-session'
+            helper.parent.mkdir(parents=True)
+            shutil.copyfile(ROOT / '.local/bin/hyprixe-session', helper)
+            binds = source / '.config/hypr/lua/keybinds.lua'
+            bridge = source / '.config/hypr/scripts/PowerMenu.sh'
+            original = binds.read_text()
+            variants = [('', original)]
+            for chord in ('SUPER + Backspace', 'SUPER + SHIFT + E'):
+                target = 'bind("' + chord + '", d.exec_cmd("hyprixe-session")'
+                variants += [(chord, original.replace(target, 'bind("' + chord + '", script("PowerMenu.sh")')),
+                             ('duplicate ' + chord, original + '\n' + target + ')\n')]
+            variants.append(('launcher', original.replace('script("RofiLauncher.sh")', 'script("PowerMenu.sh")')))
+            for damage, text in variants:
+                with self.subTest(damage=damage):
+                    binds.write_text(text)
+                    results = []
+                    with patch.object(checks, 'check_css'), contextlib.redirect_stdout(io.StringIO()):
+                        checks.check_source(lambda ok, msg: results.append((ok, msg)), source)
+                    self.assertEqual(all(ok for ok, _ in results), not damage, results)
+            binds.write_text(original)
+            bridge.write_text('#!/usr/bin/env bash\nrofi -dmenu -p Session\n')
+            results = []
+            checks.check_source(lambda ok, msg: results.append((ok, msg)), source)
+            self.assertFalse(results[0][0])
+            self.assertIn('only forward', results[0][1])
 
     def test_missing_required_asset_aborts_deployment_before_any_write(self):
         with tempfile.TemporaryDirectory() as tmp:

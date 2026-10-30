@@ -1,8 +1,10 @@
 # Wlogout Frosted Glass
 
-`SUPER + Backspace` toggles a horizontal **Lock | Logout | Shutdown | Reboot**
-menu. There are no Suspend or Hibernate buttons. The existing Waybar power
-menu and every other shortcut retain their behavior.
+`SUPER + Backspace` and `SUPER + SHIFT + E` toggle the same horizontal
+**Lock | Logout | Shutdown | Reboot** menu. Both bind directly to
+`hyprixe-session`. Waybar's power button reaches this same helper through
+`PowerMenu.sh`, now a compatibility relay with no menu/action logic. There are
+no Suspend or Hibernate buttons. `SUPER + Space` retains the application launcher.
 
 ## Appearance and sizing
 
@@ -76,8 +78,10 @@ hyprctl configerrors
 Debian stable supplies `wlogout`; `librsvg2-common` supplies the GDK Pixbuf
 loader for its SVG icons. Existing Python 3, Rofi, Hyprlock, UWSM and systemd
 dependencies are reused. No build, backports addition or new session daemon
-is needed for this feature. Open the menu with `SUPER + Backspace` or
-`hyprixe-session`. No SDDM/session restart is required for the new shortcut.
+is needed for this feature. Open the menu with `SUPER + Backspace`,
+`SUPER + SHIFT + E` or `hyprixe-session`. No SDDM/session restart is required.
+The normal installer backs up and replaces the old `PowerMenu.sh`; restoring
+the matching transaction restores the former script and keybinds together.
 
 The normal file-level deployment transaction backs up the existing Wlogout
 files, helper, keybinds and layer rules. It handles custom XDG paths containing
@@ -88,10 +92,11 @@ not removed automatically. No special recursive deletion is used.
 
 `verify.sh` validates the four-object JSON stream used by Wlogout, order,
 fixed commands, icons, GTK CSS (when the optional native parser is present),
-the shortcut and blur namespace. Dependency/session modes additionally check
-the deployed files, executable helper and required commands. The live binding
-audit now expects 68 bindings, including `SUPER + Backspace`. The menu need
-not be open for verification to succeed. Physical input and GPU blur remain
+both shortcuts, the compatibility relay and blur namespace. Dependency/session
+modes additionally check the deployed files, executable helper and required commands. The live binding
+audit expects 68 bindings, including both session shortcuts, and rejects the
+older keybind revision until the updated files are installed and reloaded.
+The menu need not be open for verification to succeed. Physical input and GPU blur remain
 explicit interactive checks, not automated successes.
 
 Upstream references: [Debian Wlogout CLI](https://manpages.debian.org/trixie/wlogout/wlogout.1.en.html),

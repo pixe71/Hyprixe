@@ -142,7 +142,7 @@ command -v python3 >/dev/null || { echo 'ERROR: python3 is required.' >&2; exit 
 PATH="$runtime:$PATH" python3 "$repo/scripts/check-deps.py"
 python3 "$repo/scripts/deploy.py" install --profile "$profile" --runtime "$runtime" --sddm
 echo 'Kitty is the terminal default for SUPER + Return, Rofi and KDE. Existing Alacritty installations/configs were left untouched.'
-echo 'Wlogout installed: SUPER + Backspace opens/closes Lock | Logout | Shutdown | Reboot. Destructive actions require confirmation.'
+echo 'Wlogout installed: SUPER + Backspace, SUPER + SHIFT + E and Waybar power share Lock | Logout | Shutdown | Reboot. Destructive actions require confirmation.'
 echo 'SDDM Frosted Glass installed with a separate system backup. SDDM was not restarted.'
 echo 'SDDM virtual keyboard disabled through [General] InputMethod=; the physical keyboard stays enabled.'
 echo 'Installed. Reboot to load the SDDM theme, then select "Hyprland (uwsm-managed)" and log in.'

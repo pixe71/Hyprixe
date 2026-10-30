@@ -4,7 +4,7 @@ local scripts = '"${XDG_CONFIG_HOME:-$HOME/.config}/hypr/scripts/'
 KOOLDOTS_BINDS = {}
 -- hyprctl's JSON omits display_key/enabled for Lua binds (and code:N keys).
 -- Stable descriptions + the retained handles allow a real session audit.
-HYPRIXE_KEYBINDS_REVISION = 1
+HYPRIXE_KEYBINDS_REVISION = 2
 local function bind(chord, action, opts)
   assert(not KOOLDOTS_BINDS[chord], "Duplicate binding: " .. chord)
   opts = opts or {}
@@ -84,7 +84,7 @@ end
 bind("ALT + Tab", cycle(true), { description = "Next window on current workspace" })
 bind("ALT + SHIFT + Tab", cycle(false), { description = "Previous window on current workspace" })
 bind("ALT + F10", script("WindowSwitcher.sh"), { description = "All windows (Rofi)" })
-bind("SUPER + SHIFT + E", script("PowerMenu.sh"))
+bind("SUPER + SHIFT + E", d.exec_cmd("hyprixe-session"), { description = "Wlogout session menu" })
 bind("SUPER + CTRL + V", script("ClipManager.sh"))
 bind("SUPER + SHIFT + S", script("ScreenShot.sh", "--copy-area"), { description = "Copy screenshot of selected area" })
 bind("Print", script("ScreenShot.sh", "--save"), { description = "Save full screenshot" })

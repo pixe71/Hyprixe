@@ -55,7 +55,7 @@ def expected_bindings():
 
 EXPECTED = expected_bindings()
 SCRIPTS = ('LaunchTerminal.sh', 'LaunchApp.sh', 'RofiLauncher.sh', 'LockScreen.sh',
-           'WindowSwitcher.sh', 'PowerMenu.sh', 'ClipManager.sh', 'ScreenShot.sh')
+           'WindowSwitcher.sh', 'ClipManager.sh', 'ScreenShot.sh')
 COMMANDS = ('hyprctl', 'jq', 'rofi', 'uwsm', 'kitty', 'dolphin', 'hyprlock', 'wlogout', 'hyprixe-session',
             'flock', 'pgrep', 'cliphist', 'wl-copy', 'grim', 'slurp', 'wpctl',
             'playerctl', 'brightnessctl', 'systemctl', 'xdg-user-dir', 'notify-send')
@@ -132,7 +132,7 @@ def handle_probe():
     expected = ','.join(f'[{json.dumps(spec.chord)}]={spec.mask}' for spec in EXPECTED)
     return '''assert(KOOLDOTS_DEFAULTS and KOOLDOTS_DEFAULTS.term == 'kitty', 'Terminal default is not Kitty; reinstall and log in again')
 assert(os.getenv('TERMINAL') == 'kitty', 'Compositor TERMINAL is not kitty; log in again')
-assert(HYPRIXE_KEYBINDS_REVISION == 1, 'Old/missing Hyprixe keybind audit metadata; reinstall and reload')
+assert(HYPRIXE_KEYBINDS_REVISION == 2, 'Old/missing Hyprixe keybind audit metadata; reinstall and reload')
 assert(type(KOOLDOTS_BINDS) == 'table', 'KOOLDOTS_BINDS is not loaded')
 for chord, mask in pairs({''' + expected + '''}) do
 local b = assert(KOOLDOTS_BINDS[chord], 'Missing ' .. chord)
@@ -148,6 +148,9 @@ local identity = 'Hyprixe | ' .. chord
 assert(b.description and (b.description == identity or b.description:sub(1, #identity+3) == identity .. ' | '), 'Changed identity ' .. chord)
 if chord == 'SUPER + Return' then
  assert(b.description == identity .. ' | Kitty', 'Stale terminal binding; reinstall and reload')
+end
+if chord == 'SUPER + Backspace' or chord == 'SUPER + SHIFT + E' then
+ assert(b.description == identity .. ' | Wlogout session menu', 'Stale session-menu binding; reinstall and reload')
 end
 end'''
 

@@ -42,8 +42,9 @@ Click **☰** to toggle the native Waybar drawer; it starts closed and uses a
 200 ms reveal transition. There is no polling/toggle script or bar restart.
 The tray itself has no reserved blank icon slots. Existing SNI item menus/actions
 continue to be handled by Waybar. Empty music/window/submap modules hide using
-their native behavior. The power action still calls Hyprixe's original
-`PowerMenu.sh`, with its existing shutdown/reboot/suspend/logout choices.
+their native behavior. The power action still calls `PowerMenu.sh`; this
+compatibility relay now opens the shared Wlogout menu with Lock, Logout,
+Shutdown and Reboot. Waybar's configuration and styling are unchanged.
 
 The network button still opens `nm-connection-editor`; its tooltip includes
 SSID/IP/interface and traffic. Bluetooth still opens `blueman-manager`.

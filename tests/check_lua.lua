@@ -94,7 +94,18 @@ for chord, binding in pairs(binds) do
 end
 assert(binds["super + e"].fn.opts:find('LaunchApp.sh" dolphin', 1, true))
 assert(KOOLDOTS_DEFAULTS.term == "kitty")
-assert(binds["super + backspace"].fn.opts == "hyprixe-session")
+for _, chord in ipairs({"super + backspace", "super + shift + e"}) do
+  assert(binds[chord] and binds[chord].fn.name == "exec_cmd" and binds[chord].fn.opts == "hyprixe-session",
+    "Session shortcuts must use the same Wlogout helper: " .. chord)
+end
+assert(binds["super + space"].fn.opts:find('RofiLauncher.sh"', 1, true), "Application launcher changed")
+for chord, binding in pairs(binds) do
+  if type(binding.fn) == "table" and binding.fn.name == "exec_cmd" then
+    assert(not binding.fn.opts:find("PowerMenu.sh", 1, true) and
+      not binding.fn.opts:find("Logout.sh", 1, true) and
+      not binding.fn.opts:find("Wlogout.sh", 1, true), "Legacy menu bind: " .. chord)
+  end
+end
 assert(binds["super + return"].fn.opts:find('LaunchTerminal.sh"', 1, true))
 assert(binds["super + return"].options.description == "Hyprixe | SUPER + Return | Kitty")
 window_snapshot = {

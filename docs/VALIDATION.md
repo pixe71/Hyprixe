@@ -1294,3 +1294,57 @@ External evidence: `/root/.cache/hyprixe-validation/rofi-glass-build.log`,
 `rofi-glass-verify.log`, `rofi-glass-dependencies.log`,
 `rofi-glass-session-verify.log`, `rofi-glass-session.log` and
 `rofi-glass-*.png` native screenshots.
+
+## Shared Wlogout entrypoints — 2026-10-30
+
+The active module list in `hypr/hyprland.lua` loads `lua/keybinds.lua`, followed
+by the personal overrides. The shipped overrides contain no active bindings.
+The audit found one legacy keyboard entrypoint: `SUPER + SHIFT + E` called
+`PowerMenu.sh`, which displayed a Rofi list with Lock, Suspend, Logout, Reboot
+and Shutdown. Waybar's power button also called that script. Historical
+`CTRL + ALT + Delete` / `CTRL + ALT + P` bindings and Rofi/Wlogout scripts under
+`extras/kooldots` are not sourced or deployed and remain reference material.
+
+Both `SUPER + Backspace` and `SUPER + SHIFT + E` now execute `hyprixe-session`
+directly. `PowerMenu.sh` is retained only as an `exec` relay for Waybar and
+existing callers; the old Rofi list and its action/confirmation implementation
+are removed. No standalone power/logout/session Rasi file was present in the
+active tree. The shared `rofi/config.rasi` remains necessary for confirmations,
+the window switcher and other menus. No theme asset or launcher file was removed.
+
+The live audit requires keybind revision 2 and the Wlogout descriptions, so a
+still-loaded older configuration is rejected until installation and reload.
+The recording Lua load test checks both callback targets, preserves
+`SUPER + Space` and rejects legacy menu scripts on loaded binds. Regressions
+also cover duplicate/misdirected shortcuts, relay exit-status propagation,
+installation/repeat/restore of the old script and original file modes.
+
+Commands actually executed in Debian 13 WSL with the previously prepared
+runtime binaries on PATH:
+
+| Command/check | Result |
+| --- | --- |
+| `python3 -m unittest discover -s tests -p test_wlogout.py -v` | 15 tests passed |
+| `python3 -m unittest discover -s tests -p test_keybind_checks.py -v` | 17 tests passed |
+| `python3 -m unittest discover -s tests -p test_runtime.py -v` | 28 tests passed |
+| `./verify.sh` | 219 tests passed; `RESULT: 0 failed check(s)`; exit 0 |
+| `./verify.sh --dependencies` | 219 tests passed; 12 installation/environment checks failed; exit 1 |
+| `./verify.sh --dependencies --session` | 219 tests passed; 16 installation/environment/session checks failed; exit 1 |
+| Real Hyprland 0.55.2 `--verify-config`, isolated unprivileged HOME | Passed, including all 68 retained binding handles and native dispatcher constructors |
+| `hyprctl configerrors` in WSL | Unavailable: `HYPRLAND_INSTANCE_SIGNATURE not set!` |
+| Isolated headless compositor/IPC attempt | Could not create a graphical backend; no live registry or physical key events validated |
+| `git diff --check` and `git diff --cached --check` | Passed |
+
+The 12/16 environment failures match the preceding WSL run: this HOME has no
+deployed desktop/SDDM configuration, several graphical commands are absent,
+and there is no active Hyprland/UWSM session. They were not suppressed. Logs
+are outside the repository under `/root/.cache/hyprixe-validation/session-menu-*`.
+
+The Rofi launcher, Wlogout layout/CSS/helper, Waybar configuration/CSS, layer
+rules, UWSM units, profiles and other applications are unchanged. Normal
+deployment backs up the replaced script and keybind file; the existing restore
+transaction restores both. On the physical PC, close Dolphin, run
+`./install.sh native --no-packages`, `hyprctl reload`, `hyprctl configerrors`
+and `./verify.sh --dependencies --session`. Check both session shortcuts,
+cross-shortcut toggle behavior, Waybar power and the unchanged Rofi launcher.
+Hyprland 0.56.2 live IPC and physical input remain target-machine checks.
