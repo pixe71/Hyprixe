@@ -1,0 +1,3414 @@
+{
+  "baseline_commit": "0315699206f0450fdc79d92c0b622502abf17c95",
+  "scope": "Pre-move classification. FUTURE_NIXOS has no existing implementation; only planned metadata/documentation will be added. Tests are classified by execution layer in the profile registry.",
+  "files": [
+    {
+      "file": ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig",
+      "category": "COMMON",
+      "destination": "common/config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg",
+      "category": "COMMON",
+      "destination": "common/config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig",
+      "category": "COMMON",
+      "destination": "common/config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/Kvantum/Frosted-Glass/Frosted-Glass.svg",
+      "category": "COMMON",
+      "destination": "common/config/Kvantum/Frosted-Glass/Frosted-Glass.svg",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/Kvantum/kvantum.kvconfig",
+      "category": "COMMON",
+      "destination": "common/config/Kvantum/kvantum.kvconfig",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/dolphinrc",
+      "category": "COMMON",
+      "destination": "common/config/dolphinrc",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/UserConfigs/monitors.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/UserConfigs/monitors.lua",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/UserConfigs/user_animations.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/UserConfigs/user_animations.lua",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/UserConfigs/user_decorations.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/UserConfigs/user_decorations.lua",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/UserConfigs/user_defaults.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/UserConfigs/user_defaults.lua",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/UserConfigs/user_keybinds.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/UserConfigs/user_keybinds.lua",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/UserConfigs/user_settings.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/UserConfigs/user_settings.lua",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/UserScripts/RofiCalc.sh",
+      "category": "COMMON",
+      "destination": "common/config/hypr/UserScripts/RofiCalc.sh",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/hl.meta.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/hl.meta.lua",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/hypridle.conf",
+      "category": "COMMON",
+      "destination": "common/config/hypr/hypridle.conf",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/hyprland.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/hyprland.lua",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/hyprlock.conf",
+      "category": "COMMON",
+      "destination": "common/config/hypr/hyprlock.conf",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/lua/animations.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/lua/animations.lua",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/lua/env.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/lua/env.lua",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/lua/keybinds.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/lua/keybinds.lua",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/lua/monitors.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/lua/monitors.lua",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/lua/rules.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/lua/rules.lua",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/lua/settings.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/lua/settings.lua",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/lua/startup.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/lua/startup.lua",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/lua/workspaces.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/lua/workspaces.lua",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/profile.env",
+      "category": "COMMON",
+      "destination": null,
+      "reason": "Unused default stub, always replaced by selected native/vmware payload; native source becomes canonical"
+    },
+    {
+      "file": ".config/hypr/profile.lua",
+      "category": "COMMON",
+      "destination": null,
+      "reason": "Unused default stub, always replaced by selected native/vmware payload; native source becomes canonical"
+    },
+    {
+      "file": ".config/hypr/rofi/0-shared-fonts.rasi",
+      "category": "COMMON",
+      "destination": "common/config/hypr/rofi/0-shared-fonts.rasi",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/rofi/config-calc.rasi",
+      "category": "COMMON",
+      "destination": "common/config/hypr/rofi/config-calc.rasi",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/rofi/config-clipboard.rasi",
+      "category": "COMMON",
+      "destination": "common/config/hypr/rofi/config-clipboard.rasi",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/rofi/config-launcher.rasi",
+      "category": "COMMON",
+      "destination": "common/config/hypr/rofi/config-launcher.rasi",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/rofi/config-windows.rasi",
+      "category": "COMMON",
+      "destination": "common/config/hypr/rofi/config-windows.rasi",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/rofi/config.rasi",
+      "category": "COMMON",
+      "destination": "common/config/hypr/rofi/config.rasi",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/rofi/themes/Frosted-Glass-Common.rasi",
+      "category": "COMMON",
+      "destination": "common/config/hypr/rofi/themes/Frosted-Glass-Common.rasi",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/rofi/themes/Frosted-Glass-Launcher.rasi",
+      "category": "COMMON",
+      "destination": "common/config/hypr/rofi/themes/Frosted-Glass-Launcher.rasi",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/rofi/themes/Frosted-Glass.rasi",
+      "category": "COMMON",
+      "destination": "common/config/hypr/rofi/themes/Frosted-Glass.rasi",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/rofi/wallust/colors-rofi.rasi",
+      "category": "COMMON",
+      "destination": "common/config/hypr/rofi/wallust/colors-rofi.rasi",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/scripts/ClipManager.sh",
+      "category": "COMMON",
+      "destination": "common/config/hypr/scripts/ClipManager.sh",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/scripts/ClipboardWatcher.sh",
+      "category": "COMMON",
+      "destination": "common/config/hypr/scripts/ClipboardWatcher.sh",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/scripts/LaunchApp.sh",
+      "category": "COMMON",
+      "destination": "common/config/hypr/scripts/LaunchApp.sh",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/scripts/LaunchTerminal.sh",
+      "category": "COMMON",
+      "destination": "common/config/hypr/scripts/LaunchTerminal.sh",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/scripts/LockScreen.sh",
+      "category": "COMMON",
+      "destination": "common/config/hypr/scripts/LockScreen.sh",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/scripts/Polkit.sh",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/config/hypr/scripts/Polkit.sh",
+      "reason": "Distribution-specific authentication-agent adapter or /usr/bin vendor-unit command"
+    },
+    {
+      "file": ".config/hypr/scripts/PowerMenu.sh",
+      "category": "COMMON",
+      "destination": "common/config/hypr/scripts/PowerMenu.sh",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/scripts/RofiLauncher.sh",
+      "category": "COMMON",
+      "destination": "common/config/hypr/scripts/RofiLauncher.sh",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/scripts/ScreenShot.sh",
+      "category": "COMMON",
+      "destination": "common/config/hypr/scripts/ScreenShot.sh",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/scripts/SessionStartup.sh",
+      "category": "COMMON",
+      "destination": "common/config/hypr/scripts/SessionStartup.sh",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/scripts/Wallpaper.sh",
+      "category": "COMMON",
+      "destination": "common/config/hypr/scripts/Wallpaper.sh",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/scripts/WallpaperDaemon.sh",
+      "category": "COMMON",
+      "destination": "common/config/hypr/scripts/WallpaperDaemon.sh",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/scripts/WaybarStartup.sh",
+      "category": "COMMON",
+      "destination": "common/config/hypr/scripts/WaybarStartup.sh",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/scripts/WindowSwitcher.sh",
+      "category": "COMMON",
+      "destination": "common/config/hypr/scripts/WindowSwitcher.sh",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/waybar/configs/Frosted-Glass",
+      "category": "COMMON",
+      "destination": "common/config/hypr/waybar/configs/Frosted-Glass",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/waybar/scripts/temperature.py",
+      "category": "COMMON",
+      "destination": "common/config/hypr/waybar/scripts/temperature.py",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/waybar/style.css",
+      "category": "COMMON",
+      "destination": "common/config/hypr/waybar/style.css",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/hypr/waybar/style/Frosted-Glass.css",
+      "category": "COMMON",
+      "destination": "common/config/hypr/waybar/style/Frosted-Glass.css",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/kdeglobals",
+      "category": "COMMON",
+      "destination": "common/config/kdeglobals",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/kitty/kitty.conf",
+      "category": "COMMON",
+      "destination": "common/config/kitty/kitty.conf",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/qt6ct/qt6ct.conf",
+      "category": "COMMON",
+      "destination": "common/config/qt6ct/qt6ct.conf",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/systemd/user/hypridle.service.d/hyprixe.conf",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/config/systemd/user/hypridle.service.d/hyprixe.conf",
+      "reason": "Distribution-specific authentication-agent adapter or /usr/bin vendor-unit command"
+    },
+    {
+      "file": ".config/systemd/user/hyprixe-awww.service",
+      "category": "COMMON",
+      "destination": "common/config/systemd/user/hyprixe-awww.service",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/systemd/user/hyprixe-clipboard.service",
+      "category": "COMMON",
+      "destination": "common/config/systemd/user/hyprixe-clipboard.service",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/systemd/user/hyprixe-polkit.service",
+      "category": "COMMON",
+      "destination": "common/config/systemd/user/hyprixe-polkit.service",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/systemd/user/hyprixe-session.target",
+      "category": "COMMON",
+      "destination": "common/config/systemd/user/hyprixe-session.target",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/systemd/user/hyprixe-wallpaper.service",
+      "category": "COMMON",
+      "destination": "common/config/systemd/user/hyprixe-wallpaper.service",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/systemd/user/swaync.service.d/hyprixe.conf",
+      "category": "COMMON",
+      "destination": "common/config/systemd/user/swaync.service.d/hyprixe.conf",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/systemd/user/waybar.service.d/hyprixe.conf",
+      "category": "COMMON",
+      "destination": "common/config/systemd/user/waybar.service.d/hyprixe.conf",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/wlogout/icons/lock.svg",
+      "category": "COMMON",
+      "destination": "common/config/wlogout/icons/lock.svg",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/wlogout/icons/logout.svg",
+      "category": "COMMON",
+      "destination": "common/config/wlogout/icons/logout.svg",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/wlogout/icons/reboot.svg",
+      "category": "COMMON",
+      "destination": "common/config/wlogout/icons/reboot.svg",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/wlogout/icons/shutdown.svg",
+      "category": "COMMON",
+      "destination": "common/config/wlogout/icons/shutdown.svg",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/wlogout/layout",
+      "category": "COMMON",
+      "destination": "common/config/wlogout/layout",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".config/wlogout/style.css",
+      "category": "COMMON",
+      "destination": "common/config/wlogout/style.css",
+      "reason": "Shared desktop configuration/behaviour; installed path stays unchanged"
+    },
+    {
+      "file": ".gitattributes",
+      "category": "HISTORICAL / DOCS",
+      "destination": ".gitattributes",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": ".gitignore",
+      "category": "HISTORICAL / DOCS",
+      "destination": ".gitignore",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": ".local/bin/hyprixe-session",
+      "category": "COMMON",
+      "destination": "common/local/bin/hyprixe-session",
+      "reason": "Shared helpers, fonts and KDE assets"
+    },
+    {
+      "file": ".local/share/color-schemes/HyprixeFrostedDolphin.colors",
+      "category": "COMMON",
+      "destination": "common/local/share/color-schemes/HyprixeFrostedDolphin.colors",
+      "reason": "Shared helpers, fonts and KDE assets"
+    },
+    {
+      "file": ".local/share/fonts/hyprixe/HyprixeDebian.ttf",
+      "category": "COMMON",
+      "destination": "common/local/share/fonts/hyprixe/HyprixeDebian.ttf",
+      "reason": "Shared helpers, fonts and KDE assets"
+    },
+    {
+      "file": ".local/share/fonts/hyprixe/LICENSE.txt",
+      "category": "COMMON",
+      "destination": "common/local/share/fonts/hyprixe/LICENSE.txt",
+      "reason": "Shared helpers, fonts and KDE assets"
+    },
+    {
+      "file": ".local/share/fonts/hyprixe/README.md",
+      "category": "COMMON",
+      "destination": "common/local/share/fonts/hyprixe/README.md",
+      "reason": "Shared helpers, fonts and KDE assets"
+    },
+    {
+      "file": ".local/share/kxmlgui5/dolphin/dolphinui.rc",
+      "category": "COMMON",
+      "destination": "common/local/share/kxmlgui5/dolphin/dolphinui.rc",
+      "reason": "Shared helpers, fonts and KDE assets"
+    },
+    {
+      "file": ".p10k.zsh",
+      "category": "COMMON",
+      "destination": "common/shell/.p10k.zsh",
+      "reason": "Shared shell/prompt; only plugin paths rendered by platform"
+    },
+    {
+      "file": ".zshrc",
+      "category": "COMMON",
+      "destination": "common/shell/.zshrc",
+      "reason": "Shared shell/prompt; only plugin paths rendered by platform"
+    },
+    {
+      "file": "CREDITS.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "CREDITS.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "INSTALL.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "INSTALL.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "LICENSE",
+      "category": "HISTORICAL / DOCS",
+      "destination": "LICENSE",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "README.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "README.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/AUDIT.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/AUDIT.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/CHANGES.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/CHANGES.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/README.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/README.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/VALIDATION.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/VALIDATION.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/architecture.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/architecture.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/asset-inventory.json",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/asset-inventory.json",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/assets-provenance.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/assets-provenance.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/customization.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/customization.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/dolphin-kvantum.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/dolphin-kvantum.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/first-start.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/first-start.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/hyprland-compatibility.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/hyprland-compatibility.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/hyprlock-hypridle.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/hyprlock-hypridle.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/installation.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/installation.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/inventory-original.tsv",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/inventory-original.tsv",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/keybindings.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/keybindings.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/kitty-zsh.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/kitty-zsh.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/licenses/Catppuccin-MIT.txt",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/licenses/Catppuccin-MIT.txt",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/licenses/Graphite-GPL-3.0.txt",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/licenses/Graphite-GPL-3.0.txt",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/licenses/Nerd-Fonts-Symbols-MIT.txt",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/licenses/Nerd-Fonts-Symbols-MIT.txt",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/licenses/Senshi111-MIT.txt",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/licenses/Senshi111-MIT.txt",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/release-readiness.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/release-readiness.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/requirements.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/requirements.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/rofi.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/rofi.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/screenshots/README.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/screenshots/README.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/screenshots/screenshot1.png",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/screenshots/screenshot1.png",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/screenshots/screenshot2.png",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/screenshots/screenshot2.png",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/screenshots/screenshot3.png",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/screenshots/screenshot3.png",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/sddm.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/sddm.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/troubleshooting.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/troubleshooting.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/uninstall-restore.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/uninstall-restore.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/update.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/update.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/uwsm.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/uwsm.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/verification.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/verification.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/waybar.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/waybar.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/wiki/Home.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/wiki/Home.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/wiki/Installation.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/wiki/Installation.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/wiki/Keybindings.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/wiki/Keybindings.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/wiki/Troubleshooting.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/wiki/Troubleshooting.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/wiki/_Sidebar.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/wiki/_Sidebar.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "docs/wlogout.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "docs/wlogout.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "dolphin/interface-baseline.json",
+      "category": "COMMON",
+      "destination": "common/metadata/dolphin/interface-baseline.json",
+      "reason": "Shared inherited interface baseline"
+    },
+    {
+      "file": "extras/kooldots/README.md",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/README.md",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/catppuccin-latte-blue/catppuccin-latte-blue.kvconfig",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/catppuccin-latte-blue/catppuccin-latte-blue.kvconfig",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/catppuccin-latte-blue/catppuccin-latte-blue.svg",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/catppuccin-latte-blue/catppuccin-latte-blue.svg",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/catppuccin-mocha-blue/catppuccin-mocha-blue.kvconfig",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/catppuccin-mocha-blue/catppuccin-mocha-blue.kvconfig",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/catppuccin-mocha-blue/catppuccin-mocha-blue.svg",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/catppuccin-mocha-blue/catppuccin-mocha-blue.svg",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/.luarc.json",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/.luarc.json",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/Monitor_Profiles/HDMI-A-1-HighRefreshRate.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/Monitor_Profiles/HDMI-A-1-HighRefreshRate.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/Monitor_Profiles/README",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/Monitor_Profiles/README",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/Monitor_Profiles/default.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/Monitor_Profiles/default.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/Monitor_Profiles/eDP-1-disable.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/Monitor_Profiles/eDP-1-disable.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserConfigs/.luarc.json",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserConfigs/.luarc.json",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserConfigs/00-Readme",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserConfigs/00-Readme",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserConfigs/ghostty.conf",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserConfigs/ghostty.conf",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserConfigs/hyprview-layout.conf",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserConfigs/hyprview-layout.conf",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserConfigs/monitors.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserConfigs/monitors.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserConfigs/user_defaults.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserConfigs/user_defaults.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserConfigs/user_laptops.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserConfigs/user_laptops.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserConfigs/user_layer_rules.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserConfigs/user_layer_rules.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserConfigs/user_startup.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserConfigs/user_startup.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserConfigs/user_window_rules.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserConfigs/user_window_rules.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserConfigs/workspaces.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserConfigs/workspaces.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserScripts/00-Readme",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserScripts/00-Readme",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserScripts/RainbowBorders-low-cpu.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserScripts/RainbowBorders-low-cpu.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserScripts/RainbowBorders.bak.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserScripts/RainbowBorders.bak.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserScripts/RofiBeats.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserScripts/RofiBeats.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserScripts/Weather.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserScripts/Weather.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserScripts/Weather.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserScripts/Weather.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/UserScripts/WeatherWrap.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/UserScripts/WeatherWrap.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/00-default.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/00-default.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/01-default - v2.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/01-default - v2.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/03- Disable Animation.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/03- Disable Animation.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/END-4.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/END-4.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/HYDE - Vertical.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/HYDE - Vertical.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/HYDE - default.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/HYDE - default.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/HYDE - minimal-1.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/HYDE - minimal-1.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/HYDE - minimal-2.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/HYDE - minimal-2.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/HYDE - optimized.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/HYDE - optimized.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/Hyprland - OEM Default.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/Hyprland - OEM Default.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/ML4W - classic.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/ML4W - classic.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/ML4W - dynamic.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/ML4W - dynamic.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/ML4W - fast.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/ML4W - fast.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/ML4W - high.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/ML4W - high.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/ML4W - moving.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/ML4W - moving.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/ML4W - standard.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/ML4W - standard.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/Mahaveer - me-1.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/Mahaveer - me-1.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/Mahaveer - me-2.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/Mahaveer - me-2.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/Spring-curves.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/Spring-curves.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/animations/amitpadhan.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/animations/amitpadhan.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/application-style.conf",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/application-style.conf",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/configs/.luarc.json",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/configs/.luarc.json",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/configs/system_env.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/configs/system_env.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/configs/system_keybinds.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/configs/system_keybinds.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/configs/system_laptops.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/configs/system_laptops.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/configs/system_layer_rules.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/configs/system_layer_rules.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/configs/system_settings.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/configs/system_settings.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/configs/system_startup.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/configs/system_startup.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/configs/system_window_rules.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/configs/system_window_rules.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/hypridle.conf",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/hypridle.conf",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/hyprland.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/hyprland.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/hyprlock-1080p.conf",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/hyprlock-1080p.conf",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/hyprlock-2k.conf",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/hyprlock-2k.conf",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/hyprlock.conf",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/hyprlock.conf",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/initial-boot.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/initial-boot.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/.luarc.json",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/.luarc.json",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/decorations.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/decorations.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/env.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/env.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/keybind_helpers.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/keybind_helpers.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/keybinds.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/keybinds.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/laptop-lid.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/laptop-lid.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/laptops.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/laptops.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/layer_rules.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/layer_rules.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/monitors.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/monitors.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/screenshot-region.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/screenshot-region.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/settings.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/settings.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/startup.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/startup.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/submap_helper.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/submap_helper.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/user_decorations_helper.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/user_decorations_helper.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/user_defaults.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/user_defaults.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/user_keybinds_helper.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/user_keybinds_helper.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/user_layer_rules_helper.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/user_layer_rules_helper.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/user_overrides.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/user_overrides.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/user_startup_helper.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/user_startup_helper.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/user_window_rules_helper.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/user_window_rules_helper.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/virtual_workspaces.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/virtual_workspaces.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/window_rules.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/window_rules.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/lua/workspaces.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/lua/workspaces.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/00-terminal.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/00-terminal.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-Animations.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-Animations.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-Monitors.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-Monitors.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-edit.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-edit.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-emacs-keybinds.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-emacs-keybinds.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-emoji.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-emoji.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-ghostty-theme.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-ghostty-theme.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-keybinds.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-keybinds.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-kitty-theme.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-kitty-theme.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-layout.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-layout.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-rofi-Beats-menu.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-rofi-Beats-menu.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-rofi-Beats.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-rofi-Beats.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-rofi-theme.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-rofi-theme.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-search.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-search.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-starship.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-starship.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-user-defaults.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-user-defaults.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-wallpaper-effect.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-wallpaper-effect.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-wallpaper.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-wallpaper.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-waybar-layout.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-waybar-layout.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-waybar-style.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-waybar-style.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config-zsh-theme.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config-zsh-theme.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/config.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/config.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/dwm-config-horiz.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/dwm-config-horiz.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/dwm-config-vert.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/dwm-config-vert.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/dwm-dmenu-horiz.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/dwm-dmenu-horiz.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/dwm-dmenu-vert.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/dwm-dmenu-vert.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/online_music.list",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/online_music.list",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_LonerOrZ.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_LonerOrZ.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_TokyoNight.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_TokyoNight.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_dwm.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_dwm.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-1.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-1.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-10-Fancy-v2.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-10-Fancy-v2.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-10-Fancy.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-10-Fancy.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-11-Win11-list-dark.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-11-Win11-list-dark.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-11-Win11-list-light.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-11-Win11-list-light.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-12-TOP-Docu.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-12-TOP-Docu.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-13-Vertical.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-13-Vertical.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-14.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-14.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-15-solarized.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-15-solarized.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-2-Dark.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-2-Dark.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-2-Light.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-2-Light.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-3-FullScreen-v1.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-3-FullScreen-v1.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-3-Fullscreen-v2.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-3-Fullscreen-v2.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-5.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-5.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-6.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-6.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-7.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-7.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-8.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-8.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/KooL_style-9.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/KooL_style-9.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/rofi/themes/saint-rofi.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/rofi/themes/saint-rofi.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Add-override-Hyprland-Portal.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Add-override-Hyprland-Portal.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/AirplaneMode.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/AirplaneMode.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Animations.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Animations.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Battery.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Battery.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Brightness.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Brightness.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/BrightnessKbd.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/BrightnessKbd.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/ChangeBlur.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/ChangeBlur.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/ChangeLayout.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/ChangeLayout.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/ChangeStarshipPrompt.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/ChangeStarshipPrompt.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/DisableWaybarService.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/DisableWaybarService.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Distro_update.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Distro_update.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Dock.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Dock.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Dropterminal.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Dropterminal.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/ExternalBrightness.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/ExternalBrightness.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Fix-Fedora-45-overview.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Fix-Fedora-45-overview.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Float-all-Windows.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Float-all-Windows.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/GameMode.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/GameMode.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/GhosttyThemeGuard.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/GhosttyThemeGuard.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Ghostty_themes.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Ghostty_themes.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/HyprLayoutModule.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/HyprLayoutModule.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Hypridle.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Hypridle.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/HypridleStartup.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/HypridleStartup.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/HyprlockWallpaperSelect.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/HyprlockWallpaperSelect.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Hyprsunset.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Hyprsunset.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/JavaManager.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/JavaManager.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/KeyBinds.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/KeyBinds.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/KeyHints.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/KeyHints.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/KeybindsLayoutInit.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/KeybindsLayoutInit.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/KeyboardLayout.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/KeyboardLayout.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/KillActiveProcess.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/KillActiveProcess.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/KooLsDotsUpdate.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/KooLsDotsUpdate.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Kool_Quick_Settings.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Kool_Quick_Settings.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/LaunchFileManager.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/LaunchFileManager.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/LaunchTerminal.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/LaunchTerminal.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/LayoutKeybindDispatch.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/LayoutKeybindDispatch.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/LidSwitch.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/LidSwitch.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/LockScreen.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/LockScreen.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Logout.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Logout.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/LuaAutoReload.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/LuaAutoReload.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/LuaCycleWindow.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/LuaCycleWindow.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/LuaFocusWorkspaceRelative.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/LuaFocusWorkspaceRelative.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/LuaFullscreenMaximized.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/LuaFullscreenMaximized.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/LuaMoveWindowDirectional.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/LuaMoveWindowDirectional.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/LuaMoveWindowWorkspaceRelative.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/LuaMoveWindowWorkspaceRelative.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/LuaSwapWindow.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/LuaSwapWindow.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/MediaCtrl.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/MediaCtrl.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/MonitorProfiles.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/MonitorProfiles.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/OverviewToggle.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/OverviewToggle.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/PersistWorkspaceLayout.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/PersistWorkspaceLayout.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Polkit-Diag.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Polkit-Diag.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Polkit-NixOS.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Polkit-NixOS.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/PortalHyprland.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/PortalHyprland.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/PortalHyprlandUbuntu.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/PortalHyprlandUbuntu.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/RainbowBordersStartup.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/RainbowBordersStartup.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Refresh.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Refresh.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/RefreshNoWaybar.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/RefreshNoWaybar.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/ResizeActive.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/ResizeActive.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/RofiEmoji.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/RofiEmoji.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/RofiFocusedWallpaperLink.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/RofiFocusedWallpaperLink.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/RofiLauncher.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/RofiLauncher.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/RofiSearch.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/RofiSearch.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/RofiThemeSelector-modified.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/RofiThemeSelector-modified.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/RofiThemeSelector.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/RofiThemeSelector.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/RofiUserDefaults.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/RofiUserDefaults.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/RofiWlogoutTheme.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/RofiWlogoutTheme.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/RofiWlogoutWallust.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/RofiWlogoutWallust.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/ScrollCycleColumnWidth.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/ScrollCycleColumnWidth.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/ScrollMaximizeToggle.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/ScrollMaximizeToggle.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Sounds.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Sounds.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Tak0-Autodispatch.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Tak0-Autodispatch.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Tak0-Per-Window-Switch.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Tak0-Per-Window-Switch.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/ThemeChanger.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/ThemeChanger.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Toggle-Active-Window-Audio.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Toggle-Active-Window-Audio.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Toggle-weather-waybar-units.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Toggle-weather-waybar-units.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/ToggleOpacity.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/ToggleOpacity.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/ToggleWaybarTime.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/ToggleWaybarTime.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/TouchPad.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/TouchPad.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/UptimeNixOS.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/UptimeNixOS.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/UserConfigsSwitcher.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/UserConfigsSwitcher.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Volume.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Volume.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/WallpaperAutoChange.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/WallpaperAutoChange.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/WallpaperCmd.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/WallpaperCmd.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/WallpaperDaemon.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/WallpaperDaemon.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/WallpaperEffects.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/WallpaperEffects.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/WallpaperRandom.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/WallpaperRandom.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/WallpaperSelect.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/WallpaperSelect.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/WallustConfig.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/WallustConfig.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/WallustSwww.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/WallustSwww.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/WaybarCava.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/WaybarCava.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/WaybarLayout.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/WaybarLayout.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/WaybarScripts.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/WaybarScripts.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/WaybarStartup.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/WaybarStartup.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/WaybarStyles.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/WaybarStyles.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Wlogout.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Wlogout.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/Zoom.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/Zoom.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/ZshChangeTheme.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/ZshChangeTheme.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/build-awww.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/build-awww.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/debian-fix-version.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/debian-fix-version.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/disable.cpu.turbo.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/disable.cpu.turbo.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/dots-tui",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/dots-tui",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/fastfetch-wrapper.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/fastfetch-wrapper.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/float.all.samesize.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/float.all.samesize.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/hyprshot.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/hyprshot.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/install-uv.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/install-uv.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/keybinds_parser.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/keybinds_parser.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/kooldots-add-ssh-agent.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/kooldots-add-ssh-agent.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/kooldots-add-ssh-localhost.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/kooldots-add-ssh-localhost.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/rofi-emacs-keybinds",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/rofi-emacs-keybinds",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/rofi-ssh-menu.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/rofi-ssh-menu.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/sddm_wallpaper.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/sddm_wallpaper.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/select-hyprview-layout.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/select-hyprview-layout.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/scripts/toggle-qs-hyprview.sh",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/scripts/toggle-qs-hyprview.sh",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/wallust/templates/colors-cava",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/wallust/templates/colors-cava",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/wallust/templates/colors-ghostty.conf",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/wallust/templates/colors-ghostty.conf",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/wallust/templates/colors-hyprland.conf",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/wallust/templates/colors-hyprland.conf",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/wallust/templates/colors-kitty.conf",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/wallust/templates/colors-kitty.conf",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/wallust/templates/colors-nwg-dock.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/wallust/templates/colors-nwg-dock.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/wallust/templates/colors-rofi.rasi",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/wallust/templates/colors-rofi.rasi",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/wallust/templates/colors-swaync.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/wallust/templates/colors-swaync.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/wallust/templates/colors-waybar.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/wallust/templates/colors-waybar.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/wallust/templates/qml_color.json",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/wallust/templates/qml_color.json",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/wallust/wallust-hyprland.conf",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/wallust/wallust-hyprland.conf",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/wallust/wallust-kitty-v4.toml",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/wallust/wallust-kitty-v4.toml",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/wallust/wallust-kitty.toml",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/wallust/wallust-kitty.toml",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/wallust/wallust-v4.toml",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/wallust/wallust-v4.toml",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/wallust/wallust.toml",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/wallust/wallust.toml",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/Modules",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/Modules",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/ModulesCustom",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/ModulesCustom",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/ModulesGroups",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/ModulesGroups",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/ModulesVertical",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/ModulesVertical",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/ModulesWorkspaces",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/ModulesWorkspaces",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/UserModules",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/UserModules",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/BOT-&-Left-SouthWest",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/BOT-&-Left-SouthWest",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/BOT-&-Right-SouthEast",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/BOT-&-Right-SouthEast",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/BOT-Camellia",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/BOT-Camellia",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/BOT-Chrysanthemum",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/BOT-Chrysanthemum",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/BOT-Default",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/BOT-Default",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/BOT-Default-Laptop",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/BOT-Default-Laptop",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/BOT-Gardenia",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/BOT-Gardenia",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/BOT-Peony",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/BOT-Peony",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/BOT-Simple",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/BOT-Simple",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/BOT-Sleek",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/BOT-Sleek",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/LEFT-WestWing",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/LEFT-WestWing",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/LEFT-WestWing-v2",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/LEFT-WestWing-v2",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/RIGHT-EastWing",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/RIGHT-EastWing",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/RIGHT-EastWing-v2",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/RIGHT-EastWing-v2",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-&-BOT-SummitSplit",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-&-BOT-SummitSplit",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-&-BOT-SummitSplit-glass",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-&-BOT-SummitSplit-glass",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-&-BOT-SummitSplit-v2",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-&-BOT-SummitSplit-v2",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-&-BOT-SummitSplit-v3",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-&-BOT-SummitSplit-v3",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-&-Left-NorthWest",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-&-Left-NorthWest",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-&-Right-NorthEast",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-&-Right-NorthEast",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-0-Ja-0",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-0-Ja-0",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Arrow",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Arrow",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Camellia",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Camellia",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Chrysanthemum",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Chrysanthemum",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Default",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Default",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-glass",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-glass",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-old-v1",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-old-v1",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-old-v2",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-old-v2",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-old-v3",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-old-v3",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-old-v4",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-old-v4",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-old-v5",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Default-Laptop-old-v5",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Default-old-v1",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Default-old-v1",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Default-old-v2",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Default-old-v2",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Default-old-v3",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Default-old-v3",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Default-old-v4",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Default-old-v4",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Everforest",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Everforest",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Everforest-glass",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Everforest-glass",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Gardenia",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Gardenia",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Minimal-Long",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Minimal-Long",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Minimal-Short",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Minimal-Short",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Peony",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Peony",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Simple",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Simple",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Simpliest",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Simpliest",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-Sleek",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-Sleek",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/configs/TOP-ddubs-simple-bar",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/configs/TOP-ddubs-simple-bar",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Black-&-White-Monochrome.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Black-&-White-Monochrome.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Catppuccin-Frappe.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Catppuccin-Frappe.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Catppuccin-Latte.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Catppuccin-Latte.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Catppuccin-Mocha.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Catppuccin-Mocha.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Colored-Chroma-Glow.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Colored-Chroma-Glow.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Colored-Translucent.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Colored-Translucent.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Colorful-Aurora-Blossom.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Colorful-Aurora-Blossom.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Colorful-Aurora.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Colorful-Aurora.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Colorful-Oglo-Chicklets.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Colorful-Oglo-Chicklets.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Colorful-Rainbow-Spectrum.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Colorful-Rainbow-Spectrum.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Colorful-stolen-style.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Colorful-stolen-style.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Crystal-Clear-Glass.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Crystal-Clear-Glass.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Dark-Golden-Eclipse.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Dark-Golden-Eclipse.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Dark-Golden-Noir.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Dark-Golden-Noir.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Dark-Half-Moon.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Dark-Half-Moon.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Dark-Latte-Wallust-combined-v2.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Dark-Latte-Wallust-combined-v2.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Dark-Latte-Wallust-combined.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Dark-Latte-Wallust-combined.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Dark-Purpl.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Dark-Purpl.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Dark-Wallust-Obsidian-Edge.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Dark-Wallust-Obsidian-Edge.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Extra-Arrow.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Extra-Arrow.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Extra-Crimson.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Extra-Crimson.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Extra-EverForest.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Extra-EverForest.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Extra-ML4W-starter.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Extra-ML4W-starter.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Extra-Mauve.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Extra-Mauve.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Extra-Modern-Combined-Transparent.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Extra-Modern-Combined-Transparent.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Extra-Modern-Combined.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Extra-Modern-Combined.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Extra-Neon-Circuit.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Extra-Neon-Circuit.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Extra-Prismatic-Glow.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Extra-Prismatic-Glow.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Extra-Rose-Pine.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Extra-Rose-Pine.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Extra-Simple-Pink.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Extra-Simple-Pink.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Light-Monochrome-Contrast.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Light-Monochrome-Contrast.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Light-Obsidian-Glow.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Light-Obsidian-Glow.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/ML4W-Glass-3d.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/ML4W-Glass-3d.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/ML4W-Glass.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/ML4W-Glass.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/ML4W/glass.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/ML4W/glass.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Rainbow-RGB-Bordered.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Rainbow-RGB-Bordered.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Retro-Simple-Style.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Retro-Simple-Style.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Transparent-Crystal-Clear.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Transparent-Crystal-Clear.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/VERTICAL-Catpuccin-Mocha.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/VERTICAL-Catpuccin-Mocha.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Wallust-Bordered-Chroma-Fusion-Edge.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Wallust-Bordered-Chroma-Fusion-Edge.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Wallust-Bordered-Chroma-Simple.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Wallust-Bordered-Chroma-Simple.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Wallust-Box-type.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Wallust-Box-type.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Wallust-Chroma-Edge.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Wallust-Chroma-Edge.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Wallust-Chroma-Fusion.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Wallust-Chroma-Fusion.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Wallust-Chroma-Tally-V2.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Wallust-Chroma-Tally-V2.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Wallust-Chroma-Tally.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Wallust-Chroma-Tally.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Wallust-Colored.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Wallust-Colored.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Wallust-ML4W-modern-mixed.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Wallust-ML4W-modern-mixed.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Wallust-ML4W-modern.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Wallust-ML4W-modern.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Wallust-Simple.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Wallust-Simple.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/Wallust-Transparent-Crystal-Clear.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/Wallust-Transparent-Crystal-Clear.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/catppuccin-themes/frappe.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/catppuccin-themes/frappe.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/catppuccin-themes/latte.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/catppuccin-themes/latte.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/catppuccin-themes/mocha.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/catppuccin-themes/mocha.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/style/catppuccin-themes/rgbmocha.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/style/catppuccin-themes/rgbmocha.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "extras/kooldots/hypr/waybar/wallust/colors-waybar.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "extras/kooldots/hypr/waybar/wallust/colors-waybar.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "install.sh",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/install/install.sh",
+      "reason": "Platform backend; root public entrypoint remains a compatibility wrapper"
+    },
+    {
+      "file": "packages-backports.txt",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/packages/packages-backports.txt",
+      "reason": "Debian package names"
+    },
+    {
+      "file": "packages-dolphin.txt",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/packages/packages-dolphin.txt",
+      "reason": "Debian package names"
+    },
+    {
+      "file": "packages-optional.txt",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/packages/packages-optional.txt",
+      "reason": "Debian package names"
+    },
+    {
+      "file": "packages-sddm.txt",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/packages/packages-sddm.txt",
+      "reason": "Debian package names"
+    },
+    {
+      "file": "packages.txt",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/packages/packages.txt",
+      "reason": "Debian package names"
+    },
+    {
+      "file": "profiles/native/profile.env",
+      "category": "COMMON",
+      "destination": "common/config/hypr/profile.env",
+      "reason": "Canonical native hardware defaults, no duplicate default stub"
+    },
+    {
+      "file": "profiles/native/profile.lua",
+      "category": "COMMON",
+      "destination": "common/config/hypr/profile.lua",
+      "reason": "Canonical native hardware defaults, no duplicate default stub"
+    },
+    {
+      "file": "profiles/vmware/monitor-examples/Virtual-1-1920x1080.lua",
+      "category": "COMMON",
+      "destination": "common/hardware/vmware/monitor-examples/Virtual-1-1920x1080.lua",
+      "reason": "Optional hardware adaptation, distinct from operating-system profile"
+    },
+    {
+      "file": "profiles/vmware/monitor-examples/Virtual-1-2560x1080.lua",
+      "category": "COMMON",
+      "destination": "common/hardware/vmware/monitor-examples/Virtual-1-2560x1080.lua",
+      "reason": "Optional hardware adaptation, distinct from operating-system profile"
+    },
+    {
+      "file": "profiles/vmware/packages.txt",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/packages/vmware.txt",
+      "reason": "APT guest package names"
+    },
+    {
+      "file": "profiles/vmware/profile.env",
+      "category": "COMMON",
+      "destination": "common/hardware/vmware/profile.env",
+      "reason": "Optional hardware adaptation, distinct from operating-system profile"
+    },
+    {
+      "file": "profiles/vmware/profile.lua",
+      "category": "COMMON",
+      "destination": "common/hardware/vmware/profile.lua",
+      "reason": "Optional hardware adaptation, distinct from operating-system profile"
+    },
+    {
+      "file": "scripts/apt-build-deps.py",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/install/apt-build-deps.py",
+      "reason": "APT, mutable deployment/restore, Debian system paths or account migration"
+    },
+    {
+      "file": "scripts/build-runtime.sh",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/install/build-runtime.sh",
+      "reason": "APT, mutable deployment/restore, Debian system paths or account migration"
+    },
+    {
+      "file": "scripts/check-deps.py",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/install/check-deps.py",
+      "reason": "APT, mutable deployment/restore, Debian system paths or account migration"
+    },
+    {
+      "file": "scripts/deploy.py",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/install/deploy.py",
+      "reason": "APT, mutable deployment/restore, Debian system paths or account migration"
+    },
+    {
+      "file": "scripts/dolphin_checks.py",
+      "category": "COMMON",
+      "destination": "scripts/dolphin_checks.py",
+      "reason": "Repository validation/maintainer orchestration, not deployed desktop configuration"
+    },
+    {
+      "file": "scripts/dolphin_config.py",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/install/dolphin_config.py",
+      "reason": "APT, mutable deployment/restore, Debian system paths or account migration"
+    },
+    {
+      "file": "scripts/dolphin_interface.py",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/install/dolphin_interface.py",
+      "reason": "APT, mutable deployment/restore, Debian system paths or account migration"
+    },
+    {
+      "file": "scripts/hyprland_version.py",
+      "category": "COMMON",
+      "destination": "scripts/hyprland_version.py",
+      "reason": "Repository validation/maintainer orchestration, not deployed desktop configuration"
+    },
+    {
+      "file": "scripts/interactive_shell.py",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/install/interactive_shell.py",
+      "reason": "APT, mutable deployment/restore, Debian system paths or account migration"
+    },
+    {
+      "file": "scripts/keybind_checks.py",
+      "category": "COMMON",
+      "destination": "scripts/keybind_checks.py",
+      "reason": "Repository validation/maintainer orchestration, not deployed desktop configuration"
+    },
+    {
+      "file": "scripts/rofi_checks.py",
+      "category": "COMMON",
+      "destination": "scripts/rofi_checks.py",
+      "reason": "Repository validation/maintainer orchestration, not deployed desktop configuration"
+    },
+    {
+      "file": "scripts/rofi_compat.py",
+      "category": "COMMON",
+      "destination": "common/compat/rofi_compat.py",
+      "reason": "Portable capability checks/patches for shared desktop binaries"
+    },
+    {
+      "file": "scripts/rofi_launcher.py",
+      "category": "COMMON",
+      "destination": "common/compat/rofi_launcher.py",
+      "reason": "Portable capability checks/patches for shared desktop binaries"
+    },
+    {
+      "file": "scripts/sddm_theme.py",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/install/sddm_theme.py",
+      "reason": "APT, mutable deployment/restore, Debian system paths or account migration"
+    },
+    {
+      "file": "scripts/session_checks.py",
+      "category": "COMMON",
+      "destination": "scripts/session_checks.py",
+      "reason": "Repository validation/maintainer orchestration, not deployed desktop configuration"
+    },
+    {
+      "file": "scripts/session_diagnostics.py",
+      "category": "COMMON",
+      "destination": "scripts/session_diagnostics.py",
+      "reason": "Repository validation/maintainer orchestration, not deployed desktop configuration"
+    },
+    {
+      "file": "scripts/shell-sources.json",
+      "category": "COMMON",
+      "destination": "common/assets/shell-sources.json",
+      "reason": "Single upstream pin source for all platforms"
+    },
+    {
+      "file": "scripts/shell_assets.py",
+      "category": "COMMON",
+      "destination": "common/tools/shell_assets.py",
+      "reason": "Pinned prompt/font source preparation, no package/account changes"
+    },
+    {
+      "file": "scripts/shell_checks.py",
+      "category": "COMMON",
+      "destination": "scripts/shell_checks.py",
+      "reason": "Repository validation/maintainer orchestration, not deployed desktop configuration"
+    },
+    {
+      "file": "scripts/terminal_checks.py",
+      "category": "COMMON",
+      "destination": "scripts/terminal_checks.py",
+      "reason": "Repository validation/maintainer orchestration, not deployed desktop configuration"
+    },
+    {
+      "file": "scripts/verify.py",
+      "category": "COMMON",
+      "destination": "scripts/verify.py",
+      "reason": "Repository validation/maintainer orchestration, not deployed desktop configuration"
+    },
+    {
+      "file": "scripts/waybar-lua-ipc.hpp",
+      "category": "COMMON",
+      "destination": "common/compat/waybar-lua-ipc.hpp",
+      "reason": "Portable capability checks/patches for shared desktop binaries"
+    },
+    {
+      "file": "scripts/waybar_checks.py",
+      "category": "COMMON",
+      "destination": "scripts/waybar_checks.py",
+      "reason": "Repository validation/maintainer orchestration, not deployed desktop configuration"
+    },
+    {
+      "file": "scripts/waybar_compat.py",
+      "category": "COMMON",
+      "destination": "common/compat/waybar_compat.py",
+      "reason": "Portable capability checks/patches for shared desktop binaries"
+    },
+    {
+      "file": "scripts/wlogout_checks.py",
+      "category": "COMMON",
+      "destination": "scripts/wlogout_checks.py",
+      "reason": "Repository validation/maintainer orchestration, not deployed desktop configuration"
+    },
+    {
+      "file": "sddm/themes/hyprixe-frosted/Main.qml",
+      "category": "COMMON",
+      "destination": "common/sddm/themes/hyprixe-frosted/Main.qml",
+      "reason": "Shared visual source, not its system deployment method"
+    },
+    {
+      "file": "sddm/themes/hyprixe-frosted/assets/user.svg",
+      "category": "COMMON",
+      "destination": "common/sddm/themes/hyprixe-frosted/assets/user.svg",
+      "reason": "Shared visual source, not its system deployment method"
+    },
+    {
+      "file": "sddm/themes/hyprixe-frosted/components/GlassButton.qml",
+      "category": "COMMON",
+      "destination": "common/sddm/themes/hyprixe-frosted/components/GlassButton.qml",
+      "reason": "Shared visual source, not its system deployment method"
+    },
+    {
+      "file": "sddm/themes/hyprixe-frosted/components/GlassComboBox.qml",
+      "category": "COMMON",
+      "destination": "common/sddm/themes/hyprixe-frosted/components/GlassComboBox.qml",
+      "reason": "Shared visual source, not its system deployment method"
+    },
+    {
+      "file": "sddm/themes/hyprixe-frosted/components/GlassPane.qml",
+      "category": "COMMON",
+      "destination": "common/sddm/themes/hyprixe-frosted/components/GlassPane.qml",
+      "reason": "Shared visual source, not its system deployment method"
+    },
+    {
+      "file": "sddm/themes/hyprixe-frosted/metadata.desktop",
+      "category": "COMMON",
+      "destination": "common/sddm/themes/hyprixe-frosted/metadata.desktop",
+      "reason": "Shared visual source, not its system deployment method"
+    },
+    {
+      "file": "sddm/themes/hyprixe-frosted/theme.conf",
+      "category": "COMMON",
+      "destination": "common/sddm/themes/hyprixe-frosted/theme.conf",
+      "reason": "Shared visual source, not its system deployment method"
+    },
+    {
+      "file": "system-info.txt",
+      "category": "HISTORICAL / DOCS",
+      "destination": "system-info.txt",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/check_lua.lua",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/check_lua.lua",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/fixtures/waybar-frosted-original.css",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/fixtures/waybar-frosted-original.css",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/sddm_qml_smoke.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/sddm_qml_smoke.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_apt_build_deps.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_apt_build_deps.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_deploy.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_deploy.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_dolphin.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_dolphin.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_hyprland_version.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_hyprland_version.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_interactive_shell.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_interactive_shell.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_keybind_checks.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_keybind_checks.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_rofi_compat.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_rofi_compat.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_rofi_launcher.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_rofi_launcher.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_rofi_menus.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_rofi_menus.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_runtime.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_runtime.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_screenshots.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_screenshots.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_sddm.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_sddm.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_session_checks.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_session_checks.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_session_diagnostics.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_session_diagnostics.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_terminal.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_terminal.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_verify.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_verify.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_waybar_compat.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_waybar_compat.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_waybar_layout.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_waybar_layout.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tests/test_wlogout.py",
+      "category": "HISTORICAL / DOCS",
+      "destination": "tests/test_wlogout.py",
+      "reason": "Documentation, tests/tooling or optional historical library"
+    },
+    {
+      "file": "tools/build-dolphin-theme.py",
+      "category": "COMMON",
+      "destination": "tools/build-dolphin-theme.py",
+      "reason": "Repository validation/maintainer orchestration, not deployed desktop configuration"
+    },
+    {
+      "file": "uninstall.sh",
+      "category": "DEBIAN",
+      "destination": "profiles/debian/install/uninstall.sh",
+      "reason": "Platform backend; root public entrypoint remains a compatibility wrapper"
+    },
+    {
+      "file": "verify.sh",
+      "category": "COMMON",
+      "destination": "verify.sh",
+      "reason": "Repository validation/maintainer orchestration, not deployed desktop configuration"
+    },
+    {
+      "file": "wallpapers/min_forest.jpg",
+      "category": "COMMON",
+      "destination": "common/wallpapers/min_forest.jpg",
+      "reason": "Shared visual source, not its system deployment method"
+    }
+  ]
+}

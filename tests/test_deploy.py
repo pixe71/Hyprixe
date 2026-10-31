@@ -10,7 +10,10 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('deploy', ROOT / 'scripts/deploy.py')
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
+spec = importlib.util.spec_from_file_location('deploy', source_path(ROOT, 'scripts/deploy.py'))
 deploy = importlib.util.module_from_spec(spec)
 with patch.object(sys, 'path', [str(ROOT / 'scripts'), *sys.path]):
     spec.loader.exec_module(deploy)
@@ -54,7 +57,7 @@ class DeploymentTests(unittest.TestCase):
         self.assertEqual(self.backups(), before)
         self.assertNotIn('LIBGL', (self.roots['config'] / 'hypr/profile.lua').read_text())
         self.assertTrue((self.roots['config'] / 'hypr/scripts/Wallpaper.sh').stat().st_mode & 0o111)
-        self.assertEqual((self.roots['data'] / 'hyprixe/wallpapers/min_forest.jpg').read_bytes(), (ROOT / 'wallpapers/min_forest.jpg').read_bytes())
+        self.assertEqual((self.roots['data'] / 'hyprixe/wallpapers/min_forest.jpg').read_bytes(), (source_path(ROOT, 'wallpapers/min_forest.jpg')).read_bytes())
 
     def test_persistent_workspaces_deploy_for_waybar_and_compositor(self):
         import shutil
@@ -149,7 +152,7 @@ class DeploymentTests(unittest.TestCase):
         old = self.write('alacritty/alacritty.toml', '# personal legacy settings\n')
         kde = self.write('kdeglobals', '[General]\nTerminalApplication=alacritty\nTerminalService=Alacritty.desktop\nUnrelated=keep\n')
         self.install()
-        self.assertEqual(kitty.read_bytes(), (ROOT / '.config/kitty/kitty.conf').read_bytes())
+        self.assertEqual(kitty.read_bytes(), (source_path(ROOT, '.config/kitty/kitty.conf')).read_bytes())
         self.assertIn('TerminalApplication=kitty\n', kde.read_text())
         self.assertIn('TerminalService=kitty.desktop\n', kde.read_text())
         self.assertIn('Unrelated=keep', kde.read_text())
@@ -186,7 +189,7 @@ class DeploymentTests(unittest.TestCase):
         self.assertIn(str(self.home / 'data/hyprixe/wallpapers/min_forest.jpg'), lock)
         waybar = self.roots['config'] / 'hypr/waybar/configs/Frosted-Glass'
         self.assertEqual(json.loads(waybar.read_text()),
-                         json.loads((ROOT / '.config/hypr/waybar/configs/Frosted-Glass').read_text()))
+                         json.loads((source_path(ROOT, '.config/hypr/waybar/configs/Frosted-Glass')).read_text()))
         self.assertFalse((self.roots['config'] / 'hypr/waybar/config').exists())
         style = self.roots['config'] / 'hypr/waybar/style.css'
         self.assertTrue(style.is_file())
@@ -234,7 +237,7 @@ class DeploymentTests(unittest.TestCase):
 
     def test_invalid_profile_rejected_by_cli(self):
         import subprocess
-        r = subprocess.run(['python3', str(ROOT / 'scripts/deploy.py'), 'install', '--profile', 'invalid'], capture_output=True)
+        r = subprocess.run(['python3', str(source_path(ROOT, 'scripts/deploy.py')), 'install', '--profile', 'invalid'], capture_output=True)
         self.assertEqual(r.returncode, 2)
 
     def test_xdg_outside_home_is_refused(self):
@@ -260,7 +263,7 @@ class DeploymentTests(unittest.TestCase):
         self.assertFalse((self.home / '.local/bin/waybar').exists())
 
     def test_permission_only_change_restores_original_mode(self):
-        source = ROOT / '.config/hypr/scripts/Wallpaper.sh'
+        source = source_path(ROOT, '.config/hypr/scripts/Wallpaper.sh')
         target = self.write('hypr/scripts/Wallpaper.sh', source.read_text())
         target.chmod(0o600)
         self.install()

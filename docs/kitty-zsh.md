@@ -15,7 +15,7 @@ and KDE's external-terminal action all use Kitty. The existing
 `LaunchTerminal.sh` helper runs `uwsm app -- kitty "$@"`; there is no terminal
 autostart or extra terminal daemon.
 
-[kitty.conf](../.config/kitty/kitty.conf) uses background `#122434`, foreground
+[kitty.conf](../common/config/kitty/kitty.conf) uses background `#122434`, foreground
 `#e6f1f4`, cyan selection `#7ed6ff` and pale cyan links. Background opacity is
 0.92, with 12 pt JetBrains Mono and 10 px padding. Existing compositor opacity,
 blur and rounding also affect the window. No graphics override is required by
@@ -42,7 +42,7 @@ No checkout of `master`, remote shell evaluation or installation of Debian's
 Powerlevel9k theme is involved. The upstream `POWERLEVEL9K_*` configuration API
 and compatibility filenames are normal parts of Powerlevel10k.
 
-`scripts/shell_assets.py` stages the exact verified files before deployment.
+`common/tools/shell_assets.py` stages the exact verified files before deployment.
 The matching official gitstatus daemon is downloaded during installation from
 `romkatv/gitstatus`, using the version and checksum embedded in that pinned
 Powerlevel10k archive. Linux x86_64 and aarch64 use **gitstatus v1.5.4**. Unsupported

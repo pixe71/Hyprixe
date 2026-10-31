@@ -1,4 +1,7 @@
 """Kitty migration checks, including its real parser without starting a window."""
+
+from source_layout import ROOT as REPOSITORY_ROOT, source_path, configure_imports, shell_bytes
+configure_imports()
 import configparser
 import os
 from pathlib import Path
@@ -95,11 +98,11 @@ def integration_errors(config):
 
 def check_source(report, root):
     root = Path(root)
-    errors = integration_errors(root / '.config')
+    errors = integration_errors(source_path(root, '.config'))
     report(not errors, 'Kitty defaults: SUPER + Return, UWSM launcher, Rofi and KDE' +
            (': ' + '; '.join(errors) if errors else ' agree'))
-    report(not (root / '.config/alacritty').exists(), 'No active Alacritty configuration is shipped')
-    check_config(report, root / '.config/kitty/kitty.conf')
+    report(not (source_path(root, '.config/alacritty')).exists(), 'No active Alacritty configuration is shipped')
+    check_config(report, source_path(root, '.config/kitty/kitty.conf'))
 
 
 def check_installed(report):

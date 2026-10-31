@@ -11,6 +11,9 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
 sys.path.insert(0, str(ROOT / 'scripts'))
 import deploy
 import rofi_launcher as launcher
@@ -89,7 +92,7 @@ class RofiPreparationTests(unittest.TestCase):
 
     @unittest.skipUnless(shutil.which('rofi') and has_wayland_support(), 'native Wayland Rofi parser required')
     def test_native_rasi_parser_preserves_separate_icon_and_action_properties(self):
-        result = subprocess.run(['rofi', '-config', str(ROOT / '.config/hypr/rofi/config-launcher.rasi'),
+        result = subprocess.run(['rofi', '-config', str(source_path(ROOT, '.config/hypr/rofi/config-launcher.rasi')),
                                  '-dump-theme'], capture_output=True, text=True, timeout=15)
         self.assertEqual(result.returncode, 0, result.stderr)
         for name, glyph, action in (('applications', '', 1), ('files', '', 17),
@@ -102,6 +105,7 @@ class RofiPreparationTests(unittest.TestCase):
 
 
 class RofiDeploymentTests(unittest.TestCase):
+    PLATFORM = 'debian'
     def test_source_contract_and_missing_helper_diagnostic(self):
         self.assertEqual(checks.source_errors(ROOT), [])
         with tempfile.TemporaryDirectory() as tmp:
@@ -134,7 +138,7 @@ class RofiDeploymentTests(unittest.TestCase):
                 for name in ('config.rasi', '0-shared-fonts.rasi', 'themes/Frosted-Glass.rasi',
                              checks.COMMON, 'config-windows.rasi', 'config-clipboard.rasi', 'wallust/colors-rofi.rasi'):
                     self.assertEqual((roots['config'] / 'hypr/rofi' / name).read_bytes(),
-                                     (ROOT / '.config/hypr/rofi' / name).read_bytes())
+                                     (source_path(ROOT, '.config/hypr/rofi') / name).read_bytes())
                 shared = roots['config'] / 'hypr/rofi/themes/Frosted-Glass.rasi'
                 original = shared.read_text()
                 shared.write_text(original.replace('@import "Frosted-Glass-Common.rasi"', ''))
@@ -149,7 +153,7 @@ class RofiDeploymentTests(unittest.TestCase):
                 self.assertFalse(results[0][0])
                 self.assertIn('Missing wallpaper', results[0][1])
                 # Restore expects the installed assets intact; put back the test deletion.
-                shutil.copyfile(ROOT / 'wallpapers/min_forest.jpg',
+                shutil.copyfile(source_path(ROOT, 'wallpapers/min_forest.jpg'),
                                 roots['data'] / 'hyprixe/wallpapers/min_forest.jpg')
                 deploy.restore(backups[0], home)
                 self.assertEqual(script.read_text(), '# previous launcher\n')

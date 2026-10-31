@@ -52,11 +52,11 @@ after a new group membership before returning to the normal desktop account.
 
 | Source | Role |
 | --- | --- |
-| [packages.txt](../packages.txt) | Kitty, Bash, Zsh and its two plugins, Dolphin/KIO, Kvantum/Qt6, Waybar, Wlogout, Rofi, NetworkManager UI, Bluetooth, PipeWire, SwayNC, clipboard and screenshot tools, fonts and utilities |
-| [packages-backports.txt](../packages-backports.txt) | Hyprland, UWSM, Hyprlock, Hypridle, Hyprland portal and Xwayland from `trixie-backports` |
-| [packages-sddm.txt](../packages-sddm.txt) | Qt 6 QML modules used by the Hyprixe greeter |
-| [packages-dolphin.txt](../packages-dolphin.txt) | Dependencies for the scoped Dolphin installation |
-| [VMware packages](../profiles/vmware/packages.txt) | Guest tools, only when that profile is selected |
+| [packages.txt](../profiles/debian/packages/packages.txt) | Kitty, Bash, Zsh and its two plugins, Dolphin/KIO, Kvantum/Qt6, Waybar, Wlogout, Rofi, NetworkManager UI, Bluetooth, PipeWire, SwayNC, clipboard and screenshot tools, fonts and utilities |
+| [packages-backports.txt](../profiles/debian/packages/packages-backports.txt) | Hyprland, UWSM, Hyprlock, Hypridle, Hyprland portal and Xwayland from `trixie-backports` |
+| [packages-sddm.txt](../profiles/debian/packages/packages-sddm.txt) | Qt 6 QML modules used by the Hyprixe greeter |
+| [packages-dolphin.txt](../profiles/debian/packages/packages-dolphin.txt) | Dependencies for the scoped Dolphin installation |
+| [VMware packages](../profiles/debian/packages/vmware.txt) | Guest tools, only when that profile is selected |
 
 The installer enables the official backports suite when necessary and selects
 it for the Hyprland components. Source-build headers from an already backported
@@ -72,7 +72,7 @@ with checksums; Zsh itself uses Debian packages.
 
 ## Optional and development dependencies
 
-[packages-optional.txt](../packages-optional.txt) is an optional tool/reference
+[packages-optional.txt](../profiles/debian/packages/packages-optional.txt) is an optional tool/reference
 list, not an additional list installed automatically. The inherited calculator
 example needs the official Debian package
 [qalc](https://packages.debian.org/trixie/amd64/qalc/filelist), which provides

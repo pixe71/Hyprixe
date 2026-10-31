@@ -11,6 +11,9 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
 sys.path.insert(0, str(ROOT / 'scripts'))
 from keybind_checks import (API_PROBE, EXPECTED, PREFIX,
                             check_native_config, check_session_keybinds, handle_probe, registry_errors)
@@ -73,7 +76,7 @@ class NativeParserTests(unittest.TestCase):
         def runner(command, **kwargs):
             self.assertIn('--verify-config', command)
             config = Path(command[-1])
-            self.assertNotEqual(config, ROOT / '.config/hypr/hyprland.lua')
+            self.assertNotEqual(config, source_path(ROOT, '.config/hypr/hyprland.lua'))
             self.assertIn(handle_probe(), config.read_text())
             self.assertIn(API_PROBE, config.read_text())
             for name in ('HYPRLAND_INSTANCE_SIGNATURE', 'WAYLAND_DISPLAY', 'DISPLAY', 'DBUS_SESSION_BUS_ADDRESS'):
@@ -103,7 +106,7 @@ class SessionAuditTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory(prefix='hyprixe keybind checks ')
         self.addCleanup(self.temp.cleanup)
         self.home = Path(self.temp.name)
-        shutil.copytree(ROOT / '.config/hypr', self.home / '.config/hypr')
+        shutil.copytree(source_path(ROOT, '.config/hypr'), self.home / '.config/hypr')
         self.env = {'HOME': str(self.home), 'HYPRLAND_INSTANCE_SIGNATURE': 'fixture', 'WAYLAND_DISPLAY': 'fixture'}
         self.commands = []
         self.rows = registry()

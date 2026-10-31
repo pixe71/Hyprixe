@@ -2,6 +2,11 @@
 
 [Documentation index](README.md) · [Requirements](requirements.md)
 
+The root installer delegates to `profiles/debian/install/` and consumes the
+canonical sources in `common/`. This internal layout does not change user
+paths, transaction format or public commands. `native`/`vmware` select hardware
+adaptations within Debian; they are not OS profiles. NixOS is planned only.
+
 ## Prepare Debian
 
 Use Debian 13 Trixie with a normal sudo-enabled desktop account, Python 3, Git,

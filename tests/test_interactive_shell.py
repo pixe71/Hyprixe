@@ -14,6 +14,9 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
 sys.path.insert(0, str(ROOT / 'scripts'))
 import deploy
 import interactive_shell as shell
@@ -83,6 +86,7 @@ class AssetTests(unittest.TestCase):
 
 
 class ShellTransactionTests(unittest.TestCase):
+    PLATFORM = 'debian'
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='hyprixe shell transaction ')
         self.addCleanup(self.temp.cleanup)
@@ -135,7 +139,7 @@ class ShellTransactionTests(unittest.TestCase):
         backup = self.install()
         self.assertEqual(self.current, '/usr/bin/zsh')
         self.assertLess(self.events.index('startup'), self.events.index('chsh:/usr/bin/zsh'))
-        self.assertEqual((self.home / '.zshrc').read_bytes(), (ROOT / '.zshrc').read_bytes())
+        self.assertEqual((self.home / '.zshrc').read_bytes(), shell_bytes(ROOT, '.zshrc'))
         self.assertIsNone(self.install())
         self.assertEqual(self.events.count('chsh:/usr/bin/zsh'), 1)
         self.assertEqual(len(list((self.roots['state'] / 'hyprixe/backups').iterdir())), 1)
@@ -198,13 +202,14 @@ STAGE = os.environ.get('HYPRIXE_TEST_SHELL_STAGE')
 
 @unittest.skipUnless(STAGE and shutil.which('zsh'), 'verified upstream shell staging required for native startup tests')
 class NativeZshTests(unittest.TestCase):
+    PLATFORM = 'debian'
     def test_real_login_interactive_startup_and_noninteractive_isolation(self):
         with tempfile.TemporaryDirectory(prefix='hyprixe native zsh ') as tmp:
             home = Path(tmp)
             roots = {key: home / name for key, name in (('config', 'config'), ('data', 'data with spaces'), ('state', 'state'))}
             content = assets.payload(home, roots['data'], Path(STAGE))
             for name in ('.zshrc', '.p10k.zsh'):
-                content[home / name] = ((ROOT / name).read_bytes(), 0o644)
+                content[home / name] = (shell_bytes(ROOT, name), 0o644)
             # Test-only exclusion of Docker Desktop's dangling WSL completion link.
             docker = Path('/usr/share/zsh/vendor-completions/_docker')
             if docker.is_symlink() and not docker.exists():

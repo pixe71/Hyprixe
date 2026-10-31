@@ -2,6 +2,10 @@
 
 [Documentation index](README.md)
 
+This is the dated pre-v1 audit. For the Core + Profiles branch, use the
+[refactor validation record](core-profiles-validation.md). Historical findings
+below are retained; this architecture work does not resolve artwork rights.
+
 **Not ready for v1.0.0** — review dated **2026-10-30**.
 
 Target: **Debian 13 Trixie**, native hardware, SDDM **Hyprland (uwsm-managed)**.
@@ -12,7 +16,7 @@ NixOS remains future work, not a supported v1 platform.
 
 | ID | Remaining requirement | How to close it |
 | --- | --- | --- |
-| A1 | Owner-reported Pinterest discovery is recorded in the asset audit, but original author/redistribution rights for `wallpapers/min_forest.jpg` remain unknown, including its SDDM/menu copies and screenshots | Record a reliable artwork license/permission, author and source, or deliberately replace it with cleared artwork and validate the result |
+| A1 | Owner-reported Pinterest discovery is recorded in the asset audit, but original author/redistribution rights for `common/wallpapers/min_forest.jpg` remain unknown, including its SDDM/menu copies and screenshots | Record a reliable artwork license/permission, author and source, or deliberately replace it with cleared artwork and validate the result |
 | S1 | `screenshot1.png` contains account/hostname/IP information and remains locally present | Replace it with a clean capture or intentionally omit it from the public commit/release; it is no longer embedded in the README |
 | P1 | This candidate has no completed physical Debian acceptance record | Run the commands/manual checklist below, including repeat installation and safe restore, and record exact versions/results |
 
@@ -36,7 +40,7 @@ This does not change A1, S1 or P1, nor the overall release verdict.
 - [x] Actual API/configuration errors still fail. Tests cover future working
   and broken APIs, old/malformed/failed queries, reference/packaged/prerelease
   outputs, and installer/live consistency.
-- [x] `packages-optional.txt` uses **qalc**, Debian's optional package
+- [x] `profiles/debian/packages/packages-optional.txt` uses **qalc**, Debian's optional package
   [providing `/usr/bin/qalc`](https://packages.debian.org/trixie/amd64/qalc/filelist).
   No new default application or keybinding was added.
 - [x] Identified a matching pinned Senshi distribution copy: wallpaper byte match,

@@ -106,9 +106,9 @@ Transparency and text opacity also depend on these pre-existing Hyprland values.
 
 | Source | Destination |
 | --- | --- |
-| `.config/Kvantum/Frosted-Glass-Dolphin/*` | `$XDG_CONFIG_HOME/Kvantum/Frosted-Glass-Dolphin/` |
+| `common/config/Kvantum/Frosted-Glass-Dolphin/*` | `$XDG_CONFIG_HOME/Kvantum/Frosted-Glass-Dolphin/` |
 | Dolphin association merged into `Kvantum/kvantum.kvconfig` | `$XDG_CONFIG_HOME/Kvantum/kvantum.kvconfig` |
-| `.local/share/color-schemes/HyprixeFrostedDolphin.colors` | `$XDG_DATA_HOME/color-schemes/HyprixeFrostedDolphin.colors` |
+| `common/local/share/color-schemes/HyprixeFrostedDolphin.colors` | `$XDG_DATA_HOME/color-schemes/HyprixeFrostedDolphin.colors` |
 | Only Dolphin's `UiSettings/ColorScheme` | `$XDG_CONFIG_HOME/dolphinrc` |
 
 These are five files with dated private backups. The shared Kvantum master keeps

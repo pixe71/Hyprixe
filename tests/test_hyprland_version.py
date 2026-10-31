@@ -9,6 +9,9 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
 sys.path.insert(0, str(ROOT / 'scripts'))
 from hyprland_version import assess, MINIMUM, REVIEWED_RELEASES
 
@@ -44,13 +47,14 @@ class PolicyTests(unittest.TestCase):
 
     def test_optional_calculator_uses_the_debian_cli_package(self):
         packages = [line.split('#', 1)[0].strip() for line in
-                    (ROOT / 'packages-optional.txt').read_text().splitlines()]
+                    (source_path(ROOT, 'packages-optional.txt')).read_text().splitlines()]
         self.assertIn('qalc', packages)
         self.assertNotIn('qalculate', packages)
-        self.assertIn('qalc', (ROOT / '.config/hypr/UserScripts/RofiCalc.sh').read_text())
+        self.assertIn('qalc', (source_path(ROOT, '.config/hypr/UserScripts/RofiCalc.sh')).read_text())
 
 
 class InstallPolicyTests(unittest.TestCase):
+    PLATFORM = 'debian'
     def preflight(self, output, code=0):
         stream = io.StringIO()
         with contextlib.ExitStack() as stack:
@@ -70,7 +74,7 @@ class InstallPolicyTests(unittest.TestCase):
             stack.enter_context(contextlib.redirect_stdout(stream))
             stack.enter_context(contextlib.redirect_stderr(stream))
             try:
-                runpy.run_path(str(ROOT / 'scripts/check-deps.py'), run_name='__main__')
+                runpy.run_path(str(source_path(ROOT, 'scripts/check-deps.py')), run_name='__main__')
                 status = 0
             except SystemExit as exc:
                 status = exc.code

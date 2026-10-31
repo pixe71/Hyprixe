@@ -10,6 +10,9 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
 sys.path.insert(0, str(ROOT / 'scripts'))
 from rofi_compat import has_wayland_support
 
@@ -24,12 +27,12 @@ class SharedThemeTests(unittest.TestCase):
     def test_all_active_menus_share_paint_search_selection_and_fonts(self):
         themes = {}
         for name in ('config-launcher', 'config-windows', 'config-clipboard', 'config-calc', 'config'):
-            result = subprocess.run(['rofi', '-config', str(ROOT / '.config/hypr/rofi' / (name + '.rasi')),
+            result = subprocess.run(['rofi', '-config', str(source_path(ROOT, '.config/hypr/rofi') / (name + '.rasi')),
                                      '-dump-theme'], capture_output=True, text=True, timeout=15)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertNotIn('Black/', result.stdout)
             themes[name] = theme_blocks(result.stdout)
-            settings = subprocess.run(['rofi', '-config', str(ROOT / '.config/hypr/rofi' / (name + '.rasi')),
+            settings = subprocess.run(['rofi', '-config', str(source_path(ROOT, '.config/hypr/rofi') / (name + '.rasi')),
                                        '-dump-config'], capture_output=True, text=True, timeout=15)
             self.assertEqual(settings.returncode, 0, settings.stderr)
             self.assertRegex(settings.stdout, r'\bfont:\s*"JetBrains Mono SemiBold 13";')
@@ -97,7 +100,7 @@ class ClipboardTests(unittest.TestCase):
 
     def run_clipboard(self, replies):
         self.env['MOCK_REPLIES'] = json.dumps(replies)
-        return subprocess.run(['bash', str(ROOT / '.config/hypr/scripts/ClipManager.sh')],
+        return subprocess.run(['bash', str(source_path(ROOT, '.config/hypr/scripts/ClipManager.sh'))],
                               env=self.env, capture_output=True, text=True, timeout=15)
 
     def calls(self):

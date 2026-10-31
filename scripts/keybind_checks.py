@@ -4,6 +4,9 @@ Hyprland 0.55.2/0.56.2 exports __lua callbacks, not their bodies, in binds JSON.
 Lua keycode binds also have key='' and keycode=0 there. Descriptions identify
 our rows; retained HL.Keybind handles provide display_key and enabled state.
 """
+
+from source_layout import ROOT as REPOSITORY_ROOT, source_path, configure_imports, shell_bytes
+configure_imports()
 from dataclasses import dataclass
 import json
 import os
@@ -210,7 +213,7 @@ The native handle checks complement, rather than replace, the recording mock.
         with tempfile.TemporaryDirectory(prefix='hyprixe native API ') as folder:
             home = Path(folder)
             config = home / '.config/hypr'
-            shutil.copytree(Path(root) / '.config/hypr', config)
+            shutil.copytree(source_path(Path(root), '.config/hypr'), config)
             runtime = home / 'runtime'
             runtime.mkdir(mode=0o700)
             entry = config / 'hyprland.lua'
@@ -302,7 +305,7 @@ def check_session_keybinds(report, root, environ=None, runner=None, which=None):
     drift = []
     for relative in ('hyprland.lua', 'lua/keybinds.lua', 'UserConfigs/user_defaults.lua', *('scripts/' + name for name in SCRIPTS)):
         try:
-            if (config / relative).read_bytes() != (Path(root) / '.config/hypr' / relative).read_bytes():
+            if (config / relative).read_bytes() != (source_path(Path(root), '.config/hypr') / relative).read_bytes():
                 drift.append(relative)
         except OSError:
             drift.append(relative)

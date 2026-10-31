@@ -9,6 +9,9 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
 spec = importlib.util.spec_from_file_location('verify', ROOT / 'scripts/verify.py')
 verify = importlib.util.module_from_spec(spec)
 with patch.object(sys, 'path', [str(ROOT / 'scripts'), *sys.path]):
@@ -25,9 +28,9 @@ class ConfigurationFormatTests(unittest.TestCase):
             '.config/Kvantum/Frosted-Glass/Frosted-Glass.svg',
             '.local/share/kxmlgui5/dolphin/dolphinui.rc',
         ):
-            target = self.root / relative
+            target = source_path(self.root, relative)
             target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(ROOT / relative, target)
+            shutil.copyfile(source_path(ROOT, relative), target)
 
     def check_formats(self):
         output = io.StringIO()
@@ -37,13 +40,13 @@ class ConfigurationFormatTests(unittest.TestCase):
         return failures, output.getvalue()
 
     def test_active_files_pass_without_legacy_waybar_wrapper(self):
-        self.assertFalse((self.root / '.config/hypr/waybar/config').exists())
+        self.assertFalse((source_path(self.root, '.config/hypr/waybar/config')).exists())
         failures, output = self.check_formats()
         self.assertEqual(failures, 0, output)
         self.assertEqual(output.count('PASS:'), 3)
 
     def test_missing_active_waybar_config_reports_failure_and_continues(self):
-        (self.root / '.config/hypr/waybar/configs/Frosted-Glass').unlink()
+        (source_path(self.root, '.config/hypr/waybar/configs/Frosted-Glass')).unlink()
         failures, output = self.check_formats()
         self.assertEqual(failures, 1)
         self.assertIn('FAIL: Waybar JSON: .config/hypr/waybar/configs/Frosted-Glass', output)
@@ -51,14 +54,14 @@ class ConfigurationFormatTests(unittest.TestCase):
         self.assertIn('PASS: Dolphin XML:', output)
 
     def test_invalid_active_waybar_json_reports_failure_and_continues(self):
-        (self.root / '.config/hypr/waybar/configs/Frosted-Glass').write_text('{ invalid JSON')
+        (source_path(self.root, '.config/hypr/waybar/configs/Frosted-Glass')).write_text('{ invalid JSON')
         failures, output = self.check_formats()
         self.assertEqual(failures, 1)
         self.assertIn('FAIL: Waybar JSON:', output)
         self.assertEqual(output.count('PASS:'), 2)
 
     def test_invalid_xml_is_reported_without_aborting(self):
-        (self.root / '.config/Kvantum/Frosted-Glass/Frosted-Glass.svg').write_text('<svg>')
+        (source_path(self.root, '.config/Kvantum/Frosted-Glass/Frosted-Glass.svg')).write_text('<svg>')
         failures, output = self.check_formats()
         self.assertEqual(failures, 1)
         self.assertIn('FAIL: Kvantum SVG:', output)
@@ -71,7 +74,7 @@ class SourceTreeTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory(prefix='hyprixe-source-test-')
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
-        self.waybar = self.root / '.config/hypr/waybar'
+        self.waybar = source_path(self.root, '.config/hypr/waybar')
         for name in ('configs/Frosted-Glass', 'style.css', 'style/Frosted-Glass.css'):
             path = self.waybar / name
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -97,7 +100,7 @@ class SourceTreeTests(unittest.TestCase):
         ok, failures, output = self.check_sources()
         self.assertFalse(ok)
         self.assertGreater(failures, 0)
-        self.assertIn('Broken source symlink: .config/hypr/waybar/style.css', output)
+        self.assertIn('Broken source symlink: common/config/hypr/waybar/style.css', output)
 
     def test_missing_css_is_a_source_failure(self):
         (self.waybar / 'style/Frosted-Glass.css').unlink()
@@ -116,9 +119,9 @@ class OriginalAssetTests(unittest.TestCase):
                      '.config/Kvantum/Frosted-Glass/Frosted-Glass.svg',
                      '.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig',
                      '.local/share/kxmlgui5/dolphin/dolphinui.rc'):
-            path = self.root / name
+            path = source_path(self.root, name)
             path.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(ROOT / name, path)
+            shutil.copyfile(source_path(ROOT, name), path)
 
     def check_assets(self):
         output = io.StringIO()
@@ -133,7 +136,7 @@ class OriginalAssetTests(unittest.TestCase):
         self.assertEqual(output.count('PASS:'), 3)
 
     def test_changed_asset_reports_its_path_and_hashes(self):
-        path = self.root / '.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig'
+        path = source_path(self.root, '.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig')
         path.write_bytes(path.read_bytes() + b'changed')
         failures, output = self.check_assets()
         self.assertEqual(failures, 1)
@@ -142,7 +145,7 @@ class OriginalAssetTests(unittest.TestCase):
         self.assertIn('got ', output)
 
     def test_missing_asset_reports_failure_and_checks_the_others(self):
-        (self.root / 'wallpapers/min_forest.jpg').unlink()
+        (source_path(self.root, 'wallpapers/min_forest.jpg')).unlink()
         failures, output = self.check_assets()
         self.assertEqual(failures, 1)
         self.assertIn('FAIL: Original asset: wallpapers/min_forest.jpg:', output)

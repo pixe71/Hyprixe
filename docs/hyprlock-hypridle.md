@@ -5,9 +5,9 @@
 ## Manual locking
 
 `SUPER + L` and Wlogout's Lock action share
-[LockScreen.sh](../.config/hypr/scripts/LockScreen.sh). It guards against
+[LockScreen.sh](../common/config/hypr/scripts/LockScreen.sh). It guards against
 duplicate instances and launches Hyprlock through UWSM with the explicit
-[hyprlock.conf](../.config/hypr/hyprlock.conf).
+[hyprlock.conf](../common/config/hypr/hyprlock.conf).
 
 Hyprlock uses the same installed forest wallpaper, its own configured blur,
 Frosted Glass colours and a password/error display. No forced software-rendering
@@ -19,7 +19,7 @@ and dependency checks cannot certify PAM authentication or recovery from sleep.
 
 ## Idle and display power
 
-[hypridle.conf](../.config/hypr/hypridle.conf) is the source of truth for timers
+[hypridle.conf](../common/config/hypr/hypridle.conf) is the source of truth for timers
 and actions. The shipped configuration requests session locking through
 `loginctl` on idle, then turns displays off through Hyprland DPMS at a later
 timeout. It also requests a lock before sleep and restores display power after

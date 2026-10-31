@@ -19,6 +19,18 @@ profile. Normal full installation can install dependencies and prepare newly
 required compatibility assets. `--no-packages` is appropriate only when all
 dependencies and verified cached/installed shell assets already exist.
 
+## Core + Profiles source migration
+
+The Debian update workflow above is unchanged. Shared configuration now lives
+under `common/`; Debian package/deployment integration is under
+`profiles/debian/`. Keep local edits in those canonical sources rather than
+recreating root `.config/` copies. Existing format-1 backups remain usable;
+no backup conversion is required. A new full install must be a no-op when the
+installed v1 contents already match. See [architecture](architecture.md).
+
+NixOS is planned, without an executable update workflow. A future declarative
+integration will consume the same Core; do not run a placeholder rebuild command.
+
 ## Activate changes
 
 | Changed component | Activation |

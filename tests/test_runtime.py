@@ -7,7 +7,10 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = ROOT / '.config/hypr/scripts'
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
+SCRIPTS = source_path(ROOT, '.config/hypr/scripts')
 MOCK = '''#!/usr/bin/python3
 import json, os, pathlib, sys
 name=pathlib.Path(sys.argv[0]).name
@@ -60,7 +63,7 @@ class RuntimeTests(unittest.TestCase):
             p.write_text(MOCK)
             p.chmod(0o755)
         self.env = dict(os.environ, HOME=str(self.root), XDG_RUNTIME_DIR=str(self.root),
-                        XDG_CONFIG_HOME=str(ROOT / '.config'), XDG_DATA_HOME=str(self.root / 'data'),
+                        XDG_CONFIG_HOME=str(source_path(ROOT, '.config')), XDG_DATA_HOME=str(self.root / 'data'),
                         XDG_STATE_HOME=str(self.root / 'state'), MOCK_ROOT=str(self.root),
                         PATH=str(bin_dir) + ':' + os.environ['PATH'])
         wallpaper = self.root / 'data/hyprixe/wallpapers/min_forest.jpg'
@@ -174,7 +177,7 @@ class RuntimeTests(unittest.TestCase):
 
     def test_switcher_sidebar_closes_before_reusing_existing_app_helpers(self):
         settings = self.root / 'settings with spaces'
-        shutil.copytree(ROOT / '.config/hypr', settings / 'hypr')
+        shutil.copytree(source_path(ROOT, '.config/hypr'), settings / 'hypr')
         self.env['XDG_CONFIG_HOME'] = str(settings)
         for status, expected in ((26, ['uwsm', 'app', '--', 'dolphin']),
                                  (28, ['uwsm', 'app', '--', 'kitty']), (10, None)):
@@ -218,7 +221,7 @@ class RuntimeTests(unittest.TestCase):
     def test_waybar_custom_xdg_still_uses_managed_service(self):
         settings = self.root / 'settings with spaces'
         hypr = settings / 'hypr'
-        shutil.copytree(ROOT / '.config/hypr', hypr)
+        shutil.copytree(source_path(ROOT, '.config/hypr'), hypr)
         # The launcher must work when no legacy include wrapper is installed.
         (hypr / 'waybar/config').unlink(missing_ok=True)
         self.env['XDG_CONFIG_HOME'] = str(settings)
@@ -270,7 +273,7 @@ class RuntimeTests(unittest.TestCase):
                  ('LaunchTerminal.sh', ['--directory', '/folder with spaces'],
                   ['kitty', '--directory', '/folder with spaces']),
                  ('RofiLauncher.sh', [], ['rofi', '-hyprixe-launcher', '-config',
-                                         str(ROOT / '.config/hypr/rofi/config-launcher.rasi'), '-show', 'drun'])]
+                                         str(source_path(ROOT, '.config/hypr/rofi/config-launcher.rasi')), '-show', 'drun'])]
         for name, args, expected in cases:
             with self.subTest(name=name):
                 (self.root / 'calls').write_text('')
@@ -297,7 +300,7 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(sum(c[:2] == ['hyprctl', 'clients'] for c in calls), 1)
         rofi = next(c for c in calls if c[0] == 'rofi')
         self.assertIn('-dmenu', rofi)
-        self.assertIn(str(ROOT / '.config/hypr/rofi/config-windows.rasi'), rofi)
+        self.assertIn(str(source_path(ROOT, '.config/hypr/rofi/config-windows.rasi')), rofi)
         self.assertTrue(any(c[:2] == ['hyprctl', 'dispatch'] for c in calls))
 
     def test_launcher_accept_cancel_and_errors_never_launch_sidebar_apps(self):
@@ -313,7 +316,7 @@ class RuntimeTests(unittest.TestCase):
 
     def test_launcher_sidebar_works_with_custom_xdg_paths_containing_spaces(self):
         settings = self.root / 'settings with spaces'
-        shutil.copytree(ROOT / '.config/hypr', settings / 'hypr')
+        shutil.copytree(source_path(ROOT, '.config/hypr'), settings / 'hypr')
         self.env.update(XDG_CONFIG_HOME=str(settings), MOCK_LAUNCHER_STATUS='12')
         result = self.run_script('RofiLauncher.sh')
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -334,6 +337,7 @@ class RuntimeTests(unittest.TestCase):
 
 
 class InstallPreflightTests(unittest.TestCase):
+    PLATFORM = 'debian'
     def test_help_and_invalid_argument(self):
         r = subprocess.run(['bash', str(ROOT / 'install.sh'), '--help'], capture_output=True)
         self.assertEqual(r.returncode, 0)
@@ -344,7 +348,7 @@ class InstallPreflightTests(unittest.TestCase):
         # Existing WSL/Linux test environment intentionally has no Hyprland session.
         with tempfile.TemporaryDirectory() as tmp:
             env = dict(os.environ, PATH=tmp)
-            r = subprocess.run(['/usr/bin/python3', str(ROOT / 'scripts/check-deps.py')], env=env, capture_output=True)
+            r = subprocess.run(['/usr/bin/python3', str(source_path(ROOT, 'scripts/check-deps.py'))], env=env, capture_output=True)
             self.assertNotEqual(r.returncode, 0)
             self.assertIn(b'Missing commands', r.stderr)
 

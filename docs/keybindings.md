@@ -2,10 +2,10 @@
 
 [Documentation index](README.md)
 
-The active source is [lua/keybinds.lua](../.config/hypr/lua/keybinds.lua), loaded
-by [hyprland.lua](../.config/hypr/hyprland.lua). The current configuration defines
+The active source is [lua/keybinds.lua](../common/config/hypr/lua/keybinds.lua), loaded
+by [hyprland.lua](../common/config/hypr/hyprland.lua). The current configuration defines
 **68 keyboard/mouse bindings** plus a workspace gesture. The
-[personal override file](../.config/hypr/UserConfigs/user_keybinds.lua) loads
+[personal override file](../common/config/hypr/UserConfigs/user_keybinds.lua) loads
 afterwards and currently adds no bindings. Optional KoolDots examples are not
 part of this load graph.
 
@@ -98,7 +98,7 @@ See [Wlogout](wlogout.md) and [locking/idle](hyprlock-hypridle.md).
 | `SUPER + Print` | Full desktop | File and clipboard |
 | `SUPER + SHIFT + Print` | Select area | File and clipboard |
 
-[ScreenShot.sh](../.config/hypr/scripts/ScreenShot.sh) uses grim/wl-copy, creates
+[ScreenShot.sh](../common/config/hypr/scripts/ScreenShot.sh) uses grim/wl-copy, creates
 the destination and uses timestamped, collision-safe filenames. The two legacy
 file-and-clipboard modes follow the XDG Pictures directory; plain Print and
 Shift+Print use the explicitly requested HOME Pictures path. Cancelling area

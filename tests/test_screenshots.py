@@ -7,7 +7,10 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / '.config/hypr/scripts/ScreenShot.sh'
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
+SCRIPT = source_path(ROOT, '.config/hypr/scripts/ScreenShot.sh')
 PNG = b'\x89PNG\r\n\x1a\nmock capture bytes'
 MOCK = '''#!/usr/bin/python3
 import json, os, pathlib, sys

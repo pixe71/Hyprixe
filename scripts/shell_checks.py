@@ -1,4 +1,7 @@
 """Interactive shell checks without opening Kitty or changing accounts."""
+
+from source_layout import ROOT as REPOSITORY_ROOT, source_path, configure_imports, shell_bytes
+configure_imports()
 import os
 import json
 from pathlib import Path
@@ -18,17 +21,17 @@ print(json.dumps(resolved_shell(load_config(sys.argv[1]))))
 
 
 def check_source(report, root):
-    files = [Path(root) / name for name in ('.zshrc', '.p10k.zsh')]
+    files = [source_path(root, name) for name in ('.zshrc', '.p10k.zsh')]
     try:
         rc, prompt = [path.read_text() for path in files]
-        if '/home/' in rc + prompt or re.search(r'^\s*shell\s+(?!\.\s*$)', (Path(root) / '.config/kitty/kitty.conf').read_text(), re.M):
+        if '/home/' in rc + prompt or re.search(r'^\s*shell\s+(?!\.\s*$)', (source_path(Path(root), '.config/kitty/kitty.conf')).read_text(), re.M):
             raise ValueError('Shell paths must be portable and Kitty must use the account shell')
         first = rc.index('p10k-instant-prompt-')
-        if first > rc.index('compinit') or not rc.strip().endswith('source ' + interactive_shell.PLUGINS[-1]):
+        if first > rc.index('compinit') or not rc.strip().endswith('source @ZSH_SYNTAX_HIGHLIGHTING@'):
             raise ValueError('Instant Prompt/highlighting startup order is incorrect')
-        for name in interactive_shell.PLUGINS:
-            if 'source ' + name not in rc:
-                raise ValueError('Missing direct Debian plugin source: ' + name)
+        for name in ('ZSH_AUTOSUGGESTIONS', 'ZSH_SYNTAX_HIGHLIGHTING'):
+            if 'source @' + name + '@' not in rc:
+                raise ValueError('Missing platform plugin token: ' + name)
         if 'POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true' not in prompt:
             raise ValueError('Hyprixe must provide a ready-to-use P10k configuration')
         for path in files:
@@ -36,7 +39,7 @@ def check_source(report, root):
                 result = subprocess.run(['zsh', '-n', str(path)], capture_output=True, text=True, timeout=15)
                 if result.returncode:
                     raise ValueError(result.stderr.strip())
-        report(True, 'Zsh source: portable config, native completion/history, Instant Prompt and Debian plugins in order')
+        report(True, 'Zsh source: portable config, completion/history, Instant Prompt and platform plugin tokens in order')
         if not shutil.which('zsh'):
             print('SKIPPED: native zsh -n parser unavailable')
     except (OSError, ValueError, subprocess.SubprocessError) as exc:

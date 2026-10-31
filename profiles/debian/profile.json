@@ -1,0 +1,19 @@
+{
+  "id": "debian",
+  "status": "supported",
+  "distribution": "Debian",
+  "release": "13",
+  "common_source": "common",
+  "backend": "profiles/debian/install",
+  "zsh_plugins": {
+    "ZSH_AUTOSUGGESTIONS": "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh",
+    "ZSH_SYNTAX_HIGHLIGHTING": "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+  },
+  "overrides": [],
+  "tests": [
+    "test_apt_build_deps",
+    "test_deploy",
+    "test_dolphin",
+    "test_sddm"
+  ]
+}
