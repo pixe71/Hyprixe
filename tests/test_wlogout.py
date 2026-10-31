@@ -13,11 +13,14 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
 sys.path.insert(0, str(ROOT / 'scripts'))
 import deploy
 import wlogout_checks as checks
 
-loader = importlib.machinery.SourceFileLoader('hyprixe_session', str(ROOT / '.local/bin/hyprixe-session'))
+loader = importlib.machinery.SourceFileLoader('hyprixe_session', str(source_path(ROOT, '.local/bin/hyprixe-session')))
 spec = importlib.util.spec_from_loader(loader.name, loader)
 session = importlib.util.module_from_spec(spec)
 loader.exec_module(session)
@@ -88,7 +91,7 @@ class SessionMenuTests(unittest.TestCase):
 
     def test_unknown_actions_are_rejected_by_cli(self):
         for name in ('suspend', 'hibernate', 'poweroff;anything'):
-            result = subprocess.run(['python3', str(ROOT / '.local/bin/hyprixe-session'), name], capture_output=True)
+            result = subprocess.run(['python3', str(source_path(ROOT, '.local/bin/hyprixe-session')), name], capture_output=True)
             self.assertEqual(result.returncode, 2)
 
     def test_toggle_stops_only_our_active_or_starting_menu(self):
@@ -116,6 +119,7 @@ class SessionMenuTests(unittest.TestCase):
 
 
 class WlogoutDeploymentTests(unittest.TestCase):
+    PLATFORM = 'debian'
     def test_debian_svg_loader_filename_is_detected_and_missing_loader_fails(self):
         with tempfile.TemporaryDirectory() as tmp:
             library = Path(tmp)
@@ -154,12 +158,12 @@ class WlogoutDeploymentTests(unittest.TestCase):
                 checks.validate(roots['config'])
                 helper = home / '.local/bin/hyprixe-session'
                 self.assertEqual(helper.stat().st_mode & 0o777, 0o755)
-                self.assertEqual(helper.read_bytes(), (ROOT / '.local/bin/hyprixe-session').read_bytes())
+                self.assertEqual(helper.read_bytes(), (source_path(ROOT, '.local/bin/hyprixe-session')).read_bytes())
                 bridge = roots['config'] / 'hypr/scripts/PowerMenu.sh'
                 self.assertEqual(bridge.stat().st_mode & 0o777, 0o755)
-                self.assertEqual(bridge.read_bytes(), (ROOT / '.config/hypr/scripts/PowerMenu.sh').read_bytes())
+                self.assertEqual(bridge.read_bytes(), (source_path(ROOT, '.config/hypr/scripts/PowerMenu.sh')).read_bytes())
                 self.assertEqual((roots['config'] / 'hypr/scripts/RofiLauncher.sh').read_bytes(),
-                                 (ROOT / '.config/hypr/scripts/RofiLauncher.sh').read_bytes())
+                                 (source_path(ROOT, '.config/hypr/scripts/RofiLauncher.sh')).read_bytes())
                 deploy.install(home, roots, 'native')
                 self.assertEqual(list((roots['state'] / 'hyprixe/backups').iterdir()), backups)
                 deploy.restore(backups[0], home)
@@ -170,10 +174,10 @@ class WlogoutDeploymentTests(unittest.TestCase):
             self.assertFalse((roots['config'] / 'wlogout/icons/lock.svg').exists())
 
     def test_layout_stream_and_invalid_duplicate_or_extra_actions(self):
-        checks.validate(ROOT / '.config')
+        checks.validate(source_path(ROOT, '.config'))
         with tempfile.TemporaryDirectory() as tmp:
             config = Path(tmp)
-            shutil.copytree(ROOT / '.config/wlogout', config / 'wlogout')
+            shutil.copytree(source_path(ROOT, '.config/wlogout'), config / 'wlogout')
             layout = config / 'wlogout/layout'
             original = layout.read_text()
             for text in ('[]', original + original, original.replace('"reboot"', '"suspend"'), 'invalid'):
@@ -197,12 +201,12 @@ class WlogoutDeploymentTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             source = Path(tmp)
             for relative in ('.config/wlogout', '.config/hypr'):
-                shutil.copytree(ROOT / relative, source / relative)
-            helper = source / '.local/bin/hyprixe-session'
+                shutil.copytree(source_path(ROOT, relative), source_path(source, relative))
+            helper = source_path(source, '.local/bin/hyprixe-session')
             helper.parent.mkdir(parents=True)
-            shutil.copyfile(ROOT / '.local/bin/hyprixe-session', helper)
-            binds = source / '.config/hypr/lua/keybinds.lua'
-            bridge = source / '.config/hypr/scripts/PowerMenu.sh'
+            shutil.copyfile(source_path(ROOT, '.local/bin/hyprixe-session'), helper)
+            binds = source_path(source, '.config/hypr/lua/keybinds.lua')
+            bridge = source_path(source, '.config/hypr/scripts/PowerMenu.sh')
             original = binds.read_text()
             variants = [('', original)]
             for chord in ('SUPER + Backspace', 'SUPER + SHIFT + E'):
@@ -227,8 +231,8 @@ class WlogoutDeploymentTests(unittest.TestCase):
     def test_missing_required_asset_aborts_deployment_before_any_write(self):
         with tempfile.TemporaryDirectory() as tmp:
             source = Path(tmp) / 'repository'
-            shutil.copytree(ROOT / '.config', source / '.config')
-            (source / '.config/wlogout/style.css').unlink()
+            shutil.copytree(source_path(ROOT, '.config'), source_path(source, '.config'))
+            (source_path(source, '.config/wlogout/style.css')).unlink()
             home = Path(tmp) / 'home'
             home.mkdir()
             roots = {key: home / key for key in ('config', 'data', 'state')}

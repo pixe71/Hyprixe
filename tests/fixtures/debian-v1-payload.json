@@ -1,0 +1,2992 @@
+{
+  "baseline_commit": "0315699206f0450fdc79d92c0b622502abf17c95",
+  "normalization": "Only invoking HOME in UTF-8 payload bytes is replaced with @HOME@; modes and destinations are exact. Binary assets are hashed verbatim.",
+  "cases": {
+    "default/native/full": {
+      ".zshrc": {
+        "sha256": "cbb8130f46945e7cea780c012c68c46a0ec85d35a0008ebcf44dfbffc44b02fc",
+        "mode": 420
+      },
+      ".p10k.zsh": {
+        "sha256": "f8d200b268fca5b16dcd31cd7e4b1ba4c8a9446377e2c089bb0c64f43f118712",
+        "mode": 420
+      },
+      ".local/bin/hyprixe-session": {
+        "sha256": "1bb4184cceb1a3f5e667c9c513bed7b72316a519e796d97ba967fe3457b4a47d",
+        "mode": 493
+      },
+      ".config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig": {
+        "sha256": "74083adfc82c03d818f57ee66a914e13de110ce03e11089dd448df1d15850c49",
+        "mode": 420
+      },
+      ".config/Kvantum/Frosted-Glass/Frosted-Glass.svg": {
+        "sha256": "5ee9ced1d2b6fb8bfe05977adec97047b7b919bcd83540d30f450a1fb188d7f8",
+        "mode": 420
+      },
+      ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig": {
+        "sha256": "c509aa99ff34c4ee626f04a07adcd106d6b4781778f78fab7315db53f196e07c",
+        "mode": 420
+      },
+      ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg": {
+        "sha256": "52bd4b8b5ef523093b28f0768c4f8b3af245bb295178375324c0052ae90385f8",
+        "mode": 420
+      },
+      ".config/Kvantum/kvantum.kvconfig": {
+        "sha256": "543e53d7427ddd6530234558b0835c304eb9a7ad91939fe2aa7a53bbb319c631",
+        "mode": 420
+      },
+      ".config/dolphinrc": {
+        "sha256": "1d4738fda9fd0baf570b643a12af48089dbf3bf309575eaf00be7b08603514a3",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/monitors.lua": {
+        "sha256": "d12f596e653d00e2776c23451e18a55a2949cce44580f00f6dbf9b7be08362d8",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_animations.lua": {
+        "sha256": "e928d9473ca04db23947b18e544e9e38fa1c69e62e5a988957fb6931a595c87a",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_decorations.lua": {
+        "sha256": "fa3c14b712cdf1ba85c99ac499f89626df6c68f4ccb49a54ad759f06a83302b9",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_defaults.lua": {
+        "sha256": "63d63627d23db797b0565a77a58c961ed820bc7fe7aff6af7de75e3896bd6b2d",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_keybinds.lua": {
+        "sha256": "aedc65324f0144df2b968ab6720f8d1d812ab97d59718049e39f56f8ffd9aa89",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_settings.lua": {
+        "sha256": "c63f99a92a3fea7445d945442bb65f93bce8b23dffb04ec19ee2074fc1bda98d",
+        "mode": 420
+      },
+      ".config/hypr/UserScripts/RofiCalc.sh": {
+        "sha256": "435dbcaf6bff579b48f508570259668ba0914502d384713ec6859f69b657fe8d",
+        "mode": 493
+      },
+      ".config/hypr/hl.meta.lua": {
+        "sha256": "c4cdc2ce00d1822f7e47a8b94c19a338387e359844dafc042ce9308f0b7416f1",
+        "mode": 420
+      },
+      ".config/hypr/hypridle.conf": {
+        "sha256": "e1556eae5609b6ea34ea694d0e73d532de40ea9ea2e5c72e9d0ae8560913e9c8",
+        "mode": 420
+      },
+      ".config/hypr/hyprland.lua": {
+        "sha256": "7abe6d28f687f27b8321be25cfea7a0a6ee91a7f85b25862824d54f2e0f401f9",
+        "mode": 420
+      },
+      ".config/hypr/hyprlock.conf": {
+        "sha256": "dafd1e3669840bfa71be626879e06d9ce80cc002bd9518ac0c0087c2299c20af",
+        "mode": 420
+      },
+      ".config/hypr/lua/animations.lua": {
+        "sha256": "d30cd8e11077d208c4743b26938399253638dc2fa54da4aee3bbabbc29fbbeca",
+        "mode": 420
+      },
+      ".config/hypr/lua/env.lua": {
+        "sha256": "79b5dae5d4af17e865d3360e108afb702ebe68e78b03ab0e6b0fff3295a3ec7a",
+        "mode": 420
+      },
+      ".config/hypr/lua/keybinds.lua": {
+        "sha256": "1cc28ec0f9228dcd310d5b159f3cbe01eef8d3d20386982d223de4c69acf9b5f",
+        "mode": 420
+      },
+      ".config/hypr/lua/monitors.lua": {
+        "sha256": "061d327d06b1b38d8529f680b38f4c750c65cc683983e6c8914db1a4c86eb88a",
+        "mode": 420
+      },
+      ".config/hypr/lua/rules.lua": {
+        "sha256": "d7b0af42a3b78d2a53656dde1ad71042fe35c2bb066158a6d480550d4faa5490",
+        "mode": 420
+      },
+      ".config/hypr/lua/settings.lua": {
+        "sha256": "36e0e5526b861e4e1d41320f6b29eff258827b86a4600b273c627a6e0075820d",
+        "mode": 420
+      },
+      ".config/hypr/lua/startup.lua": {
+        "sha256": "81e0bf3b3173ac95b8293f421255fe3da07345c2675934f7027ab35fa4f8cfa5",
+        "mode": 420
+      },
+      ".config/hypr/lua/workspaces.lua": {
+        "sha256": "7c2463a99e028a9df4c303f2e0981bfcfc394dadd8ec45452deae09c12270488",
+        "mode": 420
+      },
+      ".config/hypr/profile.env": {
+        "sha256": "456db04d4677ac6ff4d944637a1be2c09f02a9f0adb1582450a2b1296977d2a7",
+        "mode": 420
+      },
+      ".config/hypr/profile.lua": {
+        "sha256": "02c821517c80c75f3cf3210ddc8b750acffbde00d7d5b453f295b2dacec03fb0",
+        "mode": 420
+      },
+      ".config/hypr/rofi/0-shared-fonts.rasi": {
+        "sha256": "91a9deea16e9cf4a119f372bb90d8c1ace7b2f921a4c115fc010c8042605d605",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config-calc.rasi": {
+        "sha256": "5a92eda624544b82c65853b512c697a5687e990c1f187a935e3d9393af965a9d",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config-clipboard.rasi": {
+        "sha256": "d24f282ccd05390a416fa7286b3efacca1bac25e498bdaf9e13678532a035532",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config-launcher.rasi": {
+        "sha256": "d3ceb3a73a705f08dfedbe2706dec127b8b2a448cc8887892a7185ec1f7a9f01",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config-windows.rasi": {
+        "sha256": "7010b545ea6a27b69f1bc8131db79be8f2331e74d44318012d29fad0e9443792",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config.rasi": {
+        "sha256": "d855b793840b98e27e406a25e67ab5d81a5d427dd8f527efa010efb0f2951f29",
+        "mode": 420
+      },
+      ".config/hypr/rofi/themes/Frosted-Glass-Common.rasi": {
+        "sha256": "9e83f6c55b95d12b173f3d8648c921044ce814a5cece7371c41a3283dc1518d3",
+        "mode": 420
+      },
+      ".config/hypr/rofi/themes/Frosted-Glass-Launcher.rasi": {
+        "sha256": "7ddb9050dbf5440993c5e6a8d1a2d43a6713c84b34760c009472ea7fd34dbb60",
+        "mode": 420
+      },
+      ".config/hypr/rofi/themes/Frosted-Glass.rasi": {
+        "sha256": "022ff9b4e9c7db3ef7d5ba988272d596028b85a8f71e48e56d0168a1c820cc2e",
+        "mode": 420
+      },
+      ".config/hypr/rofi/wallust/colors-rofi.rasi": {
+        "sha256": "8f64f938948cca5ef099dd40a58a17ea76c4eb026568fb374ac5bd2f5165ebf6",
+        "mode": 420
+      },
+      ".config/hypr/scripts/ClipManager.sh": {
+        "sha256": "6e4a64ad3b680109306b5f9ef94654cc994eb35a14ea6d5375f9cc080cbd05fe",
+        "mode": 493
+      },
+      ".config/hypr/scripts/ClipboardWatcher.sh": {
+        "sha256": "8344db93313ed683b69b819fdf9b559623d2b7655c6ed4759d6bd1e2578e4785",
+        "mode": 493
+      },
+      ".config/hypr/scripts/LaunchApp.sh": {
+        "sha256": "2fb795cc20dbb4bf7b2c5b6fc07c949db419ab208bcfbed77fdd2a0a737c084b",
+        "mode": 493
+      },
+      ".config/hypr/scripts/LaunchTerminal.sh": {
+        "sha256": "c8fe410f857b18d3d361b8909377130d35fc16a0db34d969a34b0942881373c1",
+        "mode": 493
+      },
+      ".config/hypr/scripts/LockScreen.sh": {
+        "sha256": "f1bc7ffc0ec3a53503df4aa08ebd14eb756d4e409c67fb4d64eab938c53e6c9d",
+        "mode": 493
+      },
+      ".config/hypr/scripts/Polkit.sh": {
+        "sha256": "a1ea9aea7ff8b937a942d8060ec1cba84e3e4a32478e4f2748ce90d1536d5a3b",
+        "mode": 493
+      },
+      ".config/hypr/scripts/PowerMenu.sh": {
+        "sha256": "1a722acd2a8d57ffd4c4d5ce66c436e4d95175f6cd72782cb5b0a31bf86772d2",
+        "mode": 493
+      },
+      ".config/hypr/scripts/RofiLauncher.sh": {
+        "sha256": "8e4308eda2b565ae14d048a6bad1894339ac5f2b5a3de128d427c54c12c46b1c",
+        "mode": 493
+      },
+      ".config/hypr/scripts/ScreenShot.sh": {
+        "sha256": "a1497ef4e80f154321eaf94b3d5b905aa3b186f43c56ca26de6bdfeb2e8cfce8",
+        "mode": 493
+      },
+      ".config/hypr/scripts/SessionStartup.sh": {
+        "sha256": "305adb5972037f2aa38c1d7e6f2f5fda8bd111f42fecb22f6aee6215d8406584",
+        "mode": 493
+      },
+      ".config/hypr/scripts/Wallpaper.sh": {
+        "sha256": "baf1ddb8f338c6587073de59a20f07931c3ea2ebb897f48089ee59f62b6ae51a",
+        "mode": 493
+      },
+      ".config/hypr/scripts/WallpaperDaemon.sh": {
+        "sha256": "ca69eac4c7176701131a6b83d23cc2c3f44d8b05d71cd94868b6afff1aa1b512",
+        "mode": 493
+      },
+      ".config/hypr/scripts/WaybarStartup.sh": {
+        "sha256": "591715f5088f0c1dab1f9d4535db9c3904f7e910b6117946895a26fcdf5676d0",
+        "mode": 493
+      },
+      ".config/hypr/scripts/WindowSwitcher.sh": {
+        "sha256": "3db598aa09538ef27c60917d0f3b5a50a591f58814af17e106f8e7aa11cdccf1",
+        "mode": 493
+      },
+      ".config/hypr/waybar/configs/Frosted-Glass": {
+        "sha256": "9b11113e0fc1cd2548b9002768d1f9f81af8ef4109a8ddb18d7bb5b12d27989c",
+        "mode": 420
+      },
+      ".config/hypr/waybar/scripts/temperature.py": {
+        "sha256": "837a108a2a314c539689ecfc31a9ee8247da784ee1ef0aefa49e64c15c781fe8",
+        "mode": 420
+      },
+      ".config/hypr/waybar/style/Frosted-Glass.css": {
+        "sha256": "1cf7675e39986911f7f5fa1a8dff8ecfafd8de1020230eee16aab4690a4cabe1",
+        "mode": 420
+      },
+      ".config/hypr/waybar/style.css": {
+        "sha256": "57c739cfbceb270a1b93fb324733124167813cdffbf2c007c2febdffca056130",
+        "mode": 420
+      },
+      ".config/kdeglobals": {
+        "sha256": "93227c5bc465388ac7fe046df7626d57a36785507a4244b82064c2ca7115dd90",
+        "mode": 420
+      },
+      ".config/kitty/kitty.conf": {
+        "sha256": "65f2611f2c7747e99bb2fbb9f2dec400666b6c79057d06e0ef43e2d0b0ee8bb9",
+        "mode": 420
+      },
+      ".config/qt6ct/qt6ct.conf": {
+        "sha256": "305ec939ca0f864a27fb0b578336cda28cd2062898ecb9188b17620a98f52375",
+        "mode": 420
+      },
+      ".config/systemd/user/hypridle.service.d/hyprixe.conf": {
+        "sha256": "31f25216be8fe78f86df8549ffdabe0d2d71377e477da8c8cc4b4c9270ca7c3a",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-awww.service": {
+        "sha256": "3f2b462f44c1428c86802f8d2a0f4bd6d4d61b8e747279a74c51d2e0e0fe7f35",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-clipboard.service": {
+        "sha256": "a1fe5781b50630295e70d1b6cf3ee22eba1ab826d69282379cd14702ceff7231",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-polkit.service": {
+        "sha256": "3024a43711d10cc3ae40c01887038f6904b7c921856c81f2e6f72bc9db1b146a",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-session.target": {
+        "sha256": "9b27fbac5c2d91174825fe5e3d6a852a95ea4e85188a97968b91f1c9fe955d5b",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-wallpaper.service": {
+        "sha256": "90ba6cd477cbc51c94e739491f28fe165fac8d608662f41d3c287c3719caed8a",
+        "mode": 420
+      },
+      ".config/systemd/user/swaync.service.d/hyprixe.conf": {
+        "sha256": "9fb61450f717ed9137c2626a580219b4f1118677d65cb923c126b0d9cbb77f2f",
+        "mode": 420
+      },
+      ".config/systemd/user/waybar.service.d/hyprixe.conf": {
+        "sha256": "323b4945ddc53d4a081a7936f2d76aa96df1c5d3e8eb6c0aa3f3ac56114e88a4",
+        "mode": 420
+      },
+      ".config/wlogout/icons/lock.svg": {
+        "sha256": "c7c0fe4d10e0079f0099d1df5b6d50ec9be2ab3a120aec77aa52c2c6101b41c9",
+        "mode": 420
+      },
+      ".config/wlogout/icons/logout.svg": {
+        "sha256": "a3af82c8ce1ce1322ec61e69cd1f5a40af122f49376eef08279f90cca7979be1",
+        "mode": 420
+      },
+      ".config/wlogout/icons/reboot.svg": {
+        "sha256": "8041d6b029c6c3b4b6851639fae8e7301da7d6f863f863f3a9e501bef5fd7140",
+        "mode": 420
+      },
+      ".config/wlogout/icons/shutdown.svg": {
+        "sha256": "f3df0f5d0f6be31f8df295b40b76107c051c85d819dd4749b676dda698b9095d",
+        "mode": 420
+      },
+      ".config/wlogout/layout": {
+        "sha256": "9ca60c18bae021b5efb58fbb9e5756da2dfc86cc5af5b0d6a90beee7838d2990",
+        "mode": 420
+      },
+      ".config/wlogout/style.css": {
+        "sha256": "7d86fa1dc8a8e38ccc27f239d8c4445c3b730869f5405589664efa2f9fd3206a",
+        "mode": 420
+      },
+      ".local/share/color-schemes/HyprixeFrostedDolphin.colors": {
+        "sha256": "9c83fdcb48f756833fc65762082c5e012203499097c70875e5f91a84ab732ef5",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/HyprixeDebian.ttf": {
+        "sha256": "28214849a64be2e1dba1782bcddf45f1d29560760effec387338a0218b557ffe",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/LICENSE.txt": {
+        "sha256": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/README.md": {
+        "sha256": "c2bbbf522a85f25feb8e910fb0ca58dbe89dc84e94baa7319f802a8ed42aa73f",
+        "mode": 420
+      },
+      ".local/share/kxmlgui5/dolphin/dolphinui.rc": {
+        "sha256": "c1f59f07ce4a729b3d4226c4f12fa91e69fe0d90ddcc0ce2426ba0fa08e22766",
+        "mode": 420
+      },
+      ".local/share/hyprixe/wallpapers/min_forest.jpg": {
+        "sha256": "9bfb1f796f738ee40a6f072d1cfb5045fb4d46da7af5059de10f405ca284ce30",
+        "mode": 420
+      },
+      ".config/mimeapps.list": {
+        "sha256": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d",
+        "mode": 420
+      },
+      ".config/hyprland-mimeapps.list": {
+        "sha256": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d",
+        "mode": 420
+      },
+      ".config/hypr/hyprland.conf": {
+        "sha256": null,
+        "mode": null
+      }
+    },
+    "default/native/waybar": {
+      ".config/hypr/waybar/configs/Frosted-Glass": {
+        "sha256": "9b11113e0fc1cd2548b9002768d1f9f81af8ef4109a8ddb18d7bb5b12d27989c",
+        "mode": 420
+      },
+      ".config/hypr/waybar/style.css": {
+        "sha256": "57c739cfbceb270a1b93fb324733124167813cdffbf2c007c2febdffca056130",
+        "mode": 420
+      },
+      ".config/hypr/waybar/style/Frosted-Glass.css": {
+        "sha256": "1cf7675e39986911f7f5fa1a8dff8ecfafd8de1020230eee16aab4690a4cabe1",
+        "mode": 420
+      },
+      ".config/hypr/waybar/scripts/temperature.py": {
+        "sha256": "837a108a2a314c539689ecfc31a9ee8247da784ee1ef0aefa49e64c15c781fe8",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/HyprixeDebian.ttf": {
+        "sha256": "28214849a64be2e1dba1782bcddf45f1d29560760effec387338a0218b557ffe",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/LICENSE.txt": {
+        "sha256": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/README.md": {
+        "sha256": "c2bbbf522a85f25feb8e910fb0ca58dbe89dc84e94baa7319f802a8ed42aa73f",
+        "mode": 420
+      }
+    },
+    "default/native/dolphin": {
+      ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig": {
+        "sha256": "c509aa99ff34c4ee626f04a07adcd106d6b4781778f78fab7315db53f196e07c",
+        "mode": 420
+      },
+      ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg": {
+        "sha256": "52bd4b8b5ef523093b28f0768c4f8b3af245bb295178375324c0052ae90385f8",
+        "mode": 420
+      },
+      ".config/Kvantum/kvantum.kvconfig": {
+        "sha256": "2b24c58528b7a651aeec34439d82033a43ee021d2f5cc6f303aac645b9479251",
+        "mode": 420
+      },
+      ".local/share/color-schemes/HyprixeFrostedDolphin.colors": {
+        "sha256": "9c83fdcb48f756833fc65762082c5e012203499097c70875e5f91a84ab732ef5",
+        "mode": 420
+      },
+      ".config/dolphinrc": {
+        "sha256": "977b2d1890c457fd2f8cc566ee984340faef3290008322f06a05014d845001f1",
+        "mode": 420
+      }
+    },
+    "default/native/runtime": {
+      ".zshrc": {
+        "sha256": "cbb8130f46945e7cea780c012c68c46a0ec85d35a0008ebcf44dfbffc44b02fc",
+        "mode": 420
+      },
+      ".p10k.zsh": {
+        "sha256": "f8d200b268fca5b16dcd31cd7e4b1ba4c8a9446377e2c089bb0c64f43f118712",
+        "mode": 420
+      },
+      ".local/bin/hyprixe-session": {
+        "sha256": "1bb4184cceb1a3f5e667c9c513bed7b72316a519e796d97ba967fe3457b4a47d",
+        "mode": 493
+      },
+      ".config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig": {
+        "sha256": "74083adfc82c03d818f57ee66a914e13de110ce03e11089dd448df1d15850c49",
+        "mode": 420
+      },
+      ".config/Kvantum/Frosted-Glass/Frosted-Glass.svg": {
+        "sha256": "5ee9ced1d2b6fb8bfe05977adec97047b7b919bcd83540d30f450a1fb188d7f8",
+        "mode": 420
+      },
+      ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig": {
+        "sha256": "c509aa99ff34c4ee626f04a07adcd106d6b4781778f78fab7315db53f196e07c",
+        "mode": 420
+      },
+      ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg": {
+        "sha256": "52bd4b8b5ef523093b28f0768c4f8b3af245bb295178375324c0052ae90385f8",
+        "mode": 420
+      },
+      ".config/Kvantum/kvantum.kvconfig": {
+        "sha256": "543e53d7427ddd6530234558b0835c304eb9a7ad91939fe2aa7a53bbb319c631",
+        "mode": 420
+      },
+      ".config/dolphinrc": {
+        "sha256": "1d4738fda9fd0baf570b643a12af48089dbf3bf309575eaf00be7b08603514a3",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/monitors.lua": {
+        "sha256": "d12f596e653d00e2776c23451e18a55a2949cce44580f00f6dbf9b7be08362d8",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_animations.lua": {
+        "sha256": "e928d9473ca04db23947b18e544e9e38fa1c69e62e5a988957fb6931a595c87a",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_decorations.lua": {
+        "sha256": "fa3c14b712cdf1ba85c99ac499f89626df6c68f4ccb49a54ad759f06a83302b9",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_defaults.lua": {
+        "sha256": "63d63627d23db797b0565a77a58c961ed820bc7fe7aff6af7de75e3896bd6b2d",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_keybinds.lua": {
+        "sha256": "aedc65324f0144df2b968ab6720f8d1d812ab97d59718049e39f56f8ffd9aa89",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_settings.lua": {
+        "sha256": "c63f99a92a3fea7445d945442bb65f93bce8b23dffb04ec19ee2074fc1bda98d",
+        "mode": 420
+      },
+      ".config/hypr/UserScripts/RofiCalc.sh": {
+        "sha256": "435dbcaf6bff579b48f508570259668ba0914502d384713ec6859f69b657fe8d",
+        "mode": 493
+      },
+      ".config/hypr/hl.meta.lua": {
+        "sha256": "c4cdc2ce00d1822f7e47a8b94c19a338387e359844dafc042ce9308f0b7416f1",
+        "mode": 420
+      },
+      ".config/hypr/hypridle.conf": {
+        "sha256": "e1556eae5609b6ea34ea694d0e73d532de40ea9ea2e5c72e9d0ae8560913e9c8",
+        "mode": 420
+      },
+      ".config/hypr/hyprland.lua": {
+        "sha256": "7abe6d28f687f27b8321be25cfea7a0a6ee91a7f85b25862824d54f2e0f401f9",
+        "mode": 420
+      },
+      ".config/hypr/hyprlock.conf": {
+        "sha256": "dafd1e3669840bfa71be626879e06d9ce80cc002bd9518ac0c0087c2299c20af",
+        "mode": 420
+      },
+      ".config/hypr/lua/animations.lua": {
+        "sha256": "d30cd8e11077d208c4743b26938399253638dc2fa54da4aee3bbabbc29fbbeca",
+        "mode": 420
+      },
+      ".config/hypr/lua/env.lua": {
+        "sha256": "79b5dae5d4af17e865d3360e108afb702ebe68e78b03ab0e6b0fff3295a3ec7a",
+        "mode": 420
+      },
+      ".config/hypr/lua/keybinds.lua": {
+        "sha256": "1cc28ec0f9228dcd310d5b159f3cbe01eef8d3d20386982d223de4c69acf9b5f",
+        "mode": 420
+      },
+      ".config/hypr/lua/monitors.lua": {
+        "sha256": "061d327d06b1b38d8529f680b38f4c750c65cc683983e6c8914db1a4c86eb88a",
+        "mode": 420
+      },
+      ".config/hypr/lua/rules.lua": {
+        "sha256": "d7b0af42a3b78d2a53656dde1ad71042fe35c2bb066158a6d480550d4faa5490",
+        "mode": 420
+      },
+      ".config/hypr/lua/settings.lua": {
+        "sha256": "36e0e5526b861e4e1d41320f6b29eff258827b86a4600b273c627a6e0075820d",
+        "mode": 420
+      },
+      ".config/hypr/lua/startup.lua": {
+        "sha256": "81e0bf3b3173ac95b8293f421255fe3da07345c2675934f7027ab35fa4f8cfa5",
+        "mode": 420
+      },
+      ".config/hypr/lua/workspaces.lua": {
+        "sha256": "7c2463a99e028a9df4c303f2e0981bfcfc394dadd8ec45452deae09c12270488",
+        "mode": 420
+      },
+      ".config/hypr/profile.env": {
+        "sha256": "456db04d4677ac6ff4d944637a1be2c09f02a9f0adb1582450a2b1296977d2a7",
+        "mode": 420
+      },
+      ".config/hypr/profile.lua": {
+        "sha256": "02c821517c80c75f3cf3210ddc8b750acffbde00d7d5b453f295b2dacec03fb0",
+        "mode": 420
+      },
+      ".config/hypr/rofi/0-shared-fonts.rasi": {
+        "sha256": "91a9deea16e9cf4a119f372bb90d8c1ace7b2f921a4c115fc010c8042605d605",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config-calc.rasi": {
+        "sha256": "5a92eda624544b82c65853b512c697a5687e990c1f187a935e3d9393af965a9d",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config-clipboard.rasi": {
+        "sha256": "d24f282ccd05390a416fa7286b3efacca1bac25e498bdaf9e13678532a035532",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config-launcher.rasi": {
+        "sha256": "d3ceb3a73a705f08dfedbe2706dec127b8b2a448cc8887892a7185ec1f7a9f01",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config-windows.rasi": {
+        "sha256": "7010b545ea6a27b69f1bc8131db79be8f2331e74d44318012d29fad0e9443792",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config.rasi": {
+        "sha256": "d855b793840b98e27e406a25e67ab5d81a5d427dd8f527efa010efb0f2951f29",
+        "mode": 420
+      },
+      ".config/hypr/rofi/themes/Frosted-Glass-Common.rasi": {
+        "sha256": "9e83f6c55b95d12b173f3d8648c921044ce814a5cece7371c41a3283dc1518d3",
+        "mode": 420
+      },
+      ".config/hypr/rofi/themes/Frosted-Glass-Launcher.rasi": {
+        "sha256": "7ddb9050dbf5440993c5e6a8d1a2d43a6713c84b34760c009472ea7fd34dbb60",
+        "mode": 420
+      },
+      ".config/hypr/rofi/themes/Frosted-Glass.rasi": {
+        "sha256": "022ff9b4e9c7db3ef7d5ba988272d596028b85a8f71e48e56d0168a1c820cc2e",
+        "mode": 420
+      },
+      ".config/hypr/rofi/wallust/colors-rofi.rasi": {
+        "sha256": "8f64f938948cca5ef099dd40a58a17ea76c4eb026568fb374ac5bd2f5165ebf6",
+        "mode": 420
+      },
+      ".config/hypr/scripts/ClipManager.sh": {
+        "sha256": "6e4a64ad3b680109306b5f9ef94654cc994eb35a14ea6d5375f9cc080cbd05fe",
+        "mode": 493
+      },
+      ".config/hypr/scripts/ClipboardWatcher.sh": {
+        "sha256": "8344db93313ed683b69b819fdf9b559623d2b7655c6ed4759d6bd1e2578e4785",
+        "mode": 493
+      },
+      ".config/hypr/scripts/LaunchApp.sh": {
+        "sha256": "2fb795cc20dbb4bf7b2c5b6fc07c949db419ab208bcfbed77fdd2a0a737c084b",
+        "mode": 493
+      },
+      ".config/hypr/scripts/LaunchTerminal.sh": {
+        "sha256": "c8fe410f857b18d3d361b8909377130d35fc16a0db34d969a34b0942881373c1",
+        "mode": 493
+      },
+      ".config/hypr/scripts/LockScreen.sh": {
+        "sha256": "f1bc7ffc0ec3a53503df4aa08ebd14eb756d4e409c67fb4d64eab938c53e6c9d",
+        "mode": 493
+      },
+      ".config/hypr/scripts/Polkit.sh": {
+        "sha256": "a1ea9aea7ff8b937a942d8060ec1cba84e3e4a32478e4f2748ce90d1536d5a3b",
+        "mode": 493
+      },
+      ".config/hypr/scripts/PowerMenu.sh": {
+        "sha256": "1a722acd2a8d57ffd4c4d5ce66c436e4d95175f6cd72782cb5b0a31bf86772d2",
+        "mode": 493
+      },
+      ".config/hypr/scripts/RofiLauncher.sh": {
+        "sha256": "8e4308eda2b565ae14d048a6bad1894339ac5f2b5a3de128d427c54c12c46b1c",
+        "mode": 493
+      },
+      ".config/hypr/scripts/ScreenShot.sh": {
+        "sha256": "a1497ef4e80f154321eaf94b3d5b905aa3b186f43c56ca26de6bdfeb2e8cfce8",
+        "mode": 493
+      },
+      ".config/hypr/scripts/SessionStartup.sh": {
+        "sha256": "305adb5972037f2aa38c1d7e6f2f5fda8bd111f42fecb22f6aee6215d8406584",
+        "mode": 493
+      },
+      ".config/hypr/scripts/Wallpaper.sh": {
+        "sha256": "baf1ddb8f338c6587073de59a20f07931c3ea2ebb897f48089ee59f62b6ae51a",
+        "mode": 493
+      },
+      ".config/hypr/scripts/WallpaperDaemon.sh": {
+        "sha256": "ca69eac4c7176701131a6b83d23cc2c3f44d8b05d71cd94868b6afff1aa1b512",
+        "mode": 493
+      },
+      ".config/hypr/scripts/WaybarStartup.sh": {
+        "sha256": "591715f5088f0c1dab1f9d4535db9c3904f7e910b6117946895a26fcdf5676d0",
+        "mode": 493
+      },
+      ".config/hypr/scripts/WindowSwitcher.sh": {
+        "sha256": "3db598aa09538ef27c60917d0f3b5a50a591f58814af17e106f8e7aa11cdccf1",
+        "mode": 493
+      },
+      ".config/hypr/waybar/configs/Frosted-Glass": {
+        "sha256": "9b11113e0fc1cd2548b9002768d1f9f81af8ef4109a8ddb18d7bb5b12d27989c",
+        "mode": 420
+      },
+      ".config/hypr/waybar/scripts/temperature.py": {
+        "sha256": "837a108a2a314c539689ecfc31a9ee8247da784ee1ef0aefa49e64c15c781fe8",
+        "mode": 420
+      },
+      ".config/hypr/waybar/style/Frosted-Glass.css": {
+        "sha256": "1cf7675e39986911f7f5fa1a8dff8ecfafd8de1020230eee16aab4690a4cabe1",
+        "mode": 420
+      },
+      ".config/hypr/waybar/style.css": {
+        "sha256": "57c739cfbceb270a1b93fb324733124167813cdffbf2c007c2febdffca056130",
+        "mode": 420
+      },
+      ".config/kdeglobals": {
+        "sha256": "93227c5bc465388ac7fe046df7626d57a36785507a4244b82064c2ca7115dd90",
+        "mode": 420
+      },
+      ".config/kitty/kitty.conf": {
+        "sha256": "65f2611f2c7747e99bb2fbb9f2dec400666b6c79057d06e0ef43e2d0b0ee8bb9",
+        "mode": 420
+      },
+      ".config/qt6ct/qt6ct.conf": {
+        "sha256": "305ec939ca0f864a27fb0b578336cda28cd2062898ecb9188b17620a98f52375",
+        "mode": 420
+      },
+      ".config/systemd/user/hypridle.service.d/hyprixe.conf": {
+        "sha256": "31f25216be8fe78f86df8549ffdabe0d2d71377e477da8c8cc4b4c9270ca7c3a",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-awww.service": {
+        "sha256": "3f2b462f44c1428c86802f8d2a0f4bd6d4d61b8e747279a74c51d2e0e0fe7f35",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-clipboard.service": {
+        "sha256": "a1fe5781b50630295e70d1b6cf3ee22eba1ab826d69282379cd14702ceff7231",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-polkit.service": {
+        "sha256": "3024a43711d10cc3ae40c01887038f6904b7c921856c81f2e6f72bc9db1b146a",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-session.target": {
+        "sha256": "9b27fbac5c2d91174825fe5e3d6a852a95ea4e85188a97968b91f1c9fe955d5b",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-wallpaper.service": {
+        "sha256": "90ba6cd477cbc51c94e739491f28fe165fac8d608662f41d3c287c3719caed8a",
+        "mode": 420
+      },
+      ".config/systemd/user/swaync.service.d/hyprixe.conf": {
+        "sha256": "9fb61450f717ed9137c2626a580219b4f1118677d65cb923c126b0d9cbb77f2f",
+        "mode": 420
+      },
+      ".config/systemd/user/waybar.service.d/hyprixe.conf": {
+        "sha256": "fd1a9ad7acf602165ca650a85035092e07787f0eb8ba7b78ad7ed893215e7f77",
+        "mode": 420
+      },
+      ".config/wlogout/icons/lock.svg": {
+        "sha256": "c7c0fe4d10e0079f0099d1df5b6d50ec9be2ab3a120aec77aa52c2c6101b41c9",
+        "mode": 420
+      },
+      ".config/wlogout/icons/logout.svg": {
+        "sha256": "a3af82c8ce1ce1322ec61e69cd1f5a40af122f49376eef08279f90cca7979be1",
+        "mode": 420
+      },
+      ".config/wlogout/icons/reboot.svg": {
+        "sha256": "8041d6b029c6c3b4b6851639fae8e7301da7d6f863f863f3a9e501bef5fd7140",
+        "mode": 420
+      },
+      ".config/wlogout/icons/shutdown.svg": {
+        "sha256": "f3df0f5d0f6be31f8df295b40b76107c051c85d819dd4749b676dda698b9095d",
+        "mode": 420
+      },
+      ".config/wlogout/layout": {
+        "sha256": "9ca60c18bae021b5efb58fbb9e5756da2dfc86cc5af5b0d6a90beee7838d2990",
+        "mode": 420
+      },
+      ".config/wlogout/style.css": {
+        "sha256": "7d86fa1dc8a8e38ccc27f239d8c4445c3b730869f5405589664efa2f9fd3206a",
+        "mode": 420
+      },
+      ".local/share/color-schemes/HyprixeFrostedDolphin.colors": {
+        "sha256": "9c83fdcb48f756833fc65762082c5e012203499097c70875e5f91a84ab732ef5",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/HyprixeDebian.ttf": {
+        "sha256": "28214849a64be2e1dba1782bcddf45f1d29560760effec387338a0218b557ffe",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/LICENSE.txt": {
+        "sha256": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/README.md": {
+        "sha256": "c2bbbf522a85f25feb8e910fb0ca58dbe89dc84e94baa7319f802a8ed42aa73f",
+        "mode": 420
+      },
+      ".local/share/kxmlgui5/dolphin/dolphinui.rc": {
+        "sha256": "c1f59f07ce4a729b3d4226c4f12fa91e69fe0d90ddcc0ce2426ba0fa08e22766",
+        "mode": 420
+      },
+      ".local/share/hyprixe/wallpapers/min_forest.jpg": {
+        "sha256": "9bfb1f796f738ee40a6f072d1cfb5045fb4d46da7af5059de10f405ca284ce30",
+        "mode": 420
+      },
+      ".config/mimeapps.list": {
+        "sha256": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d",
+        "mode": 420
+      },
+      ".config/hyprland-mimeapps.list": {
+        "sha256": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d",
+        "mode": 420
+      },
+      ".config/hypr/hyprland.conf": {
+        "sha256": null,
+        "mode": null
+      },
+      ".local/bin/rofi": {
+        "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+        "mode": 493
+      },
+      ".local/bin/awww": {
+        "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+        "mode": 493
+      },
+      ".local/bin/awww-daemon": {
+        "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+        "mode": 493
+      },
+      ".local/bin/waybar": {
+        "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+        "mode": 493
+      }
+    },
+    "default/vmware/full": {
+      ".zshrc": {
+        "sha256": "cbb8130f46945e7cea780c012c68c46a0ec85d35a0008ebcf44dfbffc44b02fc",
+        "mode": 420
+      },
+      ".p10k.zsh": {
+        "sha256": "f8d200b268fca5b16dcd31cd7e4b1ba4c8a9446377e2c089bb0c64f43f118712",
+        "mode": 420
+      },
+      ".local/bin/hyprixe-session": {
+        "sha256": "1bb4184cceb1a3f5e667c9c513bed7b72316a519e796d97ba967fe3457b4a47d",
+        "mode": 493
+      },
+      ".config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig": {
+        "sha256": "74083adfc82c03d818f57ee66a914e13de110ce03e11089dd448df1d15850c49",
+        "mode": 420
+      },
+      ".config/Kvantum/Frosted-Glass/Frosted-Glass.svg": {
+        "sha256": "5ee9ced1d2b6fb8bfe05977adec97047b7b919bcd83540d30f450a1fb188d7f8",
+        "mode": 420
+      },
+      ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig": {
+        "sha256": "c509aa99ff34c4ee626f04a07adcd106d6b4781778f78fab7315db53f196e07c",
+        "mode": 420
+      },
+      ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg": {
+        "sha256": "52bd4b8b5ef523093b28f0768c4f8b3af245bb295178375324c0052ae90385f8",
+        "mode": 420
+      },
+      ".config/Kvantum/kvantum.kvconfig": {
+        "sha256": "543e53d7427ddd6530234558b0835c304eb9a7ad91939fe2aa7a53bbb319c631",
+        "mode": 420
+      },
+      ".config/dolphinrc": {
+        "sha256": "1d4738fda9fd0baf570b643a12af48089dbf3bf309575eaf00be7b08603514a3",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/monitors.lua": {
+        "sha256": "d12f596e653d00e2776c23451e18a55a2949cce44580f00f6dbf9b7be08362d8",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_animations.lua": {
+        "sha256": "e928d9473ca04db23947b18e544e9e38fa1c69e62e5a988957fb6931a595c87a",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_decorations.lua": {
+        "sha256": "fa3c14b712cdf1ba85c99ac499f89626df6c68f4ccb49a54ad759f06a83302b9",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_defaults.lua": {
+        "sha256": "63d63627d23db797b0565a77a58c961ed820bc7fe7aff6af7de75e3896bd6b2d",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_keybinds.lua": {
+        "sha256": "aedc65324f0144df2b968ab6720f8d1d812ab97d59718049e39f56f8ffd9aa89",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_settings.lua": {
+        "sha256": "c63f99a92a3fea7445d945442bb65f93bce8b23dffb04ec19ee2074fc1bda98d",
+        "mode": 420
+      },
+      ".config/hypr/UserScripts/RofiCalc.sh": {
+        "sha256": "435dbcaf6bff579b48f508570259668ba0914502d384713ec6859f69b657fe8d",
+        "mode": 493
+      },
+      ".config/hypr/hl.meta.lua": {
+        "sha256": "c4cdc2ce00d1822f7e47a8b94c19a338387e359844dafc042ce9308f0b7416f1",
+        "mode": 420
+      },
+      ".config/hypr/hypridle.conf": {
+        "sha256": "e1556eae5609b6ea34ea694d0e73d532de40ea9ea2e5c72e9d0ae8560913e9c8",
+        "mode": 420
+      },
+      ".config/hypr/hyprland.lua": {
+        "sha256": "7abe6d28f687f27b8321be25cfea7a0a6ee91a7f85b25862824d54f2e0f401f9",
+        "mode": 420
+      },
+      ".config/hypr/hyprlock.conf": {
+        "sha256": "dafd1e3669840bfa71be626879e06d9ce80cc002bd9518ac0c0087c2299c20af",
+        "mode": 420
+      },
+      ".config/hypr/lua/animations.lua": {
+        "sha256": "d30cd8e11077d208c4743b26938399253638dc2fa54da4aee3bbabbc29fbbeca",
+        "mode": 420
+      },
+      ".config/hypr/lua/env.lua": {
+        "sha256": "79b5dae5d4af17e865d3360e108afb702ebe68e78b03ab0e6b0fff3295a3ec7a",
+        "mode": 420
+      },
+      ".config/hypr/lua/keybinds.lua": {
+        "sha256": "1cc28ec0f9228dcd310d5b159f3cbe01eef8d3d20386982d223de4c69acf9b5f",
+        "mode": 420
+      },
+      ".config/hypr/lua/monitors.lua": {
+        "sha256": "061d327d06b1b38d8529f680b38f4c750c65cc683983e6c8914db1a4c86eb88a",
+        "mode": 420
+      },
+      ".config/hypr/lua/rules.lua": {
+        "sha256": "d7b0af42a3b78d2a53656dde1ad71042fe35c2bb066158a6d480550d4faa5490",
+        "mode": 420
+      },
+      ".config/hypr/lua/settings.lua": {
+        "sha256": "36e0e5526b861e4e1d41320f6b29eff258827b86a4600b273c627a6e0075820d",
+        "mode": 420
+      },
+      ".config/hypr/lua/startup.lua": {
+        "sha256": "81e0bf3b3173ac95b8293f421255fe3da07345c2675934f7027ab35fa4f8cfa5",
+        "mode": 420
+      },
+      ".config/hypr/lua/workspaces.lua": {
+        "sha256": "7c2463a99e028a9df4c303f2e0981bfcfc394dadd8ec45452deae09c12270488",
+        "mode": 420
+      },
+      ".config/hypr/profile.env": {
+        "sha256": "ce4dbf05bf3afb90b1fd7b2cc6f8ced0d1b91d8b5442d425846d2163114169f0",
+        "mode": 420
+      },
+      ".config/hypr/profile.lua": {
+        "sha256": "d9ea6c153d66b7c42d57a847e5aae1ee35fe7f40fdb544579db6fa695c05ae0d",
+        "mode": 420
+      },
+      ".config/hypr/rofi/0-shared-fonts.rasi": {
+        "sha256": "91a9deea16e9cf4a119f372bb90d8c1ace7b2f921a4c115fc010c8042605d605",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config-calc.rasi": {
+        "sha256": "5a92eda624544b82c65853b512c697a5687e990c1f187a935e3d9393af965a9d",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config-clipboard.rasi": {
+        "sha256": "d24f282ccd05390a416fa7286b3efacca1bac25e498bdaf9e13678532a035532",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config-launcher.rasi": {
+        "sha256": "d3ceb3a73a705f08dfedbe2706dec127b8b2a448cc8887892a7185ec1f7a9f01",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config-windows.rasi": {
+        "sha256": "7010b545ea6a27b69f1bc8131db79be8f2331e74d44318012d29fad0e9443792",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config.rasi": {
+        "sha256": "d855b793840b98e27e406a25e67ab5d81a5d427dd8f527efa010efb0f2951f29",
+        "mode": 420
+      },
+      ".config/hypr/rofi/themes/Frosted-Glass-Common.rasi": {
+        "sha256": "9e83f6c55b95d12b173f3d8648c921044ce814a5cece7371c41a3283dc1518d3",
+        "mode": 420
+      },
+      ".config/hypr/rofi/themes/Frosted-Glass-Launcher.rasi": {
+        "sha256": "7ddb9050dbf5440993c5e6a8d1a2d43a6713c84b34760c009472ea7fd34dbb60",
+        "mode": 420
+      },
+      ".config/hypr/rofi/themes/Frosted-Glass.rasi": {
+        "sha256": "022ff9b4e9c7db3ef7d5ba988272d596028b85a8f71e48e56d0168a1c820cc2e",
+        "mode": 420
+      },
+      ".config/hypr/rofi/wallust/colors-rofi.rasi": {
+        "sha256": "8f64f938948cca5ef099dd40a58a17ea76c4eb026568fb374ac5bd2f5165ebf6",
+        "mode": 420
+      },
+      ".config/hypr/scripts/ClipManager.sh": {
+        "sha256": "6e4a64ad3b680109306b5f9ef94654cc994eb35a14ea6d5375f9cc080cbd05fe",
+        "mode": 493
+      },
+      ".config/hypr/scripts/ClipboardWatcher.sh": {
+        "sha256": "8344db93313ed683b69b819fdf9b559623d2b7655c6ed4759d6bd1e2578e4785",
+        "mode": 493
+      },
+      ".config/hypr/scripts/LaunchApp.sh": {
+        "sha256": "2fb795cc20dbb4bf7b2c5b6fc07c949db419ab208bcfbed77fdd2a0a737c084b",
+        "mode": 493
+      },
+      ".config/hypr/scripts/LaunchTerminal.sh": {
+        "sha256": "c8fe410f857b18d3d361b8909377130d35fc16a0db34d969a34b0942881373c1",
+        "mode": 493
+      },
+      ".config/hypr/scripts/LockScreen.sh": {
+        "sha256": "f1bc7ffc0ec3a53503df4aa08ebd14eb756d4e409c67fb4d64eab938c53e6c9d",
+        "mode": 493
+      },
+      ".config/hypr/scripts/Polkit.sh": {
+        "sha256": "a1ea9aea7ff8b937a942d8060ec1cba84e3e4a32478e4f2748ce90d1536d5a3b",
+        "mode": 493
+      },
+      ".config/hypr/scripts/PowerMenu.sh": {
+        "sha256": "1a722acd2a8d57ffd4c4d5ce66c436e4d95175f6cd72782cb5b0a31bf86772d2",
+        "mode": 493
+      },
+      ".config/hypr/scripts/RofiLauncher.sh": {
+        "sha256": "8e4308eda2b565ae14d048a6bad1894339ac5f2b5a3de128d427c54c12c46b1c",
+        "mode": 493
+      },
+      ".config/hypr/scripts/ScreenShot.sh": {
+        "sha256": "a1497ef4e80f154321eaf94b3d5b905aa3b186f43c56ca26de6bdfeb2e8cfce8",
+        "mode": 493
+      },
+      ".config/hypr/scripts/SessionStartup.sh": {
+        "sha256": "305adb5972037f2aa38c1d7e6f2f5fda8bd111f42fecb22f6aee6215d8406584",
+        "mode": 493
+      },
+      ".config/hypr/scripts/Wallpaper.sh": {
+        "sha256": "baf1ddb8f338c6587073de59a20f07931c3ea2ebb897f48089ee59f62b6ae51a",
+        "mode": 493
+      },
+      ".config/hypr/scripts/WallpaperDaemon.sh": {
+        "sha256": "ca69eac4c7176701131a6b83d23cc2c3f44d8b05d71cd94868b6afff1aa1b512",
+        "mode": 493
+      },
+      ".config/hypr/scripts/WaybarStartup.sh": {
+        "sha256": "591715f5088f0c1dab1f9d4535db9c3904f7e910b6117946895a26fcdf5676d0",
+        "mode": 493
+      },
+      ".config/hypr/scripts/WindowSwitcher.sh": {
+        "sha256": "3db598aa09538ef27c60917d0f3b5a50a591f58814af17e106f8e7aa11cdccf1",
+        "mode": 493
+      },
+      ".config/hypr/waybar/configs/Frosted-Glass": {
+        "sha256": "9b11113e0fc1cd2548b9002768d1f9f81af8ef4109a8ddb18d7bb5b12d27989c",
+        "mode": 420
+      },
+      ".config/hypr/waybar/scripts/temperature.py": {
+        "sha256": "837a108a2a314c539689ecfc31a9ee8247da784ee1ef0aefa49e64c15c781fe8",
+        "mode": 420
+      },
+      ".config/hypr/waybar/style/Frosted-Glass.css": {
+        "sha256": "1cf7675e39986911f7f5fa1a8dff8ecfafd8de1020230eee16aab4690a4cabe1",
+        "mode": 420
+      },
+      ".config/hypr/waybar/style.css": {
+        "sha256": "57c739cfbceb270a1b93fb324733124167813cdffbf2c007c2febdffca056130",
+        "mode": 420
+      },
+      ".config/kdeglobals": {
+        "sha256": "93227c5bc465388ac7fe046df7626d57a36785507a4244b82064c2ca7115dd90",
+        "mode": 420
+      },
+      ".config/kitty/kitty.conf": {
+        "sha256": "65f2611f2c7747e99bb2fbb9f2dec400666b6c79057d06e0ef43e2d0b0ee8bb9",
+        "mode": 420
+      },
+      ".config/qt6ct/qt6ct.conf": {
+        "sha256": "305ec939ca0f864a27fb0b578336cda28cd2062898ecb9188b17620a98f52375",
+        "mode": 420
+      },
+      ".config/systemd/user/hypridle.service.d/hyprixe.conf": {
+        "sha256": "31f25216be8fe78f86df8549ffdabe0d2d71377e477da8c8cc4b4c9270ca7c3a",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-awww.service": {
+        "sha256": "3f2b462f44c1428c86802f8d2a0f4bd6d4d61b8e747279a74c51d2e0e0fe7f35",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-clipboard.service": {
+        "sha256": "a1fe5781b50630295e70d1b6cf3ee22eba1ab826d69282379cd14702ceff7231",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-polkit.service": {
+        "sha256": "3024a43711d10cc3ae40c01887038f6904b7c921856c81f2e6f72bc9db1b146a",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-session.target": {
+        "sha256": "9b27fbac5c2d91174825fe5e3d6a852a95ea4e85188a97968b91f1c9fe955d5b",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-wallpaper.service": {
+        "sha256": "90ba6cd477cbc51c94e739491f28fe165fac8d608662f41d3c287c3719caed8a",
+        "mode": 420
+      },
+      ".config/systemd/user/swaync.service.d/hyprixe.conf": {
+        "sha256": "9fb61450f717ed9137c2626a580219b4f1118677d65cb923c126b0d9cbb77f2f",
+        "mode": 420
+      },
+      ".config/systemd/user/waybar.service.d/hyprixe.conf": {
+        "sha256": "323b4945ddc53d4a081a7936f2d76aa96df1c5d3e8eb6c0aa3f3ac56114e88a4",
+        "mode": 420
+      },
+      ".config/wlogout/icons/lock.svg": {
+        "sha256": "c7c0fe4d10e0079f0099d1df5b6d50ec9be2ab3a120aec77aa52c2c6101b41c9",
+        "mode": 420
+      },
+      ".config/wlogout/icons/logout.svg": {
+        "sha256": "a3af82c8ce1ce1322ec61e69cd1f5a40af122f49376eef08279f90cca7979be1",
+        "mode": 420
+      },
+      ".config/wlogout/icons/reboot.svg": {
+        "sha256": "8041d6b029c6c3b4b6851639fae8e7301da7d6f863f863f3a9e501bef5fd7140",
+        "mode": 420
+      },
+      ".config/wlogout/icons/shutdown.svg": {
+        "sha256": "f3df0f5d0f6be31f8df295b40b76107c051c85d819dd4749b676dda698b9095d",
+        "mode": 420
+      },
+      ".config/wlogout/layout": {
+        "sha256": "9ca60c18bae021b5efb58fbb9e5756da2dfc86cc5af5b0d6a90beee7838d2990",
+        "mode": 420
+      },
+      ".config/wlogout/style.css": {
+        "sha256": "7d86fa1dc8a8e38ccc27f239d8c4445c3b730869f5405589664efa2f9fd3206a",
+        "mode": 420
+      },
+      ".local/share/color-schemes/HyprixeFrostedDolphin.colors": {
+        "sha256": "9c83fdcb48f756833fc65762082c5e012203499097c70875e5f91a84ab732ef5",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/HyprixeDebian.ttf": {
+        "sha256": "28214849a64be2e1dba1782bcddf45f1d29560760effec387338a0218b557ffe",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/LICENSE.txt": {
+        "sha256": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/README.md": {
+        "sha256": "c2bbbf522a85f25feb8e910fb0ca58dbe89dc84e94baa7319f802a8ed42aa73f",
+        "mode": 420
+      },
+      ".local/share/kxmlgui5/dolphin/dolphinui.rc": {
+        "sha256": "c1f59f07ce4a729b3d4226c4f12fa91e69fe0d90ddcc0ce2426ba0fa08e22766",
+        "mode": 420
+      },
+      ".local/share/hyprixe/wallpapers/min_forest.jpg": {
+        "sha256": "9bfb1f796f738ee40a6f072d1cfb5045fb4d46da7af5059de10f405ca284ce30",
+        "mode": 420
+      },
+      ".config/mimeapps.list": {
+        "sha256": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d",
+        "mode": 420
+      },
+      ".config/hyprland-mimeapps.list": {
+        "sha256": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d",
+        "mode": 420
+      },
+      ".config/hypr/hyprland.conf": {
+        "sha256": null,
+        "mode": null
+      }
+    },
+    "default/vmware/waybar": {
+      ".config/hypr/waybar/configs/Frosted-Glass": {
+        "sha256": "9b11113e0fc1cd2548b9002768d1f9f81af8ef4109a8ddb18d7bb5b12d27989c",
+        "mode": 420
+      },
+      ".config/hypr/waybar/style.css": {
+        "sha256": "57c739cfbceb270a1b93fb324733124167813cdffbf2c007c2febdffca056130",
+        "mode": 420
+      },
+      ".config/hypr/waybar/style/Frosted-Glass.css": {
+        "sha256": "1cf7675e39986911f7f5fa1a8dff8ecfafd8de1020230eee16aab4690a4cabe1",
+        "mode": 420
+      },
+      ".config/hypr/waybar/scripts/temperature.py": {
+        "sha256": "837a108a2a314c539689ecfc31a9ee8247da784ee1ef0aefa49e64c15c781fe8",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/HyprixeDebian.ttf": {
+        "sha256": "28214849a64be2e1dba1782bcddf45f1d29560760effec387338a0218b557ffe",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/LICENSE.txt": {
+        "sha256": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/README.md": {
+        "sha256": "c2bbbf522a85f25feb8e910fb0ca58dbe89dc84e94baa7319f802a8ed42aa73f",
+        "mode": 420
+      }
+    },
+    "default/vmware/dolphin": {
+      ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig": {
+        "sha256": "c509aa99ff34c4ee626f04a07adcd106d6b4781778f78fab7315db53f196e07c",
+        "mode": 420
+      },
+      ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg": {
+        "sha256": "52bd4b8b5ef523093b28f0768c4f8b3af245bb295178375324c0052ae90385f8",
+        "mode": 420
+      },
+      ".config/Kvantum/kvantum.kvconfig": {
+        "sha256": "2b24c58528b7a651aeec34439d82033a43ee021d2f5cc6f303aac645b9479251",
+        "mode": 420
+      },
+      ".local/share/color-schemes/HyprixeFrostedDolphin.colors": {
+        "sha256": "9c83fdcb48f756833fc65762082c5e012203499097c70875e5f91a84ab732ef5",
+        "mode": 420
+      },
+      ".config/dolphinrc": {
+        "sha256": "977b2d1890c457fd2f8cc566ee984340faef3290008322f06a05014d845001f1",
+        "mode": 420
+      }
+    },
+    "default/vmware/runtime": {
+      ".zshrc": {
+        "sha256": "cbb8130f46945e7cea780c012c68c46a0ec85d35a0008ebcf44dfbffc44b02fc",
+        "mode": 420
+      },
+      ".p10k.zsh": {
+        "sha256": "f8d200b268fca5b16dcd31cd7e4b1ba4c8a9446377e2c089bb0c64f43f118712",
+        "mode": 420
+      },
+      ".local/bin/hyprixe-session": {
+        "sha256": "1bb4184cceb1a3f5e667c9c513bed7b72316a519e796d97ba967fe3457b4a47d",
+        "mode": 493
+      },
+      ".config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig": {
+        "sha256": "74083adfc82c03d818f57ee66a914e13de110ce03e11089dd448df1d15850c49",
+        "mode": 420
+      },
+      ".config/Kvantum/Frosted-Glass/Frosted-Glass.svg": {
+        "sha256": "5ee9ced1d2b6fb8bfe05977adec97047b7b919bcd83540d30f450a1fb188d7f8",
+        "mode": 420
+      },
+      ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig": {
+        "sha256": "c509aa99ff34c4ee626f04a07adcd106d6b4781778f78fab7315db53f196e07c",
+        "mode": 420
+      },
+      ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg": {
+        "sha256": "52bd4b8b5ef523093b28f0768c4f8b3af245bb295178375324c0052ae90385f8",
+        "mode": 420
+      },
+      ".config/Kvantum/kvantum.kvconfig": {
+        "sha256": "543e53d7427ddd6530234558b0835c304eb9a7ad91939fe2aa7a53bbb319c631",
+        "mode": 420
+      },
+      ".config/dolphinrc": {
+        "sha256": "1d4738fda9fd0baf570b643a12af48089dbf3bf309575eaf00be7b08603514a3",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/monitors.lua": {
+        "sha256": "d12f596e653d00e2776c23451e18a55a2949cce44580f00f6dbf9b7be08362d8",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_animations.lua": {
+        "sha256": "e928d9473ca04db23947b18e544e9e38fa1c69e62e5a988957fb6931a595c87a",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_decorations.lua": {
+        "sha256": "fa3c14b712cdf1ba85c99ac499f89626df6c68f4ccb49a54ad759f06a83302b9",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_defaults.lua": {
+        "sha256": "63d63627d23db797b0565a77a58c961ed820bc7fe7aff6af7de75e3896bd6b2d",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_keybinds.lua": {
+        "sha256": "aedc65324f0144df2b968ab6720f8d1d812ab97d59718049e39f56f8ffd9aa89",
+        "mode": 420
+      },
+      ".config/hypr/UserConfigs/user_settings.lua": {
+        "sha256": "c63f99a92a3fea7445d945442bb65f93bce8b23dffb04ec19ee2074fc1bda98d",
+        "mode": 420
+      },
+      ".config/hypr/UserScripts/RofiCalc.sh": {
+        "sha256": "435dbcaf6bff579b48f508570259668ba0914502d384713ec6859f69b657fe8d",
+        "mode": 493
+      },
+      ".config/hypr/hl.meta.lua": {
+        "sha256": "c4cdc2ce00d1822f7e47a8b94c19a338387e359844dafc042ce9308f0b7416f1",
+        "mode": 420
+      },
+      ".config/hypr/hypridle.conf": {
+        "sha256": "e1556eae5609b6ea34ea694d0e73d532de40ea9ea2e5c72e9d0ae8560913e9c8",
+        "mode": 420
+      },
+      ".config/hypr/hyprland.lua": {
+        "sha256": "7abe6d28f687f27b8321be25cfea7a0a6ee91a7f85b25862824d54f2e0f401f9",
+        "mode": 420
+      },
+      ".config/hypr/hyprlock.conf": {
+        "sha256": "dafd1e3669840bfa71be626879e06d9ce80cc002bd9518ac0c0087c2299c20af",
+        "mode": 420
+      },
+      ".config/hypr/lua/animations.lua": {
+        "sha256": "d30cd8e11077d208c4743b26938399253638dc2fa54da4aee3bbabbc29fbbeca",
+        "mode": 420
+      },
+      ".config/hypr/lua/env.lua": {
+        "sha256": "79b5dae5d4af17e865d3360e108afb702ebe68e78b03ab0e6b0fff3295a3ec7a",
+        "mode": 420
+      },
+      ".config/hypr/lua/keybinds.lua": {
+        "sha256": "1cc28ec0f9228dcd310d5b159f3cbe01eef8d3d20386982d223de4c69acf9b5f",
+        "mode": 420
+      },
+      ".config/hypr/lua/monitors.lua": {
+        "sha256": "061d327d06b1b38d8529f680b38f4c750c65cc683983e6c8914db1a4c86eb88a",
+        "mode": 420
+      },
+      ".config/hypr/lua/rules.lua": {
+        "sha256": "d7b0af42a3b78d2a53656dde1ad71042fe35c2bb066158a6d480550d4faa5490",
+        "mode": 420
+      },
+      ".config/hypr/lua/settings.lua": {
+        "sha256": "36e0e5526b861e4e1d41320f6b29eff258827b86a4600b273c627a6e0075820d",
+        "mode": 420
+      },
+      ".config/hypr/lua/startup.lua": {
+        "sha256": "81e0bf3b3173ac95b8293f421255fe3da07345c2675934f7027ab35fa4f8cfa5",
+        "mode": 420
+      },
+      ".config/hypr/lua/workspaces.lua": {
+        "sha256": "7c2463a99e028a9df4c303f2e0981bfcfc394dadd8ec45452deae09c12270488",
+        "mode": 420
+      },
+      ".config/hypr/profile.env": {
+        "sha256": "ce4dbf05bf3afb90b1fd7b2cc6f8ced0d1b91d8b5442d425846d2163114169f0",
+        "mode": 420
+      },
+      ".config/hypr/profile.lua": {
+        "sha256": "d9ea6c153d66b7c42d57a847e5aae1ee35fe7f40fdb544579db6fa695c05ae0d",
+        "mode": 420
+      },
+      ".config/hypr/rofi/0-shared-fonts.rasi": {
+        "sha256": "91a9deea16e9cf4a119f372bb90d8c1ace7b2f921a4c115fc010c8042605d605",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config-calc.rasi": {
+        "sha256": "5a92eda624544b82c65853b512c697a5687e990c1f187a935e3d9393af965a9d",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config-clipboard.rasi": {
+        "sha256": "d24f282ccd05390a416fa7286b3efacca1bac25e498bdaf9e13678532a035532",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config-launcher.rasi": {
+        "sha256": "d3ceb3a73a705f08dfedbe2706dec127b8b2a448cc8887892a7185ec1f7a9f01",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config-windows.rasi": {
+        "sha256": "7010b545ea6a27b69f1bc8131db79be8f2331e74d44318012d29fad0e9443792",
+        "mode": 420
+      },
+      ".config/hypr/rofi/config.rasi": {
+        "sha256": "d855b793840b98e27e406a25e67ab5d81a5d427dd8f527efa010efb0f2951f29",
+        "mode": 420
+      },
+      ".config/hypr/rofi/themes/Frosted-Glass-Common.rasi": {
+        "sha256": "9e83f6c55b95d12b173f3d8648c921044ce814a5cece7371c41a3283dc1518d3",
+        "mode": 420
+      },
+      ".config/hypr/rofi/themes/Frosted-Glass-Launcher.rasi": {
+        "sha256": "7ddb9050dbf5440993c5e6a8d1a2d43a6713c84b34760c009472ea7fd34dbb60",
+        "mode": 420
+      },
+      ".config/hypr/rofi/themes/Frosted-Glass.rasi": {
+        "sha256": "022ff9b4e9c7db3ef7d5ba988272d596028b85a8f71e48e56d0168a1c820cc2e",
+        "mode": 420
+      },
+      ".config/hypr/rofi/wallust/colors-rofi.rasi": {
+        "sha256": "8f64f938948cca5ef099dd40a58a17ea76c4eb026568fb374ac5bd2f5165ebf6",
+        "mode": 420
+      },
+      ".config/hypr/scripts/ClipManager.sh": {
+        "sha256": "6e4a64ad3b680109306b5f9ef94654cc994eb35a14ea6d5375f9cc080cbd05fe",
+        "mode": 493
+      },
+      ".config/hypr/scripts/ClipboardWatcher.sh": {
+        "sha256": "8344db93313ed683b69b819fdf9b559623d2b7655c6ed4759d6bd1e2578e4785",
+        "mode": 493
+      },
+      ".config/hypr/scripts/LaunchApp.sh": {
+        "sha256": "2fb795cc20dbb4bf7b2c5b6fc07c949db419ab208bcfbed77fdd2a0a737c084b",
+        "mode": 493
+      },
+      ".config/hypr/scripts/LaunchTerminal.sh": {
+        "sha256": "c8fe410f857b18d3d361b8909377130d35fc16a0db34d969a34b0942881373c1",
+        "mode": 493
+      },
+      ".config/hypr/scripts/LockScreen.sh": {
+        "sha256": "f1bc7ffc0ec3a53503df4aa08ebd14eb756d4e409c67fb4d64eab938c53e6c9d",
+        "mode": 493
+      },
+      ".config/hypr/scripts/Polkit.sh": {
+        "sha256": "a1ea9aea7ff8b937a942d8060ec1cba84e3e4a32478e4f2748ce90d1536d5a3b",
+        "mode": 493
+      },
+      ".config/hypr/scripts/PowerMenu.sh": {
+        "sha256": "1a722acd2a8d57ffd4c4d5ce66c436e4d95175f6cd72782cb5b0a31bf86772d2",
+        "mode": 493
+      },
+      ".config/hypr/scripts/RofiLauncher.sh": {
+        "sha256": "8e4308eda2b565ae14d048a6bad1894339ac5f2b5a3de128d427c54c12c46b1c",
+        "mode": 493
+      },
+      ".config/hypr/scripts/ScreenShot.sh": {
+        "sha256": "a1497ef4e80f154321eaf94b3d5b905aa3b186f43c56ca26de6bdfeb2e8cfce8",
+        "mode": 493
+      },
+      ".config/hypr/scripts/SessionStartup.sh": {
+        "sha256": "305adb5972037f2aa38c1d7e6f2f5fda8bd111f42fecb22f6aee6215d8406584",
+        "mode": 493
+      },
+      ".config/hypr/scripts/Wallpaper.sh": {
+        "sha256": "baf1ddb8f338c6587073de59a20f07931c3ea2ebb897f48089ee59f62b6ae51a",
+        "mode": 493
+      },
+      ".config/hypr/scripts/WallpaperDaemon.sh": {
+        "sha256": "ca69eac4c7176701131a6b83d23cc2c3f44d8b05d71cd94868b6afff1aa1b512",
+        "mode": 493
+      },
+      ".config/hypr/scripts/WaybarStartup.sh": {
+        "sha256": "591715f5088f0c1dab1f9d4535db9c3904f7e910b6117946895a26fcdf5676d0",
+        "mode": 493
+      },
+      ".config/hypr/scripts/WindowSwitcher.sh": {
+        "sha256": "3db598aa09538ef27c60917d0f3b5a50a591f58814af17e106f8e7aa11cdccf1",
+        "mode": 493
+      },
+      ".config/hypr/waybar/configs/Frosted-Glass": {
+        "sha256": "9b11113e0fc1cd2548b9002768d1f9f81af8ef4109a8ddb18d7bb5b12d27989c",
+        "mode": 420
+      },
+      ".config/hypr/waybar/scripts/temperature.py": {
+        "sha256": "837a108a2a314c539689ecfc31a9ee8247da784ee1ef0aefa49e64c15c781fe8",
+        "mode": 420
+      },
+      ".config/hypr/waybar/style/Frosted-Glass.css": {
+        "sha256": "1cf7675e39986911f7f5fa1a8dff8ecfafd8de1020230eee16aab4690a4cabe1",
+        "mode": 420
+      },
+      ".config/hypr/waybar/style.css": {
+        "sha256": "57c739cfbceb270a1b93fb324733124167813cdffbf2c007c2febdffca056130",
+        "mode": 420
+      },
+      ".config/kdeglobals": {
+        "sha256": "93227c5bc465388ac7fe046df7626d57a36785507a4244b82064c2ca7115dd90",
+        "mode": 420
+      },
+      ".config/kitty/kitty.conf": {
+        "sha256": "65f2611f2c7747e99bb2fbb9f2dec400666b6c79057d06e0ef43e2d0b0ee8bb9",
+        "mode": 420
+      },
+      ".config/qt6ct/qt6ct.conf": {
+        "sha256": "305ec939ca0f864a27fb0b578336cda28cd2062898ecb9188b17620a98f52375",
+        "mode": 420
+      },
+      ".config/systemd/user/hypridle.service.d/hyprixe.conf": {
+        "sha256": "31f25216be8fe78f86df8549ffdabe0d2d71377e477da8c8cc4b4c9270ca7c3a",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-awww.service": {
+        "sha256": "3f2b462f44c1428c86802f8d2a0f4bd6d4d61b8e747279a74c51d2e0e0fe7f35",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-clipboard.service": {
+        "sha256": "a1fe5781b50630295e70d1b6cf3ee22eba1ab826d69282379cd14702ceff7231",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-polkit.service": {
+        "sha256": "3024a43711d10cc3ae40c01887038f6904b7c921856c81f2e6f72bc9db1b146a",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-session.target": {
+        "sha256": "9b27fbac5c2d91174825fe5e3d6a852a95ea4e85188a97968b91f1c9fe955d5b",
+        "mode": 420
+      },
+      ".config/systemd/user/hyprixe-wallpaper.service": {
+        "sha256": "90ba6cd477cbc51c94e739491f28fe165fac8d608662f41d3c287c3719caed8a",
+        "mode": 420
+      },
+      ".config/systemd/user/swaync.service.d/hyprixe.conf": {
+        "sha256": "9fb61450f717ed9137c2626a580219b4f1118677d65cb923c126b0d9cbb77f2f",
+        "mode": 420
+      },
+      ".config/systemd/user/waybar.service.d/hyprixe.conf": {
+        "sha256": "fd1a9ad7acf602165ca650a85035092e07787f0eb8ba7b78ad7ed893215e7f77",
+        "mode": 420
+      },
+      ".config/wlogout/icons/lock.svg": {
+        "sha256": "c7c0fe4d10e0079f0099d1df5b6d50ec9be2ab3a120aec77aa52c2c6101b41c9",
+        "mode": 420
+      },
+      ".config/wlogout/icons/logout.svg": {
+        "sha256": "a3af82c8ce1ce1322ec61e69cd1f5a40af122f49376eef08279f90cca7979be1",
+        "mode": 420
+      },
+      ".config/wlogout/icons/reboot.svg": {
+        "sha256": "8041d6b029c6c3b4b6851639fae8e7301da7d6f863f863f3a9e501bef5fd7140",
+        "mode": 420
+      },
+      ".config/wlogout/icons/shutdown.svg": {
+        "sha256": "f3df0f5d0f6be31f8df295b40b76107c051c85d819dd4749b676dda698b9095d",
+        "mode": 420
+      },
+      ".config/wlogout/layout": {
+        "sha256": "9ca60c18bae021b5efb58fbb9e5756da2dfc86cc5af5b0d6a90beee7838d2990",
+        "mode": 420
+      },
+      ".config/wlogout/style.css": {
+        "sha256": "7d86fa1dc8a8e38ccc27f239d8c4445c3b730869f5405589664efa2f9fd3206a",
+        "mode": 420
+      },
+      ".local/share/color-schemes/HyprixeFrostedDolphin.colors": {
+        "sha256": "9c83fdcb48f756833fc65762082c5e012203499097c70875e5f91a84ab732ef5",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/HyprixeDebian.ttf": {
+        "sha256": "28214849a64be2e1dba1782bcddf45f1d29560760effec387338a0218b557ffe",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/LICENSE.txt": {
+        "sha256": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+        "mode": 420
+      },
+      ".local/share/fonts/hyprixe/README.md": {
+        "sha256": "c2bbbf522a85f25feb8e910fb0ca58dbe89dc84e94baa7319f802a8ed42aa73f",
+        "mode": 420
+      },
+      ".local/share/kxmlgui5/dolphin/dolphinui.rc": {
+        "sha256": "c1f59f07ce4a729b3d4226c4f12fa91e69fe0d90ddcc0ce2426ba0fa08e22766",
+        "mode": 420
+      },
+      ".local/share/hyprixe/wallpapers/min_forest.jpg": {
+        "sha256": "9bfb1f796f738ee40a6f072d1cfb5045fb4d46da7af5059de10f405ca284ce30",
+        "mode": 420
+      },
+      ".config/mimeapps.list": {
+        "sha256": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d",
+        "mode": 420
+      },
+      ".config/hyprland-mimeapps.list": {
+        "sha256": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d",
+        "mode": 420
+      },
+      ".config/hypr/hyprland.conf": {
+        "sha256": null,
+        "mode": null
+      },
+      ".local/bin/rofi": {
+        "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+        "mode": 493
+      },
+      ".local/bin/awww": {
+        "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+        "mode": 493
+      },
+      ".local/bin/awww-daemon": {
+        "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+        "mode": 493
+      },
+      ".local/bin/waybar": {
+        "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+        "mode": 493
+      }
+    },
+    "custom/native/full": {
+      ".zshrc": {
+        "sha256": "cbb8130f46945e7cea780c012c68c46a0ec85d35a0008ebcf44dfbffc44b02fc",
+        "mode": 420
+      },
+      ".p10k.zsh": {
+        "sha256": "f8d200b268fca5b16dcd31cd7e4b1ba4c8a9446377e2c089bb0c64f43f118712",
+        "mode": 420
+      },
+      ".local/bin/hyprixe-session": {
+        "sha256": "1bb4184cceb1a3f5e667c9c513bed7b72316a519e796d97ba967fe3457b4a47d",
+        "mode": 493
+      },
+      "settings with spaces/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig": {
+        "sha256": "74083adfc82c03d818f57ee66a914e13de110ce03e11089dd448df1d15850c49",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/Frosted-Glass/Frosted-Glass.svg": {
+        "sha256": "5ee9ced1d2b6fb8bfe05977adec97047b7b919bcd83540d30f450a1fb188d7f8",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig": {
+        "sha256": "c509aa99ff34c4ee626f04a07adcd106d6b4781778f78fab7315db53f196e07c",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg": {
+        "sha256": "52bd4b8b5ef523093b28f0768c4f8b3af245bb295178375324c0052ae90385f8",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/kvantum.kvconfig": {
+        "sha256": "543e53d7427ddd6530234558b0835c304eb9a7ad91939fe2aa7a53bbb319c631",
+        "mode": 420
+      },
+      "settings with spaces/dolphinrc": {
+        "sha256": "1d4738fda9fd0baf570b643a12af48089dbf3bf309575eaf00be7b08603514a3",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/monitors.lua": {
+        "sha256": "d12f596e653d00e2776c23451e18a55a2949cce44580f00f6dbf9b7be08362d8",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_animations.lua": {
+        "sha256": "e928d9473ca04db23947b18e544e9e38fa1c69e62e5a988957fb6931a595c87a",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_decorations.lua": {
+        "sha256": "fa3c14b712cdf1ba85c99ac499f89626df6c68f4ccb49a54ad759f06a83302b9",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_defaults.lua": {
+        "sha256": "63d63627d23db797b0565a77a58c961ed820bc7fe7aff6af7de75e3896bd6b2d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_keybinds.lua": {
+        "sha256": "aedc65324f0144df2b968ab6720f8d1d812ab97d59718049e39f56f8ffd9aa89",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_settings.lua": {
+        "sha256": "c63f99a92a3fea7445d945442bb65f93bce8b23dffb04ec19ee2074fc1bda98d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserScripts/RofiCalc.sh": {
+        "sha256": "435dbcaf6bff579b48f508570259668ba0914502d384713ec6859f69b657fe8d",
+        "mode": 493
+      },
+      "settings with spaces/hypr/hl.meta.lua": {
+        "sha256": "c4cdc2ce00d1822f7e47a8b94c19a338387e359844dafc042ce9308f0b7416f1",
+        "mode": 420
+      },
+      "settings with spaces/hypr/hypridle.conf": {
+        "sha256": "fa5b667801e369ec876d8a386878376e10a22469061c5a086de3b23457a17a4b",
+        "mode": 420
+      },
+      "settings with spaces/hypr/hyprland.lua": {
+        "sha256": "7abe6d28f687f27b8321be25cfea7a0a6ee91a7f85b25862824d54f2e0f401f9",
+        "mode": 420
+      },
+      "settings with spaces/hypr/hyprlock.conf": {
+        "sha256": "ae2a3ea285943b5439dda86518fea01b5e5446eb8a88e4537c82dae818e412d1",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/animations.lua": {
+        "sha256": "d30cd8e11077d208c4743b26938399253638dc2fa54da4aee3bbabbc29fbbeca",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/env.lua": {
+        "sha256": "79b5dae5d4af17e865d3360e108afb702ebe68e78b03ab0e6b0fff3295a3ec7a",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/keybinds.lua": {
+        "sha256": "1cc28ec0f9228dcd310d5b159f3cbe01eef8d3d20386982d223de4c69acf9b5f",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/monitors.lua": {
+        "sha256": "061d327d06b1b38d8529f680b38f4c750c65cc683983e6c8914db1a4c86eb88a",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/rules.lua": {
+        "sha256": "d7b0af42a3b78d2a53656dde1ad71042fe35c2bb066158a6d480550d4faa5490",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/settings.lua": {
+        "sha256": "36e0e5526b861e4e1d41320f6b29eff258827b86a4600b273c627a6e0075820d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/startup.lua": {
+        "sha256": "81e0bf3b3173ac95b8293f421255fe3da07345c2675934f7027ab35fa4f8cfa5",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/workspaces.lua": {
+        "sha256": "7c2463a99e028a9df4c303f2e0981bfcfc394dadd8ec45452deae09c12270488",
+        "mode": 420
+      },
+      "settings with spaces/hypr/profile.env": {
+        "sha256": "456db04d4677ac6ff4d944637a1be2c09f02a9f0adb1582450a2b1296977d2a7",
+        "mode": 420
+      },
+      "settings with spaces/hypr/profile.lua": {
+        "sha256": "02c821517c80c75f3cf3210ddc8b750acffbde00d7d5b453f295b2dacec03fb0",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/0-shared-fonts.rasi": {
+        "sha256": "91a9deea16e9cf4a119f372bb90d8c1ace7b2f921a4c115fc010c8042605d605",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config-calc.rasi": {
+        "sha256": "5a92eda624544b82c65853b512c697a5687e990c1f187a935e3d9393af965a9d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config-clipboard.rasi": {
+        "sha256": "d24f282ccd05390a416fa7286b3efacca1bac25e498bdaf9e13678532a035532",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config-launcher.rasi": {
+        "sha256": "d3ceb3a73a705f08dfedbe2706dec127b8b2a448cc8887892a7185ec1f7a9f01",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config-windows.rasi": {
+        "sha256": "7010b545ea6a27b69f1bc8131db79be8f2331e74d44318012d29fad0e9443792",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config.rasi": {
+        "sha256": "d855b793840b98e27e406a25e67ab5d81a5d427dd8f527efa010efb0f2951f29",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/themes/Frosted-Glass-Common.rasi": {
+        "sha256": "9e83f6c55b95d12b173f3d8648c921044ce814a5cece7371c41a3283dc1518d3",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/themes/Frosted-Glass-Launcher.rasi": {
+        "sha256": "d16c988222b55bb5e66ab80409acfc0cbe75210f84a55ca78361e213ce2ac92e",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/themes/Frosted-Glass.rasi": {
+        "sha256": "022ff9b4e9c7db3ef7d5ba988272d596028b85a8f71e48e56d0168a1c820cc2e",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/wallust/colors-rofi.rasi": {
+        "sha256": "8f64f938948cca5ef099dd40a58a17ea76c4eb026568fb374ac5bd2f5165ebf6",
+        "mode": 420
+      },
+      "settings with spaces/hypr/scripts/ClipManager.sh": {
+        "sha256": "6e4a64ad3b680109306b5f9ef94654cc994eb35a14ea6d5375f9cc080cbd05fe",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/ClipboardWatcher.sh": {
+        "sha256": "8344db93313ed683b69b819fdf9b559623d2b7655c6ed4759d6bd1e2578e4785",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/LaunchApp.sh": {
+        "sha256": "2fb795cc20dbb4bf7b2c5b6fc07c949db419ab208bcfbed77fdd2a0a737c084b",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/LaunchTerminal.sh": {
+        "sha256": "c8fe410f857b18d3d361b8909377130d35fc16a0db34d969a34b0942881373c1",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/LockScreen.sh": {
+        "sha256": "f1bc7ffc0ec3a53503df4aa08ebd14eb756d4e409c67fb4d64eab938c53e6c9d",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/Polkit.sh": {
+        "sha256": "a1ea9aea7ff8b937a942d8060ec1cba84e3e4a32478e4f2748ce90d1536d5a3b",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/PowerMenu.sh": {
+        "sha256": "1a722acd2a8d57ffd4c4d5ce66c436e4d95175f6cd72782cb5b0a31bf86772d2",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/RofiLauncher.sh": {
+        "sha256": "8e4308eda2b565ae14d048a6bad1894339ac5f2b5a3de128d427c54c12c46b1c",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/ScreenShot.sh": {
+        "sha256": "a1497ef4e80f154321eaf94b3d5b905aa3b186f43c56ca26de6bdfeb2e8cfce8",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/SessionStartup.sh": {
+        "sha256": "305adb5972037f2aa38c1d7e6f2f5fda8bd111f42fecb22f6aee6215d8406584",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/Wallpaper.sh": {
+        "sha256": "baf1ddb8f338c6587073de59a20f07931c3ea2ebb897f48089ee59f62b6ae51a",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/WallpaperDaemon.sh": {
+        "sha256": "ca69eac4c7176701131a6b83d23cc2c3f44d8b05d71cd94868b6afff1aa1b512",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/WaybarStartup.sh": {
+        "sha256": "591715f5088f0c1dab1f9d4535db9c3904f7e910b6117946895a26fcdf5676d0",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/WindowSwitcher.sh": {
+        "sha256": "3db598aa09538ef27c60917d0f3b5a50a591f58814af17e106f8e7aa11cdccf1",
+        "mode": 493
+      },
+      "settings with spaces/hypr/waybar/configs/Frosted-Glass": {
+        "sha256": "9b11113e0fc1cd2548b9002768d1f9f81af8ef4109a8ddb18d7bb5b12d27989c",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/scripts/temperature.py": {
+        "sha256": "837a108a2a314c539689ecfc31a9ee8247da784ee1ef0aefa49e64c15c781fe8",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/style/Frosted-Glass.css": {
+        "sha256": "1cf7675e39986911f7f5fa1a8dff8ecfafd8de1020230eee16aab4690a4cabe1",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/style.css": {
+        "sha256": "57c739cfbceb270a1b93fb324733124167813cdffbf2c007c2febdffca056130",
+        "mode": 420
+      },
+      "settings with spaces/kdeglobals": {
+        "sha256": "93227c5bc465388ac7fe046df7626d57a36785507a4244b82064c2ca7115dd90",
+        "mode": 420
+      },
+      "settings with spaces/kitty/kitty.conf": {
+        "sha256": "65f2611f2c7747e99bb2fbb9f2dec400666b6c79057d06e0ef43e2d0b0ee8bb9",
+        "mode": 420
+      },
+      "settings with spaces/qt6ct/qt6ct.conf": {
+        "sha256": "305ec939ca0f864a27fb0b578336cda28cd2062898ecb9188b17620a98f52375",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hypridle.service.d/hyprixe.conf": {
+        "sha256": "44d3fe01a849ff9d5ea3dfcb2e651c94f890ab57becc6b78d2ab30e9d818f319",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-awww.service": {
+        "sha256": "af6695da581c78c87d97b409d65bcb0c62313cf5fd8c776661b7a51123e65227",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-clipboard.service": {
+        "sha256": "5c6ec9deac4da1c035f673308e1973b295360922c4e81415cf5c14996aab9816",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-polkit.service": {
+        "sha256": "d564c6dfe710e9b2cebf162baebf397b6b5e5940d8f9a4b784f9867b877d6c1c",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-session.target": {
+        "sha256": "9b27fbac5c2d91174825fe5e3d6a852a95ea4e85188a97968b91f1c9fe955d5b",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-wallpaper.service": {
+        "sha256": "fcc8b44db5ef48421619c8fcbe1f595a8a3cd4ebdf8dc2a0fbe85adcef0931a1",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/swaync.service.d/hyprixe.conf": {
+        "sha256": "9fb61450f717ed9137c2626a580219b4f1118677d65cb923c126b0d9cbb77f2f",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/waybar.service.d/hyprixe.conf": {
+        "sha256": "19403e21555ddc55eda39068819e78b05bc689b46f07b9b14e85ba0c9b831abe",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/icons/lock.svg": {
+        "sha256": "c7c0fe4d10e0079f0099d1df5b6d50ec9be2ab3a120aec77aa52c2c6101b41c9",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/icons/logout.svg": {
+        "sha256": "a3af82c8ce1ce1322ec61e69cd1f5a40af122f49376eef08279f90cca7979be1",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/icons/reboot.svg": {
+        "sha256": "8041d6b029c6c3b4b6851639fae8e7301da7d6f863f863f3a9e501bef5fd7140",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/icons/shutdown.svg": {
+        "sha256": "f3df0f5d0f6be31f8df295b40b76107c051c85d819dd4749b676dda698b9095d",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/layout": {
+        "sha256": "9ca60c18bae021b5efb58fbb9e5756da2dfc86cc5af5b0d6a90beee7838d2990",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/style.css": {
+        "sha256": "7d86fa1dc8a8e38ccc27f239d8c4445c3b730869f5405589664efa2f9fd3206a",
+        "mode": 420
+      },
+      "data with spaces/color-schemes/HyprixeFrostedDolphin.colors": {
+        "sha256": "9c83fdcb48f756833fc65762082c5e012203499097c70875e5f91a84ab732ef5",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/HyprixeDebian.ttf": {
+        "sha256": "28214849a64be2e1dba1782bcddf45f1d29560760effec387338a0218b557ffe",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/LICENSE.txt": {
+        "sha256": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/README.md": {
+        "sha256": "c2bbbf522a85f25feb8e910fb0ca58dbe89dc84e94baa7319f802a8ed42aa73f",
+        "mode": 420
+      },
+      "data with spaces/kxmlgui5/dolphin/dolphinui.rc": {
+        "sha256": "c1f59f07ce4a729b3d4226c4f12fa91e69fe0d90ddcc0ce2426ba0fa08e22766",
+        "mode": 420
+      },
+      "data with spaces/hyprixe/wallpapers/min_forest.jpg": {
+        "sha256": "9bfb1f796f738ee40a6f072d1cfb5045fb4d46da7af5059de10f405ca284ce30",
+        "mode": 420
+      },
+      "settings with spaces/mimeapps.list": {
+        "sha256": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d",
+        "mode": 420
+      },
+      "settings with spaces/hyprland-mimeapps.list": {
+        "sha256": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/hyprland.conf": {
+        "sha256": null,
+        "mode": null
+      }
+    },
+    "custom/native/waybar": {
+      "settings with spaces/hypr/waybar/configs/Frosted-Glass": {
+        "sha256": "9b11113e0fc1cd2548b9002768d1f9f81af8ef4109a8ddb18d7bb5b12d27989c",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/style.css": {
+        "sha256": "57c739cfbceb270a1b93fb324733124167813cdffbf2c007c2febdffca056130",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/style/Frosted-Glass.css": {
+        "sha256": "1cf7675e39986911f7f5fa1a8dff8ecfafd8de1020230eee16aab4690a4cabe1",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/scripts/temperature.py": {
+        "sha256": "837a108a2a314c539689ecfc31a9ee8247da784ee1ef0aefa49e64c15c781fe8",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/HyprixeDebian.ttf": {
+        "sha256": "28214849a64be2e1dba1782bcddf45f1d29560760effec387338a0218b557ffe",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/LICENSE.txt": {
+        "sha256": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/README.md": {
+        "sha256": "c2bbbf522a85f25feb8e910fb0ca58dbe89dc84e94baa7319f802a8ed42aa73f",
+        "mode": 420
+      }
+    },
+    "custom/native/dolphin": {
+      "settings with spaces/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig": {
+        "sha256": "c509aa99ff34c4ee626f04a07adcd106d6b4781778f78fab7315db53f196e07c",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg": {
+        "sha256": "52bd4b8b5ef523093b28f0768c4f8b3af245bb295178375324c0052ae90385f8",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/kvantum.kvconfig": {
+        "sha256": "2b24c58528b7a651aeec34439d82033a43ee021d2f5cc6f303aac645b9479251",
+        "mode": 420
+      },
+      "data with spaces/color-schemes/HyprixeFrostedDolphin.colors": {
+        "sha256": "9c83fdcb48f756833fc65762082c5e012203499097c70875e5f91a84ab732ef5",
+        "mode": 420
+      },
+      "settings with spaces/dolphinrc": {
+        "sha256": "977b2d1890c457fd2f8cc566ee984340faef3290008322f06a05014d845001f1",
+        "mode": 420
+      }
+    },
+    "custom/native/runtime": {
+      ".zshrc": {
+        "sha256": "cbb8130f46945e7cea780c012c68c46a0ec85d35a0008ebcf44dfbffc44b02fc",
+        "mode": 420
+      },
+      ".p10k.zsh": {
+        "sha256": "f8d200b268fca5b16dcd31cd7e4b1ba4c8a9446377e2c089bb0c64f43f118712",
+        "mode": 420
+      },
+      ".local/bin/hyprixe-session": {
+        "sha256": "1bb4184cceb1a3f5e667c9c513bed7b72316a519e796d97ba967fe3457b4a47d",
+        "mode": 493
+      },
+      "settings with spaces/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig": {
+        "sha256": "74083adfc82c03d818f57ee66a914e13de110ce03e11089dd448df1d15850c49",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/Frosted-Glass/Frosted-Glass.svg": {
+        "sha256": "5ee9ced1d2b6fb8bfe05977adec97047b7b919bcd83540d30f450a1fb188d7f8",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig": {
+        "sha256": "c509aa99ff34c4ee626f04a07adcd106d6b4781778f78fab7315db53f196e07c",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg": {
+        "sha256": "52bd4b8b5ef523093b28f0768c4f8b3af245bb295178375324c0052ae90385f8",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/kvantum.kvconfig": {
+        "sha256": "543e53d7427ddd6530234558b0835c304eb9a7ad91939fe2aa7a53bbb319c631",
+        "mode": 420
+      },
+      "settings with spaces/dolphinrc": {
+        "sha256": "1d4738fda9fd0baf570b643a12af48089dbf3bf309575eaf00be7b08603514a3",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/monitors.lua": {
+        "sha256": "d12f596e653d00e2776c23451e18a55a2949cce44580f00f6dbf9b7be08362d8",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_animations.lua": {
+        "sha256": "e928d9473ca04db23947b18e544e9e38fa1c69e62e5a988957fb6931a595c87a",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_decorations.lua": {
+        "sha256": "fa3c14b712cdf1ba85c99ac499f89626df6c68f4ccb49a54ad759f06a83302b9",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_defaults.lua": {
+        "sha256": "63d63627d23db797b0565a77a58c961ed820bc7fe7aff6af7de75e3896bd6b2d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_keybinds.lua": {
+        "sha256": "aedc65324f0144df2b968ab6720f8d1d812ab97d59718049e39f56f8ffd9aa89",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_settings.lua": {
+        "sha256": "c63f99a92a3fea7445d945442bb65f93bce8b23dffb04ec19ee2074fc1bda98d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserScripts/RofiCalc.sh": {
+        "sha256": "435dbcaf6bff579b48f508570259668ba0914502d384713ec6859f69b657fe8d",
+        "mode": 493
+      },
+      "settings with spaces/hypr/hl.meta.lua": {
+        "sha256": "c4cdc2ce00d1822f7e47a8b94c19a338387e359844dafc042ce9308f0b7416f1",
+        "mode": 420
+      },
+      "settings with spaces/hypr/hypridle.conf": {
+        "sha256": "fa5b667801e369ec876d8a386878376e10a22469061c5a086de3b23457a17a4b",
+        "mode": 420
+      },
+      "settings with spaces/hypr/hyprland.lua": {
+        "sha256": "7abe6d28f687f27b8321be25cfea7a0a6ee91a7f85b25862824d54f2e0f401f9",
+        "mode": 420
+      },
+      "settings with spaces/hypr/hyprlock.conf": {
+        "sha256": "ae2a3ea285943b5439dda86518fea01b5e5446eb8a88e4537c82dae818e412d1",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/animations.lua": {
+        "sha256": "d30cd8e11077d208c4743b26938399253638dc2fa54da4aee3bbabbc29fbbeca",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/env.lua": {
+        "sha256": "79b5dae5d4af17e865d3360e108afb702ebe68e78b03ab0e6b0fff3295a3ec7a",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/keybinds.lua": {
+        "sha256": "1cc28ec0f9228dcd310d5b159f3cbe01eef8d3d20386982d223de4c69acf9b5f",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/monitors.lua": {
+        "sha256": "061d327d06b1b38d8529f680b38f4c750c65cc683983e6c8914db1a4c86eb88a",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/rules.lua": {
+        "sha256": "d7b0af42a3b78d2a53656dde1ad71042fe35c2bb066158a6d480550d4faa5490",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/settings.lua": {
+        "sha256": "36e0e5526b861e4e1d41320f6b29eff258827b86a4600b273c627a6e0075820d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/startup.lua": {
+        "sha256": "81e0bf3b3173ac95b8293f421255fe3da07345c2675934f7027ab35fa4f8cfa5",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/workspaces.lua": {
+        "sha256": "7c2463a99e028a9df4c303f2e0981bfcfc394dadd8ec45452deae09c12270488",
+        "mode": 420
+      },
+      "settings with spaces/hypr/profile.env": {
+        "sha256": "456db04d4677ac6ff4d944637a1be2c09f02a9f0adb1582450a2b1296977d2a7",
+        "mode": 420
+      },
+      "settings with spaces/hypr/profile.lua": {
+        "sha256": "02c821517c80c75f3cf3210ddc8b750acffbde00d7d5b453f295b2dacec03fb0",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/0-shared-fonts.rasi": {
+        "sha256": "91a9deea16e9cf4a119f372bb90d8c1ace7b2f921a4c115fc010c8042605d605",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config-calc.rasi": {
+        "sha256": "5a92eda624544b82c65853b512c697a5687e990c1f187a935e3d9393af965a9d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config-clipboard.rasi": {
+        "sha256": "d24f282ccd05390a416fa7286b3efacca1bac25e498bdaf9e13678532a035532",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config-launcher.rasi": {
+        "sha256": "d3ceb3a73a705f08dfedbe2706dec127b8b2a448cc8887892a7185ec1f7a9f01",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config-windows.rasi": {
+        "sha256": "7010b545ea6a27b69f1bc8131db79be8f2331e74d44318012d29fad0e9443792",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config.rasi": {
+        "sha256": "d855b793840b98e27e406a25e67ab5d81a5d427dd8f527efa010efb0f2951f29",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/themes/Frosted-Glass-Common.rasi": {
+        "sha256": "9e83f6c55b95d12b173f3d8648c921044ce814a5cece7371c41a3283dc1518d3",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/themes/Frosted-Glass-Launcher.rasi": {
+        "sha256": "d16c988222b55bb5e66ab80409acfc0cbe75210f84a55ca78361e213ce2ac92e",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/themes/Frosted-Glass.rasi": {
+        "sha256": "022ff9b4e9c7db3ef7d5ba988272d596028b85a8f71e48e56d0168a1c820cc2e",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/wallust/colors-rofi.rasi": {
+        "sha256": "8f64f938948cca5ef099dd40a58a17ea76c4eb026568fb374ac5bd2f5165ebf6",
+        "mode": 420
+      },
+      "settings with spaces/hypr/scripts/ClipManager.sh": {
+        "sha256": "6e4a64ad3b680109306b5f9ef94654cc994eb35a14ea6d5375f9cc080cbd05fe",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/ClipboardWatcher.sh": {
+        "sha256": "8344db93313ed683b69b819fdf9b559623d2b7655c6ed4759d6bd1e2578e4785",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/LaunchApp.sh": {
+        "sha256": "2fb795cc20dbb4bf7b2c5b6fc07c949db419ab208bcfbed77fdd2a0a737c084b",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/LaunchTerminal.sh": {
+        "sha256": "c8fe410f857b18d3d361b8909377130d35fc16a0db34d969a34b0942881373c1",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/LockScreen.sh": {
+        "sha256": "f1bc7ffc0ec3a53503df4aa08ebd14eb756d4e409c67fb4d64eab938c53e6c9d",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/Polkit.sh": {
+        "sha256": "a1ea9aea7ff8b937a942d8060ec1cba84e3e4a32478e4f2748ce90d1536d5a3b",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/PowerMenu.sh": {
+        "sha256": "1a722acd2a8d57ffd4c4d5ce66c436e4d95175f6cd72782cb5b0a31bf86772d2",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/RofiLauncher.sh": {
+        "sha256": "8e4308eda2b565ae14d048a6bad1894339ac5f2b5a3de128d427c54c12c46b1c",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/ScreenShot.sh": {
+        "sha256": "a1497ef4e80f154321eaf94b3d5b905aa3b186f43c56ca26de6bdfeb2e8cfce8",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/SessionStartup.sh": {
+        "sha256": "305adb5972037f2aa38c1d7e6f2f5fda8bd111f42fecb22f6aee6215d8406584",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/Wallpaper.sh": {
+        "sha256": "baf1ddb8f338c6587073de59a20f07931c3ea2ebb897f48089ee59f62b6ae51a",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/WallpaperDaemon.sh": {
+        "sha256": "ca69eac4c7176701131a6b83d23cc2c3f44d8b05d71cd94868b6afff1aa1b512",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/WaybarStartup.sh": {
+        "sha256": "591715f5088f0c1dab1f9d4535db9c3904f7e910b6117946895a26fcdf5676d0",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/WindowSwitcher.sh": {
+        "sha256": "3db598aa09538ef27c60917d0f3b5a50a591f58814af17e106f8e7aa11cdccf1",
+        "mode": 493
+      },
+      "settings with spaces/hypr/waybar/configs/Frosted-Glass": {
+        "sha256": "9b11113e0fc1cd2548b9002768d1f9f81af8ef4109a8ddb18d7bb5b12d27989c",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/scripts/temperature.py": {
+        "sha256": "837a108a2a314c539689ecfc31a9ee8247da784ee1ef0aefa49e64c15c781fe8",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/style/Frosted-Glass.css": {
+        "sha256": "1cf7675e39986911f7f5fa1a8dff8ecfafd8de1020230eee16aab4690a4cabe1",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/style.css": {
+        "sha256": "57c739cfbceb270a1b93fb324733124167813cdffbf2c007c2febdffca056130",
+        "mode": 420
+      },
+      "settings with spaces/kdeglobals": {
+        "sha256": "93227c5bc465388ac7fe046df7626d57a36785507a4244b82064c2ca7115dd90",
+        "mode": 420
+      },
+      "settings with spaces/kitty/kitty.conf": {
+        "sha256": "65f2611f2c7747e99bb2fbb9f2dec400666b6c79057d06e0ef43e2d0b0ee8bb9",
+        "mode": 420
+      },
+      "settings with spaces/qt6ct/qt6ct.conf": {
+        "sha256": "305ec939ca0f864a27fb0b578336cda28cd2062898ecb9188b17620a98f52375",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hypridle.service.d/hyprixe.conf": {
+        "sha256": "44d3fe01a849ff9d5ea3dfcb2e651c94f890ab57becc6b78d2ab30e9d818f319",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-awww.service": {
+        "sha256": "af6695da581c78c87d97b409d65bcb0c62313cf5fd8c776661b7a51123e65227",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-clipboard.service": {
+        "sha256": "5c6ec9deac4da1c035f673308e1973b295360922c4e81415cf5c14996aab9816",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-polkit.service": {
+        "sha256": "d564c6dfe710e9b2cebf162baebf397b6b5e5940d8f9a4b784f9867b877d6c1c",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-session.target": {
+        "sha256": "9b27fbac5c2d91174825fe5e3d6a852a95ea4e85188a97968b91f1c9fe955d5b",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-wallpaper.service": {
+        "sha256": "fcc8b44db5ef48421619c8fcbe1f595a8a3cd4ebdf8dc2a0fbe85adcef0931a1",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/swaync.service.d/hyprixe.conf": {
+        "sha256": "9fb61450f717ed9137c2626a580219b4f1118677d65cb923c126b0d9cbb77f2f",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/waybar.service.d/hyprixe.conf": {
+        "sha256": "fe87953cd7f6fe286b68946e2bced062f35b66e980d0f1247983529f20479745",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/icons/lock.svg": {
+        "sha256": "c7c0fe4d10e0079f0099d1df5b6d50ec9be2ab3a120aec77aa52c2c6101b41c9",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/icons/logout.svg": {
+        "sha256": "a3af82c8ce1ce1322ec61e69cd1f5a40af122f49376eef08279f90cca7979be1",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/icons/reboot.svg": {
+        "sha256": "8041d6b029c6c3b4b6851639fae8e7301da7d6f863f863f3a9e501bef5fd7140",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/icons/shutdown.svg": {
+        "sha256": "f3df0f5d0f6be31f8df295b40b76107c051c85d819dd4749b676dda698b9095d",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/layout": {
+        "sha256": "9ca60c18bae021b5efb58fbb9e5756da2dfc86cc5af5b0d6a90beee7838d2990",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/style.css": {
+        "sha256": "7d86fa1dc8a8e38ccc27f239d8c4445c3b730869f5405589664efa2f9fd3206a",
+        "mode": 420
+      },
+      "data with spaces/color-schemes/HyprixeFrostedDolphin.colors": {
+        "sha256": "9c83fdcb48f756833fc65762082c5e012203499097c70875e5f91a84ab732ef5",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/HyprixeDebian.ttf": {
+        "sha256": "28214849a64be2e1dba1782bcddf45f1d29560760effec387338a0218b557ffe",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/LICENSE.txt": {
+        "sha256": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/README.md": {
+        "sha256": "c2bbbf522a85f25feb8e910fb0ca58dbe89dc84e94baa7319f802a8ed42aa73f",
+        "mode": 420
+      },
+      "data with spaces/kxmlgui5/dolphin/dolphinui.rc": {
+        "sha256": "c1f59f07ce4a729b3d4226c4f12fa91e69fe0d90ddcc0ce2426ba0fa08e22766",
+        "mode": 420
+      },
+      "data with spaces/hyprixe/wallpapers/min_forest.jpg": {
+        "sha256": "9bfb1f796f738ee40a6f072d1cfb5045fb4d46da7af5059de10f405ca284ce30",
+        "mode": 420
+      },
+      "settings with spaces/mimeapps.list": {
+        "sha256": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d",
+        "mode": 420
+      },
+      "settings with spaces/hyprland-mimeapps.list": {
+        "sha256": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/hyprland.conf": {
+        "sha256": null,
+        "mode": null
+      },
+      ".local/bin/rofi": {
+        "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+        "mode": 493
+      },
+      ".local/bin/awww": {
+        "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+        "mode": 493
+      },
+      ".local/bin/awww-daemon": {
+        "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+        "mode": 493
+      },
+      ".local/bin/waybar": {
+        "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+        "mode": 493
+      }
+    },
+    "custom/vmware/full": {
+      ".zshrc": {
+        "sha256": "cbb8130f46945e7cea780c012c68c46a0ec85d35a0008ebcf44dfbffc44b02fc",
+        "mode": 420
+      },
+      ".p10k.zsh": {
+        "sha256": "f8d200b268fca5b16dcd31cd7e4b1ba4c8a9446377e2c089bb0c64f43f118712",
+        "mode": 420
+      },
+      ".local/bin/hyprixe-session": {
+        "sha256": "1bb4184cceb1a3f5e667c9c513bed7b72316a519e796d97ba967fe3457b4a47d",
+        "mode": 493
+      },
+      "settings with spaces/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig": {
+        "sha256": "74083adfc82c03d818f57ee66a914e13de110ce03e11089dd448df1d15850c49",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/Frosted-Glass/Frosted-Glass.svg": {
+        "sha256": "5ee9ced1d2b6fb8bfe05977adec97047b7b919bcd83540d30f450a1fb188d7f8",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig": {
+        "sha256": "c509aa99ff34c4ee626f04a07adcd106d6b4781778f78fab7315db53f196e07c",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg": {
+        "sha256": "52bd4b8b5ef523093b28f0768c4f8b3af245bb295178375324c0052ae90385f8",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/kvantum.kvconfig": {
+        "sha256": "543e53d7427ddd6530234558b0835c304eb9a7ad91939fe2aa7a53bbb319c631",
+        "mode": 420
+      },
+      "settings with spaces/dolphinrc": {
+        "sha256": "1d4738fda9fd0baf570b643a12af48089dbf3bf309575eaf00be7b08603514a3",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/monitors.lua": {
+        "sha256": "d12f596e653d00e2776c23451e18a55a2949cce44580f00f6dbf9b7be08362d8",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_animations.lua": {
+        "sha256": "e928d9473ca04db23947b18e544e9e38fa1c69e62e5a988957fb6931a595c87a",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_decorations.lua": {
+        "sha256": "fa3c14b712cdf1ba85c99ac499f89626df6c68f4ccb49a54ad759f06a83302b9",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_defaults.lua": {
+        "sha256": "63d63627d23db797b0565a77a58c961ed820bc7fe7aff6af7de75e3896bd6b2d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_keybinds.lua": {
+        "sha256": "aedc65324f0144df2b968ab6720f8d1d812ab97d59718049e39f56f8ffd9aa89",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_settings.lua": {
+        "sha256": "c63f99a92a3fea7445d945442bb65f93bce8b23dffb04ec19ee2074fc1bda98d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserScripts/RofiCalc.sh": {
+        "sha256": "435dbcaf6bff579b48f508570259668ba0914502d384713ec6859f69b657fe8d",
+        "mode": 493
+      },
+      "settings with spaces/hypr/hl.meta.lua": {
+        "sha256": "c4cdc2ce00d1822f7e47a8b94c19a338387e359844dafc042ce9308f0b7416f1",
+        "mode": 420
+      },
+      "settings with spaces/hypr/hypridle.conf": {
+        "sha256": "fa5b667801e369ec876d8a386878376e10a22469061c5a086de3b23457a17a4b",
+        "mode": 420
+      },
+      "settings with spaces/hypr/hyprland.lua": {
+        "sha256": "7abe6d28f687f27b8321be25cfea7a0a6ee91a7f85b25862824d54f2e0f401f9",
+        "mode": 420
+      },
+      "settings with spaces/hypr/hyprlock.conf": {
+        "sha256": "ae2a3ea285943b5439dda86518fea01b5e5446eb8a88e4537c82dae818e412d1",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/animations.lua": {
+        "sha256": "d30cd8e11077d208c4743b26938399253638dc2fa54da4aee3bbabbc29fbbeca",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/env.lua": {
+        "sha256": "79b5dae5d4af17e865d3360e108afb702ebe68e78b03ab0e6b0fff3295a3ec7a",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/keybinds.lua": {
+        "sha256": "1cc28ec0f9228dcd310d5b159f3cbe01eef8d3d20386982d223de4c69acf9b5f",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/monitors.lua": {
+        "sha256": "061d327d06b1b38d8529f680b38f4c750c65cc683983e6c8914db1a4c86eb88a",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/rules.lua": {
+        "sha256": "d7b0af42a3b78d2a53656dde1ad71042fe35c2bb066158a6d480550d4faa5490",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/settings.lua": {
+        "sha256": "36e0e5526b861e4e1d41320f6b29eff258827b86a4600b273c627a6e0075820d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/startup.lua": {
+        "sha256": "81e0bf3b3173ac95b8293f421255fe3da07345c2675934f7027ab35fa4f8cfa5",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/workspaces.lua": {
+        "sha256": "7c2463a99e028a9df4c303f2e0981bfcfc394dadd8ec45452deae09c12270488",
+        "mode": 420
+      },
+      "settings with spaces/hypr/profile.env": {
+        "sha256": "ce4dbf05bf3afb90b1fd7b2cc6f8ced0d1b91d8b5442d425846d2163114169f0",
+        "mode": 420
+      },
+      "settings with spaces/hypr/profile.lua": {
+        "sha256": "d9ea6c153d66b7c42d57a847e5aae1ee35fe7f40fdb544579db6fa695c05ae0d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/0-shared-fonts.rasi": {
+        "sha256": "91a9deea16e9cf4a119f372bb90d8c1ace7b2f921a4c115fc010c8042605d605",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config-calc.rasi": {
+        "sha256": "5a92eda624544b82c65853b512c697a5687e990c1f187a935e3d9393af965a9d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config-clipboard.rasi": {
+        "sha256": "d24f282ccd05390a416fa7286b3efacca1bac25e498bdaf9e13678532a035532",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config-launcher.rasi": {
+        "sha256": "d3ceb3a73a705f08dfedbe2706dec127b8b2a448cc8887892a7185ec1f7a9f01",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config-windows.rasi": {
+        "sha256": "7010b545ea6a27b69f1bc8131db79be8f2331e74d44318012d29fad0e9443792",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config.rasi": {
+        "sha256": "d855b793840b98e27e406a25e67ab5d81a5d427dd8f527efa010efb0f2951f29",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/themes/Frosted-Glass-Common.rasi": {
+        "sha256": "9e83f6c55b95d12b173f3d8648c921044ce814a5cece7371c41a3283dc1518d3",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/themes/Frosted-Glass-Launcher.rasi": {
+        "sha256": "d16c988222b55bb5e66ab80409acfc0cbe75210f84a55ca78361e213ce2ac92e",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/themes/Frosted-Glass.rasi": {
+        "sha256": "022ff9b4e9c7db3ef7d5ba988272d596028b85a8f71e48e56d0168a1c820cc2e",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/wallust/colors-rofi.rasi": {
+        "sha256": "8f64f938948cca5ef099dd40a58a17ea76c4eb026568fb374ac5bd2f5165ebf6",
+        "mode": 420
+      },
+      "settings with spaces/hypr/scripts/ClipManager.sh": {
+        "sha256": "6e4a64ad3b680109306b5f9ef94654cc994eb35a14ea6d5375f9cc080cbd05fe",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/ClipboardWatcher.sh": {
+        "sha256": "8344db93313ed683b69b819fdf9b559623d2b7655c6ed4759d6bd1e2578e4785",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/LaunchApp.sh": {
+        "sha256": "2fb795cc20dbb4bf7b2c5b6fc07c949db419ab208bcfbed77fdd2a0a737c084b",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/LaunchTerminal.sh": {
+        "sha256": "c8fe410f857b18d3d361b8909377130d35fc16a0db34d969a34b0942881373c1",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/LockScreen.sh": {
+        "sha256": "f1bc7ffc0ec3a53503df4aa08ebd14eb756d4e409c67fb4d64eab938c53e6c9d",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/Polkit.sh": {
+        "sha256": "a1ea9aea7ff8b937a942d8060ec1cba84e3e4a32478e4f2748ce90d1536d5a3b",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/PowerMenu.sh": {
+        "sha256": "1a722acd2a8d57ffd4c4d5ce66c436e4d95175f6cd72782cb5b0a31bf86772d2",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/RofiLauncher.sh": {
+        "sha256": "8e4308eda2b565ae14d048a6bad1894339ac5f2b5a3de128d427c54c12c46b1c",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/ScreenShot.sh": {
+        "sha256": "a1497ef4e80f154321eaf94b3d5b905aa3b186f43c56ca26de6bdfeb2e8cfce8",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/SessionStartup.sh": {
+        "sha256": "305adb5972037f2aa38c1d7e6f2f5fda8bd111f42fecb22f6aee6215d8406584",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/Wallpaper.sh": {
+        "sha256": "baf1ddb8f338c6587073de59a20f07931c3ea2ebb897f48089ee59f62b6ae51a",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/WallpaperDaemon.sh": {
+        "sha256": "ca69eac4c7176701131a6b83d23cc2c3f44d8b05d71cd94868b6afff1aa1b512",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/WaybarStartup.sh": {
+        "sha256": "591715f5088f0c1dab1f9d4535db9c3904f7e910b6117946895a26fcdf5676d0",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/WindowSwitcher.sh": {
+        "sha256": "3db598aa09538ef27c60917d0f3b5a50a591f58814af17e106f8e7aa11cdccf1",
+        "mode": 493
+      },
+      "settings with spaces/hypr/waybar/configs/Frosted-Glass": {
+        "sha256": "9b11113e0fc1cd2548b9002768d1f9f81af8ef4109a8ddb18d7bb5b12d27989c",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/scripts/temperature.py": {
+        "sha256": "837a108a2a314c539689ecfc31a9ee8247da784ee1ef0aefa49e64c15c781fe8",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/style/Frosted-Glass.css": {
+        "sha256": "1cf7675e39986911f7f5fa1a8dff8ecfafd8de1020230eee16aab4690a4cabe1",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/style.css": {
+        "sha256": "57c739cfbceb270a1b93fb324733124167813cdffbf2c007c2febdffca056130",
+        "mode": 420
+      },
+      "settings with spaces/kdeglobals": {
+        "sha256": "93227c5bc465388ac7fe046df7626d57a36785507a4244b82064c2ca7115dd90",
+        "mode": 420
+      },
+      "settings with spaces/kitty/kitty.conf": {
+        "sha256": "65f2611f2c7747e99bb2fbb9f2dec400666b6c79057d06e0ef43e2d0b0ee8bb9",
+        "mode": 420
+      },
+      "settings with spaces/qt6ct/qt6ct.conf": {
+        "sha256": "305ec939ca0f864a27fb0b578336cda28cd2062898ecb9188b17620a98f52375",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hypridle.service.d/hyprixe.conf": {
+        "sha256": "44d3fe01a849ff9d5ea3dfcb2e651c94f890ab57becc6b78d2ab30e9d818f319",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-awww.service": {
+        "sha256": "af6695da581c78c87d97b409d65bcb0c62313cf5fd8c776661b7a51123e65227",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-clipboard.service": {
+        "sha256": "5c6ec9deac4da1c035f673308e1973b295360922c4e81415cf5c14996aab9816",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-polkit.service": {
+        "sha256": "d564c6dfe710e9b2cebf162baebf397b6b5e5940d8f9a4b784f9867b877d6c1c",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-session.target": {
+        "sha256": "9b27fbac5c2d91174825fe5e3d6a852a95ea4e85188a97968b91f1c9fe955d5b",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-wallpaper.service": {
+        "sha256": "fcc8b44db5ef48421619c8fcbe1f595a8a3cd4ebdf8dc2a0fbe85adcef0931a1",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/swaync.service.d/hyprixe.conf": {
+        "sha256": "9fb61450f717ed9137c2626a580219b4f1118677d65cb923c126b0d9cbb77f2f",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/waybar.service.d/hyprixe.conf": {
+        "sha256": "19403e21555ddc55eda39068819e78b05bc689b46f07b9b14e85ba0c9b831abe",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/icons/lock.svg": {
+        "sha256": "c7c0fe4d10e0079f0099d1df5b6d50ec9be2ab3a120aec77aa52c2c6101b41c9",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/icons/logout.svg": {
+        "sha256": "a3af82c8ce1ce1322ec61e69cd1f5a40af122f49376eef08279f90cca7979be1",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/icons/reboot.svg": {
+        "sha256": "8041d6b029c6c3b4b6851639fae8e7301da7d6f863f863f3a9e501bef5fd7140",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/icons/shutdown.svg": {
+        "sha256": "f3df0f5d0f6be31f8df295b40b76107c051c85d819dd4749b676dda698b9095d",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/layout": {
+        "sha256": "9ca60c18bae021b5efb58fbb9e5756da2dfc86cc5af5b0d6a90beee7838d2990",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/style.css": {
+        "sha256": "7d86fa1dc8a8e38ccc27f239d8c4445c3b730869f5405589664efa2f9fd3206a",
+        "mode": 420
+      },
+      "data with spaces/color-schemes/HyprixeFrostedDolphin.colors": {
+        "sha256": "9c83fdcb48f756833fc65762082c5e012203499097c70875e5f91a84ab732ef5",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/HyprixeDebian.ttf": {
+        "sha256": "28214849a64be2e1dba1782bcddf45f1d29560760effec387338a0218b557ffe",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/LICENSE.txt": {
+        "sha256": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/README.md": {
+        "sha256": "c2bbbf522a85f25feb8e910fb0ca58dbe89dc84e94baa7319f802a8ed42aa73f",
+        "mode": 420
+      },
+      "data with spaces/kxmlgui5/dolphin/dolphinui.rc": {
+        "sha256": "c1f59f07ce4a729b3d4226c4f12fa91e69fe0d90ddcc0ce2426ba0fa08e22766",
+        "mode": 420
+      },
+      "data with spaces/hyprixe/wallpapers/min_forest.jpg": {
+        "sha256": "9bfb1f796f738ee40a6f072d1cfb5045fb4d46da7af5059de10f405ca284ce30",
+        "mode": 420
+      },
+      "settings with spaces/mimeapps.list": {
+        "sha256": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d",
+        "mode": 420
+      },
+      "settings with spaces/hyprland-mimeapps.list": {
+        "sha256": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/hyprland.conf": {
+        "sha256": null,
+        "mode": null
+      }
+    },
+    "custom/vmware/waybar": {
+      "settings with spaces/hypr/waybar/configs/Frosted-Glass": {
+        "sha256": "9b11113e0fc1cd2548b9002768d1f9f81af8ef4109a8ddb18d7bb5b12d27989c",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/style.css": {
+        "sha256": "57c739cfbceb270a1b93fb324733124167813cdffbf2c007c2febdffca056130",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/style/Frosted-Glass.css": {
+        "sha256": "1cf7675e39986911f7f5fa1a8dff8ecfafd8de1020230eee16aab4690a4cabe1",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/scripts/temperature.py": {
+        "sha256": "837a108a2a314c539689ecfc31a9ee8247da784ee1ef0aefa49e64c15c781fe8",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/HyprixeDebian.ttf": {
+        "sha256": "28214849a64be2e1dba1782bcddf45f1d29560760effec387338a0218b557ffe",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/LICENSE.txt": {
+        "sha256": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/README.md": {
+        "sha256": "c2bbbf522a85f25feb8e910fb0ca58dbe89dc84e94baa7319f802a8ed42aa73f",
+        "mode": 420
+      }
+    },
+    "custom/vmware/dolphin": {
+      "settings with spaces/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig": {
+        "sha256": "c509aa99ff34c4ee626f04a07adcd106d6b4781778f78fab7315db53f196e07c",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg": {
+        "sha256": "52bd4b8b5ef523093b28f0768c4f8b3af245bb295178375324c0052ae90385f8",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/kvantum.kvconfig": {
+        "sha256": "2b24c58528b7a651aeec34439d82033a43ee021d2f5cc6f303aac645b9479251",
+        "mode": 420
+      },
+      "data with spaces/color-schemes/HyprixeFrostedDolphin.colors": {
+        "sha256": "9c83fdcb48f756833fc65762082c5e012203499097c70875e5f91a84ab732ef5",
+        "mode": 420
+      },
+      "settings with spaces/dolphinrc": {
+        "sha256": "977b2d1890c457fd2f8cc566ee984340faef3290008322f06a05014d845001f1",
+        "mode": 420
+      }
+    },
+    "custom/vmware/runtime": {
+      ".zshrc": {
+        "sha256": "cbb8130f46945e7cea780c012c68c46a0ec85d35a0008ebcf44dfbffc44b02fc",
+        "mode": 420
+      },
+      ".p10k.zsh": {
+        "sha256": "f8d200b268fca5b16dcd31cd7e4b1ba4c8a9446377e2c089bb0c64f43f118712",
+        "mode": 420
+      },
+      ".local/bin/hyprixe-session": {
+        "sha256": "1bb4184cceb1a3f5e667c9c513bed7b72316a519e796d97ba967fe3457b4a47d",
+        "mode": 493
+      },
+      "settings with spaces/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig": {
+        "sha256": "74083adfc82c03d818f57ee66a914e13de110ce03e11089dd448df1d15850c49",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/Frosted-Glass/Frosted-Glass.svg": {
+        "sha256": "5ee9ced1d2b6fb8bfe05977adec97047b7b919bcd83540d30f450a1fb188d7f8",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig": {
+        "sha256": "c509aa99ff34c4ee626f04a07adcd106d6b4781778f78fab7315db53f196e07c",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg": {
+        "sha256": "52bd4b8b5ef523093b28f0768c4f8b3af245bb295178375324c0052ae90385f8",
+        "mode": 420
+      },
+      "settings with spaces/Kvantum/kvantum.kvconfig": {
+        "sha256": "543e53d7427ddd6530234558b0835c304eb9a7ad91939fe2aa7a53bbb319c631",
+        "mode": 420
+      },
+      "settings with spaces/dolphinrc": {
+        "sha256": "1d4738fda9fd0baf570b643a12af48089dbf3bf309575eaf00be7b08603514a3",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/monitors.lua": {
+        "sha256": "d12f596e653d00e2776c23451e18a55a2949cce44580f00f6dbf9b7be08362d8",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_animations.lua": {
+        "sha256": "e928d9473ca04db23947b18e544e9e38fa1c69e62e5a988957fb6931a595c87a",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_decorations.lua": {
+        "sha256": "fa3c14b712cdf1ba85c99ac499f89626df6c68f4ccb49a54ad759f06a83302b9",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_defaults.lua": {
+        "sha256": "63d63627d23db797b0565a77a58c961ed820bc7fe7aff6af7de75e3896bd6b2d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_keybinds.lua": {
+        "sha256": "aedc65324f0144df2b968ab6720f8d1d812ab97d59718049e39f56f8ffd9aa89",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserConfigs/user_settings.lua": {
+        "sha256": "c63f99a92a3fea7445d945442bb65f93bce8b23dffb04ec19ee2074fc1bda98d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/UserScripts/RofiCalc.sh": {
+        "sha256": "435dbcaf6bff579b48f508570259668ba0914502d384713ec6859f69b657fe8d",
+        "mode": 493
+      },
+      "settings with spaces/hypr/hl.meta.lua": {
+        "sha256": "c4cdc2ce00d1822f7e47a8b94c19a338387e359844dafc042ce9308f0b7416f1",
+        "mode": 420
+      },
+      "settings with spaces/hypr/hypridle.conf": {
+        "sha256": "fa5b667801e369ec876d8a386878376e10a22469061c5a086de3b23457a17a4b",
+        "mode": 420
+      },
+      "settings with spaces/hypr/hyprland.lua": {
+        "sha256": "7abe6d28f687f27b8321be25cfea7a0a6ee91a7f85b25862824d54f2e0f401f9",
+        "mode": 420
+      },
+      "settings with spaces/hypr/hyprlock.conf": {
+        "sha256": "ae2a3ea285943b5439dda86518fea01b5e5446eb8a88e4537c82dae818e412d1",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/animations.lua": {
+        "sha256": "d30cd8e11077d208c4743b26938399253638dc2fa54da4aee3bbabbc29fbbeca",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/env.lua": {
+        "sha256": "79b5dae5d4af17e865d3360e108afb702ebe68e78b03ab0e6b0fff3295a3ec7a",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/keybinds.lua": {
+        "sha256": "1cc28ec0f9228dcd310d5b159f3cbe01eef8d3d20386982d223de4c69acf9b5f",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/monitors.lua": {
+        "sha256": "061d327d06b1b38d8529f680b38f4c750c65cc683983e6c8914db1a4c86eb88a",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/rules.lua": {
+        "sha256": "d7b0af42a3b78d2a53656dde1ad71042fe35c2bb066158a6d480550d4faa5490",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/settings.lua": {
+        "sha256": "36e0e5526b861e4e1d41320f6b29eff258827b86a4600b273c627a6e0075820d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/startup.lua": {
+        "sha256": "81e0bf3b3173ac95b8293f421255fe3da07345c2675934f7027ab35fa4f8cfa5",
+        "mode": 420
+      },
+      "settings with spaces/hypr/lua/workspaces.lua": {
+        "sha256": "7c2463a99e028a9df4c303f2e0981bfcfc394dadd8ec45452deae09c12270488",
+        "mode": 420
+      },
+      "settings with spaces/hypr/profile.env": {
+        "sha256": "ce4dbf05bf3afb90b1fd7b2cc6f8ced0d1b91d8b5442d425846d2163114169f0",
+        "mode": 420
+      },
+      "settings with spaces/hypr/profile.lua": {
+        "sha256": "d9ea6c153d66b7c42d57a847e5aae1ee35fe7f40fdb544579db6fa695c05ae0d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/0-shared-fonts.rasi": {
+        "sha256": "91a9deea16e9cf4a119f372bb90d8c1ace7b2f921a4c115fc010c8042605d605",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config-calc.rasi": {
+        "sha256": "5a92eda624544b82c65853b512c697a5687e990c1f187a935e3d9393af965a9d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config-clipboard.rasi": {
+        "sha256": "d24f282ccd05390a416fa7286b3efacca1bac25e498bdaf9e13678532a035532",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config-launcher.rasi": {
+        "sha256": "d3ceb3a73a705f08dfedbe2706dec127b8b2a448cc8887892a7185ec1f7a9f01",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config-windows.rasi": {
+        "sha256": "7010b545ea6a27b69f1bc8131db79be8f2331e74d44318012d29fad0e9443792",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/config.rasi": {
+        "sha256": "d855b793840b98e27e406a25e67ab5d81a5d427dd8f527efa010efb0f2951f29",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/themes/Frosted-Glass-Common.rasi": {
+        "sha256": "9e83f6c55b95d12b173f3d8648c921044ce814a5cece7371c41a3283dc1518d3",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/themes/Frosted-Glass-Launcher.rasi": {
+        "sha256": "d16c988222b55bb5e66ab80409acfc0cbe75210f84a55ca78361e213ce2ac92e",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/themes/Frosted-Glass.rasi": {
+        "sha256": "022ff9b4e9c7db3ef7d5ba988272d596028b85a8f71e48e56d0168a1c820cc2e",
+        "mode": 420
+      },
+      "settings with spaces/hypr/rofi/wallust/colors-rofi.rasi": {
+        "sha256": "8f64f938948cca5ef099dd40a58a17ea76c4eb026568fb374ac5bd2f5165ebf6",
+        "mode": 420
+      },
+      "settings with spaces/hypr/scripts/ClipManager.sh": {
+        "sha256": "6e4a64ad3b680109306b5f9ef94654cc994eb35a14ea6d5375f9cc080cbd05fe",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/ClipboardWatcher.sh": {
+        "sha256": "8344db93313ed683b69b819fdf9b559623d2b7655c6ed4759d6bd1e2578e4785",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/LaunchApp.sh": {
+        "sha256": "2fb795cc20dbb4bf7b2c5b6fc07c949db419ab208bcfbed77fdd2a0a737c084b",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/LaunchTerminal.sh": {
+        "sha256": "c8fe410f857b18d3d361b8909377130d35fc16a0db34d969a34b0942881373c1",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/LockScreen.sh": {
+        "sha256": "f1bc7ffc0ec3a53503df4aa08ebd14eb756d4e409c67fb4d64eab938c53e6c9d",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/Polkit.sh": {
+        "sha256": "a1ea9aea7ff8b937a942d8060ec1cba84e3e4a32478e4f2748ce90d1536d5a3b",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/PowerMenu.sh": {
+        "sha256": "1a722acd2a8d57ffd4c4d5ce66c436e4d95175f6cd72782cb5b0a31bf86772d2",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/RofiLauncher.sh": {
+        "sha256": "8e4308eda2b565ae14d048a6bad1894339ac5f2b5a3de128d427c54c12c46b1c",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/ScreenShot.sh": {
+        "sha256": "a1497ef4e80f154321eaf94b3d5b905aa3b186f43c56ca26de6bdfeb2e8cfce8",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/SessionStartup.sh": {
+        "sha256": "305adb5972037f2aa38c1d7e6f2f5fda8bd111f42fecb22f6aee6215d8406584",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/Wallpaper.sh": {
+        "sha256": "baf1ddb8f338c6587073de59a20f07931c3ea2ebb897f48089ee59f62b6ae51a",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/WallpaperDaemon.sh": {
+        "sha256": "ca69eac4c7176701131a6b83d23cc2c3f44d8b05d71cd94868b6afff1aa1b512",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/WaybarStartup.sh": {
+        "sha256": "591715f5088f0c1dab1f9d4535db9c3904f7e910b6117946895a26fcdf5676d0",
+        "mode": 493
+      },
+      "settings with spaces/hypr/scripts/WindowSwitcher.sh": {
+        "sha256": "3db598aa09538ef27c60917d0f3b5a50a591f58814af17e106f8e7aa11cdccf1",
+        "mode": 493
+      },
+      "settings with spaces/hypr/waybar/configs/Frosted-Glass": {
+        "sha256": "9b11113e0fc1cd2548b9002768d1f9f81af8ef4109a8ddb18d7bb5b12d27989c",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/scripts/temperature.py": {
+        "sha256": "837a108a2a314c539689ecfc31a9ee8247da784ee1ef0aefa49e64c15c781fe8",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/style/Frosted-Glass.css": {
+        "sha256": "1cf7675e39986911f7f5fa1a8dff8ecfafd8de1020230eee16aab4690a4cabe1",
+        "mode": 420
+      },
+      "settings with spaces/hypr/waybar/style.css": {
+        "sha256": "57c739cfbceb270a1b93fb324733124167813cdffbf2c007c2febdffca056130",
+        "mode": 420
+      },
+      "settings with spaces/kdeglobals": {
+        "sha256": "93227c5bc465388ac7fe046df7626d57a36785507a4244b82064c2ca7115dd90",
+        "mode": 420
+      },
+      "settings with spaces/kitty/kitty.conf": {
+        "sha256": "65f2611f2c7747e99bb2fbb9f2dec400666b6c79057d06e0ef43e2d0b0ee8bb9",
+        "mode": 420
+      },
+      "settings with spaces/qt6ct/qt6ct.conf": {
+        "sha256": "305ec939ca0f864a27fb0b578336cda28cd2062898ecb9188b17620a98f52375",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hypridle.service.d/hyprixe.conf": {
+        "sha256": "44d3fe01a849ff9d5ea3dfcb2e651c94f890ab57becc6b78d2ab30e9d818f319",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-awww.service": {
+        "sha256": "af6695da581c78c87d97b409d65bcb0c62313cf5fd8c776661b7a51123e65227",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-clipboard.service": {
+        "sha256": "5c6ec9deac4da1c035f673308e1973b295360922c4e81415cf5c14996aab9816",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-polkit.service": {
+        "sha256": "d564c6dfe710e9b2cebf162baebf397b6b5e5940d8f9a4b784f9867b877d6c1c",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-session.target": {
+        "sha256": "9b27fbac5c2d91174825fe5e3d6a852a95ea4e85188a97968b91f1c9fe955d5b",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/hyprixe-wallpaper.service": {
+        "sha256": "fcc8b44db5ef48421619c8fcbe1f595a8a3cd4ebdf8dc2a0fbe85adcef0931a1",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/swaync.service.d/hyprixe.conf": {
+        "sha256": "9fb61450f717ed9137c2626a580219b4f1118677d65cb923c126b0d9cbb77f2f",
+        "mode": 420
+      },
+      "settings with spaces/systemd/user/waybar.service.d/hyprixe.conf": {
+        "sha256": "fe87953cd7f6fe286b68946e2bced062f35b66e980d0f1247983529f20479745",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/icons/lock.svg": {
+        "sha256": "c7c0fe4d10e0079f0099d1df5b6d50ec9be2ab3a120aec77aa52c2c6101b41c9",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/icons/logout.svg": {
+        "sha256": "a3af82c8ce1ce1322ec61e69cd1f5a40af122f49376eef08279f90cca7979be1",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/icons/reboot.svg": {
+        "sha256": "8041d6b029c6c3b4b6851639fae8e7301da7d6f863f863f3a9e501bef5fd7140",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/icons/shutdown.svg": {
+        "sha256": "f3df0f5d0f6be31f8df295b40b76107c051c85d819dd4749b676dda698b9095d",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/layout": {
+        "sha256": "9ca60c18bae021b5efb58fbb9e5756da2dfc86cc5af5b0d6a90beee7838d2990",
+        "mode": 420
+      },
+      "settings with spaces/wlogout/style.css": {
+        "sha256": "7d86fa1dc8a8e38ccc27f239d8c4445c3b730869f5405589664efa2f9fd3206a",
+        "mode": 420
+      },
+      "data with spaces/color-schemes/HyprixeFrostedDolphin.colors": {
+        "sha256": "9c83fdcb48f756833fc65762082c5e012203499097c70875e5f91a84ab732ef5",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/HyprixeDebian.ttf": {
+        "sha256": "28214849a64be2e1dba1782bcddf45f1d29560760effec387338a0218b557ffe",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/LICENSE.txt": {
+        "sha256": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+        "mode": 420
+      },
+      "data with spaces/fonts/hyprixe/README.md": {
+        "sha256": "c2bbbf522a85f25feb8e910fb0ca58dbe89dc84e94baa7319f802a8ed42aa73f",
+        "mode": 420
+      },
+      "data with spaces/kxmlgui5/dolphin/dolphinui.rc": {
+        "sha256": "c1f59f07ce4a729b3d4226c4f12fa91e69fe0d90ddcc0ce2426ba0fa08e22766",
+        "mode": 420
+      },
+      "data with spaces/hyprixe/wallpapers/min_forest.jpg": {
+        "sha256": "9bfb1f796f738ee40a6f072d1cfb5045fb4d46da7af5059de10f405ca284ce30",
+        "mode": 420
+      },
+      "settings with spaces/mimeapps.list": {
+        "sha256": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d",
+        "mode": 420
+      },
+      "settings with spaces/hyprland-mimeapps.list": {
+        "sha256": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d",
+        "mode": 420
+      },
+      "settings with spaces/hypr/hyprland.conf": {
+        "sha256": null,
+        "mode": null
+      },
+      ".local/bin/rofi": {
+        "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+        "mode": 493
+      },
+      ".local/bin/awww": {
+        "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+        "mode": 493
+      },
+      ".local/bin/awww-daemon": {
+        "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+        "mode": 493
+      },
+      ".local/bin/waybar": {
+        "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+        "mode": 493
+      }
+    }
+  },
+  "sddm": {
+    "/usr/share/sddm/themes/hyprixe-frosted/Main.qml": "b0d0b19c6aacda5d324440f36fead011ff368c07c11f7f95aed0a2412e4b9305",
+    "/usr/share/sddm/themes/hyprixe-frosted/metadata.desktop": "39652914a9c4815d3c0fe17e1a58428cca04607c91b4e9246e8f4b55a3df43ad",
+    "/usr/share/sddm/themes/hyprixe-frosted/theme.conf": "a247e948c98c958c48156c54078bc48220bcd13ed288c209ade47f81073ddce0",
+    "/usr/share/sddm/themes/hyprixe-frosted/components/GlassPane.qml": "10eb3cf5cee16a1288d0879565f6d30cf8e2404a09d4172024319bb90b9a9415",
+    "/usr/share/sddm/themes/hyprixe-frosted/components/GlassButton.qml": "2048b3ffde6dfa212db2011abd2e13b797ceecb37029658be06162c806e60cbc",
+    "/usr/share/sddm/themes/hyprixe-frosted/components/GlassComboBox.qml": "559c6ea42bd8b955247f24945be351caebe6402e297fc00352597d8f7b1fe87c",
+    "/usr/share/sddm/themes/hyprixe-frosted/assets/user.svg": "0eb3fafaa1dfcc3dc455817587d77a1ca169cfec9c8e78442fbce8371df40643",
+    "/usr/share/sddm/themes/hyprixe-frosted/min_forest.jpg": "9bfb1f796f738ee40a6f072d1cfb5045fb4d46da7af5059de10f405ca284ce30"
+  }
+}

@@ -1,4 +1,7 @@
 """Dolphin paint checks. Never enforce a dock layout, icon size or view mode."""
+
+from source_layout import ROOT as REPOSITORY_ROOT, source_path, configure_imports, shell_bytes
+configure_imports()
 import argparse
 import configparser
 import hashlib
@@ -45,18 +48,18 @@ def assert_color_scheme(path):
 def check_source(report, root):
     root = Path(root)
     def interface():
-        spec = json.loads((root / 'dolphin/interface-baseline.json').read_text())
+        spec = json.loads((source_path(root, 'dolphin/interface-baseline.json')).read_text())
         for name, digest in spec['baseline_files'].items():
-            if hashlib.sha256((root / name).read_bytes()).hexdigest() != digest:
+            if hashlib.sha256(source_path(root, name).read_bytes()).hexdigest() != digest:
                 raise ValueError('Pre-9259fa5 interface changed: ' + name)
         for name in ('.config/baloofileinformationrc', '.local/share/dolphin/view_properties/global/.directory', 'dolphin/dock-layout.ini'):
-            if (root / name).exists():
+            if source_path(root, name).exists():
                 raise ValueError('Rejected interface preset reintroduced: ' + name)
     def theme():
-        assert_theme(*(root / '.config' / name for name in THEME_FILES))
-        assert_color_scheme(root / '.local/share' / SCHEME_FILE)
+        assert_theme(*(source_path(root, '.config') / name for name in THEME_FILES))
+        assert_color_scheme(source_path(root, '.local/share') / SCHEME_FILE)
     def association():
-        settings = read_ini(root / '.config/Kvantum/kvantum.kvconfig')
+        settings = read_ini(source_path(root, '.config/Kvantum/kvantum.kvconfig'))
         if settings['Applications'][THEME] != 'dolphin' or settings['General']['theme'] != 'Frosted-Glass':
             raise ValueError('Only Dolphin should use the light variant; global Frosted-Glass stays selected')
     for label, function in (('Dolphin interface: exact pre-9259fa5 files; no forced view/dock preset', interface),

@@ -1,4 +1,7 @@
 """Check shared Rofi menus and assets without treating visuals as tests."""
+
+from source_layout import ROOT as REPOSITORY_ROOT, source_path, configure_imports, shell_bytes
+configure_imports()
 import os
 from pathlib import Path
 import re
@@ -21,7 +24,7 @@ def imports(path, seen=None):
 
 
 def source_errors(root):
-    config = root / '.config/hypr'
+    config = source_path(root, '.config/hypr')
     required = ('rofi/config-launcher.rasi', 'rofi/config-windows.rasi',
                 'rofi/config-clipboard.rasi', 'rofi/config-calc.rasi', 'rofi/config.rasi',
                 'rofi/0-shared-fonts.rasi', 'rofi/themes/Frosted-Glass.rasi',
@@ -30,7 +33,7 @@ def source_errors(root):
     errors = [f'Missing launcher file: {name}' for name in required if not (config / name).is_file()]
     if errors:
         return errors
-    if not (root / 'wallpapers/min_forest.jpg').is_file():
+    if not (source_path(root, 'wallpapers/min_forest.jpg')).is_file():
         errors.append('Missing original min_forest.jpg wallpaper')
     for name in required:
         if name.endswith('.sh') and not os.access(config / name, os.X_OK):

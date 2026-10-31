@@ -1,4 +1,7 @@
 """Waybar organization checks; optional hardware is handled by native modules."""
+
+from source_layout import ROOT as REPOSITORY_ROOT, source_path, configure_imports, shell_bytes
+configure_imports()
 import json
 import os
 from pathlib import Path
@@ -37,10 +40,10 @@ def validate(config, root):
 
 def check_source(report, repo):
     try:
-        root = Path(repo) / '.config/hypr/waybar'
+        root = source_path(repo, '.config/hypr/waybar')
         config = json.loads((root / 'configs/Frosted-Glass').read_text())
         validate(config, root)
-        font = Path(repo) / '.local/share/fonts/hyprixe/HyprixeDebian.ttf'
+        font = source_path(repo, '.local/share/fonts/hyprixe/HyprixeDebian.ttf')
         if not font.is_file() or font.read_bytes()[:4] != b'\x00\x01\x00\x00':
             raise ValueError('Bundled Debian logo font missing/invalid')
     except (OSError, ValueError, KeyError, TypeError) as exc:

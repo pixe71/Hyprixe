@@ -1,0 +1,8 @@
+{
+  "id": "nixos",
+  "status": "planned",
+  "distribution": "NixOS",
+  "common_source": "common",
+  "overrides": [],
+  "tests": []
+}

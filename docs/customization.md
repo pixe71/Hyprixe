@@ -9,6 +9,10 @@ or fork, review `git diff`, deploy the relevant component and run verification.
 Editing a deployed `~/.config` file alone is temporary: the next installation
 can replace it, creating a backup but not merging every personal preference.
 
+Shared components live under `common/`; platform integration belongs under
+`profiles/`. The Zsh source is a template: plugin tokens are filled by the
+platform during deployment. Do not source that template directly.
+
 Use XDG-aware paths and existing helpers. Do not embed your username, display
 name or a specific connector. Custom XDG roots must stay within your HOME.
 Avoid changing generated deployment placeholders directly; the installer
@@ -16,16 +20,16 @@ renders them for the target account.
 
 | Area | Source to edit | Apply / check |
 | --- | --- | --- |
-| Wallpaper | `wallpapers/min_forest.jpg` | Full deployment; restart wallpaper service; reopen menus/lock and refresh SDDM on next reboot |
-| Waybar | `.config/hypr/waybar/configs/Frosted-Glass`, `style/Frosted-Glass.css` | Waybar-only install, restart service, `--waybar --session` |
-| Rofi | `.config/hypr/rofi/themes/Frosted-Glass-Common.rasi` and layout-specific files | Full deployment; reopen menu |
-| Wlogout | `.config/wlogout/layout`, `style.css`, icons | Full deployment; reopen menu; keep the action contract unless intentionally changing it |
-| Kitty | `.config/kitty/kitty.conf` | Full deployment; new Kitty window |
-| Zsh / prompt | `.zshrc`, `.p10k.zsh` | Full deployment; new shell; reconnect if the account shell changes |
-| Dolphin paint | `.config/Kvantum/Frosted-Glass-Dolphin/`, `.local/share/color-schemes/HyprixeFrostedDolphin.colors` | Close Dolphin; Dolphin-only deployment; reopen |
-| Hyprlock / idle | `.config/hypr/hyprlock.conf`, `hypridle.conf` | Full deployment; test lock manually / restart hypridle |
-| Keybindings | `.config/hypr/UserConfigs/user_keybinds.lua` | Full deployment, compositor reload and live audit |
-| Input / monitors | `.config/hypr/UserConfigs/` Lua settings and monitor modules | Inspect the actual load graph, deploy and reload |
+| Wallpaper | `common/wallpapers/min_forest.jpg` | Full deployment; restart wallpaper service; reopen menus/lock and refresh SDDM on next reboot |
+| Waybar | `common/config/hypr/waybar/configs/Frosted-Glass`, `style/Frosted-Glass.css` | Waybar-only install, restart service, `--waybar --session` |
+| Rofi | `common/config/hypr/rofi/themes/Frosted-Glass-Common.rasi` and layout-specific files | Full deployment; reopen menu |
+| Wlogout | `common/config/wlogout/layout`, `style.css`, icons | Full deployment; reopen menu; keep the action contract unless intentionally changing it |
+| Kitty | `common/config/kitty/kitty.conf` | Full deployment; new Kitty window |
+| Zsh / prompt | `common/shell/.zshrc`, `common/shell/.p10k.zsh` | Full deployment; new shell; reconnect if the account shell changes |
+| Dolphin paint | `common/config/Kvantum/Frosted-Glass-Dolphin/`, `common/local/share/color-schemes/HyprixeFrostedDolphin.colors` | Close Dolphin; Dolphin-only deployment; reopen |
+| Hyprlock / idle | `common/config/hypr/hyprlock.conf`, `hypridle.conf` | Full deployment; test lock manually / restart hypridle |
+| Keybindings | `common/config/hypr/UserConfigs/user_keybinds.lua` | Full deployment, compositor reload and live audit |
+| Input / monitors | `common/config/hypr/UserConfigs/` Lua settings and monitor modules | Inspect the actual load graph, deploy and reload |
 
 See each component guide for complete paths and implementation details. The
 full installer deploys all managed components, even when only one source file

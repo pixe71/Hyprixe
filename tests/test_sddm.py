@@ -12,6 +12,9 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
 sys.path.insert(0, str(ROOT / 'scripts'))
 import deploy
 import sddm_theme as sddm
@@ -45,7 +48,7 @@ class SystemThemeTests(unittest.TestCase):
         self.assertEqual(self.theme.check_installed(), [])
         self.assertIsNone(self.theme.install())
         self.assertEqual((self.theme.path(sddm.THEME_DIR) / 'min_forest.jpg').read_bytes(),
-                         (ROOT / 'wallpapers/min_forest.jpg').read_bytes())
+                         (source_path(ROOT, 'wallpapers/min_forest.jpg')).read_bytes())
         self.theme.restore(identifier)
         self.assertEqual(personal.read_text(), 'mine')
         self.assertEqual(old_theme.read_text(), '// Debian')
@@ -93,7 +96,7 @@ class SystemThemeTests(unittest.TestCase):
         self.assertIn('InputMethod', '\n'.join(self.theme.check_installed()))
 
     def test_theme_does_not_force_a_keyboard_and_detector_rejects_a_panel(self):
-        self.assertEqual(sddm.virtual_keyboard_sources(ROOT / 'sddm/themes' / sddm.THEME), [])
+        self.assertEqual(sddm.virtual_keyboard_sources(source_path(ROOT, 'sddm/themes') / sddm.THEME), [])
         qml = self.root / 'Injected.qml'
         for code in ('import QtQuick.VirtualKeyboard\nInputPanel {}',
                      'Item { Component.onCompleted: Qt.inputMethod.show() }'):

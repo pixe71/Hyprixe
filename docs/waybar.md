@@ -5,9 +5,9 @@
 ## Configuration and service
 
 The active JSON is
-[configs/Frosted-Glass](../.config/hypr/waybar/configs/Frosted-Glass).
-[style.css](../.config/hypr/waybar/style.css) imports the single
-[Frosted-Glass.css](../.config/hypr/waybar/style/Frosted-Glass.css).
+[configs/Frosted-Glass](../common/config/hypr/waybar/configs/Frosted-Glass).
+[style.css](../common/config/hypr/waybar/style.css) imports the single
+[Frosted-Glass.css](../common/config/hypr/waybar/style/Frosted-Glass.css).
 There is no legacy `waybar/config` JSON relay. The vendor `waybar.service`
 drop-in passes the config and style explicitly, retaining Debian's graphical
 session requirements. It runs under UWSM; see [session ownership](uwsm.md).

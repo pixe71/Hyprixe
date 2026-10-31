@@ -21,6 +21,18 @@ visual direction. Dolphin uses a lighter neutral glass variant.
 Native hardware is the default target. VMware compatibility is isolated in an
 optional profile rather than required by the native configuration.
 
+## Platform profiles
+
+Hyprixe uses a shared Core under `common/` and platform integrations under
+`profiles/`. Desktop configuration has one source for all platforms.
+
+| Platform | Status |
+| --- | --- |
+| Debian 13 Trixie | Supported |
+| NixOS | Planned; no working profile yet |
+
+See [architecture](docs/architecture.md). Debian installation commands are unchanged.
+
 ## Features
 
 - UWSM-managed Hyprland with four persistent workspaces and audited Lua bindings.
@@ -150,9 +162,9 @@ retained. Read [restore](docs/uninstall-restore.md) before selecting a backup.
 
 ## Status
 
-The Debian v1 documentation is being reviewed before tagging. Automated checks
-do not replace physical keyboard/mouse, PAM, GPU blur and login-transition
-testing. Asset provenance and the remaining release checklist are tracked in
+The Debian v1 desktop is stable. The Core + Profiles refactor preserves its
+installed behaviour. Automated checks do not replace physical keyboard/mouse,
+PAM, GPU blur and login-transition testing. Asset provenance and the remaining release checklist are tracked in
 [release readiness](docs/release-readiness.md). A NixOS port is a future plan,
 not an installation option for this version.
 

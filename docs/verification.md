@@ -7,6 +7,24 @@ user-local executable precedence and bytecode generation disabled. It combines
 repository checks, isolated tests and optional installed/live probes. It does
 not install missing dependencies or repair the desktop automatically.
 
+## Core and platform groups
+
+The verifier detects Debian 13 or NixOS from `/etc/os-release`. It reports
+`COMMON TESTS`, `PROFILE TESTS` and, when requested, `LIVE SESSION TESTS`.
+Ordinary full validation runs shared regressions and every supported profile's
+required tests. A supported group failure makes validation fail. A planned
+profile is explicitly skipped and never presented as a working installation.
+
+`./verify.sh --profile debian` selects the Debian context explicitly.
+`./verify.sh --profile nixos` checks Core sources only and reports the planned
+integration as skipped. Installed/live options for that unimplemented profile
+are rejected. Other hosts can run source checks and supported-profile isolated
+regressions, but cannot claim successful live Debian validation.
+
+Metadata is in `profiles/*/profile.json`. The common-source duplication check
+rejects identical profile copies and undeclared shadowing. Frozen fixtures
+also compare Debian destinations, hashes, modes and a pre-refactor backup.
+
 ## Main modes
 
 ```bash

@@ -35,3 +35,11 @@ backups/
 core
 core.*
 *.core
+
+# Source-tree runtime state must never enter the shared Core.
+common/local/share/hyprixe/powerlevel10k/
+common/local/share/fonts/hyprixe-symbols/
+common/local/state/
+common/config/hypr/.initial_startup_done
+common/config/hypr/rofi/.current_wallpaper*
+common/config/hypr/wallpaper_effects/

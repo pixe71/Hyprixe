@@ -6,7 +6,10 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('waybar_compat', ROOT / 'scripts/waybar_compat.py')
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
+spec = importlib.util.spec_from_file_location('waybar_compat', source_path(ROOT, 'scripts/waybar_compat.py'))
 compat = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(compat)
 
@@ -49,7 +52,7 @@ class WorkspaceProtocolTests(unittest.TestCase):
         source = cls.root / 'request.cpp'
         source.write_text('#include "waybar-lua-ipc.hpp"\n#include <iostream>\nint main(int argc,char** argv) { if(argc!=2) return 2; std::cout << hyprixe::waybarLuaRequest(argv[1]); }\n')
         cls.exe = cls.root / 'request'
-        subprocess.run(['g++', '-std=c++20', '-I', str(ROOT / 'scripts'), str(source), '-o', str(cls.exe)], check=True, capture_output=True)
+        subprocess.run(['g++', '-std=c++20', '-I', str(ROOT / 'common/compat'), str(source), '-o', str(cls.exe)], check=True, capture_output=True)
 
     @classmethod
     def tearDownClass(cls): cls.temp.cleanup()

@@ -16,6 +16,9 @@ from unittest.mock import patch
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
 sys.path.insert(0, str(ROOT / 'scripts'))
 import deploy
 import dolphin_interface
@@ -107,7 +110,7 @@ class DolphinDeploymentTests(unittest.TestCase):
         for root, path, source in (
             ('config', 'dolphinrc', '.config/dolphinrc'),
             ('data', 'kxmlgui5/dolphin/dolphinui.rc', '.local/share/kxmlgui5/dolphin/dolphinui.rc')):
-            expected = (ROOT / source).read_bytes()
+            expected = (source_path(ROOT, source)).read_bytes()
             if root == 'config':
                 expected = deploy.merge_ini(expected.decode(), {'UiSettings': {'ColorScheme': SCHEME_NAME}}).encode()
             self.assertEqual((self.roots[root] / path).read_bytes(), expected)
@@ -121,10 +124,10 @@ class DolphinDeploymentTests(unittest.TestCase):
         """Reproduce the rejected deployment using its actual tracked toolbar."""
         bad_toolbar = b'rejected toolbar fixture'
         self.fixture_repo = self.home / 'fixture repository'
-        spec = json.loads((ROOT / 'dolphin/interface-baseline.json').read_text())
+        spec = json.loads((source_path(ROOT, 'dolphin/interface-baseline.json')).read_text())
         import hashlib
         spec['bad_toolbar_sha256'] = [hashlib.sha256(bad_toolbar).hexdigest()]
-        spec_path = self.fixture_repo / 'dolphin/interface-baseline.json'
+        spec_path = source_path(self.fixture_repo, 'dolphin/interface-baseline.json')
         spec_path.parent.mkdir(parents=True)
         spec_path.write_text(json.dumps(spec))
         self.originals = {}
@@ -198,10 +201,10 @@ class DolphinDeploymentTests(unittest.TestCase):
         props = self.roots['data'] / 'dolphin/view_properties/global/.directory'
         toolbar = self.write('data', 'kxmlgui5/dolphin/dolphinui.rc', '<original/>')
         import hashlib
-        spec = json.loads((ROOT / 'dolphin/interface-baseline.json').read_text())
+        spec = json.loads((source_path(ROOT, 'dolphin/interface-baseline.json')).read_text())
         spec['bad_toolbar_sha256'] = [hashlib.sha256(b'bad toolbar').hexdigest()]
         self.fixture_repo = self.home / 'fixture repository'
-        path = self.fixture_repo / 'dolphin/interface-baseline.json'
+        path = source_path(self.fixture_repo, 'dolphin/interface-baseline.json')
         path.parent.mkdir(parents=True); path.write_text(json.dumps(spec))
         deploy.install(self.home, self.roots, 'native', custom_files={
             toolbar: (b'bad toolbar', 0o644), props: (b'rejected view file', 0o644)}, scope='legacy')
@@ -294,9 +297,9 @@ class DolphinChecksTests(unittest.TestCase):
     def test_component_dependencies_are_also_in_full_install_manifest(self):
         def packages(path):
             return {line.split('#', 1)[0].strip() for line in path.read_text().splitlines()} - {''}
-        component = packages(ROOT / 'packages-dolphin.txt')
+        component = packages(source_path(ROOT, 'packages-dolphin.txt'))
         self.assertTrue({'dolphin', 'kio-extras', 'udisks2', 'qt6-style-kvantum'} <= component)
-        self.assertTrue(component <= packages(ROOT / 'packages.txt'))
+        self.assertTrue(component <= packages(source_path(ROOT, 'packages.txt')))
 
     def test_kconfig_geometry_keys_and_headerless_baseline_parse(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -331,12 +334,12 @@ class DolphinChecksTests(unittest.TestCase):
                                   and part.split(':', 1)[0] not in ('fill', 'fill-opacity', 'stroke', 'stroke-opacity', 'opacity', 'stop-color', 'stop-opacity')]
                         element.attrib[name] = ';'.join(styles)
             return ET.tostring(tree.getroot())
-        self.assertEqual(geometry(ROOT / '.config/Kvantum/Frosted-Glass/Frosted-Glass.svg'),
-                         geometry(ROOT / '.config' / THEME_FILES[1]))
+        self.assertEqual(geometry(source_path(ROOT, '.config/Kvantum/Frosted-Glass/Frosted-Glass.svg')),
+                         geometry(source_path(ROOT, '.config') / THEME_FILES[1]))
 
     def test_kvantum_geometry_options_are_unchanged(self):
-        old = read_ini(ROOT / '.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig')
-        new = read_ini(ROOT / '.config' / THEME_FILES[0])
+        old = read_ini(source_path(ROOT, '.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig'))
+        new = read_ini(source_path(ROOT, '.config') / THEME_FILES[0])
         for section in old.sections():
             for key, value in old.items(section):
                 if section != 'GeneralColors' and not key.endswith('.color') and key not in ('author', 'comment'):
@@ -345,11 +348,11 @@ class DolphinChecksTests(unittest.TestCase):
     def test_light_palette_preserves_all_existing_svg_geometry_and_alpha(self):
         # Frozen from the visually accepted blue variant in 0a92888 after
         # masking RGB colors only. Any opacity, path or size change must fail.
-        svg = (ROOT / '.config' / THEME_FILES[1]).read_text()
+        svg = (source_path(ROOT, '.config') / THEME_FILES[1]).read_text()
         without_rgb = re.sub(r'#[0-9a-fA-F]{6}\b', '#COLOR', svg)
         self.assertEqual(hashlib.sha256(without_rgb.encode()).hexdigest(),
                          'b0506b92b5149510aa8e0a847019ccbf3a4a4b15ef3ab05a19fd1b6191a9228d')
-        palette = read_ini(ROOT / '.config' / THEME_FILES[0])['GeneralColors']
+        palette = read_ini(source_path(ROOT, '.config') / THEME_FILES[0])['GeneralColors']
         self.assertTrue(all(palette[key].endswith('d1') for key in ('base.color', 'alt.base.color')))
 
     def test_running_dolphin_is_refused_without_killing_it(self):

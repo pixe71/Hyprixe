@@ -6,7 +6,10 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('apt_build_deps', ROOT / 'scripts/apt-build-deps.py')
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
+spec = importlib.util.spec_from_file_location('apt_build_deps', source_path(ROOT, 'scripts/apt-build-deps.py'))
 deps = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(deps)
 

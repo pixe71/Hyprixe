@@ -19,7 +19,7 @@ such as Debian's Waybar from starting.
 
 1. SDDM starts the UWSM session entry; UWSM launches Hyprland.
 2. Hyprland loads the Lua configuration, native/profile environment and bindings.
-3. [SessionStartup.sh](../.config/hypr/scripts/SessionStartup.sh) verifies that
+3. [SessionStartup.sh](../common/config/hypr/scripts/SessionStartup.sh) verifies that
    UWSM manages the compositor, reloads user units and calls `uwsm finalize`
    with the compositor's display, PATH, terminal and Qt environment.
 4. UWSM activates `graphical-session.target`. Hyprixe queues
@@ -34,7 +34,7 @@ alone cannot repair a compositor launched outside UWSM.
 ## Services
 
 The source units and drop-ins are under
-[.config/systemd/user](../.config/systemd/user).
+[.config/systemd/user](../common/config/systemd/user).
 
 | Unit | Role / expected state after login |
 | --- | --- |
@@ -55,10 +55,10 @@ existing compositor layer integration.
 
 ## Wallpaper and login transition
 
-The source image is [wallpapers/min_forest.jpg](../wallpapers/min_forest.jpg),
+The source image is [wallpapers/min_forest.jpg](../common/wallpapers/min_forest.jpg),
 deployed under `$XDG_DATA_HOME/hyprixe/wallpapers/min_forest.jpg`.
-[WallpaperDaemon.sh](../.config/hypr/scripts/WallpaperDaemon.sh) owns the daemon;
-[Wallpaper.sh](../.config/hypr/scripts/Wallpaper.sh) waits within a bounded
+[WallpaperDaemon.sh](../common/config/hypr/scripts/WallpaperDaemon.sh) owns the daemon;
+[Wallpaper.sh](../common/config/hypr/scripts/Wallpaper.sh) waits within a bounded
 readiness check, reuses the daemon and applies the image without an initial
 fade. It detects outputs dynamically; monitor changes can reapply the wallpaper.
 Hyprlock and Rofi use the same installed asset. SDDM needs its own system-readable

@@ -4,6 +4,9 @@ import subprocess
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
 spec = importlib.util.spec_from_file_location('session_checks', ROOT / 'scripts/session_checks.py')
 session = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(session)
@@ -100,14 +103,14 @@ class SessionChecks(unittest.TestCase):
         self.assertTrue(any(not passed for passed, _ in reports))
 
     def test_source_units_order_wallpaper_before_visible_services(self):
-        self.assertEqual(session.check_source_order(ROOT / '.config/systemd/user'), [])
+        self.assertEqual(session.check_source_order(source_path(ROOT, '.config/systemd/user')), [])
 
     def test_missing_ordering_is_reported(self):
         import tempfile
         import shutil
         with tempfile.TemporaryDirectory() as tmp:
             units = Path(tmp) / 'units'
-            shutil.copytree(ROOT / '.config/systemd/user', units)
+            shutil.copytree(source_path(ROOT, '.config/systemd/user'), units)
             dropin = units / 'waybar.service.d/hyprixe.conf'
             dropin.write_text(dropin.read_text().replace('After=hyprixe-wallpaper.service', 'After=graphical-session.target'))
             self.assertTrue(any('waybar.service.d' in failure for failure in session.check_source_order(units)))

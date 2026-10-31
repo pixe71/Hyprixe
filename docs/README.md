@@ -1,8 +1,8 @@
 # Hyprixe documentation
 
-This is the canonical, versioned documentation for **Hyprixe v1 in preparation**
-on **Debian 13 Trixie**. No v1 release or tag is created by this documentation
-update. The [project README](../README.md) is the short introduction.
+This is the canonical, versioned documentation for Hyprixe. **Debian 13 Trixie**
+is supported; NixOS is planned. The [project README](../README.md) is the short
+introduction. Platform status belongs to one shared Hyprixe release.
 
 ## Install and use
 
@@ -34,8 +34,10 @@ update. The [project README](../README.md) is the short introduction.
 
 - [Customization](customization.md): change the repository first, then deploy.
 - [Troubleshooting](troubleshooting.md): diagnose session, dependency and component failures.
+- [Core and profiles](core-profiles.md): source ownership, platform boundaries and contribution rule.
+- [Refactor validation](core-profiles-validation.md): v1 equivalence evidence and Debian PC acceptance.
 - [Architecture](architecture.md): sources, deployment, service ownership and tests.
-- [Release readiness](release-readiness.md): documentation audit, known gaps and pre-tag checklist.
+- [Release readiness](release-readiness.md): dated pre-v1 audit, asset caveats and acceptance checklist.
 - [Screenshots](screenshots/README.md): existing captures and images still needed.
 - [Wiki](wiki/Home.md): short installation, shortcut and troubleshooting pages.
 - [Credits and provenance](../CREDITS.md): upstream projects and unresolved asset attribution.

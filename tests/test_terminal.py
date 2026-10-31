@@ -9,18 +9,21 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
 sys.path.insert(0, str(ROOT / 'scripts'))
 from terminal_checks import check_config, config_errors, integration_errors, runtime_errors
 
 
 class TerminalChecksTests(unittest.TestCase):
     def test_active_integration_uses_kitty(self):
-        self.assertEqual(integration_errors(ROOT / '.config'), [])
+        self.assertEqual(integration_errors(source_path(ROOT, '.config')), [])
 
     def test_stale_launcher_is_reported(self):
         with tempfile.TemporaryDirectory() as folder:
             config = Path(folder) / 'settings with spaces'
-            shutil.copytree(ROOT / '.config', config)
+            shutil.copytree(source_path(ROOT, '.config'), config)
             (config / 'hypr/scripts/LaunchTerminal.sh').write_text('exec uwsm app -- alacritty "$@"\n')
             errors = integration_errors(config)
             self.assertEqual(len(errors), 1, errors)
@@ -36,7 +39,7 @@ class TerminalChecksTests(unittest.TestCase):
         results = []
         output = io.StringIO()
         with patch('terminal_checks.shutil.which', return_value=None), contextlib.redirect_stdout(output):
-            check_config(lambda ok, msg: results.append((ok, msg)), ROOT / '.config/kitty/kitty.conf')
+            check_config(lambda ok, msg: results.append((ok, msg)), source_path(ROOT, '.config/kitty/kitty.conf'))
         self.assertTrue(results[0][0])  # File presence only; parsing is not claimed.
         self.assertIn('SKIPPED: native Kitty parser unavailable', output.getvalue())
 
@@ -50,7 +53,7 @@ class TerminalChecksTests(unittest.TestCase):
 
     @unittest.skipUnless(shutil.which('kitty'), 'native Kitty parser unavailable')
     def test_native_parser_accepts_real_config_without_display(self):
-        self.assertEqual(config_errors(ROOT / '.config/kitty/kitty.conf'), [])
+        self.assertEqual(config_errors(source_path(ROOT, '.config/kitty/kitty.conf')), [])
 
     @unittest.skipUnless(shutil.which('kitty'), 'native Kitty parser unavailable')
     def test_native_parser_rejects_bad_value_and_unknown_option(self):

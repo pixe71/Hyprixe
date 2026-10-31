@@ -1,0 +1,636 @@
+{
+  "baseline_commit": "0315699206f0450fdc79d92c0b622502abf17c95",
+  "manifest": {
+    "format": 1,
+    "id": "20261031T012536.436824Z-native",
+    "home": "@HOME@",
+    "profile": "native",
+    "files": [
+      {
+        "target": "@HOME@/.zshrc",
+        "backup": "0",
+        "mode": 436,
+        "before": "bc54486d8a6f8777ed65fcbd69ced60d54c42a18b5a49439dbc96256a9f41704",
+        "after": "cbb8130f46945e7cea780c012c68c46a0ec85d35a0008ebcf44dfbffc44b02fc"
+      },
+      {
+        "target": "@HOME@/.p10k.zsh",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "f8d200b268fca5b16dcd31cd7e4b1ba4c8a9446377e2c089bb0c64f43f118712"
+      },
+      {
+        "target": "@HOME@/.local/bin/hyprixe-session",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "1bb4184cceb1a3f5e667c9c513bed7b72316a519e796d97ba967fe3457b4a47d"
+      },
+      {
+        "target": "@HOME@/.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "74083adfc82c03d818f57ee66a914e13de110ce03e11089dd448df1d15850c49"
+      },
+      {
+        "target": "@HOME@/.config/Kvantum/Frosted-Glass/Frosted-Glass.svg",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "5ee9ced1d2b6fb8bfe05977adec97047b7b919bcd83540d30f450a1fb188d7f8"
+      },
+      {
+        "target": "@HOME@/.config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "c509aa99ff34c4ee626f04a07adcd106d6b4781778f78fab7315db53f196e07c"
+      },
+      {
+        "target": "@HOME@/.config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "52bd4b8b5ef523093b28f0768c4f8b3af245bb295178375324c0052ae90385f8"
+      },
+      {
+        "target": "@HOME@/.config/Kvantum/kvantum.kvconfig",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "543e53d7427ddd6530234558b0835c304eb9a7ad91939fe2aa7a53bbb319c631"
+      },
+      {
+        "target": "@HOME@/.config/dolphinrc",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "1d4738fda9fd0baf570b643a12af48089dbf3bf309575eaf00be7b08603514a3"
+      },
+      {
+        "target": "@HOME@/.config/hypr/UserConfigs/monitors.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "d12f596e653d00e2776c23451e18a55a2949cce44580f00f6dbf9b7be08362d8"
+      },
+      {
+        "target": "@HOME@/.config/hypr/UserConfigs/user_animations.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "e928d9473ca04db23947b18e544e9e38fa1c69e62e5a988957fb6931a595c87a"
+      },
+      {
+        "target": "@HOME@/.config/hypr/UserConfigs/user_decorations.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "fa3c14b712cdf1ba85c99ac499f89626df6c68f4ccb49a54ad759f06a83302b9"
+      },
+      {
+        "target": "@HOME@/.config/hypr/UserConfigs/user_defaults.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "63d63627d23db797b0565a77a58c961ed820bc7fe7aff6af7de75e3896bd6b2d"
+      },
+      {
+        "target": "@HOME@/.config/hypr/UserConfigs/user_keybinds.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "aedc65324f0144df2b968ab6720f8d1d812ab97d59718049e39f56f8ffd9aa89"
+      },
+      {
+        "target": "@HOME@/.config/hypr/UserConfigs/user_settings.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "c63f99a92a3fea7445d945442bb65f93bce8b23dffb04ec19ee2074fc1bda98d"
+      },
+      {
+        "target": "@HOME@/.config/hypr/UserScripts/RofiCalc.sh",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "435dbcaf6bff579b48f508570259668ba0914502d384713ec6859f69b657fe8d"
+      },
+      {
+        "target": "@HOME@/.config/hypr/hl.meta.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "c4cdc2ce00d1822f7e47a8b94c19a338387e359844dafc042ce9308f0b7416f1"
+      },
+      {
+        "target": "@HOME@/.config/hypr/hypridle.conf",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "999438490850913e6b9e575c2e6d12d75e2e9c56c2b2ad0b0dc97375653de287"
+      },
+      {
+        "target": "@HOME@/.config/hypr/hyprland.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "7abe6d28f687f27b8321be25cfea7a0a6ee91a7f85b25862824d54f2e0f401f9"
+      },
+      {
+        "target": "@HOME@/.config/hypr/hyprlock.conf",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "2f03683dacf340c1e5b156b07c3acbfef178145f7ba1c1b26a6c8f9725b788b5"
+      },
+      {
+        "target": "@HOME@/.config/hypr/lua/animations.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "d30cd8e11077d208c4743b26938399253638dc2fa54da4aee3bbabbc29fbbeca"
+      },
+      {
+        "target": "@HOME@/.config/hypr/lua/env.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "79b5dae5d4af17e865d3360e108afb702ebe68e78b03ab0e6b0fff3295a3ec7a"
+      },
+      {
+        "target": "@HOME@/.config/hypr/lua/keybinds.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "1cc28ec0f9228dcd310d5b159f3cbe01eef8d3d20386982d223de4c69acf9b5f"
+      },
+      {
+        "target": "@HOME@/.config/hypr/lua/monitors.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "061d327d06b1b38d8529f680b38f4c750c65cc683983e6c8914db1a4c86eb88a"
+      },
+      {
+        "target": "@HOME@/.config/hypr/lua/rules.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "d7b0af42a3b78d2a53656dde1ad71042fe35c2bb066158a6d480550d4faa5490"
+      },
+      {
+        "target": "@HOME@/.config/hypr/lua/settings.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "36e0e5526b861e4e1d41320f6b29eff258827b86a4600b273c627a6e0075820d"
+      },
+      {
+        "target": "@HOME@/.config/hypr/lua/startup.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "81e0bf3b3173ac95b8293f421255fe3da07345c2675934f7027ab35fa4f8cfa5"
+      },
+      {
+        "target": "@HOME@/.config/hypr/lua/workspaces.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "7c2463a99e028a9df4c303f2e0981bfcfc394dadd8ec45452deae09c12270488"
+      },
+      {
+        "target": "@HOME@/.config/hypr/profile.env",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "456db04d4677ac6ff4d944637a1be2c09f02a9f0adb1582450a2b1296977d2a7"
+      },
+      {
+        "target": "@HOME@/.config/hypr/profile.lua",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "02c821517c80c75f3cf3210ddc8b750acffbde00d7d5b453f295b2dacec03fb0"
+      },
+      {
+        "target": "@HOME@/.config/hypr/rofi/0-shared-fonts.rasi",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "91a9deea16e9cf4a119f372bb90d8c1ace7b2f921a4c115fc010c8042605d605"
+      },
+      {
+        "target": "@HOME@/.config/hypr/rofi/config-calc.rasi",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "5a92eda624544b82c65853b512c697a5687e990c1f187a935e3d9393af965a9d"
+      },
+      {
+        "target": "@HOME@/.config/hypr/rofi/config-clipboard.rasi",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "d24f282ccd05390a416fa7286b3efacca1bac25e498bdaf9e13678532a035532"
+      },
+      {
+        "target": "@HOME@/.config/hypr/rofi/config-launcher.rasi",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "d3ceb3a73a705f08dfedbe2706dec127b8b2a448cc8887892a7185ec1f7a9f01"
+      },
+      {
+        "target": "@HOME@/.config/hypr/rofi/config-windows.rasi",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "7010b545ea6a27b69f1bc8131db79be8f2331e74d44318012d29fad0e9443792"
+      },
+      {
+        "target": "@HOME@/.config/hypr/rofi/config.rasi",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "d855b793840b98e27e406a25e67ab5d81a5d427dd8f527efa010efb0f2951f29"
+      },
+      {
+        "target": "@HOME@/.config/hypr/rofi/themes/Frosted-Glass-Common.rasi",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "9e83f6c55b95d12b173f3d8648c921044ce814a5cece7371c41a3283dc1518d3"
+      },
+      {
+        "target": "@HOME@/.config/hypr/rofi/themes/Frosted-Glass-Launcher.rasi",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "29dbd6bb10f5524630a7077b82a8c88893c72f25380b2fbad6adcdbc3c76f53e"
+      },
+      {
+        "target": "@HOME@/.config/hypr/rofi/themes/Frosted-Glass.rasi",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "022ff9b4e9c7db3ef7d5ba988272d596028b85a8f71e48e56d0168a1c820cc2e"
+      },
+      {
+        "target": "@HOME@/.config/hypr/rofi/wallust/colors-rofi.rasi",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "8f64f938948cca5ef099dd40a58a17ea76c4eb026568fb374ac5bd2f5165ebf6"
+      },
+      {
+        "target": "@HOME@/.config/hypr/scripts/ClipManager.sh",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "6e4a64ad3b680109306b5f9ef94654cc994eb35a14ea6d5375f9cc080cbd05fe"
+      },
+      {
+        "target": "@HOME@/.config/hypr/scripts/ClipboardWatcher.sh",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "8344db93313ed683b69b819fdf9b559623d2b7655c6ed4759d6bd1e2578e4785"
+      },
+      {
+        "target": "@HOME@/.config/hypr/scripts/LaunchApp.sh",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "2fb795cc20dbb4bf7b2c5b6fc07c949db419ab208bcfbed77fdd2a0a737c084b"
+      },
+      {
+        "target": "@HOME@/.config/hypr/scripts/LaunchTerminal.sh",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "c8fe410f857b18d3d361b8909377130d35fc16a0db34d969a34b0942881373c1"
+      },
+      {
+        "target": "@HOME@/.config/hypr/scripts/LockScreen.sh",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "f1bc7ffc0ec3a53503df4aa08ebd14eb756d4e409c67fb4d64eab938c53e6c9d"
+      },
+      {
+        "target": "@HOME@/.config/hypr/scripts/Polkit.sh",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "a1ea9aea7ff8b937a942d8060ec1cba84e3e4a32478e4f2748ce90d1536d5a3b"
+      },
+      {
+        "target": "@HOME@/.config/hypr/scripts/PowerMenu.sh",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "1a722acd2a8d57ffd4c4d5ce66c436e4d95175f6cd72782cb5b0a31bf86772d2"
+      },
+      {
+        "target": "@HOME@/.config/hypr/scripts/RofiLauncher.sh",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "8e4308eda2b565ae14d048a6bad1894339ac5f2b5a3de128d427c54c12c46b1c"
+      },
+      {
+        "target": "@HOME@/.config/hypr/scripts/ScreenShot.sh",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "a1497ef4e80f154321eaf94b3d5b905aa3b186f43c56ca26de6bdfeb2e8cfce8"
+      },
+      {
+        "target": "@HOME@/.config/hypr/scripts/SessionStartup.sh",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "305adb5972037f2aa38c1d7e6f2f5fda8bd111f42fecb22f6aee6215d8406584"
+      },
+      {
+        "target": "@HOME@/.config/hypr/scripts/Wallpaper.sh",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "baf1ddb8f338c6587073de59a20f07931c3ea2ebb897f48089ee59f62b6ae51a"
+      },
+      {
+        "target": "@HOME@/.config/hypr/scripts/WallpaperDaemon.sh",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "ca69eac4c7176701131a6b83d23cc2c3f44d8b05d71cd94868b6afff1aa1b512"
+      },
+      {
+        "target": "@HOME@/.config/hypr/scripts/WaybarStartup.sh",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "591715f5088f0c1dab1f9d4535db9c3904f7e910b6117946895a26fcdf5676d0"
+      },
+      {
+        "target": "@HOME@/.config/hypr/scripts/WindowSwitcher.sh",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "3db598aa09538ef27c60917d0f3b5a50a591f58814af17e106f8e7aa11cdccf1"
+      },
+      {
+        "target": "@HOME@/.config/hypr/waybar/configs/Frosted-Glass",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "9b11113e0fc1cd2548b9002768d1f9f81af8ef4109a8ddb18d7bb5b12d27989c"
+      },
+      {
+        "target": "@HOME@/.config/hypr/waybar/scripts/temperature.py",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "837a108a2a314c539689ecfc31a9ee8247da784ee1ef0aefa49e64c15c781fe8"
+      },
+      {
+        "target": "@HOME@/.config/hypr/waybar/style/Frosted-Glass.css",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "1cf7675e39986911f7f5fa1a8dff8ecfafd8de1020230eee16aab4690a4cabe1"
+      },
+      {
+        "target": "@HOME@/.config/hypr/waybar/style.css",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "57c739cfbceb270a1b93fb324733124167813cdffbf2c007c2febdffca056130"
+      },
+      {
+        "target": "@HOME@/.config/kdeglobals",
+        "backup": "58",
+        "mode": 384,
+        "before": "f0b039608189fc5749101f3c0fefa32d0d073bb3c4fd480299a5ebdf9401fafb",
+        "after": "48e54eefecea2b092c4b861eef80b5a19a28c44eb2d470d0d2b384b272581e71"
+      },
+      {
+        "target": "@HOME@/.config/kitty/kitty.conf",
+        "backup": "59",
+        "mode": 416,
+        "before": "b4c14634c83f028fb3d2de09493c31b99c139c2c3098231480545d6a523f22b1",
+        "after": "65f2611f2c7747e99bb2fbb9f2dec400666b6c79057d06e0ef43e2d0b0ee8bb9"
+      },
+      {
+        "target": "@HOME@/.config/qt6ct/qt6ct.conf",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "305ec939ca0f864a27fb0b578336cda28cd2062898ecb9188b17620a98f52375"
+      },
+      {
+        "target": "@HOME@/.config/systemd/user/hypridle.service.d/hyprixe.conf",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "d755c98902cc27802bd25da0f5b10c41f7dc8c2155c32cd0fc279aa003a292e7"
+      },
+      {
+        "target": "@HOME@/.config/systemd/user/hyprixe-awww.service",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "4eb5b0ab9cf5e87e3289b77a4e977df03e43afe298173ab8f48c650201c18c54"
+      },
+      {
+        "target": "@HOME@/.config/systemd/user/hyprixe-clipboard.service",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "d83870ecbb99f7aa47e2d725274491e8753c91202415ec541c8416f88ab8c587"
+      },
+      {
+        "target": "@HOME@/.config/systemd/user/hyprixe-polkit.service",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "5cab8e4d6e03e8777786ae829dd6cc6af7f49d72987b639e488422b3ae4fb6d8"
+      },
+      {
+        "target": "@HOME@/.config/systemd/user/hyprixe-session.target",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "9b27fbac5c2d91174825fe5e3d6a852a95ea4e85188a97968b91f1c9fe955d5b"
+      },
+      {
+        "target": "@HOME@/.config/systemd/user/hyprixe-wallpaper.service",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "cd74d5ee97a882c8b2159f27c23e19b015c7d0f32e527417eab369557bedbbf3"
+      },
+      {
+        "target": "@HOME@/.config/systemd/user/swaync.service.d/hyprixe.conf",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "9fb61450f717ed9137c2626a580219b4f1118677d65cb923c126b0d9cbb77f2f"
+      },
+      {
+        "target": "@HOME@/.config/systemd/user/waybar.service.d/hyprixe.conf",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "a3e63e4edbf442914da4b6705e991f45fd294ea30ca7753591f18b0f4f3fea33"
+      },
+      {
+        "target": "@HOME@/.config/wlogout/icons/lock.svg",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "c7c0fe4d10e0079f0099d1df5b6d50ec9be2ab3a120aec77aa52c2c6101b41c9"
+      },
+      {
+        "target": "@HOME@/.config/wlogout/icons/logout.svg",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "a3af82c8ce1ce1322ec61e69cd1f5a40af122f49376eef08279f90cca7979be1"
+      },
+      {
+        "target": "@HOME@/.config/wlogout/icons/reboot.svg",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "8041d6b029c6c3b4b6851639fae8e7301da7d6f863f863f3a9e501bef5fd7140"
+      },
+      {
+        "target": "@HOME@/.config/wlogout/icons/shutdown.svg",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "f3df0f5d0f6be31f8df295b40b76107c051c85d819dd4749b676dda698b9095d"
+      },
+      {
+        "target": "@HOME@/.config/wlogout/layout",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "9ca60c18bae021b5efb58fbb9e5756da2dfc86cc5af5b0d6a90beee7838d2990"
+      },
+      {
+        "target": "@HOME@/.config/wlogout/style.css",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "7d86fa1dc8a8e38ccc27f239d8c4445c3b730869f5405589664efa2f9fd3206a"
+      },
+      {
+        "target": "@HOME@/.local/share/color-schemes/HyprixeFrostedDolphin.colors",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "9c83fdcb48f756833fc65762082c5e012203499097c70875e5f91a84ab732ef5"
+      },
+      {
+        "target": "@HOME@/.local/share/fonts/hyprixe/HyprixeDebian.ttf",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "28214849a64be2e1dba1782bcddf45f1d29560760effec387338a0218b557ffe"
+      },
+      {
+        "target": "@HOME@/.local/share/fonts/hyprixe/LICENSE.txt",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd"
+      },
+      {
+        "target": "@HOME@/.local/share/fonts/hyprixe/README.md",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "c2bbbf522a85f25feb8e910fb0ca58dbe89dc84e94baa7319f802a8ed42aa73f"
+      },
+      {
+        "target": "@HOME@/.local/share/kxmlgui5/dolphin/dolphinui.rc",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "c1f59f07ce4a729b3d4226c4f12fa91e69fe0d90ddcc0ce2426ba0fa08e22766"
+      },
+      {
+        "target": "@HOME@/.local/share/hyprixe/wallpapers/min_forest.jpg",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "9bfb1f796f738ee40a6f072d1cfb5045fb4d46da7af5059de10f405ca284ce30"
+      },
+      {
+        "target": "@HOME@/.config/mimeapps.list",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d"
+      },
+      {
+        "target": "@HOME@/.config/hyprland-mimeapps.list",
+        "backup": null,
+        "mode": null,
+        "before": null,
+        "after": "72f23f924a9d2c480a858c4cb4658c7a7c9ef64a4fb39b3194d5b6a816d4fe7d"
+      }
+    ],
+    "directories": [
+      "@HOME@/.local/bin",
+      "@HOME@/.config/Kvantum",
+      "@HOME@/.config/Kvantum/Frosted-Glass",
+      "@HOME@/.config/Kvantum/Frosted-Glass-Dolphin",
+      "@HOME@/.config/hypr",
+      "@HOME@/.config/hypr/UserConfigs",
+      "@HOME@/.config/hypr/UserScripts",
+      "@HOME@/.config/hypr/lua",
+      "@HOME@/.config/hypr/rofi",
+      "@HOME@/.config/hypr/rofi/themes",
+      "@HOME@/.config/hypr/rofi/wallust",
+      "@HOME@/.config/hypr/scripts",
+      "@HOME@/.config/hypr/waybar",
+      "@HOME@/.config/hypr/waybar/configs",
+      "@HOME@/.config/hypr/waybar/scripts",
+      "@HOME@/.config/hypr/waybar/style",
+      "@HOME@/.config/qt6ct",
+      "@HOME@/.config/systemd",
+      "@HOME@/.config/systemd/user",
+      "@HOME@/.config/systemd/user/hypridle.service.d",
+      "@HOME@/.config/systemd/user/swaync.service.d",
+      "@HOME@/.config/systemd/user/waybar.service.d",
+      "@HOME@/.config/wlogout",
+      "@HOME@/.config/wlogout/icons",
+      "@HOME@/.local/share",
+      "@HOME@/.local/share/color-schemes",
+      "@HOME@/.local/share/fonts",
+      "@HOME@/.local/share/fonts/hyprixe",
+      "@HOME@/.local/share/kxmlgui5",
+      "@HOME@/.local/share/kxmlgui5/dolphin",
+      "@HOME@/.local/share/hyprixe",
+      "@HOME@/.local/share/hyprixe/wallpapers"
+    ],
+    "scope": "full",
+    "dolphin_targets": [
+      "@HOME@/.config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig",
+      "@HOME@/.config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg"
+    ]
+  },
+  "files": {
+    "59": "IyBwZXJzb25hbCB0ZXJtaW5hbAo=",
+    "58": "W0dlbmVyYWxdClBlcnNvbmFsPWtlZXAK",
+    "0": "IyBwZXJzb25hbCBzaGVsbAo="
+  }
+}

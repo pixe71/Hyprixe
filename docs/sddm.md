@@ -3,7 +3,7 @@
 [Documentation index](README.md)
 
 Hyprixe supplies its own Qt 6 QML greeter under
-[sddm/themes/hyprixe-frosted](../sddm/themes/hyprixe-frosted). It uses the forest
+[sddm/themes/hyprixe-frosted](../common/sddm/themes/hyprixe-frosted). It uses the forest
 wallpaper, a rounded translucent panel, clock/date, user/avatar selection,
 password field, session chooser and power controls. Layouts adapt to available
 space rather than a fixed 1920×1080 coordinate grid. Physical HiDPI rendering,
@@ -15,7 +15,7 @@ desktop blur. The theme does not change UWSM or the Hyprland session entry.
 ## Installation and configuration
 
 The full installer requires SDDM with `sddm-greeter-qt6` already available, then
-installs the QML runtime modules from [packages-sddm.txt](../packages-sddm.txt).
+installs the QML runtime modules from [packages-sddm.txt](../profiles/debian/packages/packages-sddm.txt).
 It uses sudo only for the system transaction.
 
 | System path | Purpose |

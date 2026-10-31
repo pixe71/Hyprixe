@@ -1,4 +1,7 @@
 """Repository checks; missing optional validators and real-session tests say SKIPPED."""
+
+from source_layout import ROOT as REPOSITORY_ROOT, source_path, configure_imports, shell_bytes
+configure_imports()
 import argparse
 import ast
 import configparser
@@ -12,6 +15,8 @@ import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as ET
+from source_layout import detect_profile
+from profile_checks import check_sources
 from waybar_compat import has_lua_workspace_ipc, has_wlr_taskbar
 from waybar_checks import check_source as check_waybar_source, check_installed as check_waybar_installed
 from rofi_compat import has_wayland_support
@@ -58,7 +63,7 @@ def check_configuration_formats(root):
     )
     for relative, label, parse in formats:
         try:
-            parse((root / relative).read_text(encoding='utf-8'))
+            parse(source_path(root, relative).read_text(encoding='utf-8'))
         except (OSError, ValueError, ET.ParseError) as exc:
             report(False, f'{label}: {relative}: {exc}')
         else:
@@ -70,8 +75,8 @@ def check_source_tree(root, entries):
     for path in broken:
         report(False, f'Broken source symlink: {path.relative_to(root)} -> {os.readlink(path)!r}')
     required = ('configs/Frosted-Glass', 'style.css', 'style/Frosted-Glass.css')
-    missing = [root / '.config/hypr/waybar' / name for name in required
-               if not (root / '.config/hypr/waybar' / name).is_file()]
+    missing = [source_path(root, '.config/hypr/waybar') / name for name in required
+               if not (source_path(root, '.config/hypr/waybar') / name).is_file()]
     for path in missing:
         report(False, f'Required Waybar source file missing: {path.relative_to(root)}')
     if not broken and not missing:
@@ -92,7 +97,7 @@ def check_original_assets(root):
     for name in assets:
         try:
             expected = manifest[name]
-            actual = hashlib.sha256((root / name).read_bytes()).hexdigest()
+            actual = hashlib.sha256(source_path(root, name).read_bytes()).hexdigest()
         except (OSError, KeyError) as exc:
             report(False, f'Original asset: {name}: {exc}')
             continue
@@ -103,7 +108,7 @@ def check_original_assets(root):
 def check_sddm(root, installed=False):
     try:
         sddm_payload(root)
-        theme = root / 'sddm/themes' / SDDM_THEME
+        theme = source_path(root, 'sddm/themes') / SDDM_THEME
         metadata = configparser.ConfigParser(interpolation=None)
         metadata.read(theme / 'metadata.desktop')
         settings = configparser.ConfigParser(interpolation=None)
@@ -136,20 +141,20 @@ def check_sddm(root, installed=False):
             failures = [str(exc)]
         report(not failures, 'Installed SDDM files, effective theme, disabled InputMethod and UWSM session entry' +
                (': ' + '; '.join(failures) if failures else ''))
-        run(['python3', 'scripts/sddm_theme.py', 'prerequisites'], 'Installed SDDM Qt 6 greeter and QML dependencies')
+        run(['python3', str(source_path(ROOT, 'scripts/sddm_theme.py')), 'prerequisites'], 'Installed SDDM Qt 6 greeter and QML dependencies')
     else:
         print('SKIPPED: system SDDM installation (use --sddm or --dependencies on target)')
 
 
 def check_taskbar(root):
     try:
-        bar = json.loads((root / '.config/hypr/waybar/configs/Frosted-Glass').read_text())
+        bar = json.loads((source_path(root, '.config/hypr/waybar/configs/Frosted-Glass')).read_text())
         taskbar = bar['wlr/taskbar']
         left = bar['modules-left']
         assert left.count('wlr/taskbar') == 1 and left.index('wlr/taskbar') == left.index('hyprland/workspaces') + 1
         assert taskbar['format'] == '{icon}' and taskbar['on-click'] == 'activate'
         assert taskbar['all-outputs'] is True and taskbar['tooltip-format'] == '{title}'
-        css = (root / '.config/hypr/waybar/style/Frosted-Glass.css').read_text()
+        css = (source_path(root, '.config/hypr/waybar/style/Frosted-Glass.css')).read_text()
         assert '#taskbar button.active' in css
     except (OSError, ValueError, KeyError, TypeError, AttributeError, AssertionError) as exc:
         report(False, f'Waybar icon taskbar configuration/style: {exc or "missing icon/focus/active-state setting"}')
@@ -165,7 +170,19 @@ def main():
     parser.add_argument('--diagnostics', action='store_true', help='Print read-only login journals, service timings, clients, layers and autostarts')
     parser.add_argument('--dolphin', action='store_true', help='Check only Dolphin source, deployed paint and Qt/Kvantum runtime')
     parser.add_argument('--waybar', action='store_true', help='Check only Waybar source and installed layout/runtime')
+    parser.add_argument('--profile', choices=('debian', 'nixos'), help='Platform integration; detected automatically on Debian 13/NixOS')
     args = parser.parse_args()
+    selected = args.profile or detect_profile()
+    profiles = check_sources(report, ROOT)
+    if selected and profiles.get(selected, {}).get('status') == 'planned':
+        if args.dependencies or args.session or args.sddm or args.waybar or args.dolphin or args.diagnostics:
+            parser.error(selected + ' is planned, not installable; only source/Core validation is available')
+        print('SKIPPED: ' + selected + ' integration is planned; running Core checks only')
+    elif not selected:
+        print('SKIPPED: no installed platform detected; checking Core and all supported profile regressions')
+        if args.dependencies or args.session or args.sddm or args.waybar or args.dolphin:
+            parser.error('Installed checks need a supported platform (Debian 13); use source checks here')
+    print('COMMON TESTS: shared configuration and desktop behaviour')
     if args.waybar:
         if args.dolphin or args.sddm or args.diagnostics:
             parser.error('--waybar cannot check another component')
@@ -207,25 +224,32 @@ def main():
         report(all(r.returncode == 0 for r in results), f'luac -p: {len(luas)} Lua files')
         for p, r in zip(luas, results):
             if r.returncode: print(p.relative_to(ROOT), r.stderr)
-        env = dict(os.environ, XDG_CONFIG_HOME=str(ROOT / '.config'))
-        run(['lua', 'tests/check_lua.lua', str(ROOT / '.config')], 'Lua loading / required shortcuts / duplicate chords (mock)', env=env)
+        env = dict(os.environ, XDG_CONFIG_HOME=str(source_path(ROOT, '.config')))
+        run(['lua', 'tests/check_lua.lua', str(source_path(ROOT, '.config'))], 'Lua loading / required shortcuts / duplicate chords (mock)', env=env)
     else:
         print('SKIPPED: Lua compiler and load test unavailable')
     check_native_config(report, ROOT)
     for p in files:
-        if p.suffix == '.py' or p == ROOT / '.local/bin/hyprixe-session':
+        if p.suffix == '.py' or p == source_path(ROOT, '.local/bin/hyprixe-session'):
             try: ast.parse(p.read_text(), str(p))
             except SyntaxError as exc: report(False, str(exc))
     report(True, 'Python syntax parsed without generating bytecode')
     if sources_ok:
-        tests = run(['python3', '-m', 'unittest', 'discover', '-s', 'tests', '-v'], 'Deployment and runtime integration tests (isolated temporary HOME / mocked commands)')
-        if tests.returncode == 0:
-            for line in tests.stderr.splitlines():
-                if line.startswith('Ran ') or line.startswith('OK'): print(line)
-                elif ' ... skipped ' in line: print('SKIPPED: ' + line)
+        groups = ['common']
+        # Full release validation gates every supported integration. A planned
+        # profile never claims deployment support or adds an empty success.
+        if not selected or profiles.get(selected, {}).get('status') == 'supported':
+            groups += [name for name, data in profiles.items() if data['status'] == 'supported']
+        for group in groups:
+            print(('COMMON TESTS' if group == 'common' else 'PROFILE TESTS: ' + group), flush=True)
+            tests = run(['python3', 'scripts/run_tests.py', group], 'Regression suite: ' + group + ' (isolated HOME / mocked commands)')
+            if tests.returncode == 0:
+                for line in tests.stderr.splitlines():
+                    if line.startswith('Ran ') or line.startswith('OK'): print(line)
+                    elif ' ... skipped ' in line: print('SKIPPED: ' + line)
     else:
         print('SKIPPED: integration tests require intact source files; repair the source failures reported above first')
-    active_files = [p for p in files if p.relative_to(ROOT).parts[0] in ('.config', '.local') or p.is_relative_to(ROOT / 'profiles/native')]
+    active_files = [p for p in files if p.is_relative_to(ROOT / 'common/config') or p.is_relative_to(ROOT / 'common/local') or p.is_relative_to(ROOT / 'profiles/debian/config')]
     forbidden = re.compile(r'VMware|vmwgfx|llvmpipe|Virtual-1|LIBGL_ALWAYS_SOFTWARE|MESA_LOADER_DRIVER_OVERRIDE|GALLIUM_DRIVER|WLR_RENDERER_ALLOW_SOFTWARE|/home/luc|Tokyo|\balacritty\b|\bthunar\b', re.I)
     hits = []
     for p in active_files:
@@ -233,7 +257,7 @@ def main():
             if forbidden.search(p.read_text()): hits.append(str(p.relative_to(ROOT)))
         except UnicodeError: pass
     report(not hits, 'Native tree: no graphics workarounds, machine paths or obsolete app/theme defaults' + (': ' + ', '.join(hits) if hits else ''))
-    config = ROOT / '.config/hypr'
+    config = source_path(ROOT, '.config/hypr')
     entry = (config / 'hyprland.lua').read_text()
     modules = re.findall(r'"((?:lua|UserConfigs)/[^"\n]+\.lua|profile\.lua)"', entry)
     missing = [x for x in modules if not (config / x).is_file()]
@@ -242,7 +266,7 @@ def main():
             if not (p.parent / name).is_file(): missing.append(f'{p.name}: {name}')
     scripts = set(re.findall(r'(?:script\(|scripts\s*\.\.\s*)"([A-Za-z][\w-]+\.sh)', (config / 'lua/keybinds.lua').read_text() + (config / 'lua/startup.lua').read_text()))
     for name in scripts:
-        if not (config / 'scripts' / name).is_file(): missing.append(name)
+        if not source_path(ROOT, '.config/hypr/scripts/' + name).is_file(): missing.append(name)
     report(not missing, 'Entry modules, keybind scripts and Rofi theme imports resolve' + (': ' + ', '.join(missing) if missing else ''))
     check_configuration_formats(ROOT)
     check_rofi_source(report, ROOT)
@@ -253,7 +277,7 @@ def main():
     check_taskbar(ROOT)
     check_waybar_source(report, ROOT)
     check_sddm(ROOT, installed=args.sddm or args.dependencies)
-    ordering = check_source_order(ROOT / '.config/systemd/user')
+    ordering = check_source_order(source_path(ROOT, '.config/systemd/user'))
     report(not ordering, 'UWSM service ordering: wallpaper before Waybar/notifications' +
            (': ' + '; '.join(ordering) if ordering else ''))
     if args.dependencies:
@@ -289,16 +313,16 @@ def main():
         except UnicodeError: pass
     report(not secret_files, 'Secret-pattern scan (current files): ' + (', '.join(secret_files) if secret_files else 'no matches'))
     if shutil.which('git'):
-        executable_paths = ['install.sh', 'uninstall.sh', 'verify.sh', 'scripts/build-runtime.sh', '.local/bin/hyprixe-session']
+        executable_paths = ['install.sh', 'uninstall.sh', 'verify.sh', str(source_path(ROOT, 'scripts/build-runtime.sh').relative_to(ROOT)), str(source_path(ROOT, '.local/bin/hyprixe-session').relative_to(ROOT))]
         executable_paths += [str(p.relative_to(ROOT)) for p in (config / 'scripts').glob('*.sh')]
         executable_paths += [str(p.relative_to(ROOT)) for p in (config / 'UserScripts').glob('*.sh')]
-        waybar_css = '.config/hypr/waybar/style.css'
+        waybar_css = str(source_path(ROOT, '.config/hypr/waybar/style.css').relative_to(ROOT))
         index = subprocess.run(['git', 'ls-files', '-s', '--', *executable_paths, waybar_css], cwd=ROOT, capture_output=True, text=True)
         modes = {line.split('\t', 1)[1]: line.split()[0] for line in index.stdout.splitlines()}
         report(index.returncode == 0 and all(modes.get(name) == '100755' for name in executable_paths), 'Executable entrypoints and active scripts recorded as 100755 in Git')
         report(index.returncode == 0 and modes.get(waybar_css) == '100644', 'Waybar style.css recorded as a regular file in Git (not a CSS-text symlink)')
     if args.dependencies:
-        run(['python3', 'scripts/check-deps.py'], 'Installed runtime dependencies')
+        run(['python3', str(source_path(ROOT, 'scripts/check-deps.py'))], 'Installed runtime dependencies')
         check_terminal_installed(report)
         check_rofi_installed(report)
         check_shell_installed(report)
@@ -309,6 +333,7 @@ def main():
     else:
         print('SKIPPED: installed graphical dependencies (use --dependencies on target)')
     if args.session:
+        print('LIVE SESSION TESTS: installed compositor and UWSM state')
         if not args.dependencies:
             check_terminal_installed(report)
             check_shell_installed(report)

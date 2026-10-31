@@ -5,7 +5,10 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('rofi_compat', ROOT / 'scripts/rofi_compat.py')
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
+spec = importlib.util.spec_from_file_location('rofi_compat', source_path(ROOT, 'scripts/rofi_compat.py'))
 compat = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(compat)
 

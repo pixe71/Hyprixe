@@ -96,7 +96,7 @@ custom actions normally select another mode rather than returning dmenu-style
 exit codes. Stock 2.0.0 also does not implement custom-button hover paint.
 
 The existing pinned Wayland build has a small local adaptation in
-`scripts/rofi_launcher.py`. It is enabled only by the two wallpaper views' private
+`common/compat/rofi_launcher.py`. It is enabled only by the two wallpaper views' private
 `-hyprixe-launcher` command-line switch:
 
 - In `drun`, button actions 17–19 close the view and return fixed codes 10–12 to the caller.

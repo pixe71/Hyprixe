@@ -3,7 +3,7 @@
   "scope": "Current image/font assets and their Kvantum configs. Provenance and license decisions are in assets-provenance.md; hashes alone do not establish rights.",
   "files": [
     {
-      "path": ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig",
+      "path": "common/config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig",
       "bytes": 10732,
       "sha256": "c509aa99ff34c4ee626f04a07adcd106d6b4781778f78fab7315db53f196e07c",
       "license": "GPL-3.0-only",
@@ -13,11 +13,11 @@
         "docs/licenses/Graphite-GPL-3.0.txt",
         "docs/licenses/Senshi111-MIT.txt"
       ],
-      "derived_from": ".config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig",
+      "derived_from": "common/config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig",
       "hyprixe_modifications": "Dolphin-specific neutral light palette and Kvantum settings; generator in tools/build-dolphin-theme.py; source and inherited geometry retained."
     },
     {
-      "path": ".config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg",
+      "path": "common/config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg",
       "bytes": 188248,
       "sha256": "52bd4b8b5ef523093b28f0768c4f8b3af245bb295178375324c0052ae90385f8",
       "license": "GPL-3.0-only",
@@ -27,11 +27,11 @@
         "docs/licenses/Graphite-GPL-3.0.txt",
         "docs/licenses/Senshi111-MIT.txt"
       ],
-      "derived_from": ".config/Kvantum/Frosted-Glass/Frosted-Glass.svg",
+      "derived_from": "common/config/Kvantum/Frosted-Glass/Frosted-Glass.svg",
       "hyprixe_modifications": "Dolphin-specific neutral light palette and Kvantum settings; generator in tools/build-dolphin-theme.py; source and inherited geometry retained."
     },
     {
-      "path": ".config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig",
+      "path": "common/config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig",
       "bytes": 11257,
       "sha256": "74083adfc82c03d818f57ee66a914e13de110ce03e11089dd448df1d15850c49",
       "license": "GPL-3.0-only",
@@ -61,7 +61,7 @@
       }
     },
     {
-      "path": ".config/Kvantum/Frosted-Glass/Frosted-Glass.svg",
+      "path": "common/config/Kvantum/Frosted-Glass/Frosted-Glass.svg",
       "bytes": 194875,
       "sha256": "5ee9ced1d2b6fb8bfe05977adec97047b7b919bcd83540d30f450a1fb188d7f8",
       "license": "GPL-3.0-only",
@@ -93,27 +93,27 @@
       }
     },
     {
-      "path": ".config/wlogout/icons/lock.svg",
+      "path": "common/config/wlogout/icons/lock.svg",
       "bytes": 286,
       "sha256": "c7c0fe4d10e0079f0099d1df5b6d50ec9be2ab3a120aec77aa52c2c6101b41c9"
     },
     {
-      "path": ".config/wlogout/icons/logout.svg",
+      "path": "common/config/wlogout/icons/logout.svg",
       "bytes": 264,
       "sha256": "a3af82c8ce1ce1322ec61e69cd1f5a40af122f49376eef08279f90cca7979be1"
     },
     {
-      "path": ".config/wlogout/icons/reboot.svg",
+      "path": "common/config/wlogout/icons/reboot.svg",
       "bytes": 232,
       "sha256": "8041d6b029c6c3b4b6851639fae8e7301da7d6f863f863f3a9e501bef5fd7140"
     },
     {
-      "path": ".config/wlogout/icons/shutdown.svg",
+      "path": "common/config/wlogout/icons/shutdown.svg",
       "bytes": 231,
       "sha256": "f3df0f5d0f6be31f8df295b40b76107c051c85d819dd4749b676dda698b9095d"
     },
     {
-      "path": ".local/share/fonts/hyprixe/HyprixeDebian.ttf",
+      "path": "common/local/share/fonts/hyprixe/HyprixeDebian.ttf",
       "bytes": 1768,
       "sha256": "28214849a64be2e1dba1782bcddf45f1d29560760effec387338a0218b557ffe"
     },
@@ -153,12 +153,12 @@
       "sha256": "706a75657411478cce1b95f2b89795f932f90c1b63c5f5cbe1f8c7f6d7abe0db"
     },
     {
-      "path": "sddm/themes/hyprixe-frosted/assets/user.svg",
+      "path": "common/sddm/themes/hyprixe-frosted/assets/user.svg",
       "bytes": 215,
       "sha256": "0eb3fafaa1dfcc3dc455817587d77a1ca169cfec9c8e78442fbce8371df40643"
     },
     {
-      "path": "wallpapers/min_forest.jpg",
+      "path": "common/wallpapers/min_forest.jpg",
       "bytes": 148096,
       "sha256": "9bfb1f796f738ee40a6f072d1cfb5045fb4d46da7af5059de10f405ca284ce30"
     }

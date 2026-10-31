@@ -10,7 +10,7 @@ Byte hashes identify files; they do not establish copyright or permission.
 
 ## Publication blockers
 
-1. **`wallpapers/min_forest.jpg`**: identical copies and their publishers are
+1. **`common/wallpapers/min_forest.jpg`**: identical copies and their publishers are
    identified, but the original artwork author and artwork-specific license
    are not. Obtain a reliable license/permission covering redistribution and
    screenshots, or deliberately replace the artwork with a cleared asset.
@@ -25,7 +25,7 @@ does not remove its redistribution obligations.
 
 ## Wallpaper and Senshi sources
 
-The project owner reports that `wallpapers/min_forest.jpg` was found via
+The project owner reports that `common/wallpapers/min_forest.jpg` was found via
 [Pinterest](https://fr.pinterest.com/pin/730427633330946825/).
 **Original author: unknown. License: unknown.** The original author and
 redistribution license could not be independently verified. This is a
@@ -43,10 +43,10 @@ of every collected wallpaper or override earlier authors' terms.
 
 | Local asset | Confirmed source and author evidence | Match / modifications | Status |
 | --- | --- | --- | --- |
-| `wallpapers/min_forest.jpg` | Owner-reported Pinterest discovery above; original author/license unknown. Independently matched [Senshi copy](https://github.com/Senshi111/hyprland-hyprdots-files/blob/d9d47fe1c18ed2f1462a3b1dc713169e0abf0337/Theme/Configs/.config/swww/Frosted-Glass/min_forest.jpg) | Exact 148,096-byte match; SHA256 `9bfb1f796f738ee40a6f072d1cfb5045fb4d46da7af5059de10f405ca284ce30`; no local image modification | **Blocked: artwork rights unconfirmed** |
-| `.config/Kvantum/Frosted-Glass/Frosted-Glass.svg` | Exact normalized Senshi copy, derived from Vince Liuice's GPLv3 Graphite light SVG; see the file findings below | All 710 Graphite shape records and 174 distinct paths retained; Frosted styles/gradients predate Hyprixe | **Cleared: GPL-3.0-only; retain attribution and compatible MIT notice** |
-| `.config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig` | Exact normalized Senshi copy; GPLv3 Graphite configuration, retaining its Vince Liuice/KvAdapta author line | 456 unchanged Graphite values, 20 changed, six removed; no added keys | **Cleared: same GPLv3 terms/notices** |
-| `.config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg` and `.kvconfig` | Hyprixe derivative of that GPLv3 pair; [generator](../tools/build-dolphin-theme.py) and [paint guide](dolphin-kvantum.md) | Paint/config changes introduced by `0a92888` and neutral palette `c38e479`, both 2026-10-27; inherited geometry retained | **Cleared: same GPLv3 terms and inherited notices** |
+| `common/wallpapers/min_forest.jpg` | Owner-reported Pinterest discovery above; original author/license unknown. Independently matched [Senshi copy](https://github.com/Senshi111/hyprland-hyprdots-files/blob/d9d47fe1c18ed2f1462a3b1dc713169e0abf0337/Theme/Configs/.config/swww/Frosted-Glass/min_forest.jpg) | Exact 148,096-byte match; SHA256 `9bfb1f796f738ee40a6f072d1cfb5045fb4d46da7af5059de10f405ca284ce30`; no local image modification | **Blocked: artwork rights unconfirmed** |
+| `common/config/Kvantum/Frosted-Glass/Frosted-Glass.svg` | Exact normalized Senshi copy, derived from Vince Liuice's GPLv3 Graphite light SVG; see the file findings below | All 710 Graphite shape records and 174 distinct paths retained; Frosted styles/gradients predate Hyprixe | **Cleared: GPL-3.0-only; retain attribution and compatible MIT notice** |
+| `common/config/Kvantum/Frosted-Glass/Frosted-Glass.kvconfig` | Exact normalized Senshi copy; GPLv3 Graphite configuration, retaining its Vince Liuice/KvAdapta author line | 456 unchanged Graphite values, 20 changed, six removed; no added keys | **Cleared: same GPLv3 terms/notices** |
+| `common/config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg` and `.kvconfig` | Hyprixe derivative of that GPLv3 pair; [generator](../tools/build-dolphin-theme.py) and [paint guide](dolphin-kvantum.md) | Paint/config changes introduced by `0a92888` and neutral palette `c38e479`, both 2026-10-27; inherited geometry retained | **Cleared: same GPLv3 terms and inherited notices** |
 
 The wallpaper also exactly matches
 [HyDE's Frosted Glass image at 224e1027](https://github.com/HyDE-Project/hyde-themes/blob/224e1027e451481db526a095242d261d47a68775/Configs/.config/hyde/themes/Frosted%20Glass/wallpapers/min_forest.jpg).
@@ -186,9 +186,9 @@ changed to carry these notices in the full repository distribution.
 | --- | --- | --- |
 | `extras/kooldots/catppuccin-latte-blue/catppuccin-latte-blue.svg` and `.kvconfig` | [Catppuccin/Kvantum a87694e0](https://github.com/catppuccin/kvantum/tree/a87694e0a3c97644dbb34f8835112d17b54ace68/themes/catppuccin-latte-blue), Catppuccin; config credits elkrien/Arc Dark; [MIT notice](licenses/Catppuccin-MIT.txt) | Both match that revision after line-ending normalization. No theme edits by this audit; optional, not deployed. Source/notice established. |
 | `extras/kooldots/catppuccin-mocha-blue/catppuccin-mocha-blue.svg` and `.kvconfig` | [Same pinned Catppuccin revision](https://github.com/catppuccin/kvantum/tree/a87694e0a3c97644dbb34f8835112d17b54ace68/themes/catppuccin-mocha-blue), same authors/notice | Both match after line-ending normalization; same optional scope. |
-| `.local/share/fonts/hyprixe/HyprixeDebian.ttf` | [font-logos](https://github.com/lukas-w/font-logos), published 1.4.0 font, by the font-logos contributors; [bundled Unlicense](../.local/share/fonts/hyprixe/LICENSE.txt) | One-glyph U+F306 subset, renamed Hyprixe Debian. Source font hash and modification are recorded in its [README](../.local/share/fonts/hyprixe/README.md). Debian trademark is not reassigned. |
-| `sddm/themes/hyprixe-frosted/assets/user.svg` | Hyprixe repository-authored simple vector icon; GPL-3.0-or-later with the project | Generic head/shoulders primitives; introduced with the own SDDM theme, no external icon pack/source identified. The SDDM wallpaper remains separately blocked. |
-| `.config/wlogout/icons/lock.svg`, `logout.svg`, `shutdown.svg`, `reboot.svg` | Hyprixe repository-authored simple monochrome vectors; GPL-3.0-or-later | Introduced with Wlogout, drawn from basic paths/shapes; no Senshi icon assets imported. Senshi inspired proportions, not an imported theme/icon set. |
+| `common/local/share/fonts/hyprixe/HyprixeDebian.ttf` | [font-logos](https://github.com/lukas-w/font-logos), published 1.4.0 font, by the font-logos contributors; [bundled Unlicense](../common/local/share/fonts/hyprixe/LICENSE.txt) | One-glyph U+F306 subset, renamed Hyprixe Debian. Source font hash and modification are recorded in its [README](../common/local/share/fonts/hyprixe/README.md). Debian trademark is not reassigned. |
+| `common/sddm/themes/hyprixe-frosted/assets/user.svg` | Hyprixe repository-authored simple vector icon; GPL-3.0-or-later with the project | Generic head/shoulders primitives; introduced with the own SDDM theme, no external icon pack/source identified. The SDDM wallpaper remains separately blocked. |
+| `common/config/wlogout/icons/lock.svg`, `logout.svg`, `shutdown.svg`, `reboot.svg` | Hyprixe repository-authored simple monochrome vectors; GPL-3.0-or-later | Introduced with Wlogout, drawn from basic paths/shapes; no Senshi icon assets imported. Senshi inspired proportions, not an imported theme/icon set. |
 | `docs/screenshots/screenshot1.png`, `screenshot2.png`, `screenshot3.png` | User-supplied captures; no separate capture license asserted here | Unmodified; review in [screenshot checklist](screenshots/README.md). Capture 1 fails privacy review. Captures 2/3 have no observed personal identifiers, but still contain the uncleared wallpaper. |
 
 ## Downloaded and packaged assets
@@ -205,7 +205,7 @@ These are not additional vendored image copies in the source tree:
   has a separate [GNU GPLv3 notice](https://github.com/romkatv/gitstatus/blob/v1.5.4/LICENSE),
   retained at `powerlevel10k/gitstatus/LICENSE` in the prepared installation.
   It must not be described as MIT. Full pins/checksums and installation
-  behaviour are in [shell sources](../scripts/shell-sources.json) and
+  behaviour are in [shell sources](../common/assets/shell-sources.json) and
   [Kitty/Zsh](kitty-zsh.md). Neither is attributed as a Hyprixe original.
 - **JetBrains Mono, Font Awesome, Breeze icons/cursors, Qt/KDE/SDDM components**
   are installed as Debian packages, not copied into this repository as theme

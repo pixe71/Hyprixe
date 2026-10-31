@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 """Derive Dolphin-only paint from Frosted-Glass; never alter widget geometry."""
+
+from pathlib import Path as _Path
+import sys as _sys
+_sys.path.insert(0, str(_Path(__file__).resolve().parents[1] / "scripts"))
+from source_layout import ROOT as REPOSITORY_ROOT, source_path, configure_imports, shell_bytes
+configure_imports()
 from pathlib import Path
 import re
 import xml.etree.ElementTree as ET
@@ -26,8 +32,8 @@ SVG_COLORS = {
 
 
 def main():
-    base = ROOT / '.config/Kvantum/Frosted-Glass'
-    output = ROOT / '.config/Kvantum' / NAME
+    base = source_path(ROOT, '.config/Kvantum/Frosted-Glass')
+    output = source_path(ROOT, '.config/Kvantum') / NAME
     output.mkdir(exist_ok=True)
     section, lines = '', []
     for line in (base / 'Frosted-Glass.kvconfig').read_text().splitlines():

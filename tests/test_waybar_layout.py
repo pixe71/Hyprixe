@@ -13,11 +13,14 @@ import unittest
 from unittest.mock import Mock, patch
 
 ROOT = Path(__file__).resolve().parents[1]
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
 sys.path.insert(0, str(ROOT / 'scripts'))
 import deploy
 from waybar_checks import check_source
 
-spec = importlib.util.spec_from_file_location('bar_temperature', ROOT / '.config/hypr/waybar/scripts/temperature.py')
+spec = importlib.util.spec_from_file_location('bar_temperature', source_path(ROOT, '.config/hypr/waybar/scripts/temperature.py'))
 sensor = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(sensor)
 
@@ -105,14 +108,14 @@ class LayoutTests(unittest.TestCase):
             self.assertEqual(list(home.iterdir()), [])
 
     def test_workspace_filter_shows_only_one_to_four_without_changing_hyprland(self):
-        config = json.loads((ROOT / '.config/hypr/waybar/configs/Frosted-Glass').read_text())
+        config = json.loads((source_path(ROOT, '.config/hypr/waybar/configs/Frosted-Glass')).read_text())
         ignored = config['hyprland/workspaces']['ignore-workspaces'][0]
         self.assertTrue(all(re.fullmatch(ignored, str(i)) is None for i in range(1, 5)))
         self.assertTrue(all(re.fullmatch(ignored, name) for name in ('5', '10', '42', 'notes', 'special:term')))
 
     def test_every_original_frosted_css_rule_is_preserved(self):
         original = css_rules((ROOT / 'tests/fixtures/waybar-frosted-original.css').read_text())
-        current = css_rules((ROOT / '.config/hypr/waybar/style/Frosted-Glass.css').read_text())
+        current = css_rules((source_path(ROOT, '.config/hypr/waybar/style/Frosted-Glass.css')).read_text())
         for selectors, declarations in original:
             if selectors == {'window#waybar'}:
                 # The only requested change to the historical Frosted CSS.
@@ -123,7 +126,7 @@ class LayoutTests(unittest.TestCase):
         results = []
         check_source(lambda ok, label: results.append((ok, label)), ROOT)
         self.assertTrue(all(ok for ok, _ in results), results)
-        config = json.loads((ROOT / '.config/hypr/waybar/configs/Frosted-Glass').read_text())
+        config = json.loads((source_path(ROOT, '.config/hypr/waybar/configs/Frosted-Glass')).read_text())
         modules = sum((config['modules-' + key] for key in ('left', 'center', 'right')), [])
         modules += config['group/traygroup']['modules']
         self.assertEqual(len(modules), len(set(modules)))

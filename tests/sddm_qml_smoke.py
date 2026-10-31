@@ -15,6 +15,9 @@ from PyQt6.QtQuick import QQuickView
 from PyQt6.QtTest import QTest
 
 ROOT = Path(__file__).resolve().parents[1]
+from support import source_path, configure_imports, shell_bytes
+configure_imports()
+
 warnings = []
 
 
@@ -76,8 +79,8 @@ def run():
     qInstallMessageHandler(lambda kind, context, text: warnings.append(text))
     with tempfile.TemporaryDirectory(prefix='hyprixe-qml-') as tmp:
         theme = Path(tmp) / 'theme'
-        shutil.copytree(ROOT / 'sddm/themes/hyprixe-frosted', theme)
-        shutil.copyfile(ROOT / 'wallpapers/min_forest.jpg', theme / 'min_forest.jpg')
+        shutil.copytree(source_path(ROOT, 'sddm/themes/hyprixe-frosted'), theme)
+        shutil.copyfile(source_path(ROOT, 'wallpapers/min_forest.jpg'), theme / 'min_forest.jpg')
         view = QQuickView()
         view.setResizeMode(QQuickView.ResizeMode.SizeRootObjectToView)
         context = view.rootContext()
