@@ -11,5 +11,5 @@ Type=oneshot
 EnvironmentFile=-%t/uwsm/env_session.conf
 ExecStart="@HYPR_CONFIG@/scripts/Wallpaper.sh"
 RemainAfterExit=yes
-TimeoutStartSec=15
+TimeoutStartSec=90
 Slice=background-graphical.slice

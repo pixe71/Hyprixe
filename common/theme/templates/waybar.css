@@ -1,0 +1,15 @@
+@define-color hx_background @background@;
+@define-color hx_surface @surface@;
+@define-color hx_surface_alt @surface_alt@;
+@define-color hx_foreground @foreground@;
+@define-color hx_foreground_muted @foreground_muted@;
+@define-color hx_accent @accent@;
+@define-color hx_accent_alt @accent_alt@;
+@define-color hx_border @border@;
+@define-color hx_border_focus @border_focus@;
+@define-color hx_border_secondary @border_secondary@;
+@define-color hx_success @success@;
+@define-color hx_warning @warning@;
+@define-color hx_error @error@;
+@define-color hx_selection @selection@;
+@define-color hx_workspace @workspace@;

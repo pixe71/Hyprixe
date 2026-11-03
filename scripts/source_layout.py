@@ -39,7 +39,8 @@ USER_MAPPINGS = (('common/config', 'config', ''),
                  ('common/local/share', 'data', ''),
                  ('common/local/bin', 'home', '.local/bin'),
                  ('common/shell', 'home', ''),
-                 ('common/wallpapers', 'data', 'hyprixe/wallpapers'))
+                 ('common/wallpapers', 'data', 'hyprixe/wallpapers'),
+                 ('common/theme', 'data', 'hyprixe/theme'))
 
 
 def source_path(root, relative):
@@ -92,7 +93,7 @@ def mapped_files(root=ROOT, platform='debian'):
     for prefix, namespace, destination in USER_MAPPINGS:
         directory = Path(root) / prefix
         for path in sorted(directory.rglob('*')):
-            if path.is_file():
+            if path.is_file() and '__pycache__' not in path.parts and path.suffix != '.pyc':
                 yield path, namespace, Path(destination) / path.relative_to(directory)
     integration = Path(root) / 'profiles' / platform / 'config'
     for path in sorted(integration.rglob('*')):

@@ -25,6 +25,12 @@ checkout() {
     [[ $(git -C "$build/$name" rev-parse HEAD) == "$commit" ]] || exit 1
     git -C "$build/$name" submodule update --init --recursive --depth 1
 }
+if ! python3 "$script_dir/wallust.py" --check 2>/dev/null; then
+    echo 'Building Wallust 3.5.1 (SHA-256 checked release, locked Cargo dependencies).'
+    sudo apt-get install -y --no-remove build-essential pkg-config libssl-dev
+    sudo apt-get install -y --no-remove -t trixie-backports cargo rustc
+    python3 "$script_dir/wallust.py" --staging "$output"
+fi
 if ! command -v awww >/dev/null || ! command -v awww-daemon >/dev/null; then
     echo 'Building awww v0.12.1 (pinned upstream commit).'
     install_build_dependencies awww

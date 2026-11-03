@@ -17,17 +17,11 @@ configuration {
     me-accept-entry:            "MousePrimary";
 }
 
-/* ---- Load wallust colors ---- */
-@theme "../wallust/colors-rofi.rasi"
+/* One semantic palette shared by every menu. */
+@import "Frosted-Glass-Common.rasi"
 
 /*****----- Global Properties -----*****/
 * {
-    background-alt: @color0;
-    /* selected uses color12, active uses color11 (match other working styles) */
-    selected:       @color12;
-    active:         @color11;
-    urgent:         @color13;
-    
     border-color:                @active;
     handle-color:                @selected;
     background-color:            @background;
@@ -307,7 +301,7 @@ textbox {
     border:                      0px solid;
     border-radius:               8px;
     border-color:                @border-color;
-    background-color:            @color0;
+    background-color:            @background-alt;
     text-color:                  @foreground-color;
     vertical-align:              0.5;
     horizontal-align:            0.5;
