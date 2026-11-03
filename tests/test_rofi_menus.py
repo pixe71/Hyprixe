@@ -24,21 +24,15 @@ def theme_blocks(text):
 
 @unittest.skipUnless(shutil.which('rofi') and has_wayland_support(), 'native Wayland Rofi parser required')
 class SharedThemeTests(unittest.TestCase):
-    def setUp(self):
-        from theme_checks import resolved_config
-        resolver = resolved_config()
-        self.config = resolver.__enter__()
-        self.addCleanup(resolver.__exit__, None, None, None)
-
     def test_all_active_menus_share_paint_search_selection_and_fonts(self):
         themes = {}
         for name in ('config-launcher', 'config-windows', 'config-clipboard', 'config-calc', 'config'):
-            result = subprocess.run(['rofi', '-config', str(self.config / 'hypr/rofi' / (name + '.rasi')),
+            result = subprocess.run(['rofi', '-config', str(source_path(ROOT, '.config/hypr/rofi') / (name + '.rasi')),
                                      '-dump-theme'], capture_output=True, text=True, timeout=15)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertNotIn('Black/', result.stdout)
             themes[name] = theme_blocks(result.stdout)
-            settings = subprocess.run(['rofi', '-config', str(self.config / 'hypr/rofi' / (name + '.rasi')),
+            settings = subprocess.run(['rofi', '-config', str(source_path(ROOT, '.config/hypr/rofi') / (name + '.rasi')),
                                        '-dump-config'], capture_output=True, text=True, timeout=15)
             self.assertEqual(settings.returncode, 0, settings.stderr)
             self.assertRegex(settings.stdout, r'\bfont:\s*"JetBrains Mono SemiBold 13";')

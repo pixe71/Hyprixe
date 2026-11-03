@@ -115,18 +115,7 @@ class LayoutTests(unittest.TestCase):
 
     def test_every_original_frosted_css_rule_is_preserved(self):
         original = css_rules((ROOT / 'tests/fixtures/waybar-frosted-original.css').read_text())
-        # Resolve the default semantic paint before comparing the entire layout
-        # and every declaration against the v1 reference (including alpha).
-        text = (source_path(ROOT, '.config/hypr/waybar/style/Frosted-Glass.css')).read_text()
-        text = re.sub(r'^@import[^\n]*\n', '', text)
-        palette = json.loads((ROOT / 'common/theme/defaults/frosted-glass.json').read_text())
-        for role, value in sorted(palette.items(), key=lambda item: len(item[0]), reverse=True):
-            text = text.replace('@hx_' + role, value)
-        def rgba(match):
-            color, alpha = match.groups()
-            return 'rgba(' + ', '.join(str(int(color[i:i+2], 16)) for i in (0, 2, 4)) + ', ' + alpha + ')'
-        text = re.sub(r'alpha\(#([0-9a-f]{6}), ([0-9.]+)\)', rgba, text)
-        current = css_rules(text)
+        current = css_rules((source_path(ROOT, '.config/hypr/waybar/style/Frosted-Glass.css')).read_text())
         for selectors, declarations in original:
             if selectors == {'window#waybar'}:
                 # The only requested change to the historical Frosted CSS.

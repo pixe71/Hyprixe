@@ -44,12 +44,6 @@ appropriate. They test backup/restore, modes, failures, repeated deployment and
 runtime logic without logging you out or powering off the machine. Passing
 these tests is not equivalent to exercising a real graphical session.
 
-Dynamic theming adds source checks for semantic templates/imports and isolated
-palette, cache, rollback, lock and Debian-install tests. With `--dependencies`,
-verification also requires Wallust 3.5.1, valid current wallpaper state, palette
-checksums and resolved installed imports. Source checks skip installed/session
-requirements. See [dynamic theming](dynamic-theming.md).
-
 ## Additional options
 
 ```bash

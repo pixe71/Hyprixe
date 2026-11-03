@@ -30,10 +30,6 @@ def config_errors(path):
     if not binary:
         return ['Kitty parser unavailable: install the Debian kitty package']
     try:
-        if '@HYPRIXE_THEME@/' in path.read_text():
-            from theme_checks import resolved_config
-            with resolved_config() as config:
-                return config_errors(config / 'kitty/kitty.conf')
         result = subprocess.run([binary, '+runpy', PARSER, str(path)],
                                 capture_output=True, text=True, timeout=15)
     except (OSError, subprocess.TimeoutExpired) as exc:

@@ -48,9 +48,6 @@ elif name=='systemctl':
     if 'start' in sys.argv and 'hyprixe-awww.service' in sys.argv:
         (root/'ready').touch()
 elif name=='pgrep': sys.exit(1)
-elif name=='hyprixe-theme':
-    import subprocess
-    sys.exit(subprocess.run(['awww','img','--resize','crop','--transition-type','none',str(root/'data/hyprixe/wallpapers/min_forest.jpg')]).returncode)
 '''
 
 
@@ -69,9 +66,6 @@ class RuntimeTests(unittest.TestCase):
                         XDG_CONFIG_HOME=str(source_path(ROOT, '.config')), XDG_DATA_HOME=str(self.root / 'data'),
                         XDG_STATE_HOME=str(self.root / 'state'), MOCK_ROOT=str(self.root),
                         PATH=str(bin_dir) + ':' + os.environ['PATH'])
-        helper = self.root / '.local/bin/hyprixe-theme'
-        helper.parent.mkdir(parents=True)
-        helper.write_text(MOCK); helper.chmod(0o755)
         wallpaper = self.root / 'data/hyprixe/wallpapers/min_forest.jpg'
         wallpaper.parent.mkdir(parents=True)
         wallpaper.write_bytes(b'wallpaper fixture')
@@ -167,7 +161,7 @@ class RuntimeTests(unittest.TestCase):
 
     def test_switcher_prefers_managed_rofi(self):
         managed = self.root / '.local/bin/rofi'
-        managed.parent.mkdir(parents=True, exist_ok=True)
+        managed.parent.mkdir(parents=True)
         managed.write_text(MOCK.replace("name=pathlib.Path(sys.argv[0]).name", "name='rofi-managed'")
                            + "\nif name=='rofi-managed': print('0')\n")
         managed.chmod(0o755)

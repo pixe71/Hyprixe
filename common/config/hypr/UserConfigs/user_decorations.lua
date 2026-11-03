@@ -5,7 +5,7 @@
 --  SPDX-License-Identifier: GPL-3.0-or-later
 -- ==================================================
 -- Frosted Glass / Senshi inspired
--- Frosted Glass defaults are available before the theme cache is initialized.
+-- Fixed palette: no wallpaper recolouring service changes these decorations.
 
 hl.config({
   general = {
@@ -57,7 +57,3 @@ hl.config({
     },
   },
 })
-
--- Only colours override the fixed defaults; geometry stays above.
-local cache = os.getenv("XDG_CACHE_HOME") or (os.getenv("HOME") .. "/.cache")
-pcall(dofile, cache .. "/hyprixe/theme/current/hyprland.lua")

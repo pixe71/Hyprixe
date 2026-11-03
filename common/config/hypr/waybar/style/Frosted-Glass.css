@@ -1,4 +1,3 @@
-@import "@HYPRIXE_THEME@/waybar.css";
 /* Frosted Glass — original Senshi-inspired palette and translucent top bar. */
 * {
     border: none;
@@ -10,48 +9,48 @@
     min-height: 0;
 }
 window#waybar {
-    background: alpha(@hx_background, 0.76);
+    background: rgba(18, 36, 52, 0.76);
     border-radius: 14px;
-    border-bottom: 1px solid alpha(@hx_accent, 0.20);
+    border-bottom: 1px solid rgba(126, 214, 255, 0.20);
 }
 #workspaces, #mpris, #tray, #submap, #idle_inhibitor, #clock,
 #window, #pulseaudio, #cpu, #memory, #network, #bluetooth, #custom-power,
 #custom-traylauncher, #custom-temperature, #custom-distro, #battery {
-    background: alpha(@hx_accent, 0.32);
-    color: @hx_foreground;
+    background: rgba(126, 214, 255, 0.32);
+    color: #e6f1f4;
     margin: 4px 2px;
     padding: 0 8px;
     border-radius: 10px;
-    border: 1px solid alpha(@hx_foreground, 0.20);
+    border: 1px solid rgba(230, 241, 244, 0.20);
 }
 #cpu, #memory, #network, #bluetooth, #custom-power,
 #custom-traylauncher, #custom-temperature, #custom-distro, #battery {
-    background: alpha(@hx_border_secondary, 0.45);
-    border-color: alpha(@hx_accent, 0.18);
+    background: rgba(30, 76, 132, 0.45);
+    border-color: rgba(126, 214, 255, 0.18);
 }
-#cpu, #network { color: @hx_accent; }
-#memory, #bluetooth { color: @hx_accent_alt; }
+#cpu, #network { color: #7ed6ff; }
+#memory, #bluetooth { color: #b4f9f8; }
 #workspaces { padding: 0 4px; }
 #workspaces button {
     background: transparent;
-    color: @hx_foreground;
+    color: #e6f1f4;
     padding: 0 5px;
     margin: 2px 1px;
     border-radius: 7px;
     transition: all 0.25s ease;
 }
 #workspaces button.active {
-    background: @hx_workspace;
+    background: #a44185;
     padding: 0 11px;
 }
-#workspaces button:hover { background: @hx_accent; color: @hx_border_secondary; }
+#workspaces button:hover { background: #7ed6ff; color: #1e4c84; }
 /* One compact icon per window; focus is reported by the toplevel protocol. */
 #taskbar {
-    background: alpha(@hx_border_secondary, 0.45);
+    background: rgba(30, 76, 132, 0.45);
     margin: 4px 2px;
     padding: 0 3px;
     border-radius: 10px;
-    border: 1px solid alpha(@hx_accent, 0.18);
+    border: 1px solid rgba(126, 214, 255, 0.18);
 }
 #taskbar button {
     background: transparent;
@@ -60,20 +59,20 @@ window#waybar {
     border: 1px solid transparent;
     border-radius: 7px;
 }
-#taskbar button:hover { background: alpha(@hx_accent, 0.25); }
+#taskbar button:hover { background: rgba(126, 214, 255, 0.25); }
 #taskbar button.active {
-    background: alpha(@hx_border_focus, 0.68);
-    border-color: @hx_accent;
+    background: rgba(39, 112, 192, 0.68);
+    border-color: #7ed6ff;
 }
 #taskbar.empty { background: transparent; border: none; padding: 0; margin: 0; }
 
 tooltip {
-    background: alpha(@hx_border_secondary, 0.92);
-    border: 1px solid alpha(@hx_accent, 0.45);
+    background: rgba(30, 76, 132, 0.92);
+    border: 1px solid rgba(126, 214, 255, 0.45);
     border-radius: 10px;
 }
-tooltip label { color: @hx_foreground; }
-#network.disconnected { color: @hx_error; }
+tooltip label { color: #e6f1f4; }
+#network.disconnected { color: #ff6b81; }
 
 /* Equal-width pairs keep the Debian logo at the actual bar midpoint.
    Existing font, padding, margins and Frosted Glass paints are retained. */
@@ -83,11 +82,11 @@ tooltip label { color: @hx_foreground; }
 #custom-distro {
     font-family: "Hyprixe Debian";
     font-size: 14px;
-    color: @hx_accent;
+    color: #7ed6ff;
 }
-#battery.charging, #battery.plugged, #battery.full { color: @hx_accent_alt; }
-#battery.warning:not(.charging):not(.plugged) { color: @hx_accent; }
+#battery.charging, #battery.plugged, #battery.full { color: #b4f9f8; }
+#battery.warning:not(.charging):not(.plugged) { color: #7ed6ff; }
 #battery.critical:not(.charging):not(.plugged) {
-    color: @hx_error;
-    border-color: @hx_error;
+    color: #ff6b81;
+    border-color: #ff6b81;
 }

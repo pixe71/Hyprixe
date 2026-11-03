@@ -126,8 +126,6 @@ class RofiDeploymentTests(unittest.TestCase):
             script.chmod(0o640)
             with patch.dict(os.environ, env), contextlib.redirect_stdout(io.StringIO()):
                 deploy.install(home, roots, 'native')
-                from theme_checks import Engine
-                Engine(roots['data'] / 'hyprixe/theme').transact(apply=False, reload=False)
                 backups = sorted((roots['state'] / 'hyprixe/backups').iterdir())
                 deploy.install(home, roots, 'native')
                 self.assertEqual(sorted((roots['state'] / 'hyprixe/backups').iterdir()), backups)
@@ -139,9 +137,8 @@ class RofiDeploymentTests(unittest.TestCase):
                 self.assertNotIn('$HOME', theme)
                 for name in ('config.rasi', '0-shared-fonts.rasi', 'themes/Frosted-Glass.rasi',
                              checks.COMMON, 'config-windows.rasi', 'config-clipboard.rasi', 'wallust/colors-rofi.rasi'):
-                    expected = (source_path(ROOT, '.config/hypr/rofi') / name).read_text().replace(
-                        '@HYPRIXE_THEME@', str(home / '.cache/hyprixe/theme/current'))
-                    self.assertEqual((roots['config'] / 'hypr/rofi' / name).read_text(), expected)
+                    self.assertEqual((roots['config'] / 'hypr/rofi' / name).read_bytes(),
+                                     (source_path(ROOT, '.config/hypr/rofi') / name).read_bytes())
                 shared = roots['config'] / 'hypr/rofi/themes/Frosted-Glass.rasi'
                 original = shared.read_text()
                 shared.write_text(original.replace('@import "Frosted-Glass-Common.rasi"', ''))

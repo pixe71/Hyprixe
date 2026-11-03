@@ -17,7 +17,6 @@ from terminal_checks import runtime_errors as terminal_runtime_errors, config_er
 from wlogout_checks import runtime_errors as wlogout_runtime_errors
 from interactive_shell import dependencies as shell_dependencies
 from hyprland_version import assess
-from wallust import compatible as wallust_compatible
 
 commands = ('Hyprland', 'hyprctl', 'uwsm', 'hyprlock', 'hypridle', 'kitty', 'dolphin',
             'waybar', 'wlogout', 'rofi', 'awww', 'awww-daemon', 'jq', 'flock', 'wpctl',
@@ -26,17 +25,6 @@ commands = ('Hyprland', 'hyprctl', 'uwsm', 'hyprlock', 'hypridle', 'kitty', 'dol
             'grim', 'slurp', 'xdg-user-dir', 'dbus-update-activation-environment')
 missing = [c for c in commands if not shutil.which(c)]
 errors = []
-if not wallust_compatible():
-    errors.append('Wallust 3.5.1 required; run ./install.sh native to prepare the pinned release.')
-else:
-    print('PASS: Wallust installed (3.5.1)')
-try:
-    from PIL import Image
-    import gi
-    gi.require_version('Gtk', '3.0')
-    from gi.repository import Gtk
-except (ImportError, ValueError):
-    errors.append('Dynamic theming requires python3-pil and python3-gi (GTK 3).')
 if missing:
     errors.append('Missing commands: ' + ', '.join(missing))
 if not Path('/usr/share/wayland-sessions/hyprland-uwsm.desktop').is_file():
