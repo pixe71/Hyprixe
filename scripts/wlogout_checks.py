@@ -55,6 +55,10 @@ def validate(config):
 
 
 def check_css(report, path):
+    if '@HYPRIXE_THEME@/' in Path(path).read_text():
+        from theme_checks import resolved_config
+        with resolved_config() as config:
+            return check_css(report, config / 'wlogout/style.css')
     # PyGObject is available with Blueman on Debian; keep it optional for source
     # verification on minimal hosts. The native GTK parser needs no window.
     code = '''import gi,sys

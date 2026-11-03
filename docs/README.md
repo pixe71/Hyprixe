@@ -21,6 +21,7 @@ introduction. Platform status belongs to one shared Hyprixe release.
 
 | Guide | Contents |
 | --- | --- |
+| [Dynamic wallpaper theming](dynamic-theming.md) | v1.2.0 candidate: Wallust, semantic colours, apply/refresh/disable and recovery |
 | [Waybar](waybar.md) | Module layout, tray, taskbar, hardware detection and compatibility build |
 | [Rofi](rofi.md) | Applications, clipboard, window switcher and shared Frosted Glass theme |
 | [Wlogout](wlogout.md) | Four actions, confirmations and UWSM logout |

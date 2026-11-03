@@ -118,7 +118,9 @@ class ShellTransactionTests(unittest.TestCase):
         return SimpleNamespace(pw_uid=1000, pw_name='desktop-fixture', pw_dir=str(self.home), pw_shell=self.current)
 
     def runner(self, args, **kwargs):
-        if args[0] == 'fc-cache':
+        if len(args) > 2 and args[1].endswith('/theme/engine.py') and args[2] == 'init':
+            self.events.append('theme-init')
+        elif args[0] == 'fc-cache':
             self.events.append('font-cache')
         elif args[:2] == ['sudo', '/usr/bin/chsh']:
             self.assertEqual(args[-1], 'desktop-fixture')
@@ -139,6 +141,7 @@ class ShellTransactionTests(unittest.TestCase):
         backup = self.install()
         self.assertEqual(self.current, '/usr/bin/zsh')
         self.assertLess(self.events.index('startup'), self.events.index('chsh:/usr/bin/zsh'))
+        self.assertLess(self.events.index('theme-init'), self.events.index('chsh:/usr/bin/zsh'))
         self.assertEqual((self.home / '.zshrc').read_bytes(), shell_bytes(ROOT, '.zshrc'))
         self.assertIsNone(self.install())
         self.assertEqual(self.events.count('chsh:/usr/bin/zsh'), 1)

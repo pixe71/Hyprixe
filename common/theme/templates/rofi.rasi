@@ -1,0 +1,14 @@
+* {
+    background: rgba(@surface_rgb@, 0.82);
+    foreground: @foreground@;
+    background-alt: @background@;
+    selected: @border@;
+    active: @selection@;
+    urgent: @warning@;
+    launcher-glass: rgba(@surface_rgb@, 0.82);
+    launcher-input: rgba(@surface_alt_rgb@, 0.40);
+    launcher-button: rgba(@surface_alt_rgb@, 0.76);
+    launcher-selection: rgba(@selection_rgb@, 0.92);
+    launcher-hover: rgba(@border_rgb@, 0.92);
+    launcher-edge: rgba(@accent_rgb@, 0.20);
+}

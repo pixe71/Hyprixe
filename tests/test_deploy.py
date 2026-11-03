@@ -152,7 +152,9 @@ class DeploymentTests(unittest.TestCase):
         old = self.write('alacritty/alacritty.toml', '# personal legacy settings\n')
         kde = self.write('kdeglobals', '[General]\nTerminalApplication=alacritty\nTerminalService=Alacritty.desktop\nUnrelated=keep\n')
         self.install()
-        self.assertEqual(kitty.read_bytes(), (source_path(ROOT, '.config/kitty/kitty.conf')).read_bytes())
+        expected = (source_path(ROOT, '.config/kitty/kitty.conf')).read_text().replace(
+            '@HYPRIXE_THEME@', str(self.home / '.cache/hyprixe/theme/current'))
+        self.assertEqual(kitty.read_text(), expected)
         self.assertIn('TerminalApplication=kitty\n', kde.read_text())
         self.assertIn('TerminalService=kitty.desktop\n', kde.read_text())
         self.assertIn('Unrelated=keep', kde.read_text())

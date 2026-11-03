@@ -19,6 +19,8 @@ def imports(path, seen=None):
     text = path.read_text()
     seen.add(path)
     for name in re.findall(r'@(?:import|theme)\s+"([^"]+)"', text):
+        if name.startswith('@HYPRIXE_THEME@/'):
+            continue  # Source-only token; theme_checks validates/materializes it.
         imports(path.parent / name, seen)
     return seen
 
