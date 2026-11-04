@@ -118,13 +118,17 @@ class RofiDeploymentTests(unittest.TestCase):
             home.mkdir()
             roots = {kind: home / folder for kind, folder in (
                 ('config', 'settings with spaces'), ('data', 'data with spaces'), ('state', 'state'))}
-            env = dict(HOME=str(home), XDG_CONFIG_HOME=str(roots['config']),
+            env = dict(HOME=str(home), XDG_CACHE_HOME=str(home / '.cache'), XDG_CONFIG_HOME=str(roots['config']),
                        XDG_DATA_HOME=str(roots['data']), XDG_STATE_HOME=str(roots['state']))
             script = roots['config'] / 'hypr/scripts/RofiLauncher.sh'
             script.parent.mkdir(parents=True)
             script.write_text('# previous launcher\n')
             script.chmod(0o640)
-            with patch.dict(os.environ, env), contextlib.redirect_stdout(io.StringIO()):
+            caller_cache = Path(tmp) / 'caller cache'
+            caller_cache.mkdir()
+            sentinel = caller_cache / 'personal'; sentinel.write_text('unchanged')
+            with patch.dict(os.environ, XDG_CACHE_HOME=str(caller_cache)), \
+                 patch.dict(os.environ, env), contextlib.redirect_stdout(io.StringIO()):
                 deploy.install(home, roots, 'native')
                 from theme_checks import Engine
                 Engine(roots['data'] / 'hyprixe/theme').transact(apply=False, reload=False)
@@ -162,6 +166,8 @@ class RofiDeploymentTests(unittest.TestCase):
                 self.assertEqual(script.read_text(), '# previous launcher\n')
                 self.assertEqual(script.stat().st_mode & 0o777, 0o640)
                 self.assertFalse((roots['config'] / 'hypr/rofi/config-launcher.rasi').exists())
+            self.assertEqual(sentinel.read_text(), 'unchanged')
+            self.assertEqual(list(caller_cache.iterdir()), [sentinel])
 
     def test_missing_installed_configuration_reports_failure_without_traceback(self):
         with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, XDG_CONFIG_HOME=tmp):

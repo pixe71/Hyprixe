@@ -61,7 +61,9 @@ def check_installed(report):
         saved = engine.load_state()
         report(bool(saved), 'Persistent theme state valid (XDG_STATE, independent of cache)')
         meta = engine.read()
-        report(engine.cache_status(saved) == 'valid', 'Generated theme palette valid (roles, contrast, checksums, state)')
+        cache = engine.cache_status(saved)
+        detail = ': ' + engine.cache_reason(saved) if cache == 'invalid' else ''
+        report(cache == 'valid', 'Generated theme palette valid (roles, contrast, checksums, state)' + detail)
         if not meta or not saved:
             return
         image = image_valid(saved['wallpaper'])

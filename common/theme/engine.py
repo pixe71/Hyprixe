@@ -20,6 +20,7 @@ import subprocess
 import sys
 import tempfile
 import uuid
+from hyprland_errors import parse_config_errors
 
 WALLUST_VERSION = '3.5.1'
 FILES = ('hyprland.lua', 'waybar.css', 'rofi.rasi', 'wlogout.css',
@@ -383,6 +384,15 @@ class Engine:
         meta = self.read()
         return 'valid' if meta and saved and meta.get('state_hash') == self.state_hash(saved) else 'invalid'
 
+    def cache_reason(self, saved):
+        """Explain rejection without weakening any palette/manifest checks."""
+        meta = self.read()
+        if meta and saved and meta.get('state_hash') != self.state_hash(saved):
+            return ('generation state fingerprint differs from persistent state; generation wallpaper: '
+                    + meta['wallpaper'] + '; generation enabled: ' + str(meta['enabled'])
+                    + '; persistent enabled: ' + str(saved['enabled']) + '; run hyprixe-theme refresh')
+        return 'generation files, metadata or checksums are invalid; run hyprixe-theme refresh'
+
     def version(self):
         if not shutil.which('wallust'):
             return None
@@ -392,7 +402,7 @@ class Engine:
 
     def fingerprint(self):
         h = hashlib.sha256()
-        for relative in ('engine.py', 'wallust.toml', 'raw.json', 'defaults/frosted-glass.json',
+        for relative in ('engine.py', 'hyprland_errors.py', 'wallust.toml', 'raw.json', 'defaults/frosted-glass.json',
                          *('templates/' + name for name in FILES)):
             h.update((self.resources / relative).read_bytes())
         return h.hexdigest()
@@ -467,8 +477,11 @@ class Engine:
             if result.returncode:
                 raise ValueError('Hyprland reload failed: ' + result.stderr.strip())
             errors = run(['hyprctl', 'configerrors', '-j'])
-            if errors.returncode == 0 and errors.stdout.strip() not in ('', '[]', '{}', 'null'):
-                raise ValueError('Hyprland configerrors: ' + errors.stdout.strip())
+            if errors.returncode:
+                raise ValueError('Hyprland configerrors query failed: ' + (errors.stderr or errors.stdout).strip())
+            messages = parse_config_errors(errors.stdout)
+            if messages:
+                raise ValueError('Hyprland configerrors: ' + '\n'.join(messages))
         # SIGUSR1 in Kitty 0.41 (Trixie) reloads config, SIGUSR2 is Waybar's
         # supported reload. Signal only our user's processes with a handler.
         for name, signum in (('waybar', signal.SIGUSR2), ('kitty', signal.SIGUSR1)):
@@ -633,6 +646,8 @@ def main(argv=None):
                 print('current wallpaper: ' + str(saved['wallpaper'] or 'none' if saved else 'none'))
                 print('wallpaper hash: ' + str(saved['wallpaper_hash'] or 'none' if saved else 'none'))
                 print('cache: ' + cache)
+                if cache == 'invalid':
+                    print('cache reason: ' + engine.cache_reason(saved))
                 palette = ('dynamic' if meta['source'].startswith('wallust') else 'default') if meta else 'unavailable'
                 print('palette: ' + palette)
                 if meta:

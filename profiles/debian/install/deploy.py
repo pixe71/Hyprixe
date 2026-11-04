@@ -58,10 +58,11 @@ def locations():
     if home.is_symlink() or home.resolve() != home:
         raise ValueError('HOME must be an absolute canonical path')
     roots = {'config': Path(os.environ.get('XDG_CONFIG_HOME', home / '.config')),
+             'cache': Path(os.environ.get('XDG_CACHE_HOME', home / '.cache')),
              'data': Path(os.environ.get('XDG_DATA_HOME', home / '.local/share')),
              'state': Path(os.environ.get('XDG_STATE_HOME', home / '.local/state'))}
     for name, path in roots.items():
-        if not path.is_absolute() or not path.is_relative_to(home) or path == home:
+        if not path.is_absolute() or (name != 'cache' and not path.is_relative_to(home)) or path == home:
             raise ValueError(f'XDG {name} must be an absolute subdirectory of HOME: {path}')
         # Reject traversal in XDG overrides before normalisation.
         if '..' in path.parts or any(c in str(path) for c in '\n\r\0'):
@@ -102,7 +103,11 @@ def merge_ini(old, updates):
     return ''.join(lines)
 
 
-def payload(roots, profile, runtime=None, dolphin_only=False, waybar_only=False):
+def payload(roots, profile, runtime=None, dolphin_only=False, waybar_only=False, *, home):
+    # Environment lookup belongs exclusively to locations(), at the CLI boundary.
+    # Every renderer/helper below uses the explicit deployment target.
+    home = Path(home)
+    cache = roots.get('cache', home / '.cache') / 'hyprixe/theme/current'
     if waybar_only:
         result = {}
         # Explicit source list: missing active assets fail before any write;
@@ -111,7 +116,6 @@ def payload(roots, profile, runtime=None, dolphin_only=False, waybar_only=False)
             source = source_path(REPO, '.config/hypr/waybar') / name
             data = source.read_bytes()
             if name.endswith('.css'):
-                cache = Path(os.environ.get('XDG_CACHE_HOME', Path.home() / '.cache')) / 'hyprixe/theme/current'
                 if (cache / 'waybar.css').is_file():
                     data = data.replace(b'@HYPRIXE_THEME@', str(cache).encode())
                 else:
@@ -138,7 +142,6 @@ def payload(roots, profile, runtime=None, dolphin_only=False, waybar_only=False)
         raise FileNotFoundError('Required Kitty configuration missing: .config/kitty/kitty.conf')
     validate_wlogout(source_path(REPO, '.config'))
     result = {}
-    home = Path(os.environ['HOME'])
     destinations = dict(roots, home=home)
     for source, namespace, relative in mapped_files(REPO):
         target = destinations[namespace] / relative
@@ -151,7 +154,7 @@ def payload(roots, profile, runtime=None, dolphin_only=False, waybar_only=False)
         result[target] = (data, mode)
     result.update(shell_assets.payload(home, roots['data'], runtime))
     hypr = roots['config'] / 'hypr'
-    local_waybar = Path(os.environ['HOME']) / '.local/bin/waybar'
+    local_waybar = home / '.local/bin/waybar'
     staged_waybar = runtime and (Path(runtime) / 'waybar').is_file()
     waybar = str(local_waybar if staged_waybar or local_waybar.is_file() else shutil.which('waybar') or '/usr/bin/waybar')
     for name in ('profile.lua', 'profile.env'):
@@ -165,7 +168,6 @@ def payload(roots, profile, runtime=None, dolphin_only=False, waybar_only=False)
             text = text.replace('$HOME/.local/share/hyprixe', str(roots['data'] / 'hyprixe'))
             unit_path = str(hypr).replace('%', '%%').replace('\\', '\\\\').replace('"', '\\"')
             text = text.replace('@HYPR_CONFIG@', unit_path)
-            cache = Path(os.environ.get('XDG_CACHE_HOME', home / '.cache')) / 'hyprixe/theme/current'
             text = text.replace('@HYPRIXE_THEME@', str(cache))
             text = text.replace('@WAYBAR_EXEC@', waybar.replace('%', '%%').replace('\\', '\\\\').replace('"', '\\"'))
             result[target] = (text.encode(), mode)
@@ -187,7 +189,7 @@ def payload(roots, profile, runtime=None, dolphin_only=False, waybar_only=False)
         for name in ('rofi', 'awww', 'awww-daemon', 'waybar', 'wallust'):
             source = Path(runtime) / name
             if source.is_file():
-                result[Path(os.environ['HOME']) / '.local/bin' / name] = (source.read_bytes(), 0o755)
+                result[home / '.local/bin' / name] = (source.read_bytes(), 0o755)
     result.update(dolphin_config.payload(REPO, roots, merge_ini, default_theme='Frosted-Glass'))
     # Installation-time validated defaults survive later template corruption.
     import sys
@@ -330,9 +332,10 @@ def restore(backup, home, dry=False, rollback=False, save_dolphin_changes=False)
 def install(home, roots, profile, dry=False, runtime=None, dolphin_only=False,
             custom_files=None, view_xattr_after=None, scope=None, waybar_only=False):
     # Refuse symlinked parents even during preview, before reading merge targets.
-    for root in roots.values():
-        guard(root / '.hyprixe-path-check', home)
-    content = custom_files if custom_files is not None else payload(roots, profile, runtime, dolphin_only=dolphin_only, waybar_only=waybar_only)
+    for name, root in roots.items():
+        if name != 'cache':  # No deployment file is written into the cache root.
+            guard(root / '.hyprixe-path-check', home)
+    content = custom_files if custom_files is not None else payload(roots, profile, runtime, dolphin_only=dolphin_only, waybar_only=waybar_only, home=home)
     view_directory = roots['data'] / 'dolphin/view_properties/global'
     if view_xattr_after is not None:
         guard(view_directory / '.metadata-path-check', home)
@@ -473,7 +476,8 @@ def install_with_shell(home, roots, profile, runtime=None, sddm=True):
     # All desktop/system installation and startup validation precede chsh.
     backup = (install_with_sddm if sddm else install)(home, roots, profile, runtime=runtime)
     try:
-        theme_env = dict(os.environ, **{'XDG_' + key.upper() + '_HOME': str(roots[key]) for key in ('config', 'data', 'state')})
+        theme_env = dict(os.environ, HOME=str(home), XDG_CACHE_HOME=str(roots.get('cache', home / '.cache')),
+                         **{'XDG_' + key.upper() + '_HOME': str(roots[key]) for key in ('config', 'data', 'state')})
         subprocess.run([sys.executable, str(roots['data'] / 'hyprixe/theme/engine.py'), 'init'], check=True, env=theme_env)
         shell_assets.validate(roots['data'] / 'hyprixe/powerlevel10k')
         shell_assets.check_daemon(roots['data'] / 'hyprixe/powerlevel10k')

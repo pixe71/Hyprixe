@@ -121,7 +121,7 @@ class DebianEquivalenceTests(unittest.TestCase):
             for name, expected in fixture['cases'].items():
                 xdg, hardware, scope = name.split('/')
                 with self.subTest(case=name), patch.dict(os.environ, HOME=str(home)), patch.object(deploy.shutil, 'which', side_effect=lambda name: '/usr/bin/' + name):
-                    payload = deploy.payload(self.roots(home, xdg == 'custom'), hardware,
+                    payload = deploy.payload(self.roots(home, xdg == 'custom'), hardware, home=home,
                             runtime=stage if scope == 'runtime' else None,
                             waybar_only=scope == 'waybar', dolphin_only=scope == 'dolphin')
                     actual = {}
@@ -182,7 +182,7 @@ class DebianEquivalenceTests(unittest.TestCase):
                     path.chmod(entry['mode'])
                     originals[path] = (data, entry['mode'])
             with patch.dict(os.environ, HOME=str(home)):
-                content = deploy.payload(self.roots(home), 'native')
+                content = deploy.payload(self.roots(home), 'native', home=home)
             # Rebase only the transient HOME-dependent installed hashes. The
             # independent golden test above prevents content drift being hidden.
             for entry in manifest['files']:

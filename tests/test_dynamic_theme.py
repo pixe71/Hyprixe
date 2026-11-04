@@ -325,6 +325,69 @@ class TransactionTests(unittest.TestCase):
             self.assertIn('cache: invalid', output.getvalue())
             self.assertIn('palette: unavailable', output.getvalue())
 
+    def test_empty_hyprctl_configerrors_allows_disable(self):
+        outputs = ('', '\n', '   \n', '[]', '[""]', '["", "   ", "\\n"]')
+        for output in outputs:
+            with self.subTest(stdout=output):
+                self.generate(enabled=True, force=True)
+                def query(arguments, **kwargs):
+                    if arguments == ['hyprctl', 'reload']:
+                        return subprocess.CompletedProcess(arguments, 0, 'ok', '')
+                    if arguments == ['hyprctl', 'configerrors', '-j']:
+                        return subprocess.CompletedProcess(arguments, 0, output, '')
+                    raise AssertionError(arguments)
+                with patch.object(self.engine, 'reload', engine.Engine.reload.__get__(self.engine)), \
+                     patch('engine.Engine', return_value=self.engine), \
+                     patch('engine.run', side_effect=query), \
+                     patch('engine.shutil.which', side_effect=lambda name: '/bin/hyprctl' if name == 'hyprctl' else None), \
+                     patch.dict(os.environ, HYPRLAND_INSTANCE_SIGNATURE='mock-session'):
+                    self.assertEqual(engine.main(['disable']), 0)
+                self.assertFalse(self.engine.load_state()['enabled'])
+                self.assertEqual(self.engine.cache_status(self.engine.load_state()), 'valid')
+
+    def test_nonempty_hyprctl_configerrors_are_still_rejected(self):
+        self.generate()
+        for output in ('Config error at line 12', '["", "Config error at line 12"]'):
+            with self.subTest(stdout=output), \
+                 patch('engine.run', side_effect=[subprocess.CompletedProcess([], 0, 'ok', ''),
+                                                 subprocess.CompletedProcess([], 0, output, '')]), \
+                 patch('engine.shutil.which', return_value='/bin/hyprctl'), \
+                 patch.dict(os.environ, HYPRLAND_INSTANCE_SIGNATURE='mock-session'):
+                with self.assertRaisesRegex(ValueError, 'Config error at line 12'):
+                    engine.Engine.reload(self.engine)
+
+    def test_failed_disable_leaves_a_state_mismatch_which_refresh_repairs(self):
+        self.generate(enabled=True)
+        self.reload.side_effect = [ValueError('Hyprland configerrors: [""]'), []]
+        with self.assertRaises(ValueError):
+            self.engine.transact(enabled=False, force=True)
+        saved = self.engine.load_state()
+        self.assertFalse(saved['enabled'])
+        self.assertIsNotNone(self.engine.read())  # Palette/manifest remain valid.
+        self.assertEqual(self.engine.cache_status(saved), 'invalid')
+        self.reload.side_effect = None
+        self.engine.transact(force=True, apply=False, reload=False)
+        self.assertEqual(self.engine.load_state(), saved)
+        self.assertEqual(self.engine.cache_status(saved), 'valid')
+
+    def test_refresh_repairs_foreign_or_legacy_generation_fingerprints(self):
+        self.generate(enabled=False)
+        saved = self.engine.load_state()
+        for fingerprint in (None, 'a' * 64):
+            with self.subTest(state_hash=fingerprint):
+                path = self.engine.current / 'metadata.json'
+                metadata = json.loads(path.read_text())
+                metadata.pop('state_hash', None)
+                if fingerprint is not None:
+                    metadata['state_hash'] = fingerprint
+                path.write_text(json.dumps(metadata))
+                self.assertIsNotNone(self.engine.read())
+                self.assertEqual(self.engine.cache_status(saved), 'invalid')
+                self.assertIn('fingerprint differs', self.engine.cache_reason(saved))
+                self.engine.transact(force=True, apply=False, reload=False)
+                self.assertEqual(self.engine.load_state(), saved)
+                self.assertEqual(self.engine.cache_status(saved), 'valid')
+
     def test_legacy_enabled_preference_migrates_without_losing_selection(self):
         self.legacy(enabled=True)
         self.engine.transact(force=True, apply=False, reload=False)

@@ -180,6 +180,27 @@ Hyprland `configerrors` complement the parser tests. A failed compositor
 activation restores the preceding generation and wallpaper. Soft reload issues
 for disappearing Kitty/SwayNC processes are reported without closing apps.
 
+`hyprctl configerrors` is normalized consistently in the engine and session
+checks: blank/whitespace output and JSON arrays containing only blank strings
+mean no errors. Real nonempty error messages still reject activation.
+
+If state/wallpaper checks pass but cache validation fails, `status` now reports
+whether the generation's state fingerprint differs from persistent state.
+Pre-fix test fixtures could inherit the session's `XDG_CACHE_HOME` and replace
+the real current generation with one belonging to a temporary test state. A
+failed enable/disable reload can also leave an older generation selected after
+rollback. Neither case justifies accepting mismatched fingerprints. Deployment
+rendering and initialization now use the explicit target HOME/cache, and tests
+isolate their cache. After updating installed files, regenerate from persistent
+state without deleting preferences:
+
+```bash
+./install.sh native --no-packages
+hyprixe-theme refresh
+hyprixe-theme status
+./verify.sh --dependencies --session
+```
+
 Installed import bridges, engine resources, fallback fragments and staged
 Wallust use Hyprixe's ordinary file-level backups. Restore transactions in
 reverse order with `./uninstall.sh`; user-edited files retain the existing

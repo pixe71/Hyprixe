@@ -119,6 +119,10 @@ class ShellTransactionTests(unittest.TestCase):
 
     def runner(self, args, **kwargs):
         if len(args) > 2 and args[1].endswith('/theme/engine.py') and args[2] == 'init':
+            self.assertEqual(kwargs['env']['HOME'], str(self.home))
+            self.assertEqual(kwargs['env']['XDG_CACHE_HOME'], str(self.roots.get('cache', self.home / '.cache')))
+            for name in ('config', 'data', 'state'):
+                self.assertEqual(kwargs['env']['XDG_' + name.upper() + '_HOME'], str(self.roots[name]))
             self.events.append('theme-init')
         elif args[0] == 'fc-cache':
             self.events.append('font-cache')
@@ -151,6 +155,12 @@ class ShellTransactionTests(unittest.TestCase):
         for name in ('.zshrc', '.p10k.zsh'):
             self.assertEqual((self.home / name).read_text(), 'old personal ' + name)
             self.assertEqual((self.home / name).stat().st_mode & 0o777, 0o640)
+
+    def test_theme_init_environment_uses_explicit_home_and_custom_cache(self):
+        self.roots['cache'] = self.home / 'target cache with spaces'
+        with patch.dict(os.environ, HOME=str(self.home / 'other user'), XDG_CACHE_HOME=str(self.home / 'caller cache')):
+            self.install()  # runner asserts all HOME/XDG values at the init boundary.
+        self.assertIn('theme-init', self.events)
 
     def test_startup_failure_rolls_back_without_changing_shell(self):
         with patch.object(shell, 'startup', side_effect=ValueError('broken plugin')):

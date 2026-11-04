@@ -52,7 +52,7 @@ def source_path(root, relative):
 
 
 def configure_imports():
-    paths = [str(ROOT / path) for path in ('scripts', 'common/tools', 'common/compat', BACKEND)]
+    paths = [str(ROOT / path) for path in ('scripts', 'common/tools', 'common/compat', 'common/theme', BACKEND)]
     for path in reversed(paths):
         if path not in sys.path:
             sys.path.insert(0, path)

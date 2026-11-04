@@ -35,7 +35,7 @@ def layout_objects(text):
     return objects
 
 
-def validate(config):
+def validate(config, *, theme_dir=None):
     folder = Path(config) / 'wlogout'
     rows = layout_objects((folder / 'layout').read_text())
     expected = [dict(label=name, action='hyprixe-session ' + name, text=name.capitalize(), keybind=key)
@@ -50,8 +50,15 @@ def validate(config):
         raise ValueError('The four local Wlogout icons must resolve')
     for name in icons:
         ET.parse(folder / name)
-    if re.search(r'/home/|Virtual-1|killall|pkill|hibernate|suspend', css + str(rows), re.I):
+    # Source paint may only use the unresolved token. Installed paint may use
+    # exactly the generated fragment for the explicitly selected XDG cache.
+    expected_import = str(Path(theme_dir) / 'wlogout.css') if theme_dir is not None else '@HYPRIXE_THEME@/wlogout.css'
+    imports = re.findall(r'@import\s+"([^"]+)"\s*;', css)
+    audited = re.sub(r'@import\s+"' + re.escape(expected_import) + r'"\s*;', '', css)
+    if re.search(r'/home/|Virtual-1|killall|pkill|hibernate|suspend', audited + str(rows), re.I):
         raise ValueError('Machine-specific path or unsupported session action')
+    if imports != [expected_import]:
+        raise ValueError('Unexpected dynamic Wlogout import; expected the target theme cache')
 
 
 def check_css(report, path):
@@ -103,7 +110,8 @@ def check_source(report, root):
 def check_installed(report, root):
     config = Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config'))
     try:
-        validate(config)
+        cache = Path(os.environ.get('XDG_CACHE_HOME', Path.home() / '.cache')) / 'hyprixe/theme/current'
+        validate(config, theme_dir=cache)
         launcher = Path.home() / '.local/bin/hyprixe-session'
         if not launcher.is_file() or not os.access(launcher, os.X_OK):
             raise ValueError('Installed hyprixe-session must exist and be executable')
