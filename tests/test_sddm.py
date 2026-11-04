@@ -57,6 +57,42 @@ class SystemThemeTests(unittest.TestCase):
         self.assertEqual(self.theme.path(sddm.SESSION).read_bytes(), session)
         self.theme.restore(identifier)  # resumable combined restoration
 
+    def test_receiver_authorization_units_and_system_theme_share_restore_transaction(self):
+        identifier = self.theme.install()
+        authorization = self.theme.path(sddm.SYNC_USERS)
+        self.assertEqual(json.loads(authorization.read_text()), {'format': 1, 'uids': [1000]})
+        self.assertEqual(authorization.stat().st_mode & 0o777, 0o644)
+        for name in sddm.SYNC_FILES:
+            self.assertTrue(self.theme.path(name).is_file())
+        self.assertIn(sddm.SYNC_PALETTE, self.theme.path(sddm.THEME_DIR + '/theme.conf').read_text())
+        self.theme.restore(identifier)
+        self.assertFalse(authorization.exists())
+        self.assertTrue(all(not self.theme.path(name).exists() for name in sddm.SYNC_FILES))
+
+    def test_additional_installer_enrolls_only_its_uid_and_restores_previous_policy(self):
+        self.theme.install()
+        other = sddm.SystemTheme(self.root, actor_uid=1001)
+        identifier = other.install()
+        self.assertEqual(json.loads(other.path(sddm.SYNC_USERS).read_text())['uids'], [1000, 1001])
+        other.restore(identifier)
+        self.assertEqual(json.loads(other.path(sddm.SYNC_USERS).read_text())['uids'], [1000])
+
+    def test_dynamic_check_accepts_no_snapshot_and_detects_corrupt_copy(self):
+        self.theme.install()
+        self.assertEqual(self.theme.dynamic_errors(), [])
+        from sddm_sync import Receiver, ROLES
+        from engine import defaults
+        image = source_path(ROOT, 'wallpapers/min_forest.jpg')
+        import hashlib
+        request = {'format': 1, 'palette': {k: defaults(ROOT / 'common/theme')[k] for k in ROLES},
+                   'image_hash': hashlib.sha256(image.read_bytes()).hexdigest()}
+        state = self.theme.path('/var/lib/hyprixe/theme')
+        with image.open('rb') as stream:
+            Receiver(state).receive(request, stream.fileno(), image.stat().st_uid)
+        self.assertEqual(self.theme.dynamic_errors(), [])
+        (state / 'current/palette.json').write_text('{broken')
+        self.assertTrue(self.theme.dynamic_errors())
+
     def test_higher_priority_config_is_backed_up_without_changing_session_settings(self):
         original = '[Theme]\nCurrent=debian\nThemeDir=/opt/themes\nCursorTheme=breeze\n[Autologin]\nUser=alice\nSession=hyprland-uwsm.desktop\n[Wayland]\nSessionDir=/usr/share/wayland-sessions\n[General]\nDisplayServer=x11\n'
         top = self.write('/etc/sddm.conf', original)

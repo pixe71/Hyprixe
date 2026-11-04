@@ -282,7 +282,8 @@ class TransactionTests(unittest.TestCase):
                     self.assertTrue(self.engine.load_state()['enabled'])
             self.assertEqual(self.engine.read()['source'], 'frosted-glass')
             self.assertEqual(engine.main(['refresh']), 0)
-            self.assertEqual(self.engine.read()['source'], 'wallust')
+            self.assertEqual(self.engine.read()['source'], 'wallust-calibrated')
+            self.assertEqual(self.engine.wallpaper(), self.reference)
 
     def test_first_install_init_is_the_only_implicit_initial_opt_in(self):
         with patch('engine.Engine', return_value=self.engine):
@@ -299,9 +300,9 @@ class TransactionTests(unittest.TestCase):
         self.generate(enabled=False)
         saved = self.engine.load_state()
         shutil.rmtree(self.engine.cache.parent)
-        with patch('engine.Engine', return_value=self.engine), patch('engine.shutil.which') as executable:
+        with patch('engine.Engine', return_value=self.engine), patch('engine.shutil.which', return_value=None) as executable:
             self.assertEqual(engine.main(['init']), 0)
-            executable.assert_not_called()  # No active-image discovery on recovery.
+            self.assertNotIn(unittest.mock.call('awww'), executable.call_args_list)
         self.assertEqual(self.engine.load_state(), saved)
 
     def test_status_distinguishes_dynamic_default_and_invalid_cache(self):

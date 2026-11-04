@@ -137,6 +137,7 @@ class DebianEquivalenceTests(unittest.TestCase):
                     # declared import bridges and adds the common theme engine.
                     changed = ('hypr/UserConfigs/user_decorations.lua', 'hypr/hyprlock.conf',
                                'hypr/rofi/themes/Frosted-Glass-Common.rasi',
+                               'hypr/rofi/themes/Frosted-Glass-Launcher.rasi',
                                'hypr/rofi/themes/Frosted-Glass.rasi', 'hypr/rofi/wallust/colors-rofi.rasi',
                                'hypr/scripts/Wallpaper.sh', 'hypr/waybar/style/Frosted-Glass.css',
                                'kitty/kitty.conf', 'wlogout/style.css',
@@ -148,10 +149,19 @@ class DebianEquivalenceTests(unittest.TestCase):
                     self.assertFalse(set(expected) - set(actual))
                     data_prefix = 'data with spaces/' if xdg == 'custom' else '.local/share/'
                     for name in set(actual) - set(expected):
-                        self.assertTrue(name.startswith(data_prefix + 'hyprixe/theme/') or
-                                        name in ('.local/bin/hyprixe-theme', config_prefix + 'swaync/style.css',
+                        wallpapers = {data_prefix + 'hyprixe/wallpapers/' + image
+                                      for image in ('wallpaper1.jpg', 'wallpaper2.jpg', 'wallpaper3.png')}
+                        self.assertTrue(name in wallpapers or name.startswith(data_prefix + 'hyprixe/theme/') or
+                                        name in ('.local/bin/hyprixe-theme', '.local/bin/hyprixe-login-theme-sync', config_prefix + 'swaync/style.css',
                                                  config_prefix + 'hypr/waybar/colors.css'), name)
-        self.assertEqual({name: hashlib.sha256(data).hexdigest() for name, data in sddm_theme.source_payload().items()}, fixture['sddm'])
+        sddm = sddm_theme.source_payload()
+        changed_sddm = {sddm_theme.THEME_DIR + '/' + name for name in
+                        ('Main.qml', 'theme.conf', 'components/GlassPane.qml',
+                         'components/GlassButton.qml', 'components/GlassComboBox.qml')}
+        # Dynamic colours/image are intentional; all other v1.1 assets stay exact.
+        self.assertEqual({name: hashlib.sha256(sddm[name]).hexdigest() for name in fixture['sddm'] if name not in changed_sddm},
+                         {name: digest for name, digest in fixture['sddm'].items() if name not in changed_sddm})
+        self.assertFalse(set(fixture['sddm']) - set(sddm))
 
     def test_mapping_covers_all_shared_sources_without_changed_destinations(self):
         entries = list(mapped_files())

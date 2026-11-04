@@ -35,7 +35,7 @@ See [architecture](docs/architecture.md). Debian installation commands are uncha
 
 ## Features
 
-- Dynamic wallpaper colours (v1.2.0 candidate): `hyprixe-theme apply IMAGE`, with dark Frosted Glass semantics, cache and fallback. [Guide](docs/dynamic-theming.md).
+- Dynamic wallpaper colours (v1.2.0 candidate): `hyprixe-theme apply IMAGE`, shared desktop/Rofi/Hyprlock image and safe Debian SDDM synchronization. [Guide](docs/dynamic-theming.md).
 - UWSM-managed Hyprland with four persistent workspaces and audited Lua bindings.
 - Top Waybar with a collapsible tray, application icons and adaptive CPU-temperature/root-storage reporting.
 - Rofi applications and window menus with wallpaper/sidebar; compact clipboard history.

@@ -79,6 +79,9 @@ HOME and symlinked parents are refused. Existing Dolphin layout is preserved.
 
 SDDM's visual source is shared; its privileged system deployment and separate
 linked backup are Debian integration. The account-shell change remains last.
+The portable theme state derives one user wallpaper link; Debian alone supplies
+the optional login-theme hook, authenticated socket receiver and SDDM system
+snapshot under `/var/lib/hyprixe/theme`. Shared QML keeps its static fallbacks.
 APT packages and backports sources are not rolled back by the user restorer.
 
 Backup manifest format **1** is unchanged. Its absolute target paths and saved

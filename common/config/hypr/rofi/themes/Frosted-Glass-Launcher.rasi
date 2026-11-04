@@ -16,7 +16,7 @@ wallpaper-panel {
     padding: 12px;
     border-radius: 8px;
     background-color: transparent;
-    background-image: url("$HOME/.local/share/hyprixe/wallpapers/min_forest.jpg", height);
+    background-image: url("$HOME/.local/share/hyprixe/current-wallpaper", height);
     hyprixe-preview-cover: true;
     children: [ launcher-sidebar, wallpaper-space ];
 }

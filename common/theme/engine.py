@@ -254,11 +254,12 @@ class Engine:
         self.cache = Path(os.environ.get('XDG_CACHE_HOME', home / '.cache')) / 'hyprixe/theme'
         self.state = Path(os.environ.get('XDG_STATE_HOME', home / '.local/state')) / 'hyprixe'
         self.data = Path(os.environ.get('XDG_DATA_HOME', home / '.local/share')) / 'hyprixe'
+        self.current_wallpaper = self.data / 'current-wallpaper'
         self.current = self.cache / 'current'
         self.state_file = self.state / 'theme.json'
         self.base = defaults(self.resources)
         # Refuse source-tree runtime state, including XDG overrides into a checkout.
-        for path in (self.cache, self.state):
+        for path in (self.cache, self.state, self.data):
             if not path.is_absolute() or '..' in path.parts:
                 raise ValueError('XDG paths must be absolute and canonical')
             if any((p / '.git').exists() for p in (path.resolve(), *path.resolve().parents)):
@@ -470,6 +471,46 @@ class Engine:
         if result.returncode:
             raise ValueError('awww could not apply wallpaper: ' + result.stderr.strip())
 
+    def guard_wallpaper_link(self):
+        link = self.current_wallpaper
+        if link.exists() or link.is_symlink():
+            if not link.is_symlink() or link.lstat().st_uid != os.getuid():
+                raise ValueError('Refusing an unmanaged current-wallpaper: ' + str(link))
+
+    def link_wallpaper(self, wallpaper):
+        """Derived presentation path, never a second source of selection state."""
+        target = image_valid(wallpaper)
+        self.data.mkdir(parents=True, exist_ok=True)
+        self.guard_wallpaper_link()
+        link = self.current_wallpaper
+        temporary = self.data / ('.wallpaper-' + uuid.uuid4().hex)
+        try:
+            temporary.symlink_to(target)
+            os.replace(temporary, link)
+            directory_fd = os.open(self.data, os.O_RDONLY | os.O_DIRECTORY)
+            try:
+                os.fsync(directory_fd)
+            finally:
+                os.close(directory_fd)
+        finally:
+            temporary.unlink(missing_ok=True)
+
+    def sync_login_theme(self, wallpaper):
+        # Profiles may provide this optional integration. The portable engine
+        # knows neither system destinations nor privileged mechanisms.
+        helper = shutil.which('hyprixe-login-theme-sync')
+        if not helper:
+            installed = Path.home() / '.local/bin/hyprixe-login-theme-sync'
+            if installed.is_file() and os.access(installed, os.X_OK):
+                helper = str(installed)
+        if helper:
+            try:
+                result = run([helper, str(wallpaper), str(self.current / 'palette.json')])
+                if result.returncode:
+                    raise ValueError((result.stderr or result.stdout).strip())
+            except (OSError, ValueError, subprocess.SubprocessError) as exc:
+                print('WARNING: Login theme sync failed; session theme is active: ' + str(exc), file=sys.stderr)
+
     def reload(self):
         warnings = []
         if os.environ.get('HYPRLAND_INSTANCE_SIGNATURE') and shutil.which('hyprctl'):
@@ -504,9 +545,19 @@ class Engine:
                     warnings.append('SwayNC: CSS reload failed')
         return warnings
 
-    def transact(self, wallpaper=None, *, enabled=None, force=False, apply=True, reload=True, use_default=False, restore=False, initialize=False):
+    def transact(self, wallpaper=None, *, enabled=None, force=False, apply=True, reload=True, use_default=False, restore=False, initialize=False, reapply=False):
         with self.locked():
-            saved = self.load_state(migrate=True)
+            state_error = False
+            try:
+                saved = self.load_state(migrate=True)
+            except ValueError:
+                if not restore:
+                    raise
+                saved, state_error = None, True
+                print('WARNING: Invalid theme state; restoring defaults without changing preferences.', file=sys.stderr)
+            def persist(value):
+                if not state_error:
+                    self.save_state(value)
             fresh = saved is None
             if fresh:
                 # Public commands preserve a safe disabled preference when no
@@ -515,7 +566,7 @@ class Engine:
             if enabled is not None:
                 saved = dict(saved, enabled=enabled)
             # Record an explicit choice even if extraction/rendering later fails.
-            self.save_state(saved)
+            persist(saved)
             old = self.read()
             previous = self.current.resolve() if old else None
             is_enabled = saved['enabled']
@@ -527,7 +578,7 @@ class Engine:
                         wallpaper = image_valid(images[0])
                     except (OSError, ValueError):
                         pass
-            path = wallpaper or self.wallpaper(saved)
+            path = self.data / 'wallpapers/min_forest.jpg' if use_default else wallpaper or self.wallpaper(saved)
             fallback_wallpaper = False
             try:
                 path = image_valid(path)
@@ -538,14 +589,19 @@ class Engine:
                 fallback_wallpaper = True
                 print('WARNING: Selected wallpaper unavailable; using Frosted Glass wallpaper and preserving its saved path/preference.', file=sys.stderr)
             digest = sha(path)
+            self.guard_wallpaper_link()
             selected = saved if fallback_wallpaper and saved['wallpaper'] else dict(saved, wallpaper=str(path), wallpaper_hash=digest)
             self.ensure_cache()
             fingerprint = self.fingerprint()
-            key = hashlib.sha256(f'{digest}:{fingerprint}:{is_enabled}:{use_default}'.encode()).hexdigest()
+            # default now selects the calibrated bundled image. Its generated
+            # palette is also correct for restore, without a second extraction.
+            key = hashlib.sha256(f'{digest}:{fingerprint}:{is_enabled}'.encode()).hexdigest()
             if old and old['key'] == key and old['wallpaper'] == str(path) and old.get('state_hash') == self.state_hash(selected) and not force:
-                if apply and restore:
+                self.link_wallpaper(path)
+                if apply and (restore or reapply):
                     self.apply_image(path)
-                self.save_state(selected)
+                persist(selected)
+                self.sync_login_theme(path)
                 return old
             with tempfile.TemporaryDirectory(prefix='.build-', dir=self.cache / 'generations') as temporary:
                 stage = Path(temporary)
@@ -594,18 +650,32 @@ class Engine:
                 destination = self.cache / 'generations' / uuid.uuid4().hex
                 os.replace(stage, destination)
                 changed_image = False
+                old_link = self.current_wallpaper.resolve() if self.current_wallpaper.is_symlink() and self.current_wallpaper.is_file() else None
+                linked = False
                 try:
                     # Preparation precedes presentation: one wallpaper update,
                     # with all colour files already validated and complete.
-                    if apply and (restore or not old or old['wallpaper'] != str(path) or old['wallpaper_hash'] != digest):
+                    if apply and (restore or reapply or not old or old['wallpaper'] != str(path) or old['wallpaper_hash'] != digest):
                         self.apply_image(path)
                         changed_image = True
+                    self.link_wallpaper(path)
+                    linked = True
                     self.publish(destination)
                     if reload:
                         for warning in self.reload():
                             print('WARNING: ' + warning, file=sys.stderr)
-                    self.save_state(selected)
+                    persist(selected)
                 except BaseException:
+                    if linked:
+                        if previous:
+                            try:
+                                old_link = image_valid(old['wallpaper'])
+                            except (OSError, ValueError):
+                                old_link = image_valid(self.data / 'wallpapers/min_forest.jpg')
+                        if old_link and old_link.is_file():
+                            self.link_wallpaper(old_link)
+                        else:
+                            self.current_wallpaper.unlink(missing_ok=True)
                     if previous:
                         self.publish(previous)
                         if changed_image:
@@ -623,8 +693,10 @@ class Engine:
                         fallback_meta = dict(meta, source='fallback', key=hashlib.sha256((key + ':recovery').encode()).hexdigest())
                         fallback_meta['files'] = {name: sha(emergency / name) for name in (*FILES, 'palette.json')}
                         atomic(emergency / 'metadata.json', json.dumps(fallback_meta, indent=2) + '\n')
+                        self.link_wallpaper(path)
                         self.publish(emergency)
                     raise
+                self.sync_login_theme(path)
                 return meta
 
 
@@ -646,6 +718,9 @@ def main(argv=None):
                 print('current wallpaper: ' + str(saved['wallpaper'] or 'none' if saved else 'none'))
                 print('wallpaper hash: ' + str(saved['wallpaper_hash'] or 'none' if saved else 'none'))
                 print('cache: ' + cache)
+                stable = engine.current_wallpaper
+                print('wallpaper link: ' + ('valid' if stable.is_symlink() and stable.is_file() else
+                                            'invalid' if stable.exists() or stable.is_symlink() else 'missing'))
                 if cache == 'invalid':
                     print('cache reason: ' + engine.cache_reason(saved))
                 palette = ('dynamic' if meta['source'].startswith('wallust') else 'default') if meta else 'unavailable'
@@ -661,7 +736,8 @@ def main(argv=None):
                         enabled=False if action == 'disable' else True if action == 'enable' else None,
                         force=action in ('refresh', 'default', 'enable', 'disable'),
                         use_default=action == 'default', apply=action != 'init',
-                        reload=action != 'init', restore=action == 'restore', initialize=action == 'init')
+                        reload=action != 'init', restore=action == 'restore', initialize=action == 'init',
+                        reapply=action in ('apply', 'default'))
         return 0
     except (OSError, ValueError, KeyError, subprocess.SubprocessError) as exc:
         print('ERROR: ' + str(exc), file=sys.stderr)

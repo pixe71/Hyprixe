@@ -8,7 +8,7 @@ including for a very bright wallpaper; there is no automatic light mode.
 hyprixe-theme apply ~/Pictures/wallpaper.jpg
 hyprixe-theme refresh     # Force extraction of the current wallpaper again
 hyprixe-theme status
-hyprixe-theme default     # Default colours now; preserve the enabled preference
+hyprixe-theme default     # Default wallpaper + colours; preserve enabled preference
 hyprixe-theme disable     # Persist default colours across wallpaper changes
 hyprixe-theme enable      # Enable and regenerate the current wallpaper
 ```
@@ -16,10 +16,10 @@ hyprixe-theme enable      # Enable and regenerate the current wallpaper
 | Command | Persistent preference |
 | --- | --- |
 | `enable` | Set enabled, then regenerate |
-| `disable` | Set disabled, then generate Frosted Glass defaults |
+| `disable` | Set disabled; retain selected image, generate Frosted Glass colours |
 | `apply IMAGE` | Preserve enabled/disabled; select the image after a successful transaction |
 | `refresh` | Preserve enabled/disabled and selected wallpaper; rebuild the cache |
-| `default` | Preserve enabled/disabled; use default colours for this generation |
+| `default` | Preserve enabled/disabled; select min_forest.jpg and default colours |
 | `status` | Read persistent preferences and report the separate cache state |
 
 Only `enable` activates an existing preference. After `default`, a subsequent
@@ -72,7 +72,8 @@ A single advisory `flock` in `XDG_STATE_HOME/hyprixe/theme.lock` serializes
 transactions even if the entire cache directory disappears. Cache keys include image
 bytes, engine/templates/defaults and enabled mode. Login validates the cached
 generation, restores the wallpaper and avoids Wallust when unchanged. An
-identical `apply` does not rewrite, recolour, reload or transition again.
+identical `apply` does not regenerate or reload colours; it reasserts the image
+once in awww without a transition, including after an external wallpaper change.
 `refresh` bypasses that cache. Removing `~/.cache/hyprixe` followed by `refresh`
 rebuilds it with the saved image and preference. A missing/invalid saved image
 produces a warning and uses the bundled wallpaper while retaining the saved
@@ -90,7 +91,8 @@ and selection even with corrupt colour fragments. Missing/ambiguous metadata
 is migrated **disabled**, recovering the image path if possible. Only owned
 legacy links are replaced/removed. If the old cache has already disappeared,
 information which existed only there cannot be recovered. A corrupt new state
-file fails with a clear error and is preserved for manual repair; the engine
+file fails with a clear error and is preserved for manual repair; login alone
+uses a disabled/default recovery without overwriting the damaged state. The engine
 never substitutes an enabled value from cache. Installation discovery of the
 active awww image runs only on a genuine first initialization.
 
@@ -107,12 +109,12 @@ the active awww image when possible; otherwise v1.1's bundled image is used.
 | Rofi | One generated Rasi palette through the former `wallust/colors-rofi.rasi` compatibility import and `Frosted-Glass-Common.rasi`; all three menus keep their layout/actions |
 | Wlogout | Colour definitions; four horizontal Lock/Logout/Shutdown/Reboot actions and fixed SVG icons preserved |
 | Kitty | Separate included colours; SIGUSR1 reload for running user processes with a registered handler, supported by Debian Trixie's Kitty 0.41.1; no terminal closure or remote-control access required |
-| Hyprlock | Sourced colour variables; background image, positions, blur and PAM unchanged; new colours on the next lock |
+| Hyprlock | Sourced colour variables and stable current wallpaper; positions, blur and PAM unchanged; updates on the next lock |
 | SwayNC | Shared GTK colour definitions with paint selectors; default widgets/layout and notification behaviour preserved; `swaync-client --reload-css` |
 
 Rofi and Wlogout read colours at their next launch. Existing locks are not
-restarted. The Rofi wallpaper preview and Hyprlock background remain the bundled
-image in this first implementation; the desktop wallpaper itself changes.
+restarted. The Rofi wallpaper preview and Hyprlock background follow the same
+current selection as the desktop, through the stable user data link.
 
 Kitty's reload signal is documented in the
 [0.41.1 upstream manual](https://github.com/kovidgoyal/kitty/blob/v0.41.1/docs/conf.rst).
@@ -121,7 +123,68 @@ Kvantum stays static: its SVG paint and application-specific Dolphin variant
 have no small shared palette-variable interface. Global SVG substitution would
 damage the carefully separated light/dark paint. Powerlevel10k's existing
 explicit RGB prompt colours stay static; ANSI terminal colours do update in
-Kitty. SDDM stays static because it runs outside the user session.
+Kitty. SDDM receives a separate system snapshot as described below.
+
+## Current wallpaper and login screen
+
+`theme.json` is the only authoritative wallpaper selection. The derived symlink
+`${XDG_DATA_HOME:-~/.local/share}/hyprixe/current-wallpaper` points to a validated
+image and is replaced atomically under the theme lock. Rofi's launcher preview
+and Hyprlock use this stable path, including with spaces/custom XDG roots;
+their main configurations are never rewritten when selecting another image.
+Login/hotplug restores the saved selection through `hyprixe-theme restore`.
+If its image is unavailable, the link and desktop use `min_forest.jpg`, with a
+warning; saved path/hash/preferences remain available for recovery. Refresh or
+restore reconstructs the link as needed. Keep selected source images available.
+
+On Debian the installer enrolls the invoking user's numeric UID in root-owned
+`/etc/hyprixe/sddm-sync-users.json` and installs a socket-activated receiver.
+`hyprixe-login-theme-sync` is a platform hook invoked after a successful theme
+transaction (also init/restore/refresh). It sends seven semantic colours and
+an open read-only image descriptor over `/run/hyprixe-sddm-sync.sock`.
+No sudo prompt, shell command, source path or destination path is sent to the
+receiver. Other platforms can supply their own hook; the core contains no
+Debian/systemd mechanism.
+
+The receiver runs as the dedicated **non-login, unprivileged** `hyprixe-theme`
+account with an isolated HOME, read-only system, no capabilities, private
+network/devices and bounded memory. Linux `SO_PEERCRED` authenticates the caller;
+only installer-enrolled UIDs may publish. The received descriptor must identify
+a regular image owned by that UID (at most 32 MiB/36 megapixels, JPEG/PNG/WebP/BMP).
+The receiver verifies bytes/hash and decodes/re-encodes RGB PNG, stripping
+metadata. An image owned by another account can still work in the desktop, but
+its SDDM export is refused with a warning; copy it into your own files first.
+Paths/options/traversal are not part of the protocol. No sudoers rule is added.
+
+`/var/lib/hyprixe/theme/generations/<id>/` contains readable `wallpaper.png`,
+`palette.json`, data-only `Palette.qml` and checksums; `current` switches to a
+complete generation atomically. Files use 0644, directories 0755 and belong to
+the receiver account. No user HOME access or Wallust execution is required by
+SDDM. The QML structure stays static and optionally loads the generated data;
+absent/malformed colours or an unavailable copied image select the original
+Frosted Glass wallpaper and paint. Several complete predecessors are retained;
+failure before publication leaves the prior snapshot intact.
+
+`apply`, `enable`, `disable`, `refresh`, `restore` and installation initialization
+sync the resulting image/palette. `disable` exports the selected image with
+default colours; `enable` exports that same image with calculated colours.
+`default` exports **min_forest.jpg + default colours** for the next greeter.
+Sync failure warns without undoing the working session; `hyprixe-theme refresh`
+retries. No greeter/display-manager restart occurs. A greeter already open may
+keep its loaded snapshot until its next launch.
+
+Multi-user policy: **last successful sync from an installer-enrolled account
+wins**. Accounts cannot modify the allowlist or another user's files. The image
+is deliberately made public for the greeter; choose wallpapers accordingly.
+Root-only installation changes require the existing sudo installer once.
+Ordinary backup/restore covers the hook, system units/code, authorization and
+SDDM configuration. Restore stops/removes the managed socket when reverting its
+installation; inert snapshots and the non-login account are retained, as are
+user theme state/cache. No global XDG directory or unrelated file is deleted.
+
+The transport uses [systemd socket activation](https://www.freedesktop.org/software/systemd/man/latest/systemd.socket.html),
+[Unix descriptor passing](https://docs.python.org/3/library/socket.html#socket.socket.recvmsg)
+and an optional [Qt Loader](https://doc.qt.io/qt-6/qml-qtquick-loader.html).
 
 ## Wallust and Debian installation
 
@@ -215,6 +278,8 @@ this change adds no recursive uninstall cleanup or deletion of XDG roots.
 ./verify.sh
 python3 -m unittest discover -s tests -p 'test_dynamic_theme.py'
 python3 -m unittest discover -s tests -p 'test_wallust_install.py'
+python3 -m unittest discover -s tests -p 'test_wallpaper_propagation.py'
+python3 -m unittest discover -s tests -p 'test_sddm_sync.py'
 ./verify.sh --dependencies --session  # inside the installed Debian desktop
 ```
 

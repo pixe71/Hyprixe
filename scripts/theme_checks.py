@@ -53,6 +53,14 @@ def check_source(report, root=ROOT):
                 for path, output in checks.items())
     valid &= '/hyprixe/theme/current/hyprland.lua' in (root / 'common/config/hypr/UserConfigs/user_decorations.lua').read_text()
     report(valid, 'Component dynamic colour imports resolve through one generation')
+    stable = '$HOME/.local/share/hyprixe/current-wallpaper'
+    report(stable in (root / 'common/config/hypr/rofi/themes/Frosted-Glass-Launcher.rasi').read_text(),
+           'Rofi uses current Hyprixe wallpaper')
+    report(stable in (root / 'common/config/hypr/hyprlock.conf').read_text(),
+           'Hyprlock uses current Hyprixe wallpaper')
+    startup = (root / 'common/config/hypr/scripts/Wallpaper.sh').read_text()
+    report('hyprixe-theme" restore' in startup and 'min_forest.jpg' not in startup,
+           'Wallpaper startup resolves persisted state')
 
 
 def check_installed(report):
@@ -64,6 +72,9 @@ def check_installed(report):
         cache = engine.cache_status(saved)
         detail = ': ' + engine.cache_reason(saved) if cache == 'invalid' else ''
         report(cache == 'valid', 'Generated theme palette valid (roles, contrast, checksums, state)' + detail)
+        target = image_valid(engine.wallpaper(saved))
+        report(engine.current_wallpaper.is_symlink() and engine.current_wallpaper.resolve(strict=True) == target,
+               'Current wallpaper stable path valid')
         if not meta or not saved:
             return
         image = image_valid(saved['wallpaper'])
@@ -76,5 +87,9 @@ def check_installed(report):
         valid = all(str(engine.current / output) in (config / name).read_text() and
                     (engine.current / output).is_file() for name, output in imports.items())
         report(valid, 'Installed component dynamic colour imports resolve')
+        for name, label in (('hypr/rofi/themes/Frosted-Glass-Launcher.rasi', 'Rofi'),
+                            ('hypr/hyprlock.conf', 'Hyprlock')):
+            report(str(engine.current_wallpaper) in (config / name).read_text(),
+                   label + ' uses current Hyprixe wallpaper')
     except (OSError, ValueError, KeyError) as exc:
         report(False, 'Dynamic theme state: ' + str(exc))

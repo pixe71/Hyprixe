@@ -139,7 +139,7 @@ class RofiDeploymentTests(unittest.TestCase):
                 checks.check_installed(lambda ok, message: results.append((ok, message)))
                 self.assertTrue(all(ok for ok, _ in results), results)
                 theme = (roots['config'] / 'hypr/rofi' / checks.OVERLAY).read_text()
-                self.assertIn(str(roots['data'] / 'hyprixe/wallpapers/min_forest.jpg'), theme)
+                self.assertIn(str(roots['data'] / 'hyprixe/current-wallpaper'), theme)
                 self.assertNotIn('$HOME', theme)
                 for name in ('config.rasi', '0-shared-fonts.rasi', 'themes/Frosted-Glass.rasi',
                              checks.COMMON, 'config-windows.rasi', 'config-clipboard.rasi', 'wallust/colors-rofi.rasi'):

@@ -1,0 +1,10 @@
+[Unit]
+Description=Hyprixe login theme synchronization socket
+
+[Socket]
+ListenSequentialPacket=/run/hyprixe-sddm-sync.sock
+SocketMode=0666
+RemoveOnStop=yes
+
+[Install]
+WantedBy=sockets.target

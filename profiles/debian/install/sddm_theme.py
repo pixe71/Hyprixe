@@ -22,6 +22,8 @@ import shlex
 import stat
 import sys
 import uuid
+import pwd
+import subprocess
 from deploy import atomic, digest, merge_ini
 
 REPO = REPOSITORY_ROOT
@@ -31,7 +33,13 @@ CONFIG = '/etc/sddm.conf.d/zz-hyprixe-theme.conf'
 BACKUPS = '/var/lib/hyprixe/sddm/backups'
 SESSION = '/usr/share/wayland-sessions/hyprland-uwsm.desktop'
 FILES = ('Main.qml', 'metadata.desktop', 'theme.conf', 'components/GlassPane.qml',
-         'components/GlassButton.qml', 'components/GlassComboBox.qml', 'assets/user.svg')
+         'components/GlassButton.qml', 'components/GlassComboBox.qml',
+         'components/DynamicTheme.qml', 'assets/user.svg')
+SYNC_FILES = ('/usr/libexec/hyprixe/sddm_sync.py',
+              '/etc/systemd/system/hyprixe-sddm-sync.socket',
+              '/etc/systemd/system/hyprixe-sddm-sync.service')
+SYNC_USERS = '/etc/hyprixe/sddm-sync-users.json'
+SYNC_PALETTE = 'file:///var/lib/hyprixe/theme/current/Palette.qml'
 QML_PACKAGES = ('qml6-module-qtquick', 'qml6-module-qtquick-window',
                 'qml6-module-qtquick-controls', 'qml6-module-qtquick-templates',
                 'qml6-module-qtquick-layouts', 'qml6-module-qtquick-effects',
@@ -62,7 +70,11 @@ def source_payload(repo=REPO):
         if not path.is_file() or path.is_symlink():
             raise ValueError(f'Missing or symlinked SDDM theme source: {path}')
         result[THEME_DIR + '/' + name] = path.read_bytes()
+    result[THEME_DIR + '/theme.conf'] = result[THEME_DIR + '/theme.conf'].replace(b'dynamicPalette=', ('dynamicPalette=' + SYNC_PALETTE).encode())
     result[THEME_DIR + '/min_forest.jpg'] = (source_path(repo, 'wallpapers/min_forest.jpg')).read_bytes()
+    result[SYNC_FILES[0]] = (repo / 'profiles/debian/install/sddm_sync.py').read_bytes()
+    for name in SYNC_FILES[1:]:
+        result[name] = (repo / 'profiles/debian/systemd' / Path(name).name).read_bytes()
     return result
 
 
@@ -126,10 +138,12 @@ class SystemTheme:
     def guard(self, path, directory=False):
         relative = path.relative_to(self.root).as_posix()
         allowed = (relative == 'etc/sddm.conf' or
+                   '/' + relative in (*SYNC_FILES, SYNC_USERS) or
                    (path.parent == self.path('/etc/sddm.conf.d') and path.suffix == '.conf') or
                    relative.startswith(THEME_DIR.lstrip('/') + '/'))
         if directory:
-            allowed = relative in ('etc/sddm.conf.d', THEME_DIR.lstrip('/')) or relative.startswith(THEME_DIR.lstrip('/') + '/')
+            allowed = relative in ('etc/sddm.conf.d', THEME_DIR.lstrip('/'), 'usr/libexec',
+                                  'usr/libexec/hyprixe', 'etc/hyprixe', 'etc/systemd', 'etc/systemd/system') or relative.startswith(THEME_DIR.lstrip('/') + '/')
         if not allowed or '..' in path.parts:
             raise ValueError(f'Refusing SDDM target outside the allowed paths: {path}')
         for parent in path.parents:
@@ -137,6 +151,10 @@ class SystemTheme:
                 break
             if parent.is_symlink() or (parent.exists() and not parent.is_dir()):
                 raise ValueError(f'Symlinked/non-directory SDDM parent: {parent}')
+            if '/' + relative in (*SYNC_FILES, SYNC_USERS) and parent.exists():
+                expected_uid = 0 if self.root == Path('/') else os.getuid()
+                if parent.stat().st_uid != expected_uid or parent.stat().st_mode & 0o022:
+                    raise ValueError(f'Unsafe synchronization integration parent: {parent}')
         if path.is_symlink() or (not directory and path.exists() and not path.is_file()):
             raise ValueError(f'SDDM target must be a regular file: {path}')
 
@@ -172,6 +190,20 @@ class SystemTheme:
         if '/usr/share/wayland-sessions' not in [item.strip().rstrip('/') for item in directories.split(',')]:
             raise ValueError('SDDM [Wayland] SessionDir excludes the Debian UWSM session directory. Keep /usr/share/wayland-sessions available.')
         content = {self.path(name): data for name, data in source_payload(self.repo).items()}
+        authorization = self.path(SYNC_USERS)
+        self.guard(authorization)
+        users = {'format': 1, 'uids': []}
+        if authorization.exists():
+            expected_uid = 0 if self.root == Path('/') else os.getuid()
+            if authorization.stat().st_uid != expected_uid or authorization.stat().st_mode & 0o022:
+                raise ValueError('Unsafe SDDM sync authorization permissions')
+            users = json.loads(authorization.read_text())
+            if (set(users) != {'format', 'uids'} or users['format'] != 1 or
+                    not isinstance(users['uids'], list) or any(type(uid) is not int or uid <= 0 for uid in users['uids'])):
+                raise ValueError('Invalid SDDM sync authorization')
+        if self.actor_uid > 0:
+            users['uids'] = sorted(set([*users['uids'], self.actor_uid]))
+        content[authorization] = (json.dumps(users, indent=2) + '\n').encode()
         config = self.path(CONFIG)
         self.guard(config)
         content[config] = merge_ini(config.read_text() if config.exists() else '', MANAGED_SETTINGS).encode()
@@ -195,16 +227,44 @@ class SystemTheme:
                         raise ValueError(f'SDDM theme directory must be traversable by the greeter: {parent}')
         return content
 
+    def socket_command(self, *arguments, check=True):
+        # Isolated filesystem tests never operate on the host's systemd.
+        if self.root == Path('/'):
+            return subprocess.run(['systemctl', *arguments], check=check, capture_output=True, text=True)
+
+    def ensure_receiver_account(self):
+        if self.root != Path('/'):
+            return
+        try:
+            account = pwd.getpwnam('hyprixe-theme')
+        except KeyError:
+            subprocess.run(['useradd', '--system', '--user-group', '--no-create-home',
+                            '--home-dir', '/nonexistent', '--shell', '/usr/sbin/nologin', 'hyprixe-theme'], check=True)
+            account = pwd.getpwnam('hyprixe-theme')
+        if not 0 < account.pw_uid < 1000 or account.pw_dir != '/nonexistent' or account.pw_shell != '/usr/sbin/nologin':
+            raise ValueError('Existing hyprixe-theme account is not the dedicated non-login receiver')
+        # The public snapshot and private root backups have separate leaves.
+        # An installer's restrictive umask must not hide both from the greeter.
+        parent = self.path('/var/lib/hyprixe')
+        self.guard_state(parent / 'sddm')
+        if parent.exists() and (not parent.is_dir() or parent.stat().st_uid != 0 or parent.stat().st_mode & 0o022):
+            raise ValueError('Unsafe Hyprixe system state parent')
+        parent.mkdir(parents=True, exist_ok=True, mode=0o755)
+        parent.chmod(0o755)
+
     def install(self, dry=False):
         content = self.payload()
         changes = [(path, data) for path, data in content.items()
                    if digest(path) != hashlib.sha256(data).hexdigest() or
-                   (path.is_relative_to(self.path(THEME_DIR)) and stat.S_IMODE(path.stat().st_mode) != 0o644)]
+                   ((path.is_relative_to(self.path(THEME_DIR)) or path in [self.path(p) for p in (*SYNC_FILES, SYNC_USERS)])
+                    and stat.S_IMODE(path.stat().st_mode) != 0o644)]
         if dry:
             for path, _ in changes:
                 print('SDDM INSTALL (backed up)', path)
             return None
         if not changes:
+            self.socket_command('daemon-reload')
+            self.socket_command('enable', '--now', 'hyprixe-sddm-sync.socket')
             return None
         identifier = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S.%fZ') + '-sddm-' + uuid.uuid4().hex[:8]
         backup = self.path(BACKUPS) / identifier
@@ -213,6 +273,8 @@ class SystemTheme:
         (backup / 'files').mkdir(mode=0o700)
         manifest = {'format': 1, 'kind': 'sddm', 'id': identifier, 'root': str(self.root),
                     'actor_uid': self.actor_uid, 'files': [], 'directories': []}
+        prior = self.socket_command('is-enabled', 'hyprixe-sddm-sync.socket', check=False)
+        manifest['sync_was_enabled'] = bool(prior and prior.returncode == 0)
         for i, (path, data) in enumerate(changes):
             old = path.stat() if path.exists() else None
             if old:
@@ -232,7 +294,9 @@ class SystemTheme:
                 parent = path.parent
                 absent = []
                 while not parent.exists() and parent != self.root:
-                    if parent == self.path('/etc/sddm.conf.d') or parent == self.path(THEME_DIR) or parent.is_relative_to(self.path(THEME_DIR)):
+                    if (parent == self.path('/etc/sddm.conf.d') or parent == self.path(THEME_DIR) or
+                            parent.is_relative_to(self.path(THEME_DIR)) or
+                            parent in [self.path(p) for p in ('/etc/hyprixe', '/usr/libexec', '/usr/libexec/hyprixe', '/etc/systemd', '/etc/systemd/system')]):
                         absent.append(str(parent))
                     parent = parent.parent
                 for name in reversed(absent):
@@ -241,6 +305,8 @@ class SystemTheme:
                     Path(name).mkdir(parents=True, exist_ok=True, mode=0o755)
                     Path(name).chmod(0o755)
                 mode = entry['mode'] if path.is_relative_to(self.path('/etc')) else 0o644
+                if path in [self.path(p) for p in (*SYNC_FILES, SYNC_USERS)]:
+                    mode = 0o644
                 atomic(path, data, mode)
                 applied.append(entry)
                 save()
@@ -248,6 +314,9 @@ class SystemTheme:
                 raise ValueError('A higher-priority SDDM setting prevents Hyprixe theme selection')
             if self.configuration().get('General', 'InputMethod', fallback=None) != '':
                 raise ValueError('A higher-priority SDDM setting prevents InputMethod from being disabled')
+            self.socket_command('stop', 'hyprixe-sddm-sync.service', check=False)
+            self.socket_command('daemon-reload')
+            self.socket_command('enable', '--now', 'hyprixe-sddm-sync.socket')
         except BaseException:
             manifest['files'] = applied
             save()
@@ -297,6 +366,9 @@ class SystemTheme:
                     raise ValueError(f'Missing/corrupt SDDM backup file: {name}')
         for name in manifest['directories']:
             self.guard(Path(name), directory=True)
+        if not dry and any(entry['target'] == str(self.path(SYNC_FILES[1])) for entry in manifest['files']):
+            self.socket_command('disable', '--now', 'hyprixe-sddm-sync.socket', check=False)
+            self.socket_command('stop', 'hyprixe-sddm-sync.service', check=False)
         for entry in reversed(manifest['files']):
             path = Path(entry['target'])
             print('SDDM RESTORE', path, file=sys.stderr)
@@ -309,6 +381,9 @@ class SystemTheme:
                 if os.geteuid() == 0:
                     os.chown(path, entry['uid'], entry['gid'])
         if not dry:
+            self.socket_command('daemon-reload')
+            if manifest.get('sync_was_enabled'):
+                self.socket_command('enable', '--now', 'hyprixe-sddm-sync.socket')
             manifest['restored'] = True
             atomic(backup / 'manifest.json', (json.dumps(manifest, indent=2) + '\n').encode())
             for name in reversed(manifest['directories']):
@@ -346,7 +421,59 @@ class SystemTheme:
         directories = self.configuration().get('Wayland', 'SessionDir', fallback='/usr/local/share/wayland-sessions,/usr/share/wayland-sessions')
         if '/usr/share/wayland-sessions' not in [item.strip().rstrip('/') for item in directories.split(',')]:
             failures.append('SDDM [Wayland] SessionDir excludes the Debian UWSM session directory')
+        authorization = self.path(SYNC_USERS)
+        try:
+            self.guard(authorization)
+            users = json.loads(authorization.read_text())
+            expected_uid = 0 if self.root == Path('/') else os.getuid()
+            if (authorization.stat().st_uid != expected_uid or authorization.stat().st_mode & 0o022 or
+                    set(users) != {'format', 'uids'} or users['format'] != 1 or
+                    any(type(uid) is not int or uid <= 0 for uid in users['uids'])):
+                raise ValueError('Invalid root-owned SDDM sync authorization')
+        except (ValueError, OSError, KeyError, TypeError) as exc:
+            failures.append('SDDM sync authorization: ' + str(exc))
+        active = self.socket_command('is-active', 'hyprixe-sddm-sync.socket', check=False)
+        if active and active.returncode:
+            failures.append('SDDM synchronization socket is not active; rerun ./install.sh native')
         return failures
+
+    def dynamic_errors(self):
+        """A missing snapshot is normal: the QML retains its bundled fallback."""
+        from sddm_sync import palette_valid, palette_qml
+        state = self.path('/var/lib/hyprixe/theme')
+        current = state / 'current'
+        try:
+            if not current.exists() and not current.is_symlink():
+                return []
+            if not current.is_symlink() or not re.fullmatch('generations/[0-9a-f]{32}', os.readlink(current)):
+                raise ValueError('Unexpected system theme pointer')
+            generation = state / os.readlink(current)
+            expected_uid = pwd.getpwnam('hyprixe-theme').pw_uid if self.root == Path('/') else state.stat().st_uid
+            if current.lstat().st_uid != expected_uid:
+                raise ValueError('Unexpected system snapshot owner')
+            for directory in (state, state / 'generations', generation):
+                if (directory.is_symlink() or stat.S_IMODE(directory.stat().st_mode) != 0o755 or
+                        directory.stat().st_uid != expected_uid):
+                    raise ValueError('Unsafe system snapshot directory')
+            files = ('wallpaper.png', 'palette.json', 'Palette.qml', 'manifest.json')
+            for name in files:
+                path = generation / name
+                if (path.is_symlink() or not path.is_file() or stat.S_IMODE(path.stat().st_mode) != 0o644 or
+                        path.stat().st_uid != expected_uid):
+                    raise ValueError('Unsafe/missing copied SDDM file: ' + name)
+            manifest = json.loads((generation / 'manifest.json').read_text())
+            if (manifest['format'] != 1 or set(manifest['files']) != set(files) - {'manifest.json'} or
+                    any(digest(generation / name) != expected for name, expected in manifest['files'].items())):
+                raise ValueError('System snapshot checksum mismatch')
+            palette = palette_valid(json.loads((generation / 'palette.json').read_text()))
+            if (generation / 'Palette.qml').read_bytes() != palette_qml(palette, (generation / 'wallpaper.png').as_uri()):
+                raise ValueError('System palette configuration mismatch')
+            from PIL import Image
+            with Image.open(generation / 'wallpaper.png') as image:
+                image.verify()
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            return [str(exc)]
+        return []
 
 
 def main():
@@ -381,6 +508,7 @@ def main():
         fcntl.flock(lock, fcntl.LOCK_EX)
         if args.action == 'install':
             prerequisites()
+            theme.ensure_receiver_account()
             print(json.dumps({'backup': theme.install()}))
         else:
             available = theme.list_backups()

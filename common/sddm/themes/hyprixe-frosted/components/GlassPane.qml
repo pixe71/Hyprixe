@@ -4,6 +4,7 @@ import QtQuick.Effects
 
 Item {
     id: pane
+    property DynamicTheme theme
     property Item wallpaper
     property rect sampleRect: Qt.rect(0, 0, width, height)
     property real cornerRadius: 24
@@ -38,8 +39,8 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: pane.cornerRadius
-        color: "#b0122434"
+        color: pane.theme.tint("background", 0.6901960784313725, "#b0122434")
         border.width: 1
-        border.color: "#887ed6ff"
+        border.color: pane.theme.tint("border", 0.5333333333333333, "#887ed6ff")
     }
 }

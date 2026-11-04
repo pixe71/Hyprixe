@@ -234,7 +234,7 @@ class DeploymentTests(unittest.TestCase):
         self.roots['data'] = self.home / 'data'
         self.install()
         lock = (self.roots['config'] / 'hypr/hyprlock.conf').read_text()
-        self.assertIn(str(self.home / 'data/hyprixe/wallpapers/min_forest.jpg'), lock)
+        self.assertIn(str(self.home / 'data/hyprixe/current-wallpaper'), lock)
         waybar = self.roots['config'] / 'hypr/waybar/configs/Frosted-Glass'
         self.assertEqual(json.loads(waybar.read_text()),
                          json.loads((source_path(ROOT, '.config/hypr/waybar/configs/Frosted-Glass')).read_text()))

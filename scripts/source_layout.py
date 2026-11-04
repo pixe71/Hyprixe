@@ -99,3 +99,7 @@ def mapped_files(root=ROOT, platform='debian'):
     for path in sorted(integration.rglob('*')):
         if path.is_file():
             yield path, 'config', path.relative_to(integration)
+    helpers = Path(root) / 'profiles' / platform / 'local/bin'
+    for path in sorted(helpers.glob('*')):
+        if path.is_file():
+            yield path, 'home', Path('.local/bin') / path.name

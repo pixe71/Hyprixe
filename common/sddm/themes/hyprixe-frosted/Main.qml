@@ -6,9 +6,10 @@ import "components"
 
 Rectangle {
     id: root
+    DynamicTheme { id: dynamicTheme; objectName: "dynamicTheme"; paletteSource: config.dynamicPalette || "" }
     width: 1920
     height: 1080
-    color: "#122434"
+    color: dynamicTheme.paint("background", "#122434")
     readonly property bool wide: width >= 1100 && height >= 700
     readonly property real margin: wide ? Math.max(36, width * 0.065) : 20
     readonly property bool shortScreen: height < 850
@@ -44,8 +45,9 @@ Rectangle {
 
     Image {
         id: backgroundImage
+        objectName: "backgroundImage"
         anchors.fill: parent
-        source: Qt.resolvedUrl(config.background || "min_forest.jpg")
+        source: dynamicTheme.wallpaper || Qt.resolvedUrl(config.background || "min_forest.jpg")
         fillMode: Image.PreserveAspectCrop
         asynchronous: true
         smooth: true
@@ -53,8 +55,8 @@ Rectangle {
     Rectangle {
         anchors.fill: parent
         gradient: Gradient {
-            GradientStop { position: 0; color: "#15122434" }
-            GradientStop { position: 1; color: "#70122434" }
+            GradientStop { position: 0; color: dynamicTheme.tint("background", 0.08235294117647059, "#15122434") }
+            GradientStop { position: 1; color: dynamicTheme.tint("background", 0.4392156862745098, "#70122434") }
         }
     }
 
@@ -84,7 +86,7 @@ Rectangle {
                 Text {
                     Layout.alignment: root.wide ? Qt.AlignLeft : Qt.AlignHCenter
                     text: "HYPRIXE"
-                    color: "#b4f9f8"
+                    color: dynamicTheme.paint("accent_alt", "#b4f9f8")
                     font.family: root.themeFont
                     font.pixelSize: 14
                     font.letterSpacing: 6
@@ -92,7 +94,7 @@ Rectangle {
                 Text {
                     Layout.alignment: root.wide ? Qt.AlignLeft : Qt.AlignHCenter
                     text: Qt.formatTime(root.now, "HH:mm")
-                    color: "#e6f1f4"
+                    color: dynamicTheme.paint("foreground", "#e6f1f4")
                     font.family: root.themeFont
                     font.pixelSize: root.wide ? Math.min(112, root.height * 0.105) : 42
                     font.weight: Font.Light
@@ -100,20 +102,20 @@ Rectangle {
                 Text {
                     Layout.alignment: root.wide ? Qt.AlignLeft : Qt.AlignHCenter
                     text: Qt.formatDate(root.now, Qt.locale().dateFormat(Locale.LongFormat))
-                    color: "#b4f9f8"
+                    color: dynamicTheme.paint("accent_alt", "#b4f9f8")
                     font.family: root.themeFont
                     font.pixelSize: root.wide ? 19 : 13
                 }
                 Text {
                     visible: root.wide
                     text: "F R O S T E D   G L A S S"
-                    color: "#a6c5d2"
+                    color: dynamicTheme.paint("foreground", "#a6c5d2")
                     font.family: root.themeFont
                     font.pixelSize: 11
                 }
             }
 
-            GlassPane {
+            GlassPane { theme: dynamicTheme;
                 id: pane
                 objectName: "loginPane"
                 Layout.preferredWidth: Math.min(430, composition.width)
@@ -139,9 +141,9 @@ Rectangle {
                         Layout.preferredWidth: root.shortScreen ? 56 : 72
                         Layout.preferredHeight: root.shortScreen ? 56 : 72
                         radius: 18
-                        color: "#701e4c84"
+                        color: dynamicTheme.tint("surface", 0.4392156862745098, "#701e4c84")
                         border.width: 1
-                        border.color: "#807ed6ff"
+                        border.color: dynamicTheme.tint("border", 0.5019607843137255, "#807ed6ff")
                         Image {
                             id: avatar
                             anchors.fill: parent
@@ -162,16 +164,16 @@ Rectangle {
                         text: qsTr("Welcome back")
                         font.family: root.themeFont
                         font.pixelSize: root.shortScreen ? 22 : 24
-                        color: "#e6f1f4"
+                        color: dynamicTheme.paint("foreground", "#e6f1f4")
                     }
                     Text {
                         text: qsTr("ACCOUNT")
-                        color: "#a6c5d2"
+                        color: dynamicTheme.paint("foreground", "#a6c5d2")
                         font.family: root.themeFont
                         font.pixelSize: 11
                         font.letterSpacing: 1.5
                     }
-                    GlassComboBox {
+                    GlassComboBox { theme: dynamicTheme;
                         id: users
                         objectName: "users"
                         Layout.fillWidth: true
@@ -191,11 +193,11 @@ Rectangle {
                         visible: users.count === 0
                         enabled: !root.busy
                         placeholderText: qsTr("User name")
-                        color: "#e6f1f4"
+                        color: dynamicTheme.paint("foreground", "#e6f1f4")
                         font.family: root.themeFont
                         font.pixelSize: 14
                         leftPadding: 14
-                        background: Rectangle { color: "#b01a3448"; radius: 12; border.width: 1; border.color: "#607ed6ff" }
+                        background: Rectangle { color: dynamicTheme.tint("surface", 0.6901960784313725, "#b01a3448"); radius: 12; border.width: 1; border.color: dynamicTheme.tint("border", 0.3764705882352941, "#607ed6ff") }
                         onAccepted: password.forceActiveFocus()
                     }
                     C.TextField {
@@ -208,19 +210,19 @@ Rectangle {
                         echoMode: TextInput.Password
                         inputMethodHints: Qt.ImhSensitiveData | Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase
                         placeholderText: qsTr("Password")
-                        placeholderTextColor: "#8daebb"
-                        color: "#e6f1f4"
-                        selectionColor: "#2770c0"
+                        placeholderTextColor: dynamicTheme.paint("foreground", "#8daebb")
+                        color: dynamicTheme.paint("foreground", "#e6f1f4")
+                        selectionColor: dynamicTheme.paint("accent", "#2770c0")
                         selectedTextColor: "white"
                         font.family: root.themeFont
                         font.pixelSize: 15
                         leftPadding: 14
                         rightPadding: 14
                         background: Rectangle {
-                            color: "#c0122434"
+                            color: dynamicTheme.tint("background", 0.7529411764705882, "#c0122434")
                             radius: 12
                             border.width: password.activeFocus ? 2 : 1
-                            border.color: password.activeFocus ? "#7ed6ff" : "#607ed6ff"
+                            border.color: password.activeFocus ? dynamicTheme.paint("accent", "#7ed6ff") : dynamicTheme.tint("border", 0.3764705882352941, "#607ed6ff")
                         }
                         onAccepted: root.authenticate()
                     }
@@ -228,13 +230,13 @@ Rectangle {
                         Layout.fillWidth: true
                         Layout.minimumHeight: root.shortScreen ? 28 : 34
                         text: sessions.count === 0 ? qsTr("No sessions found. Check the SDDM session installation.") : root.message
-                        color: "#ff9ca8"
+                        color: dynamicTheme.paint("error", "#ff9ca8")
                         wrapMode: Text.Wrap
                         font.family: root.themeFont
                         font.pixelSize: 12
                         Accessible.role: Accessible.AlertMessage
                     }
-                    GlassButton {
+                    GlassButton { theme: dynamicTheme;
                         objectName: "signIn"
                         Layout.fillWidth: true
                         primary: true
@@ -245,12 +247,12 @@ Rectangle {
                     Rectangle { Layout.fillWidth: true; Layout.topMargin: 8; Layout.bottomMargin: 4; implicitHeight: 1; color: "#307ed6ff" }
                     Text {
                         text: qsTr("SESSION")
-                        color: "#a6c5d2"
+                        color: dynamicTheme.paint("foreground", "#a6c5d2")
                         font.family: root.themeFont
                         font.pixelSize: 11
                         font.letterSpacing: 1.5
                     }
-                    GlassComboBox {
+                    GlassComboBox { theme: dynamicTheme;
                         id: sessions
                         objectName: "sessions"
                         Layout.fillWidth: true
@@ -271,11 +273,11 @@ Rectangle {
         anchors.leftMargin: root.margin
         anchors.bottomMargin: 28
         text: root.width < 480 ? "Hyprixe" : "Hyprixe · Frosted Glass"
-        color: "#a6c5d2"
+        color: dynamicTheme.paint("foreground", "#a6c5d2")
         font.family: root.themeFont
         font.pixelSize: 11
     }
-    GlassButton {
+    GlassButton { theme: dynamicTheme;
         id: power
         objectName: "power"
         anchors.right: parent.right
@@ -295,11 +297,11 @@ Rectangle {
         width: 220
         padding: 12
         closePolicy: C.Popup.CloseOnEscape | C.Popup.CloseOnPressOutside
-        background: Rectangle { color: "#f0122434"; radius: 16; border.width: 1; border.color: "#887ed6ff" }
+        background: Rectangle { color: dynamicTheme.tint("background", 0.9411764705882353, "#f0122434"); radius: 16; border.width: 1; border.color: dynamicTheme.tint("border", 0.5333333333333333, "#887ed6ff") }
         contentItem: ColumnLayout {
             spacing: 8
-            GlassButton { objectName: "restart"; Layout.fillWidth: true; text: qsTr("Restart"); enabled: sddm.canReboot; onClicked: sddm.reboot() }
-            GlassButton { objectName: "shutdown"; Layout.fillWidth: true; text: qsTr("Shut down"); enabled: sddm.canPowerOff; onClicked: sddm.powerOff() }
+            GlassButton { theme: dynamicTheme; objectName: "restart"; Layout.fillWidth: true; text: qsTr("Restart"); enabled: sddm.canReboot; onClicked: sddm.reboot() }
+            GlassButton { theme: dynamicTheme; objectName: "shutdown"; Layout.fillWidth: true; text: qsTr("Shut down"); enabled: sddm.canPowerOff; onClicked: sddm.powerOff() }
         }
     }
     Component.onCompleted: users.count > 0 ? password.forceActiveFocus() : manualUser.forceActiveFocus()

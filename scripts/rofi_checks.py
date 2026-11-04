@@ -62,7 +62,7 @@ def source_errors(root):
                 'button-windows': 'kb-custom-18', 'button-terminal': 'kb-custom-19'}
     if actions != expected:
         errors.append('Launcher must expose exactly Applications / Files / Windows / Terminal')
-    image = '$HOME/.local/share/hyprixe/wallpapers/min_forest.jpg'
+    image = '$HOME/.local/share/hyprixe/current-wallpaper'
     if image not in theme or 'background-image:' not in theme:
         errors.append('Launcher must reference the existing installed Hyprixe wallpaper')
     launcher = (config / 'scripts/RofiLauncher.sh').read_text()
@@ -92,7 +92,7 @@ def check_installed(report):
     try:
         wrapper = (config / 'rofi/config-launcher.rasi').read_text()
         theme = (config / 'rofi' / OVERLAY).read_text()
-        wallpaper = data / 'hyprixe/wallpapers/min_forest.jpg'
+        wallpaper = data / 'hyprixe/current-wallpaper'
         if str(wallpaper) not in theme:
             errors.append('Launcher wallpaper path does not match XDG_DATA_HOME; reinstall')
         if not wallpaper.is_file():

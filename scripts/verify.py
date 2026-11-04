@@ -121,6 +121,10 @@ def check_sddm(root, installed=False):
         report(False, f'SDDM theme source/metadata/wallpaper: {exc}')
         return
     report(True, 'SDDM Qt 6 theme, QML components, icon and original wallpaper exist; no forced virtual keyboard')
+    report('dynamicPalette=' in (theme / 'theme.conf').read_text() and
+           'min_forest.jpg' in (theme / 'Main.qml').read_text(), 'SDDM dynamic wallpaper fallback valid')
+    report('function validData' in (theme / 'components/DynamicTheme.qml').read_text() and
+           'fallback' in (theme / 'components/DynamicTheme.qml').read_text(), 'SDDM dynamic palette fallback valid')
     lint = '/usr/lib/qt6/bin/qmllint' if Path('/usr/lib/qt6/bin/qmllint').is_file() else shutil.which('qmllint6')
     if not lint and shutil.which('qmllint'):
         version = subprocess.run(['qmllint', '--version'], capture_output=True, text=True)
@@ -142,6 +146,9 @@ def check_sddm(root, installed=False):
             failures = [str(exc)]
         report(not failures, 'Installed SDDM files, effective theme, disabled InputMethod and UWSM session entry' +
                (': ' + '; '.join(failures) if failures else ''))
+        dynamic = SystemTheme(repo=root).dynamic_errors()
+        report(not dynamic, 'SDDM system wallpaper/palette snapshot valid or absent (bundled fallback)' +
+               (': ' + '; '.join(dynamic) if dynamic else ''))
         run(['python3', str(source_path(ROOT, 'scripts/sddm_theme.py')), 'prerequisites'], 'Installed SDDM Qt 6 greeter and QML dependencies')
     else:
         print('SKIPPED: system SDDM installation (use --sddm or --dependencies on target)')
