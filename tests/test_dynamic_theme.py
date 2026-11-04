@@ -115,6 +115,8 @@ class TransactionTests(unittest.TestCase):
         self.addCleanup(patch.stopall)
 
     def generate(self, wallpaper=None, **kwargs):
+        if self.engine.load_state() is None:
+            kwargs.setdefault('enabled', True)  # Existing tests explicitly opt in.
         return self.engine.transact(wallpaper or self.image, **kwargs)
 
     def test_successful_extraction_and_single_presentation(self):
@@ -125,7 +127,234 @@ class TransactionTests(unittest.TestCase):
         self.extract.assert_called_once()
         self.apply.assert_called_once_with(self.image)
         self.reload.assert_called_once()
-        self.assertEqual((self.engine.state / 'wallpaper').read_text().strip(), str(self.image))
+        self.assertEqual(self.engine.load_state()['wallpaper'], str(self.image))
+
+    def test_disabled_preference_survives_corrupt_fragment_and_refresh(self):
+        self.extract.side_effect = ValueError('Wallust failed')
+        for name in ('waybar.css', 'metadata.json'):
+            with self.subTest(corrupt=name):
+                self.generate(enabled=False)
+                (self.engine.current / name).write_text('corrupt')
+                self.engine.transact(force=True, apply=False, reload=False)
+                self.assertFalse(self.engine.load_state()['enabled'])
+                self.assertFalse(self.engine.read()['enabled'])
+        self.extract.assert_not_called()
+
+    def test_selected_wallpaper_and_preference_survive_complete_cache_deletion(self):
+        for enabled in (True, False):
+            with self.subTest(enabled=enabled):
+                self.generate(enabled=enabled, force=True)
+                saved = self.engine.load_state()
+                state_bytes = (self.engine.state / 'theme.json').read_bytes()
+                shutil.rmtree(self.engine.cache.parent)
+                recovered = engine.Engine(self.resources)
+                self.assertEqual(recovered.load_state(), saved)
+                self.assertEqual(recovered.wallpaper(), self.image)
+                self.assertEqual(recovered.cache_status(saved), 'missing')
+                with patch.object(recovered, 'extract', return_value=raw(SWATCHES['forest'])), \
+                     patch.object(recovered, 'version', return_value=engine.WALLUST_VERSION):
+                    recovered.transact(force=True, apply=False, reload=False)
+                self.assertEqual(recovered.load_state(), saved)
+                self.assertEqual((recovered.state / 'theme.json').read_bytes(), state_bytes)
+                self.assertEqual(recovered.cache_status(saved), 'valid')
+
+    def test_status_reads_disabled_state_without_creating_missing_cache(self):
+        self.generate(enabled=False)
+        shutil.rmtree(self.engine.cache.parent)
+        output = io.StringIO()
+        with patch('engine.Engine', return_value=self.engine), contextlib.redirect_stdout(output):
+            self.assertEqual(engine.main(['status']), 0)
+        self.assertIn('dynamic theming: disabled', output.getvalue())
+        self.assertIn('current wallpaper: ' + str(self.image), output.getvalue())
+        self.assertIn('wallpaper hash: ' + engine.sha(self.image), output.getvalue())
+        self.assertIn('cache: missing', output.getvalue())
+        self.assertFalse(self.engine.cache.exists())
+
+    def test_corrupt_state_fails_closed_without_recovering_enabled_from_cache(self):
+        self.generate()
+        path = self.engine.state / 'theme.json'
+        for content in ('{broken', '[]', '{"format": 2, "enabled": "false"}'):
+            with self.subTest(content=content):
+                path.write_text(content)
+                before = self.engine.current.resolve()
+                with self.assertRaisesRegex(ValueError, 'Persistent theme state'):
+                    self.engine.transact(force=True, apply=False, reload=False)
+                self.assertEqual(path.read_text(), content)
+                self.assertEqual(self.engine.current.resolve(), before)
+                with patch('engine.Engine', return_value=self.engine), contextlib.redirect_stderr(io.StringIO()):
+                    self.assertEqual(engine.main(['status']), 1)
+
+    def test_missing_selected_image_uses_fallback_without_losing_selection_or_mode(self):
+        self.generate(enabled=False)
+        saved = self.engine.load_state()
+        self.image.unlink()
+        with contextlib.redirect_stderr(io.StringIO()) as errors:
+            meta = self.engine.transact(force=True, apply=False, reload=False)
+        self.assertIn('wallpaper unavailable', errors.getvalue())
+        self.assertEqual(self.engine.load_state(), saved)
+        self.assertEqual(meta['wallpaper'], str(self.reference))
+        self.assertFalse(meta['enabled'])
+        self.extract.assert_not_called()
+
+    def test_explicit_disable_persists_even_when_generation_fails(self):
+        self.generate()
+        (self.resources / 'templates/waybar.css').write_text('@unknown_role@')
+        with self.assertRaises(ValueError):
+            self.engine.transact(enabled=False, force=True, apply=False, reload=False)
+        self.assertFalse(self.engine.load_state()['enabled'])
+
+    def test_preference_update_and_wallpaper_state_use_atomic_writes(self):
+        self.generate(enabled=False)
+        saved = (self.engine.state / 'theme.json').read_bytes()
+        original_replace = engine.os.replace
+        def fail_state(source, destination):
+            if Path(destination) == self.engine.state / 'theme.json':
+                raise OSError('state rename interrupted')
+            return original_replace(source, destination)
+        with patch('engine.os.replace', side_effect=fail_state):
+            with self.assertRaises(OSError):
+                self.engine.transact(enabled=True, force=True, apply=False, reload=False)
+        self.assertEqual((self.engine.state / 'theme.json').read_bytes(), saved)
+        self.assertFalse(list(self.engine.state.glob('.tmp-*')))
+
+    def test_failed_apply_does_not_save_new_wallpaper_or_hash(self):
+        self.generate(enabled=False)
+        saved = self.engine.load_state()
+        other = fixture(self.root / 'other.png', SWATCHES['purple'])
+        self.reload.side_effect = [ValueError('reload failed'), []]
+        with self.assertRaises(ValueError):
+            self.engine.transact(other)
+        self.assertEqual(self.engine.load_state(), saved)
+
+    def legacy(self, *, corrupt_fragment=False, corrupt_metadata=False, enabled=False):
+        self.generate(enabled=enabled)
+        persistent = self.engine.state / 'theme.json'
+        persistent.unlink()
+        persistent.symlink_to(self.engine.current / 'metadata.json')
+        meta = self.engine.current / 'metadata.json'
+        contents = json.loads(meta.read_text()); contents.pop('state_hash', None)
+        meta.write_text(json.dumps(contents))
+        (self.engine.state / 'wallpaper').symlink_to(self.engine.current / 'wallpaper-path')
+        if corrupt_fragment:
+            (self.engine.current / 'waybar.css').write_text('corrupt')
+        if corrupt_metadata:
+            (self.engine.current / 'metadata.json').write_text('{broken')
+
+    def test_legacy_symlinks_migrate_disabled_even_with_corrupt_colours(self):
+        self.legacy(corrupt_fragment=True)
+        self.engine.transact(force=True, apply=False, reload=False)
+        persistent = self.engine.state / 'theme.json'
+        self.assertFalse(persistent.is_symlink())
+        self.assertEqual(self.engine.load_state(), {'format': 2, 'enabled': False,
+                         'wallpaper': str(self.image), 'wallpaper_hash': engine.sha(self.image)})
+        self.assertFalse((self.engine.state / 'wallpaper').is_symlink())
+
+    def test_unreadable_legacy_preference_is_migrated_disabled(self):
+        self.legacy(corrupt_metadata=True, enabled=True)
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.engine.transact(force=True, apply=False, reload=False)
+        self.assertFalse(self.engine.load_state()['enabled'])
+        self.assertEqual(self.engine.load_state()['wallpaper'], str(self.image))
+
+    def test_dangling_legacy_state_does_not_enable_theming(self):
+        self.legacy(enabled=False)
+        shutil.rmtree(self.engine.cache.parent)
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.engine.transact(force=True, apply=False, reload=False)
+        self.assertFalse(self.engine.load_state()['enabled'])
+
+    def test_only_enable_changes_an_existing_disabled_preference(self):
+        self.generate(enabled=False)
+        with patch('engine.Engine', return_value=self.engine):
+            for arguments in (['apply', str(self.image)], ['refresh'], ['default'], ['init']):
+                with self.subTest(command=arguments):
+                    self.assertEqual(engine.main(arguments), 0)
+                    self.assertFalse(self.engine.load_state()['enabled'])
+            self.assertEqual(engine.main(['enable']), 0)
+            self.assertTrue(self.engine.load_state()['enabled'])
+
+    def test_apply_refresh_and_default_preserve_an_enabled_preference(self):
+        self.generate(enabled=True)
+        with patch('engine.Engine', return_value=self.engine):
+            for arguments in (['apply', str(self.image)], ['refresh'], ['default']):
+                with self.subTest(command=arguments):
+                    self.assertEqual(engine.main(arguments), 0)
+                    self.assertTrue(self.engine.load_state()['enabled'])
+            self.assertEqual(self.engine.read()['source'], 'frosted-glass')
+            self.assertEqual(engine.main(['refresh']), 0)
+            self.assertEqual(self.engine.read()['source'], 'wallust')
+
+    def test_first_install_init_is_the_only_implicit_initial_opt_in(self):
+        with patch('engine.Engine', return_value=self.engine):
+            self.assertEqual(engine.main(['init']), 0)
+        self.assertTrue(self.engine.load_state()['enabled'])
+
+    def test_apply_without_any_state_is_disabled_until_explicitly_enabled(self):
+        with patch('engine.Engine', return_value=self.engine):
+            self.assertEqual(engine.main(['apply', str(self.image)]), 0)
+        self.assertFalse(self.engine.load_state()['enabled'])
+        self.extract.assert_not_called()
+
+    def test_reinstall_init_preserves_selection_after_cache_loss(self):
+        self.generate(enabled=False)
+        saved = self.engine.load_state()
+        shutil.rmtree(self.engine.cache.parent)
+        with patch('engine.Engine', return_value=self.engine), patch('engine.shutil.which') as executable:
+            self.assertEqual(engine.main(['init']), 0)
+            executable.assert_not_called()  # No active-image discovery on recovery.
+        self.assertEqual(self.engine.load_state(), saved)
+
+    def test_status_distinguishes_dynamic_default_and_invalid_cache(self):
+        self.generate(enabled=True)
+        with patch('engine.Engine', return_value=self.engine):
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                self.assertEqual(engine.main(['status']), 0)
+            self.assertIn('palette: dynamic', output.getvalue())
+            self.assertIn('cache: valid', output.getvalue())
+            self.generate(enabled=False)
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                self.assertEqual(engine.main(['status']), 0)
+            self.assertIn('palette: default', output.getvalue())
+            (self.engine.current / 'waybar.css').write_text('corrupt')
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                self.assertEqual(engine.main(['status']), 0)
+            self.assertIn('dynamic theming: disabled', output.getvalue())
+            self.assertIn('cache: invalid', output.getvalue())
+            self.assertIn('palette: unavailable', output.getvalue())
+
+    def test_legacy_enabled_preference_migrates_without_losing_selection(self):
+        self.legacy(enabled=True)
+        self.engine.transact(force=True, apply=False, reload=False)
+        self.assertTrue(self.engine.load_state()['enabled'])
+        self.assertEqual(self.engine.load_state()['wallpaper'], str(self.image))
+
+    def test_atomic_state_commit_failure_rolls_back_new_wallpaper_and_cache(self):
+        self.generate(enabled=False)
+        saved = self.engine.load_state()
+        previous = self.engine.current.resolve()
+        other = fixture(self.root / 'purple.png', SWATCHES['purple'])
+        original_save = self.engine.save_state
+        def fail_selection(candidate):
+            if candidate['wallpaper'] == str(other):
+                raise OSError('state commit failed')
+            original_save(candidate)
+        with patch.object(self.engine, 'save_state', side_effect=fail_selection):
+            with self.assertRaises(OSError):
+                self.engine.transact(other)
+        self.assertEqual(self.engine.current.resolve(), previous)
+        self.assertEqual(self.engine.load_state(), saved)
+        self.assertEqual(self.apply.call_args.args, (self.image,))
+
+    def test_persistent_lock_survives_deletion_of_cache_parent(self):
+        with self.engine.locked():
+            self.engine.ensure_cache()
+            lock = self.engine.state / 'theme.lock'
+            inode = lock.stat().st_ino
+            shutil.rmtree(self.engine.cache.parent)
+            self.assertEqual(lock.stat().st_ino, inode)
 
     def test_invalid_wallpaper_preserves_current_generation(self):
         self.generate()
@@ -369,7 +598,7 @@ class FormatAndArchitectureTests(unittest.TestCase):
                         except ValueError:
                             # Extremely pale or monochrome input may not contain
                             # enough chroma for Wallust; exercise the real fallback.
-                            meta = runtime.transact(image, apply=False, reload=False, force=True)
+                            meta = runtime.transact(image, enabled=True, apply=False, reload=False, force=True)
                             self.assertEqual(meta['source'], 'fallback')
                             palette = json.loads((runtime.current / 'palette.json').read_text())
                         else:

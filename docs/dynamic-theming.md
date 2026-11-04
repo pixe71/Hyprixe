@@ -8,10 +8,27 @@ including for a very bright wallpaper; there is no automatic light mode.
 hyprixe-theme apply ~/Pictures/wallpaper.jpg
 hyprixe-theme refresh     # Force extraction of the current wallpaper again
 hyprixe-theme status
-hyprixe-theme default     # Default colours now; next apply can be dynamic
+hyprixe-theme default     # Default colours now; preserve the enabled preference
 hyprixe-theme disable     # Persist default colours across wallpaper changes
 hyprixe-theme enable      # Enable and regenerate the current wallpaper
 ```
+
+| Command | Persistent preference |
+| --- | --- |
+| `enable` | Set enabled, then regenerate |
+| `disable` | Set disabled, then generate Frosted Glass defaults |
+| `apply IMAGE` | Preserve enabled/disabled; select the image after a successful transaction |
+| `refresh` | Preserve enabled/disabled and selected wallpaper; rebuild the cache |
+| `default` | Preserve enabled/disabled; use default colours for this generation |
+| `status` | Read persistent preferences and report the separate cache state |
+
+Only `enable` activates an existing preference. After `default`, a subsequent
+apply/refresh/login uses dynamic colours if the saved preference is enabled;
+use `disable` for a persistent default palette. Enable/disable record the
+explicit choice before generation, so it survives a later rendering failure.
+The installer's internal `init` enables a genuinely fresh installation once;
+it preserves existing or migrated preferences on reinstall/recovery. Public
+commands without any previous state start disabled until `enable` is requested.
 
 Use `apply` as the canonical wallpaper command. The existing `Wallpaper.sh`
 startup/hotplug helper delegates to `hyprixe-theme restore`; it retains the
@@ -36,22 +53,46 @@ template, semantic component templates and `defaults/frosted-glass.json`.
    still needs visual testing on the actual display.
 5. Render and validate seven colour fragments in a private temporary directory.
 6. Apply awww once, then atomically replace the `current` generation symlink.
-   Reload active components through one orchestrator; record the state through
-   that same pointer. No source configuration is rewritten at runtime.
+   Reload active components through one orchestrator, then save the successful
+   wallpaper selection atomically in XDG_STATE. No source configuration is
+   rewritten at runtime.
 
 Files live in `${XDG_CACHE_HOME:-~/.cache}/hyprixe/theme/generations/`.
 `current/` points to one complete generation, including `palette.json`, metadata
-and a manifest of SHA-256 hashes. State links under
-`${XDG_STATE_HOME:-~/.local/state}/hyprixe/{wallpaper,theme.json}` point through
-the same generation. They contain the original image path, image hash, enabled
-state, palette source, generation time and Wallust version.
+and a manifest of SHA-256 hashes. This cache is entirely disposable.
 
-A single advisory `flock` serializes transactions. Cache keys include image
+`${XDG_STATE_HOME:-~/.local/state}/hyprixe/theme.json` is a **regular file**,
+independent of the cache, containing only the format, enabled boolean, selected
+wallpaper path and its last successful SHA-256. It is written to a temporary
+file, fsynced, atomically renamed and followed by a directory fsync. Cache
+metadata contains a regenerable state fingerprint to detect stale generations;
+it never supplies preferences once the persistent file exists.
+
+A single advisory `flock` in `XDG_STATE_HOME/hyprixe/theme.lock` serializes
+transactions even if the entire cache directory disappears. Cache keys include image
 bytes, engine/templates/defaults and enabled mode. Login validates the cached
 generation, restores the wallpaper and avoids Wallust when unchanged. An
 identical `apply` does not rewrite, recolour, reload or transition again.
-`refresh` bypasses that cache. Keep the image file available at its recorded
-path; a missing saved image restores the bundled wallpaper.
+`refresh` bypasses that cache. Removing `~/.cache/hyprixe` followed by `refresh`
+rebuilds it with the saved image and preference. A missing/invalid saved image
+produces a warning and uses the bundled wallpaper while retaining the saved
+selection, last known hash and enabled/disabled preference for later recovery.
+
+`status` reports enabled/disabled, current selected wallpaper/hash, cache
+`valid`/`missing`/`invalid`, palette `dynamic`/`default` and Wallust version.
+When valid, cached palette source and last generation time are also shown.
+With no usable generated cache, palette is `unavailable` until regeneration;
+status still shows the persistent selection/preference without creating cache.
+
+Pre-release migration recognizes only the old Hyprixe `theme.json` and
+`wallpaper` symlink targets. Readable legacy metadata preserves the preference
+and selection even with corrupt colour fragments. Missing/ambiguous metadata
+is migrated **disabled**, recovering the image path if possible. Only owned
+legacy links are replaced/removed. If the old cache has already disappeared,
+information which existed only there cannot be recovered. A corrupt new state
+file fails with a clear error and is preserved for manual repair; the engine
+never substitutes an enabled value from cache. Installation discovery of the
+active awww image runs only on a genuine first initialization.
 
 The bundled `min_forest.jpg` is calibrated by content hash to the original
 Frosted Glass palette, including when copied or renamed. Installation discovers
@@ -143,8 +184,9 @@ Installed import bridges, engine resources, fallback fragments and staged
 Wallust use Hyprixe's ordinary file-level backups. Restore transactions in
 reverse order with `./uninstall.sh`; user-edited files retain the existing
 conflict protection. Mutable cache/state are intentionally outside deployment
-manifests, so wallpaper changes do not block restoration. They can remain as
-inert user cache after restore; no unrelated user directory is deleted.
+manifests, so wallpaper changes do not block restoration. Restore retains both
+the disposable cache and persistent preferences, as well as unrelated files;
+this change adds no recursive uninstall cleanup or deletion of XDG roots.
 
 ## Validation
 
@@ -159,6 +201,9 @@ Source tests generate six tiny blue/green/orange/purple/light/monochrome PNGs,
 check semantic mapping/contrast, all component formats, real Wallust when
 present, cache/hash invalidation, default/disable, corruption, atomic publication,
 rollback, concurrency, archive integrity, `--no-packages` and Core ownership.
+State regressions also cover disable plus corrupt CSS, complete cache deletion
+in both modes, status without cache, corrupt JSON, legacy migration, missing
+images, command preference contracts and failed atomic state commits.
 The immutable v1 backup fixture still tests restore; explicit v1.2 import
 changes are separated from the unchanged deployment contract.
 

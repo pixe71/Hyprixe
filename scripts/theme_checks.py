@@ -58,13 +58,14 @@ def check_source(report, root=ROOT):
 def check_installed(report):
     try:
         engine = Engine()
+        saved = engine.load_state()
+        report(bool(saved), 'Persistent theme state valid (XDG_STATE, independent of cache)')
         meta = engine.read()
-        report(bool(meta), 'Generated theme palette valid (roles, contrast, checksums)')
-        if not meta:
+        report(engine.cache_status(saved) == 'valid', 'Generated theme palette valid (roles, contrast, checksums, state)')
+        if not meta or not saved:
             return
-        image = image_valid(meta['wallpaper'])
-        report(sha(image) == meta['wallpaper_hash'] and
-               (engine.state / 'wallpaper').read_text().strip() == str(image), 'Current wallpaper state valid')
+        image = image_valid(saved['wallpaper'])
+        report(sha(image) == saved['wallpaper_hash'], 'Current wallpaper state valid')
         config = Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config'))
         imports = {'hypr/waybar/style/Frosted-Glass.css': 'waybar.css',
                    'hypr/rofi/wallust/colors-rofi.rasi': 'rofi.rasi',

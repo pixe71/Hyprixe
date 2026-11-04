@@ -59,6 +59,23 @@ class DeploymentTests(unittest.TestCase):
         self.assertTrue((self.roots['config'] / 'hypr/scripts/Wallpaper.sh').stat().st_mode & 0o111)
         self.assertEqual((self.roots['data'] / 'hyprixe/wallpapers/min_forest.jpg').read_bytes(), (source_path(ROOT, 'wallpapers/min_forest.jpg')).read_bytes())
 
+    def test_restore_leaves_persistent_theme_state_cache_and_unrelated_xdg_files(self):
+        self.install()
+        from theme_checks import Engine
+        with patch.dict(os.environ, XDG_CACHE_HOME=str(self.home / '.cache')):
+            theme = Engine(self.roots['data'] / 'hyprixe/theme')
+            theme.transact(enabled=False, apply=False, reload=False)
+            saved = theme.state_file.read_bytes()
+            personal = self.home / '.cache/personal'
+            personal.write_text('keep')
+            unrelated = theme.state / 'personal'
+            unrelated.write_text('keep')
+            deploy.restore(self.backups()[0], self.home)
+            self.assertEqual(theme.state_file.read_bytes(), saved)
+            self.assertTrue(theme.current.exists())
+            self.assertEqual(personal.read_text(), 'keep')
+            self.assertEqual(unrelated.read_text(), 'keep')
+
     def test_persistent_workspaces_deploy_for_waybar_and_compositor(self):
         import shutil
         import subprocess

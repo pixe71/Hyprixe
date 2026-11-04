@@ -219,6 +219,7 @@ def atomic(path, data):
     temporary = path.with_name('.tmp-' + uuid.uuid4().hex)
     try:
         with temporary.open('x', encoding='utf-8') as stream:
+            os.fchmod(stream.fileno(), 0o600)
             stream.write(data)
             stream.flush()
             os.fsync(stream.fileno())
@@ -253,6 +254,7 @@ class Engine:
         self.state = Path(os.environ.get('XDG_STATE_HOME', home / '.local/state')) / 'hyprixe'
         self.data = Path(os.environ.get('XDG_DATA_HOME', home / '.local/share')) / 'hyprixe'
         self.current = self.cache / 'current'
+        self.state_file = self.state / 'theme.json'
         self.base = defaults(self.resources)
         # Refuse source-tree runtime state, including XDG overrides into a checkout.
         for path in (self.cache, self.state):
@@ -266,20 +268,120 @@ class Engine:
 
     @contextmanager
     def locked(self):
-        self.cache.parent.mkdir(parents=True, exist_ok=True)
-        # Keep the lock outside disposable generations. Never unlink it while held.
-        lock_path = self.cache.parent / 'theme.lock'
+        self.state.mkdir(parents=True, exist_ok=True)
+        # This lock must survive deletion of the entire cache/hyprixe tree.
+        lock_path = self.state / 'theme.lock'
         if lock_path.is_symlink():
             raise ValueError('Unsafe theme lock')
         with lock_path.open('a') as lock:
             fcntl.flock(lock, fcntl.LOCK_EX)
-            if self.cache.exists() and not (self.cache / '.owner').is_file():
-                raise ValueError('Refusing an unowned theme cache: ' + str(self.cache))
-            self.cache.mkdir(mode=0o700, exist_ok=True)
-            atomic(self.cache / '.owner', OWNER)
-            (self.cache / 'generations').mkdir(exist_ok=True)
-            self.state.mkdir(parents=True, exist_ok=True)
             yield
+
+    def ensure_cache(self):
+        if self.cache.exists() and not (self.cache / '.owner').is_file():
+            raise ValueError('Refusing an unowned theme cache: ' + str(self.cache))
+        self.cache.mkdir(parents=True, mode=0o700, exist_ok=True)
+        if not (self.cache / '.owner').exists():
+            atomic(self.cache / '.owner', OWNER)
+        (self.cache / 'generations').mkdir(exist_ok=True)
+
+    @staticmethod
+    def validate_state(saved):
+        if not isinstance(saved, dict) or set(saved) != {'format', 'enabled', 'wallpaper', 'wallpaper_hash'}:
+            raise ValueError('Invalid state fields')
+        if saved['format'] != 2 or type(saved['enabled']) is not bool:
+            raise ValueError('Invalid state format/preference')
+        wallpaper, digest = saved['wallpaper'], saved['wallpaper_hash']
+        if wallpaper is not None and (not isinstance(wallpaper, str) or not wallpaper or
+                not Path(wallpaper).is_absolute() or '..' in Path(wallpaper).parts or
+                any(c in wallpaper for c in '\r\n\0')):
+            raise ValueError('Invalid persistent wallpaper path')
+        if digest is not None and (not isinstance(digest, str) or not re.fullmatch('[0-9a-f]{64}', digest)):
+            raise ValueError('Invalid persistent wallpaper hash')
+        if wallpaper is None and digest is not None:
+            raise ValueError('Wallpaper hash has no associated path')
+        return saved
+
+    def save_state(self, saved):
+        """Called under the persistent lock; never follow an arbitrary symlink."""
+        self.validate_state(saved)
+        if self.state_file.is_symlink() and os.readlink(self.state_file) != str(self.current / 'metadata.json'):
+            raise ValueError('Refusing to replace unowned state: ' + str(self.state_file))
+        text = json.dumps(saved, indent=2) + '\n'
+        if not self.state_file.is_symlink() and self.state_file.is_file() and self.state_file.read_text() == text:
+            return
+        atomic(self.state_file, text)
+        descriptor = os.open(self.state, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+
+    def load_state(self, *, migrate=False):
+        """Read durable preferences, or conservatively import the pre-release links.
+
+        A corrupt v2 file is never replaced using cache guesses. A legacy mode
+        is enabled only when the current legacy metadata is unambiguous.
+        """
+        legacy_link = self.state_file.is_symlink()
+        if legacy_link and os.readlink(self.state_file) != str(self.current / 'metadata.json'):
+            raise ValueError('Refusing to replace unowned state: ' + str(self.state_file))
+        if not legacy_link and self.state_file.exists():
+            try:
+                return self.validate_state(json.loads(self.state_file.read_text()))
+            except (OSError, ValueError, TypeError) as exc:
+                raise ValueError('Persistent theme state is invalid; preserve/repair ' + str(self.state_file)) from exc
+        legacy_wallpaper = self.state / 'wallpaper'
+        managed_wallpaper = legacy_wallpaper.is_symlink() and os.readlink(legacy_wallpaper) == str(self.current / 'wallpaper-path')
+        if (legacy_wallpaper.exists() or legacy_wallpaper.is_symlink()) and not managed_wallpaper:
+            raise ValueError('Refusing to replace unowned state: ' + str(legacy_wallpaper))
+        legacy = legacy_link or managed_wallpaper or self.current.exists() or self.current.is_symlink() or (self.cache / 'generations').exists()
+        if not legacy:
+            return None
+        meta = {}
+        try:
+            generation = self.current.resolve(strict=True)
+            if generation.parent == self.cache / 'generations':
+                candidate = json.loads((generation / 'metadata.json').read_text())
+                if isinstance(candidate, dict):
+                    meta = candidate
+        except (OSError, ValueError):
+            pass
+        saved = {'format': 2, 'enabled': False, 'wallpaper': None, 'wallpaper_hash': None}
+        try:
+            candidate = dict(saved, enabled=meta['enabled'] if meta.get('format') == 1 and 'state_hash' not in meta else False,
+                             wallpaper=meta['wallpaper'], wallpaper_hash=meta['wallpaper_hash'])
+            self.validate_state(candidate)
+            if candidate['wallpaper'] is not None and candidate['wallpaper_hash'] is not None:
+                saved = candidate
+        except (KeyError, ValueError, TypeError):
+            pass
+        if saved['wallpaper'] is None and managed_wallpaper:
+            try:
+                path = legacy_wallpaper.read_text().strip()
+                candidate = dict(saved, wallpaper=path)
+                self.validate_state(candidate)
+                saved = candidate
+                if Path(path).is_file():
+                    saved['wallpaper_hash'] = sha(path)
+            except (OSError, ValueError):
+                pass
+        if migrate:
+            self.save_state(saved)
+            # Only remove the exact legacy link owned by this engine.
+            if managed_wallpaper:
+                legacy_wallpaper.unlink()
+        return saved
+
+    @staticmethod
+    def state_hash(saved):
+        return hashlib.sha256(json.dumps(saved, sort_keys=True).encode()).hexdigest()
+
+    def cache_status(self, saved):
+        if not self.current.exists() and not self.current.is_symlink():
+            return 'missing'
+        meta = self.read()
+        return 'valid' if meta and saved and meta.get('state_hash') == self.state_hash(saved) else 'invalid'
 
     def version(self):
         if not shutil.which('wallust'):
@@ -304,7 +406,7 @@ class Engine:
             meta = json.loads((resolved / 'metadata.json').read_text())
             required = {'format', 'enabled', 'wallpaper', 'wallpaper_hash', 'key',
                         'source', 'created', 'wallust_version', 'files'}
-            if not required <= meta.keys() or meta['format'] != 1 or type(meta['enabled']) is not bool:
+            if not isinstance(meta, dict) or not required <= meta.keys() or meta['format'] != 1 or type(meta['enabled']) is not bool:
                 return None
             if not Path(meta['wallpaper']).is_absolute() or any(c in meta['wallpaper'] for c in '\r\n\0'):
                 return None
@@ -326,17 +428,10 @@ class Engine:
         except (OSError, ValueError, KeyError, TypeError):
             return None
 
-    def wallpaper(self):
-        meta = self.read()
-        if meta and meta.get('wallpaper'):
-            return Path(meta['wallpaper'])
-        # Recover the last path even when a generated colour file is corrupt.
-        try:
-            saved = (self.state / 'wallpaper').read_text().strip()
-            if saved:
-                return Path(saved)
-        except OSError:
-            pass
+    def wallpaper(self, saved=None):
+        saved = self.load_state() if saved is None else saved
+        if saved and saved['wallpaper']:
+            return Path(saved['wallpaper'])
         return self.data / 'wallpapers/min_forest.jpg'
 
     def extract(self, wallpaper, directory):
@@ -359,17 +454,6 @@ class Engine:
             os.replace(temporary, self.current)
         finally:
             temporary.unlink(missing_ok=True)
-
-    def mirrors(self):
-        # These stable links point through the same atomic generation pointer.
-        for name, target in (('wallpaper', self.current / 'wallpaper-path'),
-                             ('theme.json', self.current / 'metadata.json')):
-            path = self.state / name
-            if path.is_symlink() and os.readlink(path) == str(target):
-                continue
-            if path.exists() or path.is_symlink():
-                raise ValueError('Refusing to replace unowned state: ' + str(path))
-            path.symlink_to(target)
 
     def apply_image(self, wallpaper):
         result = run(['awww', 'img', '--resize', 'crop', '--transition-type', 'none', str(wallpaper)])
@@ -407,28 +491,49 @@ class Engine:
                     warnings.append('SwayNC: CSS reload failed')
         return warnings
 
-    def transact(self, wallpaper=None, *, enabled=None, force=False, apply=True, reload=True, use_default=False, restore=False):
+    def transact(self, wallpaper=None, *, enabled=None, force=False, apply=True, reload=True, use_default=False, restore=False, initialize=False):
         with self.locked():
+            saved = self.load_state(migrate=True)
+            fresh = saved is None
+            if fresh:
+                # Public commands preserve a safe disabled preference when no
+                # history exists. Only first installation init opts in by default.
+                saved = {'format': 2, 'enabled': bool(initialize), 'wallpaper': None, 'wallpaper_hash': None}
+            if enabled is not None:
+                saved = dict(saved, enabled=enabled)
+            # Record an explicit choice even if extraction/rendering later fails.
+            self.save_state(saved)
             old = self.read()
             previous = self.current.resolve() if old else None
-            is_enabled = enabled if enabled is not None else old.get('enabled', True) if old else True
-            path = wallpaper or self.wallpaper()
+            is_enabled = saved['enabled']
+            if initialize and fresh and wallpaper is None and shutil.which('awww'):
+                query = run(['awww', 'query'])
+                images = re.findall(r'currently displaying: image: (.+)', query.stdout)
+                if query.returncode == 0 and images and len(set(images)) == 1:
+                    try:
+                        wallpaper = image_valid(images[0])
+                    except (OSError, ValueError):
+                        pass
+            path = wallpaper or self.wallpaper(saved)
+            fallback_wallpaper = False
             try:
                 path = image_valid(path)
             except (OSError, ValueError) as exc:
                 if wallpaper is not None:
                     raise ValueError('Invalid wallpaper; previous theme preserved: ' + str(exc)) from exc
                 path = image_valid(self.data / 'wallpapers/min_forest.jpg')
-                print('WARNING: Saved wallpaper unavailable; using Frosted Glass wallpaper.', file=sys.stderr)
+                fallback_wallpaper = True
+                print('WARNING: Selected wallpaper unavailable; using Frosted Glass wallpaper and preserving its saved path/preference.', file=sys.stderr)
             digest = sha(path)
+            selected = saved if fallback_wallpaper and saved['wallpaper'] else dict(saved, wallpaper=str(path), wallpaper_hash=digest)
+            self.ensure_cache()
             fingerprint = self.fingerprint()
             key = hashlib.sha256(f'{digest}:{fingerprint}:{is_enabled}:{use_default}'.encode()).hexdigest()
-            if old and old['key'] == key and old['wallpaper'] == str(path) and not force:
+            if old and old['key'] == key and old['wallpaper'] == str(path) and old.get('state_hash') == self.state_hash(selected) and not force:
                 if apply and restore:
                     self.apply_image(path)
+                self.save_state(selected)
                 return old
-            # Validate state link ownership before changing wallpaper or current.
-            self.mirrors()
             with tempfile.TemporaryDirectory(prefix='.build-', dir=self.cache / 'generations') as temporary:
                 stage = Path(temporary)
                 palette, source = dict(self.base), 'frosted-glass'
@@ -469,6 +574,7 @@ class Engine:
                 atomic(stage / 'wallpaper-path', str(path) + '\n')
                 meta = {'format': 1, 'enabled': is_enabled, 'wallpaper': str(path),
                         'wallpaper_hash': digest, 'key': key, 'source': source,
+                        'state_hash': self.state_hash(selected),
                         'created': datetime.now(timezone.utc).isoformat(),
                         'wallust_version': self.version(), 'files': {name: sha(stage / name) for name in (*FILES, 'palette.json')}}
                 atomic(stage / 'metadata.json', json.dumps(meta, indent=2) + '\n')
@@ -485,6 +591,7 @@ class Engine:
                     if reload:
                         for warning in self.reload():
                             print('WARNING: ' + warning, file=sys.stderr)
+                    self.save_state(selected)
                 except BaseException:
                     if previous:
                         self.publish(previous)
@@ -518,31 +625,28 @@ def main(argv=None):
     try:
         engine = Engine()
         if args.action == 'status':
-            meta = engine.read()
-            if not meta:
-                raise ValueError('No valid generated theme; run hyprixe-theme refresh')
-            print('dynamic theming: ' + ('enabled' if meta['enabled'] else 'disabled'))
-            for key in ('wallpaper', 'wallpaper_hash', 'source', 'created'):
-                print(key.replace('_', ' ') + ': ' + str(meta[key]))
-            print('Wallust version: ' + str(engine.version() or 'absent'))
+            with engine.locked():
+                saved = engine.load_state(migrate=True)
+                cache = engine.cache_status(saved)
+                meta = engine.read() if cache == 'valid' else None
+                print('dynamic theming: ' + ('enabled' if saved and saved['enabled'] else 'disabled'))
+                print('current wallpaper: ' + str(saved['wallpaper'] or 'none' if saved else 'none'))
+                print('wallpaper hash: ' + str(saved['wallpaper_hash'] or 'none' if saved else 'none'))
+                print('cache: ' + cache)
+                palette = ('dynamic' if meta['source'].startswith('wallust') else 'default') if meta else 'unavailable'
+                print('palette: ' + palette)
+                if meta:
+                    print('palette source: ' + meta['source'])
+                    print('last generation: ' + meta['created'])
+                print('Wallust version: ' + str(engine.version() or 'absent'))
             return 0
         action = args.action
         wallpaper = Path(args.wallpaper) if args.wallpaper else None
-        if action == 'init' and not engine.current.exists() and shutil.which('awww'):
-            # v1.1 migration: use the actual active image when the daemon knows
-            # it; a session without a daemon keeps the bundled min_forest.
-            query = run(['awww', 'query'])
-            images = re.findall(r'currently displaying: image: (.+)', query.stdout)
-            if query.returncode == 0 and images and len(set(images)) == 1:
-                try:
-                    wallpaper = image_valid(images[0])
-                except (OSError, ValueError):
-                    pass
         engine.transact(wallpaper,
                         enabled=False if action == 'disable' else True if action == 'enable' else None,
                         force=action in ('refresh', 'default', 'enable', 'disable'),
                         use_default=action == 'default', apply=action != 'init',
-                        reload=action != 'init', restore=action == 'restore')
+                        reload=action != 'init', restore=action == 'restore', initialize=action == 'init')
         return 0
     except (OSError, ValueError, KeyError, subprocess.SubprocessError) as exc:
         print('ERROR: ' + str(exc), file=sys.stderr)
