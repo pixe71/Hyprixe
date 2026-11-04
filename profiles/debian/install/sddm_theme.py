@@ -126,17 +126,70 @@ def neutralize_managed_keys(text):
     return ''.join(output)
 
 
+class SystemRoot:
+    """Map virtual absolute paths, and bound host-path checks to one root.
+
+    Real system objects require UID 0. An unprivileged image/fixture root uses
+    the invoking UID to represent that same owner, with identical mode checks.
+    No pathname (including /tmp) exempts an object from validation.
+    """
+    def __init__(self, root):
+        root = Path(root)
+        if not root.is_absolute() or root.anchor != '/' or '..' in root.parts:
+            raise ValueError('System root must be an absolute canonical path')
+        if root.is_symlink():
+            raise ValueError('Symlinked system root: ' + str(root))
+        self.root = root.resolve(strict=True)
+        if not self.root.is_dir():
+            raise ValueError('System root must be a directory')
+        self.owner_uid = 0 if self.root == Path('/') else os.getuid()
+
+    def path(self, absolute):
+        virtual = Path(absolute)
+        if not virtual.is_absolute() or virtual.anchor != '/' or '..' in virtual.parts:
+            raise ValueError('Expected an absolute system path without traversal')
+        return self.root.joinpath(*virtual.parts[1:])
+
+    def relative(self, path):
+        path = Path(path)
+        if not path.is_absolute() or '..' in path.parts or not path.is_relative_to(self.root):
+            raise ValueError('Path outside system root or containing traversal: ' + str(path))
+        return path.relative_to(self.root)
+
+    def parents(self, path):
+        path = Path(path)
+        self.relative(path)
+        if path == self.root:
+            return
+        for parent in path.parents:
+            yield parent
+            if parent == self.root:
+                break
+
+    def require_owner_and_mode(self, path, label):
+        info = path.stat()
+        if info.st_uid != self.owner_uid or info.st_mode & 0o022:
+            raise ValueError(label + ': ' + str(path))
+
+    def guard_parents(self, path):
+        # Check from the anchor down, before following any child of a symlink.
+        for parent in reversed(list(self.parents(path))):
+            if parent.is_symlink() or (parent.exists() and not parent.is_dir()):
+                raise ValueError(f'Symlinked/non-directory SDDM parent: {parent}')
+
+
 class SystemTheme:
     def __init__(self, root=Path('/'), repo=REPO, actor_uid=None):
-        self.root = Path(root).resolve()
+        self.filesystem = SystemRoot(root)
+        self.root = self.filesystem.root
         self.repo = repo
         self.actor_uid = os.getuid() if actor_uid is None else actor_uid
 
     def path(self, absolute):
-        return self.root / absolute.lstrip('/')
+        return self.filesystem.path(absolute)
 
     def guard(self, path, directory=False):
-        relative = path.relative_to(self.root).as_posix()
+        relative = self.filesystem.relative(path).as_posix()
         allowed = (relative == 'etc/sddm.conf' or
                    '/' + relative in (*SYNC_FILES, SYNC_USERS) or
                    (path.parent == self.path('/etc/sddm.conf.d') and path.suffix == '.conf') or
@@ -144,33 +197,61 @@ class SystemTheme:
         if directory:
             allowed = relative in ('etc/sddm.conf.d', THEME_DIR.lstrip('/'), 'usr/libexec',
                                   'usr/libexec/hyprixe', 'etc/hyprixe', 'etc/systemd', 'etc/systemd/system') or relative.startswith(THEME_DIR.lstrip('/') + '/')
-        if not allowed or '..' in path.parts:
+        if not allowed:
             raise ValueError(f'Refusing SDDM target outside the allowed paths: {path}')
-        for parent in path.parents:
-            if parent == self.root:
-                break
-            if parent.is_symlink() or (parent.exists() and not parent.is_dir()):
-                raise ValueError(f'Symlinked/non-directory SDDM parent: {parent}')
+        self.filesystem.guard_parents(path)
+        for parent in self.filesystem.parents(path):
             if '/' + relative in (*SYNC_FILES, SYNC_USERS) and parent.exists():
-                expected_uid = 0 if self.root == Path('/') else os.getuid()
-                if parent.stat().st_uid != expected_uid or parent.stat().st_mode & 0o022:
-                    raise ValueError(f'Unsafe synchronization integration parent: {parent}')
+                self.filesystem.require_owner_and_mode(parent, 'Unsafe synchronization integration parent')
         if path.is_symlink() or (not directory and path.exists() and not path.is_file()):
             raise ValueError(f'SDDM target must be a regular file: {path}')
 
     def guard_state(self, path):
+        self.filesystem.relative(path)
         if not path.is_relative_to(self.path('/var/lib/hyprixe/sddm')):
             raise ValueError('Invalid SDDM state path')
-        for parent in (path, *path.parents):
-            if parent == self.root:
-                break
+        for parent in (*reversed(list(self.filesystem.parents(path))), path):
             if parent.is_symlink():
                 raise ValueError(f'Symlinked SDDM backup/state path: {parent}')
+            if parent.exists():
+                if not parent.is_dir() and (parent != path or not parent.is_file()):
+                    raise ValueError('Invalid SDDM backup/state object: ' + str(parent))
+                if parent.is_dir():
+                    self.filesystem.require_owner_and_mode(parent, 'Unsafe SDDM backup/state owner or permissions')
+                elif parent.stat().st_uid != self.filesystem.owner_uid:
+                    raise ValueError('Unsafe SDDM backup/state owner: ' + str(parent))
+                # Saved files retain original modes for legacy backup support;
+                # their checked, private ancestors protect their contents.
+
+    def mkdir_state(self, path):
+        """Create only missing state ancestors with explicit, safe modes."""
+        self.guard_state(path)
+        missing = []
+        parent = path
+        while not parent.exists():
+            missing.append(parent)
+            parent = parent.parent
+        for directory in reversed(missing):
+            private = directory.is_relative_to(self.path('/var/lib/hyprixe/sddm'))
+            mode = 0o700 if private else 0o755
+            try:
+                directory.mkdir(mode=mode)
+            except FileExistsError:
+                self.guard_state(path)  # A concurrent installer may have created it.
+            else:
+                directory.chmod(mode)
 
     def config_files(self):
-        return [*sorted(self.path('/usr/lib/sddm/sddm.conf.d').glob('*.conf')),
-                *sorted(self.path('/etc/sddm.conf.d').glob('*.conf')),
-                self.path('/etc/sddm.conf')]
+        directories = [self.path('/usr/lib/sddm/sddm.conf.d'), self.path('/etc/sddm.conf.d')]
+        for directory in directories:
+            self.filesystem.guard_parents(directory / '.config-path-check')
+        paths = [p for directory in directories for p in sorted(directory.glob('*.conf'))]
+        paths.append(self.path('/etc/sddm.conf'))
+        for path in paths:
+            self.filesystem.guard_parents(path)
+            if path.is_symlink() or (path.exists() and not path.is_file()):
+                raise ValueError('Symlinked/non-regular SDDM configuration: ' + str(path))
+        return paths
 
     def configuration(self):
         parser = configparser.ConfigParser(interpolation=None, strict=False)
@@ -194,9 +275,7 @@ class SystemTheme:
         self.guard(authorization)
         users = {'format': 1, 'uids': []}
         if authorization.exists():
-            expected_uid = 0 if self.root == Path('/') else os.getuid()
-            if authorization.stat().st_uid != expected_uid or authorization.stat().st_mode & 0o022:
-                raise ValueError('Unsafe SDDM sync authorization permissions')
+            self.filesystem.require_owner_and_mode(authorization, 'Unsafe SDDM sync authorization permissions')
             users = json.loads(authorization.read_text())
             if (set(users) != {'format', 'uids'} or users['format'] != 1 or
                     not isinstance(users['uids'], list) or any(type(uid) is not int or uid <= 0 for uid in users['uids'])):
@@ -220,9 +299,9 @@ class SystemTheme:
         for path in content:
             self.guard(path)
             if path.is_relative_to(self.path(THEME_DIR)):
-                for parent in path.parents:
+                for parent in self.filesystem.parents(path):
                     if parent == self.root:
-                        break
+                        continue
                     if parent.exists() and parent.stat().st_mode & 0o001 == 0:
                         raise ValueError(f'SDDM theme directory must be traversable by the greeter: {parent}')
         return content
@@ -268,8 +347,7 @@ class SystemTheme:
             return None
         identifier = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S.%fZ') + '-sddm-' + uuid.uuid4().hex[:8]
         backup = self.path(BACKUPS) / identifier
-        self.guard_state(backup)
-        backup.mkdir(parents=True, mode=0o700)
+        self.mkdir_state(backup)
         (backup / 'files').mkdir(mode=0o700)
         manifest = {'format': 1, 'kind': 'sddm', 'id': identifier, 'root': str(self.root),
                     'actor_uid': self.actor_uid, 'files': [], 'directories': []}
@@ -407,7 +485,7 @@ class SystemTheme:
                 failures.append(f'Missing/changed SDDM file: {absolute}')
             elif path.stat().st_mode & 0o444 != 0o444:
                 failures.append(f'SDDM theme file is not readable by the greeter: {absolute}')
-            if any(p.exists() and p.stat().st_mode & 0o001 == 0 for p in path.parents if p != self.root):
+            if any(p.exists() and p.stat().st_mode & 0o001 == 0 for p in self.filesystem.parents(path) if p != self.root):
                 failures.append(f'SDDM theme parent directory is not traversable by the greeter: {absolute}')
         if self.effective_theme() != (THEME, '/usr/share/sddm/themes'):
             failures.append('Effective SDDM configuration does not select hyprixe-frosted from /usr/share/sddm/themes')
@@ -425,7 +503,7 @@ class SystemTheme:
         try:
             self.guard(authorization)
             users = json.loads(authorization.read_text())
-            expected_uid = 0 if self.root == Path('/') else os.getuid()
+            expected_uid = self.filesystem.owner_uid
             if (authorization.stat().st_uid != expected_uid or authorization.stat().st_mode & 0o022 or
                     set(users) != {'format', 'uids'} or users['format'] != 1 or
                     any(type(uid) is not int or uid <= 0 for uid in users['uids'])):
@@ -502,7 +580,7 @@ def main():
         raise ValueError('Only SDDM system installation/restoration requires sudo')
     state = theme.path('/var/lib/hyprixe/sddm')
     theme.guard_state(state / 'deployment.lock')
-    state.mkdir(parents=True, mode=0o700, exist_ok=True)
+    theme.mkdir_state(state)
     state.chmod(0o700)
     with (state / 'deployment.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)

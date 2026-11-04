@@ -62,6 +62,13 @@ wallpaper, input method and preserved UWSM session availability. Native QML
 checks run when the necessary tools exist. None of these checks proves a real
 password login, scaling or absence of a white transition on the physical PC.
 
+System filesystem checks are bounded by an explicit root (`/` in production).
+Isolated tests use an owned temporary system image with explicit 0755 system
+directories and 0644 configuration files, independent of the shell's umask.
+The same owner/mode and anti-symlink checks apply inside that root; host parents
+outside it are not simulated system directories. Regressions cover umasks 0002,
+0022 and 0077, traversal, foreign owners, unsafe permissions and backup state.
+
 ## Restore only the greeter
 
 Use a working TTY if the greeter is unusable. Run from the checkout as your
