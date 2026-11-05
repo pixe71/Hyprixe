@@ -10,6 +10,7 @@ import sys
 import tempfile
 import unittest
 import stat
+import re
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -515,6 +516,16 @@ class CombinedRestoreTests(unittest.TestCase):
 
 
 class QmlRuntimeTests(unittest.TestCase):
+    def test_active_text_bindings_do_not_display_frosted_glass(self):
+        theme = source_path(ROOT, 'sddm/themes/hyprixe-frosted')
+        for path in theme.rglob('*.qml'):
+            for binding in re.findall(r'\btext\s*:\s*([^;\n}]+)', path.read_text()):
+                # Restrict to displayed strings: comments, filenames and
+                # internal theme metadata may retain the Frosted Glass name.
+                for value in re.findall(r'["\']([^"\']*)["\']', binding):
+                    normalized = re.sub(r'\s+', '', value).casefold()
+                    self.assertNotIn('frostedglass', normalized, str(path) + ': ' + value)
+
     @unittest.skipUnless(importlib.util.find_spec('PyQt6') and importlib.util.find_spec('PyQt6.QtQuick'),
                          'optional python3-pyqt6.qtquick needed for QML interaction tests')
     def test_qt6_models_login_errors_power_and_responsive_layout(self):

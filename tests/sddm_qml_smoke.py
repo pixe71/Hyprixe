@@ -12,6 +12,7 @@ from PyQt6.QtCore import (QAbstractListModel, QMetaObject, QModelIndex, QObject,
                           qInstallMessageHandler)
 from PyQt6.QtGui import QGuiApplication
 from PyQt6.QtQuick import QQuickView
+from PyQt6.QtQml import QQmlExpression, qmlContext
 from PyQt6.QtTest import QTest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -72,6 +73,62 @@ class Sddm(QObject):
 def require(value, message):
     if not value:
         raise AssertionError(message)
+
+
+def check_initial_snapshots(theme, folder, users, sessions, proxy):
+    """Inspect fresh views before show(), waits or an event-loop iteration.
+
+    Every dynamic image URL is new: a previously decoded Qt image must not
+    conceal an asynchronous startup regression through its shared cache.
+    """
+    from PIL import Image
+    from sddm_sync import palette_qml, ROLES
+    from engine import defaults
+    palette = {role: defaults(ROOT / 'common/theme')[role] for role in ROLES}
+    palette['background'] = '#101820'
+    fallback = (theme / 'min_forest.jpg').as_uri()
+    for case in ('valid', 'absent', 'missing-palette', 'invalid-colour', 'malformed-palette', 'missing-image', 'broken-image'):
+        image = folder / ('first-' + case + '.png')
+        Image.new('RGB', (64, 40), (128, 42, 170)).save(image)
+        path = folder / ('first-' + case + '.qml')
+        colours = dict(palette, accent='invalid') if case == 'invalid-colour' else palette
+        if case != 'missing-palette':
+            path.write_bytes(palette_qml(colours, image.as_uri()))
+        if case == 'missing-image':
+            image.unlink()
+        if case == 'broken-image':
+            image.write_bytes(b'not an image')
+        if case == 'malformed-palette':
+            path.write_text('import QtQuick\nQtObject { property string broken: }\n')
+        warning_start = len(warnings)
+        view = QQuickView()
+        context = view.rootContext()
+        context.setContextProperty('sddm', proxy)
+        context.setContextProperty('userModel', users)
+        context.setContextProperty('sessionModel', sessions)
+        context.setContextProperty('config', {'font': 'JetBrains Mono', 'background': 'min_forest.jpg',
+                                             'dynamicPalette': '' if case == 'absent' else path.as_uri()})
+        view.setSource(QUrl.fromLocalFile(str(theme / 'Main.qml')))
+        require(view.status() == QQuickView.Status.Ready, '\n'.join(e.toString() for e in view.errors()))
+        root = view.rootObject()
+        background = root.findChild(QObject, 'backgroundImage')
+        dynamic = root.findChild(QObject, 'dynamicTheme')
+        expected = image.as_uri() if case == 'valid' else fallback
+        require(background.property('source').toString() == expected,
+                case + ': initial wallpaper source must already be the selected image, without a fallback placeholder')
+        # QQuickImageBase::Status is not registered as a Python enum in PyQt6.
+        ready = QQmlExpression(qmlContext(background), background, 'status === 1')  # Image.Ready
+        decoded, undefined = ready.evaluate()
+        require(not ready.hasError() and not undefined and decoded,
+                case + ': image must be decoded before the first frame')
+        require(dynamic.property('resolved'), case + ': snapshot decision must be complete before the first frame')
+        require(dynamic.property('valid') == (case == 'valid'), case + ': incorrect initial palette activation')
+        require(root.property('color').name() == (palette['background'] if case == 'valid' else '#122434'),
+                case + ': initial paint must agree with the wallpaper decision')
+        new_warnings = warnings[warning_start:]
+        require(all('first-' + case in message for message in new_warnings),
+                case + ': unexpected Qt warnings: ' + '\n'.join(new_warnings))
+        view.close()
 
 
 def run():
@@ -189,7 +246,8 @@ def run():
         require(all('Cannot open:' in text or 'No such file' in text for text in warnings),
                 'Unexpected fallback runtime warnings: ' + '\n'.join(warnings))
         view.close()
-    print('PASS: actual Qt 6 login/models/layouts and SDDM dynamic image/palette, absent/corrupt snapshot fallbacks')
+        check_initial_snapshots(theme, Path(tmp), users, sessions, proxy)
+    print('PASS: actual Qt 6 login/models/layouts, initial dynamic wallpaper before rendering and snapshot fallbacks')
 
 
 if __name__ == '__main__':

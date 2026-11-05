@@ -7,6 +7,10 @@ Item {
     readonly property var snapshot: paletteLoader.status === Loader.Ready ? paletteLoader.item : null
     readonly property bool coloursValid: validData(snapshot)
     readonly property bool valid: coloursValid && imageProbe.status === Image.Ready
+    // Never use the fallback as a placeholder while a local snapshot settles.
+    readonly property bool resolved: paletteSource.toString() === "" || paletteLoader.status === Loader.Error ||
+                                     (paletteLoader.status === Loader.Ready &&
+                                      (!coloursValid || imageProbe.status === Image.Ready || imageProbe.status === Image.Error))
     readonly property string wallpaper: valid ? snapshot.wallpaper : ""
     visible: false
 
@@ -44,12 +48,12 @@ Item {
                        parseInt(c.substr(3, 2), 16) / 255,
                        parseInt(c.substr(5, 2), 16) / 255, opacity);
     }
-    Loader { id: paletteLoader; source: theme.paletteSource }
+    Loader { id: paletteLoader; source: theme.paletteSource; asynchronous: false }
     Image {
         id: imageProbe
         source: theme.coloursValid ? theme.snapshot.wallpaper : ""
-        asynchronous: true
-        sourceSize.width: 1
-        sourceSize.height: 1
+        // Decode once before the first frame. The full-size background shares
+        // Qt's image cache, including this already validated local image.
+        asynchronous: false
     }
 }

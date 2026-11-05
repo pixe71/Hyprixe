@@ -47,9 +47,9 @@ Rectangle {
         id: backgroundImage
         objectName: "backgroundImage"
         anchors.fill: parent
-        source: dynamicTheme.wallpaper || Qt.resolvedUrl(config.background || "min_forest.jpg")
+        source: dynamicTheme.resolved ? (dynamicTheme.wallpaper || Qt.resolvedUrl(config.background || "min_forest.jpg")) : ""
         fillMode: Image.PreserveAspectCrop
-        asynchronous: true
+        asynchronous: false
         smooth: true
     }
     Rectangle {
@@ -106,12 +106,11 @@ Rectangle {
                     font.family: root.themeFont
                     font.pixelSize: root.wide ? 19 : 13
                 }
-                Text {
+                Item {
                     visible: root.wide
-                    text: "F R O S T E D   G L A S S"
-                    color: dynamicTheme.paint("foreground", "#a6c5d2")
-                    font.family: root.themeFont
-                    font.pixelSize: 11
+                    // Preserve the clock/date spacing after removing the label.
+                    implicitHeight: Math.ceil(labelMetrics.height)
+                    FontMetrics { id: labelMetrics; font.family: root.themeFont; font.pixelSize: 11 }
                 }
             }
 
@@ -272,7 +271,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.leftMargin: root.margin
         anchors.bottomMargin: 28
-        text: root.width < 480 ? "Hyprixe" : "Hyprixe · Frosted Glass"
+        text: "Hyprixe"
         color: dynamicTheme.paint("foreground", "#a6c5d2")
         font.family: root.themeFont
         font.pixelSize: 11
