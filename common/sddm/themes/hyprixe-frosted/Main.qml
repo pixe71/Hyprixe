@@ -212,7 +212,7 @@ Rectangle {
                         placeholderTextColor: dynamicTheme.paint("foreground", "#8daebb")
                         color: dynamicTheme.paint("foreground", "#e6f1f4")
                         selectionColor: dynamicTheme.paint("accent", "#2770c0")
-                        selectedTextColor: "white"
+                        selectedTextColor: dynamicTheme.paint("background", "white")
                         font.family: root.themeFont
                         font.pixelSize: 15
                         leftPadding: 14

@@ -17,7 +17,7 @@ window#waybar {
 #workspaces, #mpris, #tray, #submap, #idle_inhibitor, #clock,
 #window, #pulseaudio, #cpu, #memory, #network, #bluetooth, #custom-power,
 #custom-traylauncher, #custom-temperature, #custom-distro, #battery {
-    background: alpha(@hx_accent, 0.32);
+    background: alpha(@hx_surface, 0.32);
     color: @hx_foreground;
     margin: 4px 2px;
     padding: 0 8px;
@@ -34,7 +34,7 @@ window#waybar {
 #workspaces { padding: 0 4px; }
 #workspaces button {
     background: transparent;
-    color: @hx_foreground;
+    color: @hx_foreground_muted;
     padding: 0 5px;
     margin: 2px 1px;
     border-radius: 7px;
@@ -42,9 +42,11 @@ window#waybar {
 }
 #workspaces button.active {
     background: @hx_workspace;
+    color: @hx_foreground;
     padding: 0 11px;
 }
-#workspaces button:hover { background: @hx_accent; color: @hx_border_secondary; }
+#workspaces button:hover { background: @hx_accent; color: @hx_background; }
+#workspaces button.urgent { background: @hx_error; color: @hx_background; }
 /* One compact icon per window; focus is reported by the toplevel protocol. */
 #taskbar {
     background: alpha(@hx_border_secondary, 0.45);
@@ -85,8 +87,8 @@ tooltip label { color: @hx_foreground; }
     font-size: 14px;
     color: @hx_accent;
 }
-#battery.charging, #battery.plugged, #battery.full { color: @hx_accent_alt; }
-#battery.warning:not(.charging):not(.plugged) { color: @hx_accent; }
+#battery.charging, #battery.plugged, #battery.full { color: @hx_success; }
+#battery.warning:not(.charging):not(.plugged) { color: @hx_warning; }
 #battery.critical:not(.charging):not(.plugged) {
     color: @hx_error;
     border-color: @hx_error;

@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 import fcntl
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -87,35 +88,129 @@ def defaults(resources):
     return json.loads((resources / 'defaults/frosted-glass.json').read_text())
 
 
+def oklab(color):
+    """D65 sRGB -> Oklab, using Ottosson's published 2021 matrices."""
+    r, g, b = (v / 12.92 if v <= .04045 else ((v + .055) / 1.055) ** 2.4 for v in rgb(color))
+    l = (.4122214708*r + .5363325363*g + .0514459929*b) ** (1/3)
+    m = (.2119034982*r + .6806995451*g + .1073969566*b) ** (1/3)
+    s = (.0883024619*r + .2817188376*g + .6299787005*b) ** (1/3)
+    return (.2104542553*l + .7936177850*m - .0040720468*s,
+            1.9779984951*l - 2.4285922050*m + .4505937099*s,
+            .0259040371*l + .7827717662*m - .8086757660*s)
+
+
+def lch(color):
+    lightness, a, b = oklab(color)
+    return lightness, math.hypot(a, b), (math.atan2(b, a) / math.tau) % 1
+
+
+def distance(a, b):
+    """Euclidean Oklab distance, on the 0..1 lightness scale (not x100)."""
+    return math.dist(oklab(a), oklab(b))
+
+
+def tinted(lightness, chroma, hue):
+    """Oklch -> sRGB; reduce chroma at fixed L/h to stay inside the gamut."""
+    def channels(c):
+        a, b = c * math.cos(hue * math.tau), c * math.sin(hue * math.tau)
+        l = (lightness + .3963377774*a + .2158037573*b) ** 3
+        m = (lightness - .1055613458*a - .0638541728*b) ** 3
+        s = (lightness - .0894841775*a - 1.2914855480*b) ** 3
+        return (4.0767416621*l - 3.3077115913*m + .2309699292*s,
+                -1.2684380046*l + 2.6097574011*m - .3413193965*s,
+                -.0041960863*l - .7034186147*m + 1.7076147010*s)
+    low, high = 0., chroma
+    values = channels(chroma)
+    if not all(-1e-7 <= v <= 1 + 1e-7 for v in values):
+        for _ in range(14):
+            candidate = (low + high) / 2
+            if all(0 <= v <= 1 for v in channels(candidate)):
+                low = candidate
+            else:
+                high = candidate
+        values = channels(low)
+    return hexcolor(12.92*v if v <= .0031308 else 1.055*v**(1/2.4) - .055 for v in values)
+
+
+def blend(color, background, opacity):
+    """Encoded-sRGB alpha composition, for existing GTK/QML paint checks."""
+    return hexcolor(a * opacity + b * (1-opacity) for a, b in zip(rgb(color), rgb(background)))
+
+
+def hue_distance(a, b):
+    return min(abs(a-b), 1-abs(a-b))
+
+
+def accent_candidates(colors):
+    result = []
+    for color in sorted(set(c.lower() for c in colors)):
+        lightness, chroma, hue = lch(color)
+        if chroma < .025:
+            continue
+        visibility = max(.05, min(1., (lightness-.15)/.25, (.99-lightness)/.20))
+        score = min(chroma, .18) * visibility
+        # A dull brown may be genuine, but should not displace a useful colour.
+        if .10 < hue < .23 and lightness < .62 and chroma < .11:
+            score *= .65
+        result.append((score, color, lightness, chroma, hue))
+    return sorted(result, reverse=True)
+
+
+def lit_accent(lightness, chroma, hue, backgrounds):
+    for step in range(8):
+        if lightness + step * .01 > .85 + 1e-9:
+            break
+        color = tinted(lightness + step * .01, chroma, hue)
+        if all(contrast(color, b) >= 4.5 for b in backgrounds):
+            return color
+    raise ValueError('Cannot fit a readable accent inside the Frosted Glass range')
+
+
 def normalize(raw, base):
     colors = raw['colors']
     if len(colors) != 16:
         raise ValueError('Wallust must return exactly 16 RGB colours')
     for color in [raw['background'], raw['foreground'], *colors]:
         rgb(color)
-    # Pick chroma rather than a terminal index. Low-chroma images retain the
-    # familiar cyan hue; fixed semantic status colours keep their meaning.
-    candidates = [colorsys.rgb_to_hls(*rgb(c)) for c in colors]
-    hue, _, saturation = max(candidates, key=lambda c: c[2] * (1 - abs(c[1] - .5)))
-    if saturation < .12:
-        hue = colorsys.rgb_to_hls(*rgb(base['accent']))[0]
+    candidates = accent_candidates(colors)
+    if candidates:
+        _, _, source_lightness, source_chroma, hue = candidates[0]
+    else:
+        source_lightness, source_chroma, hue = max((lch(c) for c in colors), key=lambda c: (c[1], c[0], c[2]))
+        if source_chroma < .012:
+            hue = lch(base['accent'])[2]
     p = dict(base)
-    for role, lightness, sat, offset in (
-        ('background', .12, .30, 0), ('surface', .23, .26, 0),
-        ('surface_alt', .28, .25, 0), ('accent', .75, .54, 0),
-        ('accent_alt', .82, .38, .055), ('border', .46, .27, 0),
-        ('border_focus', .53, .46, 0), ('border_secondary', .34, .40, 0),
-        ('selection', .34, .28, 0), ('workspace', .46, .34, .22),
+    tone = max(-.01, min(.01, (source_lightness-.60) * .04))
+    tint = max(.012, min(.022, source_chroma * .14))
+    for role, lightness, chroma in (
+        ('background', .225+tone, tint*.80), ('surface', .310+tone, tint),
+        ('surface_alt', .375+tone, tint), ('foreground', .94, .007),
+        ('foreground_muted', .80, .014), ('border', .54, .025),
+        ('border_focus', .63, .065), ('border_secondary', .35, .030),
+        ('selection', .42, .065), ('workspace', .43, .075),
     ):
-        p[role] = hexcolor(colorsys.hls_to_rgb((hue + offset) % 1, lightness, sat))
-    for role in ('foreground', 'foreground_muted', 'accent', 'accent_alt', 'success', 'warning', 'error'):
-        p[role] = readable(p[role], p['surface_alt'], 4.5)
-    for role in ('border', 'border_focus'):
-        p[role] = readable(p[role], p['background'], 3)
-    # White text on the workspace pill and selection must stay readable too.
-    for role in ('workspace', 'selection'):
-        while contrast(p['foreground'], p[role]) < 4.5:
-            p[role] = hexcolor(v * .92 for v in rgb(p[role]))
+        p[role] = tinted(lightness, chroma, hue)
+    # Keep accent text readable over the unchanged translucent Waybar layers,
+    # including a white wallpaper. No opacity/geometry compensation is needed.
+    bar = blend(p['background'], '#ffffff', .76)
+    backgrounds = (p['surface_alt'], blend(p['surface'], bar, .32), blend(p['border_secondary'], bar, .45))
+    p['accent'] = lit_accent(.79, max(.09, min(.13, source_chroma*.65)), hue, backgrounds)
+    alternatives = []
+    for score, color, lightness, chroma, other_hue in candidates:
+        if hue_distance(hue, other_hue) < .10:
+            continue
+        alternate = lit_accent(.80, max(.09, min(.12, chroma*.65)), other_hue, backgrounds)
+        if distance(p['accent'], alternate) >= .075:
+            alternatives.append((score * (1 - .4*hue_distance(hue, other_hue)), color, alternate))
+    if alternatives:
+        p['accent_alt'] = max(alternatives)[2]
+    else:
+        # Monochrome: an analogous hue at most 54 degrees away, not a foreign
+        # complementary workspace colour. Quantized distance is checked below.
+        offset = -.15 if hue >= .58 or .15 < hue < .30 else .15
+        p['accent_alt'] = lit_accent(.80, .12, (hue+offset) % 1, backgrounds)
+    for role, lightness, chroma in (('success', .82, .13), ('warning', .83, .13), ('error', .81, .15)):
+        p[role] = tinted(lightness, chroma, lch(base[role])[2])
     validate_palette(p, base)
     return p
 
@@ -131,11 +226,37 @@ def validate_palette(palette, base):
         for role in ('foreground', 'foreground_muted'):
             if contrast(palette[role], palette[surface]) < 4.5:
                 raise ValueError(f'Insufficient contrast: {role}/{surface}')
-    if contrast(palette['foreground'], palette['selection']) < 4.5:
-        raise ValueError('Insufficient selection contrast')
+    for role in ('selection', 'workspace', 'border_secondary'):
+        if contrast(palette['foreground'], palette[role]) < 4.5:
+            raise ValueError('Insufficient text contrast: ' + role)
+    for role in ('accent', 'accent_alt'):
+        if contrast(palette['background'], palette[role]) < 4.5:
+            raise ValueError('Insufficient dark text on accent: ' + role)
     for role in ('accent', 'accent_alt', 'border', 'border_focus'):
         if contrast(palette[role], palette['background']) < 3:
             raise ValueError('Invisible accent/border: ' + role)
+    # Preserve the complete historical/default palette and existing fallback.
+    # Additional tonal envelopes apply only to transformed wallpaper palettes.
+    if palette == base:
+        return
+    for role in ('background', 'surface', 'surface_alt'):
+        if not .003 <= luminance(palette[role]) <= .065 or lch(palette[role])[1] > .025:
+            raise ValueError('Surface outside dark neutral range: ' + role)
+    if not luminance(palette['background']) < luminance(palette['surface']) < luminance(palette['surface_alt']):
+        raise ValueError('Surface hierarchy is not ordered')
+    for a, b, minimum in (('background', 'surface', .075), ('surface', 'surface_alt', .055),
+                          ('accent', 'accent_alt', .075), ('foreground', 'foreground_muted', .12)):
+        if distance(palette[a], palette[b]) < minimum:
+            raise ValueError('Semantic colours too close: ' + a + '/' + b)
+    for role in ('accent', 'accent_alt'):
+        lightness, chroma, _ = lch(palette[role])
+        if not .77 <= lightness <= .855 or not .035 <= chroma <= .135:
+            raise ValueError('Accent outside restrained chroma/lightness range: ' + role)
+        if contrast(palette[role], palette['surface_alt']) < 4.5:
+            raise ValueError('Insufficient accent text contrast: ' + role)
+    for role in ('success', 'warning', 'error'):
+        if contrast(palette[role], palette['surface_alt']) < 4.5:
+            raise ValueError('Insufficient status contrast: ' + role)
 
 
 def render(resources, palette):

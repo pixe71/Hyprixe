@@ -100,6 +100,69 @@ The bundled `min_forest.jpg` is calibrated by content hash to the original
 Frosted Glass palette, including when copied or renamed. Installation discovers
 the active awww image when possible; otherwise v1.1's bundled image is used.
 
+## Colour refinement
+
+Wallust 3.5.1 still extracts the image. Hyprixe then works in
+[Oklab/Oklch](https://bottosson.github.io/posts/oklab/), using small standard-library
+Python calculations. Lightness `L` is on a 0–1 scale; `C` is perceptual chroma,
+not HSL saturation. Colours outside sRGB lose chroma at the same lightness/hue,
+rather than being clipped into a different hue.
+
+The primary accent ranks useful raw colours by bounded chroma and usable
+lightness; near-white/black and dull browns receive less weight. Its hue stays
+from the image, with `L` around 0.79–0.85 and requested `C` 0.09–0.13. A raw
+alternative at least 36° away is preferred when its rendered colour is distinct
+enough. Only monochrome/no-usable-alternative palettes derive a neighbouring
+hue 54° away. Truly achromatic images use the historical cool accent hue.
+
+| Role | Transformed palette |
+| --- | --- |
+| background / surface / surface_alt | `L` about 0.225 / 0.310 / 0.375 (±0.01); `C` ≤ 0.025; ordered dark levels with a subtle wallpaper tint |
+| foreground / foreground_muted | `L` 0.94 / 0.80, `C` about 0.007 / 0.014; off-white and visible secondary text |
+| border / border_focus | `L` about 0.54 / 0.63, `C` about 0.025 / 0.065; neutral inactive edge, restrained active edge |
+| selection / workspace | Dark accent-tinted fills with bright text, rather than fluorescent blocks |
+| success / warning / error | Stable green / amber / red hues from Frosted Glass; readable independently of the wallpaper |
+
+Validation requires at least **4.5:1** for foreground and muted text on the three
+opaque surfaces, foreground on selection/workspace/secondary fills, dark text
+on bright accents, and accent/status text on surface_alt. Borders/focus must
+reach **3:1** against background. Oklab distances must be ≥ 0.075 between
+background/surface, ≥ 0.055 between surface/surface_alt, ≥ 0.075 between accents,
+and ≥ 0.12 between foreground/muted. Surfaces have relative luminance
+0.003–0.065; the separate Oklch lightness/chroma bounds prevent both neon and
+washed-out accents. Checks run after RGB rounding.
+
+Tests also composite the existing translucent Waybar, Rofi, Hyprlock input and
+SDDM input layers over their brightest backdrop. These guarantees concern the
+specified surfaces and controls, not arbitrary text directly over every possible
+wallpaper pattern; blur/display rendering still needs visual review. Opacity,
+layouts and blur are unchanged. Kitty and SDDM selections use dark text on a
+bright accent. Waybar battery warnings/errors keep amber/red, and SwayNC critical
+notifications keep a red border.
+
+The **exact historical palette** remains the default/fallback and the
+content-hash calibration for `min_forest.jpg`. Its existing general contrast
+checks still apply; the new tonal/distance envelopes apply to transformed
+palettes. No palette roles, manifest/state format or SDDM protocol change is
+needed. The existing engine/template fingerprint invalidates older generated
+colours on the next generation.
+
+For an offline contact sheet and 13 tiny generated wallpapers, without changing
+your selected theme or state:
+
+```bash
+python3 tests/preview_palette.py --wallust \
+  --output /tmp/hyprixe-palette-preview.html \
+  --png /tmp/hyprixe-palette-preview.png \
+  --fixtures /tmp/hyprixe-palette-fixtures
+```
+
+Open the HTML report to inspect raw and semantic swatches. Omit `--wallust` to
+isolate the Hyprixe transformation using controlled raw-palette fixtures. Very
+uniform/pale images can legitimately contain too few colours for Wallust; the
+report labels those as the existing Frosted Glass fallback. This development
+tool adds no runtime command or dependency.
+
 ## Supported components
 
 | Component | Integration |

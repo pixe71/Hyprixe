@@ -23,7 +23,7 @@ C.Button {
     contentItem: Text {
         text: control.text
         font: control.font
-        color: control.theme.paint("foreground", "#e6f1f4")
+        color: control.down ? control.theme.paint("background", "#e6f1f4") : control.theme.paint("foreground", "#e6f1f4")
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         opacity: control.enabled ? 1 : 0.55

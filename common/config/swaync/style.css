@@ -1,7 +1,12 @@
 /* Frosted Glass paint only; SwayNC keeps its default widgets and layout. */
 @import "@HYPRIXE_THEME@/swaync.css";
-.control-center, .notification-background .notification {
+.control-center {
     background: alpha(@hx_background, 0.82);
+    color: @hx_foreground;
+    border-color: alpha(@hx_accent, 0.20);
+}
+.notification-background .notification {
+    background: alpha(@hx_surface, 0.82);
     color: @hx_foreground;
     border-color: alpha(@hx_accent, 0.20);
 }
@@ -10,8 +15,9 @@
     color: @hx_foreground;
 }
 .notification-default-action:hover, .notification-action:hover, .close-button:hover {
-    background: alpha(@hx_selection, 0.92);
+    background: alpha(@hx_surface_alt, 0.92);
 }
+.notification-action:focus { background: alpha(@hx_selection, 0.92); }
 .summary, .body, .widget-title { color: @hx_foreground; }
 .time, .notification-group-headers { color: @hx_foreground_muted; }
 .notification.critical { border-color: @hx_error; }
