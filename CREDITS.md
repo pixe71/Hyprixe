@@ -62,16 +62,16 @@ artist and redistribution rights for `common/wallpapers/min_forest.jpg` are stil
 unknown. Its copies in SDDM and its depiction in screenshots are not separately
 cleared. The Kvantum component is now cleared: the actual files establish
 Graphite derivation, and its GPLv3 license, source and attributions are retained.
-See the [file-by-file Kvantum findings](docs/assets-provenance.md#kvantum-file-by-file-findings)
+See the [Kvantum findings](docs/wiki/Assets.md#kvantum)
 and [exact upstream GPL text](docs/licenses/Graphite-GPL-3.0.txt).
 
 The wallpaper remains an explicit blocker for a public release of the current asset set.
 Do not infer an original artist from the theme contributor name, apply the
 project GPL to unrelated artwork, or discard required upstream notices.
-See the [complete asset audit](docs/assets-provenance.md) and
-[SHA256 inventory](docs/asset-inventory.json) for every current image/font and
+See the [asset summary](docs/wiki/Assets.md) and
+[SHA256 inventory](docs/asset-inventory.json) for the dated image/font and
 Kvantum pair, source URLs, author evidence, modifications and status.
-The [screenshot review](docs/screenshots/README.md) separately records privacy.
+The [screenshot review guidance](docs/wiki/Assets.md#screenshots) separately records privacy.
 
 The exact pinned [Nerd Fonts symbols notice](docs/licenses/Nerd-Fonts-Symbols-MIT.txt)
 is retained here as well as with the installed font. The bundled Debian glyph

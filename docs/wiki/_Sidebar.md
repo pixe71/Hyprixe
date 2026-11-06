@@ -1,5 +1,19 @@
 - [Home](Home)
+
+**Getting started**
+
 - [Installation](Installation)
 - [Keybindings](Keybindings)
+
+**Desktop**
+
+- [Dynamic Wallpaper Theming](Dynamic-Theming)
+- [Desktop components](Desktop)
+- [Customization](Customization)
+
+**Maintenance**
+
+- [Update, verify and restore](Maintenance)
 - [Troubleshooting](Troubleshooting)
-- [Full documentation](https://github.com/pixe71/hyprixe-debian/blob/main/docs/README.md)
+- [Architecture](Architecture)
+- [Assets and credits](Assets)
