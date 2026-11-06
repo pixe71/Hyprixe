@@ -9,6 +9,8 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import stat
+import re
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,6 +22,25 @@ import deploy
 import sddm_theme as sddm
 
 
+def fixture_directory(root, path):
+    """Model system directories as 0755, independent of the caller's umask.
+
+    Only newly created fixture directories are normalized. Existing paths keep
+    their modes, so an unsafe directory injected by a security test stays unsafe.
+    """
+    path.relative_to(root)
+    if '..' in path.parts:
+        raise ValueError('Fixture directory cannot contain traversal')
+    missing = []
+    parent = path
+    while not parent.exists():
+        missing.append(parent)
+        parent = parent.parent
+    for directory in reversed(missing):
+        directory.mkdir(mode=0o755)
+        directory.chmod(0o755)
+
+
 class SystemThemeTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='hyprixe-sddm-')
@@ -28,6 +49,10 @@ class SystemThemeTests(unittest.TestCase):
         self.quiet = contextlib.ExitStack()
         self.quiet.enter_context(contextlib.redirect_stdout(io.StringIO()))
         self.quiet.enter_context(contextlib.redirect_stderr(io.StringIO()))
+        for name in ('etc', 'usr', 'var'):
+            fixture_directory(self.root, self.root / name)
+        # SDDM is a prerequisite in production; its package-owned parent exists.
+        fixture_directory(self.root, self.root / 'usr/share/sddm/themes')
         self.write(sddm.SESSION, '[Desktop Entry]\nName=Hyprland (uwsm-managed)\nExec=uwsm start -e -D Hyprland hyprland.desktop\n')
 
     def tearDown(self):
@@ -36,8 +61,9 @@ class SystemThemeTests(unittest.TestCase):
 
     def write(self, name, content):
         path = self.theme.path(name)
-        path.parent.mkdir(parents=True, exist_ok=True)
+        fixture_directory(self.root, path.parent)
         path.write_text(content)
+        path.chmod(0o644)
         return path
 
     def test_install_noop_restore_preserves_other_theme_and_personal_files(self):
@@ -56,6 +82,42 @@ class SystemThemeTests(unittest.TestCase):
         self.assertFalse((self.theme.path(sddm.THEME_DIR) / 'Main.qml').exists())
         self.assertEqual(self.theme.path(sddm.SESSION).read_bytes(), session)
         self.theme.restore(identifier)  # resumable combined restoration
+
+    def test_receiver_authorization_units_and_system_theme_share_restore_transaction(self):
+        identifier = self.theme.install()
+        authorization = self.theme.path(sddm.SYNC_USERS)
+        self.assertEqual(json.loads(authorization.read_text()), {'format': 1, 'uids': [1000]})
+        self.assertEqual(authorization.stat().st_mode & 0o777, 0o644)
+        for name in sddm.SYNC_FILES:
+            self.assertTrue(self.theme.path(name).is_file())
+        self.assertIn(sddm.SYNC_PALETTE, self.theme.path(sddm.THEME_DIR + '/theme.conf').read_text())
+        self.theme.restore(identifier)
+        self.assertFalse(authorization.exists())
+        self.assertTrue(all(not self.theme.path(name).exists() for name in sddm.SYNC_FILES))
+
+    def test_additional_installer_enrolls_only_its_uid_and_restores_previous_policy(self):
+        self.theme.install()
+        other = sddm.SystemTheme(self.root, actor_uid=1001)
+        identifier = other.install()
+        self.assertEqual(json.loads(other.path(sddm.SYNC_USERS).read_text())['uids'], [1000, 1001])
+        other.restore(identifier)
+        self.assertEqual(json.loads(other.path(sddm.SYNC_USERS).read_text())['uids'], [1000])
+
+    def test_dynamic_check_accepts_no_snapshot_and_detects_corrupt_copy(self):
+        self.theme.install()
+        self.assertEqual(self.theme.dynamic_errors(), [])
+        from sddm_sync import Receiver, ROLES
+        from engine import defaults
+        image = source_path(ROOT, 'wallpapers/min_forest.jpg')
+        import hashlib
+        request = {'format': 1, 'palette': {k: defaults(ROOT / 'common/theme')[k] for k in ROLES},
+                   'image_hash': hashlib.sha256(image.read_bytes()).hexdigest()}
+        state = self.theme.path('/var/lib/hyprixe/theme')
+        with image.open('rb') as stream:
+            Receiver(state).receive(request, stream.fileno(), image.stat().st_uid)
+        self.assertEqual(self.theme.dynamic_errors(), [])
+        (state / 'current/palette.json').write_text('{broken')
+        self.assertTrue(self.theme.dynamic_errors())
 
     def test_higher_priority_config_is_backed_up_without_changing_session_settings(self):
         original = '[Theme]\nCurrent=debian\nThemeDir=/opt/themes\nCursorTheme=breeze\n[Autologin]\nUser=alice\nSession=hyprland-uwsm.desktop\n[Wayland]\nSessionDir=/usr/share/wayland-sessions\n[General]\nDisplayServer=x11\n'
@@ -126,14 +188,14 @@ class SystemThemeTests(unittest.TestCase):
         outside = self.root / 'outside'
         outside.mkdir()
         themes = self.theme.path('/usr/share/sddm/themes')
-        themes.mkdir(parents=True)
+        fixture_directory(self.root, themes)
         (themes / sddm.THEME).symlink_to(outside, target_is_directory=True)
         with self.assertRaisesRegex(ValueError, 'Symlinked'):
             self.theme.install()
         self.assertEqual(list(outside.iterdir()), [])
         (themes / sddm.THEME).unlink()
         state = self.theme.path('/var/lib/hyprixe')
-        state.parent.mkdir(parents=True)
+        fixture_directory(self.root, state.parent)
         state.symlink_to(outside, target_is_directory=True)
         with self.assertRaisesRegex(ValueError, 'Symlinked'):
             self.theme.install()
@@ -216,6 +278,184 @@ class SystemThemeTests(unittest.TestCase):
         self.assertFalse(self.theme.path(sddm.CONFIG).exists())
 
 
+class SystemRootSecurityTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix='hyprixe-root-boundary-')
+        self.addCleanup(self.temp.cleanup)
+        self.host = Path(self.temp.name)
+        self.root = self.host / 'system image'
+        self.root.mkdir(mode=0o700)
+        self.theme = sddm.SystemTheme(self.root, actor_uid=1000)
+        for name in ('etc', 'usr', 'var'):
+            fixture_directory(self.root, self.root / name)
+
+    @contextlib.contextmanager
+    def metadata(self, target, *, uid=None, mode=None):
+        # Inject stat metadata without needing chown/root on the physical PC.
+        original = Path.stat
+        def changed(path, *args, **kwargs):
+            info = original(path, *args, **kwargs)
+            if path == target:
+                values = list(info)
+                if uid is not None:
+                    values[stat.ST_UID] = uid
+                if mode is not None:
+                    values[stat.ST_MODE] = stat.S_IFMT(info.st_mode) | mode
+                return os.stat_result(values)
+            return info
+        with patch.object(Path, 'stat', changed):
+            yield
+
+    def authorization(self):
+        path = self.theme.path(sddm.SYNC_USERS)
+        fixture_directory(self.root, path.parent)
+        path.write_text('{"format":1,"uids":[1000]}')
+        path.chmod(0o644)
+        return path
+
+    def test_virtual_absolute_paths_map_inside_target_and_reject_traversal(self):
+        self.assertEqual(self.theme.path('/etc/systemd/system'), self.root / 'etc/systemd/system')
+        for path in ('../../etc/passwd', '/etc/../../etc/passwd', '//etc/passwd'):
+            with self.subTest(path=path), self.assertRaises(ValueError):
+                self.theme.path(path)
+        for path in (self.root / 'etc/../usr/libexec/hyprixe/sddm_sync.py',
+                     self.host / 'outside/usr/libexec/hyprixe/sddm_sync.py',
+                     Path('/etc/systemd/system/hyprixe-sddm-sync.service')):
+            with self.subTest(path=path), self.assertRaisesRegex(ValueError, 'outside system root|traversal'):
+                self.theme.guard(path)
+        for path in (self.root / 'var/lib/hyprixe/sddm/../../../../etc/passwd',
+                     Path('/var/lib/hyprixe/sddm/manifest.json')):
+            with self.subTest(state=path), self.assertRaisesRegex(ValueError, 'outside system root|traversal'):
+                self.theme.guard_state(path)
+
+    def test_root_itself_must_be_canonical_and_not_a_symlink(self):
+        alias = self.host / 'alias'; alias.symlink_to(self.root, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, 'Symlinked system root'):
+            sddm.SystemTheme(alias)
+        for path in (Path('relative-root'), self.root / '..' / self.root.name):
+            with self.subTest(path=path), self.assertRaisesRegex(ValueError, 'absolute canonical'):
+                sddm.SystemTheme(path)
+
+    def test_host_ancestors_are_not_part_of_the_simulated_system(self):
+        self.host.chmod(0o777)
+        self.theme.guard(self.theme.path(sddm.SYNC_USERS))
+        self.theme.guard_state(self.theme.path(sddm.BACKUPS) / 'example')
+        # This host directory is private again; only virtual-system parents
+        # contribute to the greeter's traversal/permission checks.
+        self.host.chmod(0o700)
+        fixture_directory(self.root, self.root / 'usr/share/sddm/themes')
+        session = self.theme.path(sddm.SESSION)
+        fixture_directory(self.root, session.parent)
+        session.write_text('[Desktop Entry]\nName=Hyprland (uwsm-managed)\nExec=uwsm start -e -D Hyprland hyprland.desktop\n')
+        session.chmod(0o644)
+        with contextlib.redirect_stderr(io.StringIO()), contextlib.redirect_stdout(io.StringIO()):
+            self.theme.install()
+        self.assertEqual(self.theme.check_installed(), [])
+
+    def test_symlinked_usr_etc_and_var_never_reach_outside_fixture(self):
+        for name in ('usr', 'etc', 'var'):
+            with self.subTest(parent=name):
+                target = self.host / ('outside-' + name)
+                target.mkdir(mode=0o755)
+                parent = self.root / name
+                parent.rmdir(); parent.symlink_to(target, target_is_directory=True)
+                try:
+                    with self.assertRaisesRegex(ValueError, 'Symlinked'):
+                        self.theme.install()
+                    self.assertEqual(list(target.iterdir()), [])
+                finally:
+                    parent.unlink(); parent.mkdir(mode=0o755); parent.chmod(0o755)
+
+    def test_target_file_symlink_is_rejected_without_changing_destination(self):
+        target = self.host / 'personal-file'; target.write_text('unchanged')
+        path = self.theme.path(sddm.SYNC_FILES[0])
+        fixture_directory(self.root, path.parent)
+        path.symlink_to(target)
+        with self.assertRaisesRegex(ValueError, 'regular file'):
+            self.theme.guard(path)
+        self.assertEqual(target.read_text(), 'unchanged')
+
+    def test_backup_directory_symlink_is_rejected(self):
+        state = self.theme.path('/var/lib/hyprixe/sddm')
+        self.theme.mkdir_state(state)
+        outside = self.host / 'outside-backups'; outside.mkdir()
+        (state / 'backups').symlink_to(outside, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, 'Symlinked'):
+            self.theme.guard_state(state / 'backups/example/manifest.json')
+        self.assertEqual(list(outside.iterdir()), [])
+
+    def test_fixture_system_parents_keep_strict_modes(self):
+        for name in ('usr', 'etc', 'var'):
+            parent = self.root / name
+            target = self.theme.path(sddm.SYNC_FILES[0] if name == 'usr' else sddm.SYNC_USERS)
+            for mode in (0o775, 0o777):
+                with self.subTest(parent=name, mode=oct(mode)):
+                    parent.chmod(mode)
+                    try:
+                        with self.assertRaisesRegex(ValueError, 'Unsafe'):
+                            if name == 'var':
+                                self.theme.guard_state(self.theme.path(sddm.BACKUPS) / 'example')
+                            else:
+                                self.theme.guard(target)
+                    finally:
+                        parent.chmod(0o755)
+
+    def test_fixture_system_parents_reject_unexpected_owners(self):
+        for name in ('usr', 'etc', 'var'):
+            with self.subTest(parent=name), self.metadata(self.root / name, uid=os.getuid() + 1):
+                with self.assertRaisesRegex(ValueError, 'Unsafe'):
+                    if name == 'var':
+                        self.theme.guard_state(self.theme.path(sddm.BACKUPS) / 'example')
+                    else:
+                        self.theme.guard(self.theme.path(sddm.SYNC_FILES[0] if name == 'usr' else sddm.SYNC_USERS))
+
+    def test_authorization_world_writable_is_rejected_before_deployment(self):
+        path = self.authorization(); path.chmod(0o666)
+        with self.assertRaisesRegex(ValueError, 'Unsafe SDDM sync authorization'):
+            self.theme.payload()
+        self.assertFalse(self.theme.path(sddm.BACKUPS).exists())
+
+    def test_authorization_wrong_owner_is_rejected_without_root(self):
+        path = self.authorization()
+        with self.metadata(path, uid=os.getuid() + 1), self.assertRaisesRegex(ValueError, 'Unsafe SDDM sync authorization'):
+            self.theme.payload()
+
+    def test_backup_state_requires_safe_directory_owner_and_permissions(self):
+        backup = self.theme.path(sddm.BACKUPS) / 'example'
+        self.theme.mkdir_state(backup)
+        backup.chmod(0o777)
+        with self.assertRaisesRegex(ValueError, 'Unsafe SDDM backup/state'):
+            self.theme.guard_state(backup / 'manifest.json')
+        backup.chmod(0o700)
+        with self.metadata(backup, uid=os.getuid() + 1), self.assertRaisesRegex(ValueError, 'Unsafe SDDM backup/state'):
+            self.theme.guard_state(backup / 'manifest.json')
+
+    def test_production_root_keeps_uid_zero_and_strict_etc_parent(self):
+        with patch('sddm_theme.os.getuid', return_value=12345):
+            production = sddm.SystemTheme()
+        self.assertEqual(production.root, Path('/'))
+        self.assertEqual(production.filesystem.owner_uid, 0)
+        for changes in ({'uid': 12345}, {'mode': 0o777}):
+            with self.subTest(changes=changes), self.metadata(Path('/etc'), **changes):
+                with self.assertRaisesRegex(ValueError, 'Unsafe synchronization integration parent'):
+                    production.guard(production.path(sddm.SYNC_USERS))
+
+
+class FixtureEnvironmentTests(unittest.TestCase):
+    def test_transactions_work_with_group_writable_and_restrictive_umasks(self):
+        code = ('import os,sys,unittest; os.umask(int(sys.argv[1],8)); '
+                'suite=unittest.defaultTestLoader.loadTestsFromName("test_sddm.SystemThemeTests"); '
+                'result=unittest.TextTestRunner(verbosity=1).run(suite); '
+                'sys.exit(not result.wasSuccessful())')
+        env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1',
+                   PYTHONPATH=str(ROOT / 'tests') + os.pathsep + os.environ.get('PYTHONPATH', ''))
+        for mode in ('002', '022', '077'):
+            with self.subTest(umask=mode):
+                result = subprocess.run([sys.executable, '-c', code, mode], env=env, cwd=ROOT,
+                                        capture_output=True, text=True, timeout=45)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+
 class CombinedRestoreTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='hyprixe-combined-')
@@ -276,6 +516,16 @@ class CombinedRestoreTests(unittest.TestCase):
 
 
 class QmlRuntimeTests(unittest.TestCase):
+    def test_active_text_bindings_do_not_display_frosted_glass(self):
+        theme = source_path(ROOT, 'sddm/themes/hyprixe-frosted')
+        for path in theme.rglob('*.qml'):
+            for binding in re.findall(r'\btext\s*:\s*([^;\n}]+)', path.read_text()):
+                # Restrict to displayed strings: comments, filenames and
+                # internal theme metadata may retain the Frosted Glass name.
+                for value in re.findall(r'["\']([^"\']*)["\']', binding):
+                    normalized = re.sub(r'\s+', '', value).casefold()
+                    self.assertNotIn('frostedglass', normalized, str(path) + ': ' + value)
+
     @unittest.skipUnless(importlib.util.find_spec('PyQt6') and importlib.util.find_spec('PyQt6.QtQuick'),
                          'optional python3-pyqt6.qtquick needed for QML interaction tests')
     def test_qt6_models_login_errors_power_and_responsive_layout(self):

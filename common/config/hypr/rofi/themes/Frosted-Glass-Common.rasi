@@ -1,12 +1,5 @@
 /* Shared paint from the SUPER + Space launcher. Paint the main glass once. */
-* {
-    launcher-glass: rgba(40, 77, 91, 0.82);
-    launcher-input: rgba(52, 84, 97, 0.40);
-    launcher-button: rgba(52, 84, 97, 0.76);
-    launcher-selection: rgba(69, 112, 129, 0.92);
-    launcher-hover: rgba(77, 122, 138, 0.92);
-    launcher-edge: rgba(126, 214, 255, 0.20);
-}
+@import "../wallust/colors-rofi.rasi"
 window {
     background-color: @launcher-glass;
     border: 1px solid;

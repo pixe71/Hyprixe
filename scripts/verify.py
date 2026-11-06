@@ -30,6 +30,7 @@ from shell_checks import check_source as check_shell_source, check_installed as 
 from sddm_theme import SystemTheme, source_payload as sddm_payload, FILES as SDDM_FILES, THEME as SDDM_THEME
 from session_diagnostics import collect as collect_session_diagnostics
 from dolphin_checks import check_source as check_dolphin_source, check_installed as check_dolphin_installed, check_runtime as check_dolphin_runtime, check_session as check_dolphin_session
+from theme_checks import check_source as check_theme_source, check_installed as check_theme_installed, resolved_config
 
 ROOT = Path(__file__).resolve().parents[1]
 failed = 0
@@ -120,6 +121,10 @@ def check_sddm(root, installed=False):
         report(False, f'SDDM theme source/metadata/wallpaper: {exc}')
         return
     report(True, 'SDDM Qt 6 theme, QML components, icon and original wallpaper exist; no forced virtual keyboard')
+    report('dynamicPalette=' in (theme / 'theme.conf').read_text() and
+           'min_forest.jpg' in (theme / 'Main.qml').read_text(), 'SDDM dynamic wallpaper fallback valid')
+    report('function validData' in (theme / 'components/DynamicTheme.qml').read_text() and
+           'fallback' in (theme / 'components/DynamicTheme.qml').read_text(), 'SDDM dynamic palette fallback valid')
     lint = '/usr/lib/qt6/bin/qmllint' if Path('/usr/lib/qt6/bin/qmllint').is_file() else shutil.which('qmllint6')
     if not lint and shutil.which('qmllint'):
         version = subprocess.run(['qmllint', '--version'], capture_output=True, text=True)
@@ -141,6 +146,9 @@ def check_sddm(root, installed=False):
             failures = [str(exc)]
         report(not failures, 'Installed SDDM files, effective theme, disabled InputMethod and UWSM session entry' +
                (': ' + '; '.join(failures) if failures else ''))
+        dynamic = SystemTheme(repo=root).dynamic_errors()
+        report(not dynamic, 'SDDM system wallpaper/palette snapshot valid or absent (bundled fallback)' +
+               (': ' + '; '.join(dynamic) if dynamic else ''))
         run(['python3', str(source_path(ROOT, 'scripts/sddm_theme.py')), 'prerequisites'], 'Installed SDDM Qt 6 greeter and QML dependencies')
     else:
         print('SKIPPED: system SDDM installation (use --sddm or --dependencies on target)')
@@ -263,12 +271,13 @@ def main():
     missing = [x for x in modules if not (config / x).is_file()]
     for p in (config / 'rofi').rglob('*.rasi'):
         for name in re.findall(r'@(?:import|theme)\s+"([^"]+)"', p.read_text()):
-            if not (p.parent / name).is_file(): missing.append(f'{p.name}: {name}')
+            if not name.startswith('@HYPRIXE_THEME@/') and not (p.parent / name).is_file(): missing.append(f'{p.name}: {name}')
     scripts = set(re.findall(r'(?:script\(|scripts\s*\.\.\s*)"([A-Za-z][\w-]+\.sh)', (config / 'lua/keybinds.lua').read_text() + (config / 'lua/startup.lua').read_text()))
     for name in scripts:
         if not source_path(ROOT, '.config/hypr/scripts/' + name).is_file(): missing.append(name)
     report(not missing, 'Entry modules, keybind scripts and Rofi theme imports resolve' + (': ' + ', '.join(missing) if missing else ''))
     check_configuration_formats(ROOT)
+    check_theme_source(report, ROOT)
     check_rofi_source(report, ROOT)
     check_shell_source(report, ROOT)
     check_terminal_source(report, ROOT)
@@ -289,11 +298,11 @@ def main():
     if rofi and has_wayland_support(rofi):
         report(has_launcher_actions(rofi), 'Rofi includes scoped Hyprixe launcher button actions (./install.sh native to prepare)')
         report(has_launcher_cover(rofi), 'Rofi includes adaptive launcher wallpaper cropping (./install.sh native to prepare)')
-        for p in sorted((config / 'rofi').rglob('*.rasi')):
-            # Rofi 2.0.0's early -rasi-validate path segfaults upstream, including
-            # on minimal themes. -dump-theme uses the fully initialized parser
-            # and exits before opening a graphical window.
-            run([rofi, '-config', str(p), '-dump-theme'], 'Rofi parser: ' + str(p.relative_to(config)))
+        with resolved_config(ROOT) as rendered:
+            for p in sorted((rendered / 'hypr/rofi').rglob('*.rasi')):
+                # -dump-theme uses the initialized parser without a window;
+                # upstream 2.0's early -rasi-validate path can segfault.
+                run([rofi, '-config', str(p), '-dump-theme'], 'Rofi parser: ' + str(p.relative_to(rendered)))
     elif rofi:
         report(False, f'Rofi lacks Wayland support: {rofi}; run ./install.sh native')
         print('SKIPPED: theme parser requires a suitable Wayland Rofi; this is a runtime capability failure, not six theme failures')
@@ -322,6 +331,7 @@ def main():
         report(index.returncode == 0 and all(modes.get(name) == '100755' for name in executable_paths), 'Executable entrypoints and active scripts recorded as 100755 in Git')
         report(index.returncode == 0 and modes.get(waybar_css) == '100644', 'Waybar style.css recorded as a regular file in Git (not a CSS-text symlink)')
     if args.dependencies:
+        check_theme_installed(report)
         run(['python3', str(source_path(ROOT, 'scripts/check-deps.py'))], 'Installed runtime dependencies')
         check_terminal_installed(report)
         check_rofi_installed(report)
@@ -332,6 +342,7 @@ def main():
         check_dolphin_runtime(report)
     else:
         print('SKIPPED: installed graphical dependencies (use --dependencies on target)')
+        print('SKIPPED: Wallust installed/current wallpaper/generated palette checks (use --dependencies on target)')
     if args.session:
         print('LIVE SESSION TESTS: installed compositor and UWSM state')
         if not args.dependencies:

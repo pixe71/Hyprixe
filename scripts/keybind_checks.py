@@ -16,6 +16,7 @@ import shutil
 import subprocess
 import tempfile
 from hyprland_version import assess
+from hyprland_errors import parse_config_errors
 
 PREFIX = 'Hyprixe | '
 MODIFIERS = {'SHIFT': 1, 'CTRL': 4, 'ALT': 8, 'SUPER': 64}
@@ -262,7 +263,7 @@ def check_session_keybinds(report, root, environ=None, runner=None, which=None):
     # Hyprland eval()/Lua dispatch clear the manager's stored errors upstream.
     # Never use them while existing configuration errors would be hidden.
     configerrors = query('configerrors')
-    config_ok = configerrors.returncode == 0 and not configerrors.stdout.strip()
+    config_ok = configerrors.returncode == 0 and not parse_config_errors(configerrors.stdout)
     report(config_ok, 'Running Hyprland reports no configuration errors' if config_ok else
            'Running Hyprland configuration errors (preserved; Lua probes skipped): ' +
            (configerrors.stderr or configerrors.stdout).strip())

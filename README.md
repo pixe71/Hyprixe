@@ -31,10 +31,11 @@ Hyprixe uses a shared Core under `common/` and platform integrations under
 | Debian 13 Trixie | Supported |
 | NixOS | Planned; no working profile yet |
 
-See [architecture](docs/architecture.md). Debian installation commands are unchanged.
+See [architecture](docs/wiki/Architecture.md). Debian installation commands are unchanged.
 
 ## Features
 
+- Dynamic wallpaper colours (v1.2.0 candidate): `hyprixe-theme apply IMAGE`, shared desktop/Rofi/Hyprlock image and safe Debian SDDM synchronization. [Guide](docs/wiki/Dynamic-Theming.md).
 - UWSM-managed Hyprland with four persistent workspaces and audited Lua bindings.
 - Top Waybar with a collapsible tray, application icons and adaptive CPU-temperature/root-storage reporting.
 - Rofi applications and window menus with wallpaper/sidebar; compact clipboard history.
@@ -42,6 +43,29 @@ See [architecture](docs/architecture.md). Debian installation commands are uncha
 - Kitty with Zsh, pinned upstream Powerlevel10k, autosuggestions and syntax highlighting.
 - Dolphin with Kvantum glass paint, Hyprlock/Hypridle, SwayNC notifications and managed wallpaper startup.
 - Screenshots, file-level deployment backups and source/dependency/live-session checks.
+
+## Dynamic Wallpaper Theming
+
+Hyprixe automatically adapts its colours to the current wallpaper while keeping
+its dark Frosted Glass style. Extracted colours become a controlled semantic
+palette with neutral surfaces, restrained accents and readable text, even with
+bright or saturated wallpapers.
+
+```text
+Wallpaper → Wallust → Hyprixe semantic palette
+                              ↓
+Waybar / Rofi / Hyprland / Kitty / Hyprlock / SwayNC / SDDM
+```
+
+The current wallpaper follows you across the desktop, Rofi launcher, Hyprlock
+and SDDM login screen. `min_forest.jpg` remains the default wallpaper and theme
+reference. Kvantum and Powerlevel10k prompt colours stay intentionally static.
+
+| Desktop | Rofi / launcher | Lock screen / SDDM |
+| --- | --- | --- |
+| ![Dynamic desktop](docs/screenshots/screenshot4.png) | ![Dynamic Rofi](docs/screenshots/screenshot5.png) | ![Dynamic lock screen](docs/screenshots/screenshot6.png) |
+| ![Dynamic desktop](docs/screenshots/screenshot7.png) | ![Dynamic Rofi](docs/screenshots/screenshot8.png) | ![Dynamic lock screen](docs/screenshots/screenshot9.png) |
+See the [Dynamic Wallpaper Theming guide](docs/wiki/Dynamic-Theming.md) for commands and details.
 
 ## Components
 
@@ -66,9 +90,9 @@ access and may build compatible Waybar/Rofi/awww binaries.
 
 The configuration minimum is **Hyprland 0.55.2**. Reference release numbers are
 **0.55.2 and 0.56.2**; newer/unreviewed builds remain provisional and must pass
-the same capability checks. See the [version policy](docs/hyprland-compatibility.md).
-See [requirements](docs/requirements.md) for package sources, architecture
-limits and optional validation tools.
+the same capability checks. See the [version policy](docs/wiki/Architecture.md#compatibility).
+See [requirements](docs/wiki/Installation.md#requirements) for prerequisites,
+supported architectures and installation options.
 
 ## Installation
 
@@ -84,7 +108,7 @@ replacement. The installer also configures SDDM and changes the invoking
 account's login shell to validated Zsh as its final step.
 
 `native` is the default; `vmware`, `--dry-run`, `--no-packages` and scoped
-component modes are documented in [installation](docs/installation.md).
+component modes are documented in [installation](docs/wiki/Installation.md).
 `--no-packages` requires previously prepared dependencies and assets.
 
 ## First login
@@ -92,7 +116,7 @@ component modes are documented in [installation](docs/installation.md).
 Save your work and reboot after the initial installation. In SDDM select
 **Hyprland (uwsm-managed)**. UWSM owns the graphical-session target and
 environment required by Waybar, notifications and the wallpaper services.
-Follow the [first-login checks](docs/first-start.md).
+Follow the [first-login checks](docs/wiki/Installation.md#first-login).
 
 ## Main keybindings
 
@@ -115,7 +139,7 @@ Follow the [first-login checks](docs/first-start.md).
 | `Print` / `SHIFT + Print` | Save full / area screenshot |
 
 Workspace digits refer to physical number-row positions, including on the
-default French AZERTY layout. The [complete reference](docs/keybindings.md)
+default French AZERTY layout. The [complete reference](docs/wiki/Keybindings.md)
 covers all 68 bindings, workspaces 1–10, media keys and the touchpad gesture.
 
 ## Verification
@@ -128,13 +152,13 @@ covers all 68 bindings, workspaces 1–10, media keys and the touchpad gesture.
 
 Successful runs end with `RESULT: 0 failed check(s)`. Optional unavailable tools
 and interactive checks can be `SKIPPED`; they are not claims of success.
-See [verification](docs/verification.md) and [troubleshooting](docs/troubleshooting.md).
+See [verification](docs/wiki/Maintenance.md#verify) and [troubleshooting](docs/wiki/Troubleshooting.md).
 
 ## Documentation
 
-The [documentation index](docs/README.md) links installation, components,
-customization, architecture and recovery. `docs/` is the canonical source;
-[short Wiki pages](docs/wiki/Home.md) link back to it.
+The [Wiki](docs/wiki/Home.md) is the single guide for installation, customization,
+maintenance and troubleshooting. Screenshots, license notices and audit inventories
+remain under `docs/`.
 
 ## Updating
 
@@ -146,7 +170,7 @@ git pull --ff-only
 
 Reconnect when session, environment or shell settings change; reboot when the
 greeter needs refreshing. Then run `./verify.sh --dependencies --session`.
-[Updating](docs/update.md) explains scoped updates and when reload is sufficient.
+[Updating](docs/wiki/Maintenance.md#update) explains scoped updates and when reload is sufficient.
 
 ## Uninstall / restore
 
@@ -158,14 +182,14 @@ greeter needs refreshing. Then run `./verify.sh --dependencies --session`.
 
 Restore uses dated transactions and refuses conflicting later edits. Linked
 SDDM and login-shell state are covered where recorded; Debian packages are
-retained. Read [restore](docs/uninstall-restore.md) before selecting a backup.
+retained. Read [restore](docs/wiki/Maintenance.md#restore) before selecting a backup.
 
 ## Status
 
 The Debian v1 desktop is stable. The Core + Profiles refactor preserves its
 installed behaviour. Automated checks do not replace physical keyboard/mouse,
 PAM, GPU blur and login-transition testing. Asset provenance and the remaining release checklist are tracked in
-[release readiness](docs/release-readiness.md). A NixOS port is a future plan,
+[release readiness](docs/wiki/Assets.md#evidence-and-release-checklist). A NixOS port is a future plan,
 not an installation option for this version.
 
 ## License

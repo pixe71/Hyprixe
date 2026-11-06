@@ -2,8 +2,6 @@
 set -euo pipefail
 : "${XDG_RUNTIME_DIR:?Run this script inside a Wayland session}"
 config="${XDG_CONFIG_HOME:-$HOME/.config}/hypr"
-wallpaper="${XDG_DATA_HOME:-$HOME/.local/share}/hyprixe/wallpapers/min_forest.jpg"
-[[ -s "$wallpaper" ]] || { printf 'Missing wallpaper: %s\n' "$wallpaper" >&2; exit 1; }
 # shellcheck source=/dev/null
 source "$config/profile.env"
 managed=false
@@ -50,7 +48,5 @@ if ! $ready; then
     fi
     exit 1
 fi
-# Omitting --outputs applies the image to every detected output.
-# This is the same static image at login and hotplug: present it immediately.
-# A one-second fade needlessly exposes the daemon's initial/previous contents.
-awww img --resize crop --transition-type none "$wallpaper"
+# Common engine owns the wallpaper state, palette cache and transaction lock.
+exec "${HOME}/.local/bin/hyprixe-theme" restore

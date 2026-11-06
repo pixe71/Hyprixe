@@ -1,16 +1,8 @@
 # Installing Hyprixe
 
-The canonical procedure is [docs/installation.md](docs/installation.md).
-This entrypoint is kept for existing links and installer messages; it does not
-maintain a second set of instructions.
+Follow the [Wiki installation guide](docs/wiki/Installation.md).
+See [maintenance](docs/wiki/Maintenance.md) for updates, verification and restore,
+or [troubleshooting](docs/wiki/Troubleshooting.md) for recovery.
 
-- [Requirements and prerequisites](docs/requirements.md)
-- [Full installation and supported options](docs/installation.md)
-- [First login: Hyprland (uwsm-managed)](docs/first-start.md)
-- [Verification](docs/verification.md)
-- [Updating](docs/update.md)
-- [Uninstall and restore](docs/uninstall-restore.md)
-- [Troubleshooting](docs/troubleshooting.md)
-
-Target: **Debian 13 Trixie**, native profile by default, with SDDM's Qt 6
-greeter already installed. Run the installer as your normal desktop user.
+Target: Debian 13 Trixie, native by default, with SDDM's Qt 6 greeter prepared.
+Run installation as your normal sudo-enabled desktop user, not root.

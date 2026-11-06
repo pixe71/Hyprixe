@@ -67,6 +67,7 @@ class InstallPolicyTests(unittest.TestCase):
                          'interactive_shell.dependencies'):
                 stack.enter_context(patch(name, return_value=[]))
             stack.enter_context(patch('shutil.which', side_effect=lambda c: '/bin/' + c))
+            stack.enter_context(patch('wallust.compatible', return_value=True))
             stack.enter_context(patch('pathlib.Path.is_file', return_value=True))
             stack.enter_context(patch('pathlib.Path.glob', return_value=[Path('/fixture/libkvantum.so')]))
             stack.enter_context(patch('subprocess.run', return_value=

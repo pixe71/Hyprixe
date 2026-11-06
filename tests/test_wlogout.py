@@ -155,7 +155,7 @@ class WlogoutDeploymentTests(unittest.TestCase):
                 deploy.install(home, roots, 'native')
                 backups = list((roots['state'] / 'hyprixe/backups').iterdir())
                 self.assertEqual(len(backups), 1)
-                checks.validate(roots['config'])
+                checks.validate(roots['config'], theme_dir=home / '.cache/hyprixe/theme/current')
                 helper = home / '.local/bin/hyprixe-session'
                 self.assertEqual(helper.stat().st_mode & 0o777, 0o755)
                 self.assertEqual(helper.read_bytes(), (source_path(ROOT, '.local/bin/hyprixe-session')).read_bytes())
@@ -189,6 +189,23 @@ class WlogoutDeploymentTests(unittest.TestCase):
             (config / 'wlogout/icons/lock.svg').unlink()
             with self.assertRaises(OSError):
                 checks.validate(config)
+
+    def test_rendered_import_is_allowed_only_for_the_explicit_target_cache(self):
+        with tempfile.TemporaryDirectory(prefix='hyprixe wlogout imports ') as tmp:
+            config = Path(tmp)
+            shutil.copytree(source_path(ROOT, '.config/wlogout'), config / 'wlogout')
+            css = config / 'wlogout/style.css'
+            original = css.read_text()
+            cache = Path('/home/target user/cache with spaces/hyprixe/theme/current')
+            css.write_text(original.replace('@HYPRIXE_THEME@', str(cache)))
+            checks.validate(config, theme_dir=cache)
+            with self.assertRaisesRegex(ValueError, 'Machine-specific'):
+                checks.validate(config)  # This path is never accepted as source paint.
+            with self.assertRaises(ValueError):
+                checks.validate(config, theme_dir=Path('/home/different/cache'))
+            css.write_text(css.read_text() + '\n/* /home/arbitrary/hardcoded */\n')
+            with self.assertRaisesRegex(ValueError, 'Machine-specific'):
+                checks.validate(config, theme_dir=cache)
 
     def test_missing_files_are_reported_without_traceback(self):
         with tempfile.TemporaryDirectory() as tmp:

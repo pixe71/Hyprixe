@@ -1,0 +1,3 @@
+#!/bin/sh
+# Debian platform hook; the core passes a validated image and generated palette.
+exec /usr/bin/python3 -I /usr/libexec/hyprixe/sddm_sync.py client "$@"

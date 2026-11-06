@@ -121,7 +121,7 @@ class DebianEquivalenceTests(unittest.TestCase):
             for name, expected in fixture['cases'].items():
                 xdg, hardware, scope = name.split('/')
                 with self.subTest(case=name), patch.dict(os.environ, HOME=str(home)), patch.object(deploy.shutil, 'which', side_effect=lambda name: '/usr/bin/' + name):
-                    payload = deploy.payload(self.roots(home, xdg == 'custom'), hardware,
+                    payload = deploy.payload(self.roots(home, xdg == 'custom'), hardware, home=home,
                             runtime=stage if scope == 'runtime' else None,
                             waybar_only=scope == 'waybar', dolphin_only=scope == 'dolphin')
                     actual = {}
@@ -133,8 +133,35 @@ class DebianEquivalenceTests(unittest.TestCase):
                                 pass
                         actual[target.relative_to(home).as_posix()] = {
                             'sha256': hashlib.sha256(data).hexdigest() if data is not None else None, 'mode': mode}
-                    self.assertEqual(actual, expected)
-        self.assertEqual({name: hashlib.sha256(data).hexdigest() for name, data in sddm_theme.source_payload().items()}, fixture['sddm'])
+                    # Keep the v1.1 fixture immutable. v1.2 changes only these
+                    # declared import bridges and adds the common theme engine.
+                    changed = ('hypr/UserConfigs/user_decorations.lua', 'hypr/hyprlock.conf',
+                               'hypr/rofi/themes/Frosted-Glass-Common.rasi',
+                               'hypr/rofi/themes/Frosted-Glass-Launcher.rasi',
+                               'hypr/rofi/themes/Frosted-Glass.rasi', 'hypr/rofi/wallust/colors-rofi.rasi',
+                               'hypr/scripts/Wallpaper.sh', 'hypr/waybar/style/Frosted-Glass.css',
+                               'kitty/kitty.conf', 'wlogout/style.css',
+                               'systemd/user/hyprixe-wallpaper.service')
+                    config_prefix = 'settings with spaces/' if xdg == 'custom' else '.config/'
+                    allowed = {config_prefix + name for name in changed}
+                    self.assertEqual({k: v for k, v in actual.items() if k in expected and k not in allowed},
+                                     {k: v for k, v in expected.items() if k not in allowed})
+                    self.assertFalse(set(expected) - set(actual))
+                    data_prefix = 'data with spaces/' if xdg == 'custom' else '.local/share/'
+                    for name in set(actual) - set(expected):
+                        wallpapers = {data_prefix + 'hyprixe/wallpapers/' + image
+                                      for image in ('wallpaper1.jpg', 'wallpaper2.jpg', 'wallpaper3.png')}
+                        self.assertTrue(name in wallpapers or name.startswith(data_prefix + 'hyprixe/theme/') or
+                                        name in ('.local/bin/hyprixe-theme', '.local/bin/hyprixe-login-theme-sync', config_prefix + 'swaync/style.css',
+                                                 config_prefix + 'hypr/waybar/colors.css'), name)
+        sddm = sddm_theme.source_payload()
+        changed_sddm = {sddm_theme.THEME_DIR + '/' + name for name in
+                        ('Main.qml', 'theme.conf', 'components/GlassPane.qml',
+                         'components/GlassButton.qml', 'components/GlassComboBox.qml')}
+        # Dynamic colours/image are intentional; all other v1.1 assets stay exact.
+        self.assertEqual({name: hashlib.sha256(sddm[name]).hexdigest() for name in fixture['sddm'] if name not in changed_sddm},
+                         {name: digest for name, digest in fixture['sddm'].items() if name not in changed_sddm})
+        self.assertFalse(set(fixture['sddm']) - set(sddm))
 
     def test_mapping_covers_all_shared_sources_without_changed_destinations(self):
         entries = list(mapped_files())
@@ -165,7 +192,7 @@ class DebianEquivalenceTests(unittest.TestCase):
                     path.chmod(entry['mode'])
                     originals[path] = (data, entry['mode'])
             with patch.dict(os.environ, HOME=str(home)):
-                content = deploy.payload(self.roots(home), 'native')
+                content = deploy.payload(self.roots(home), 'native', home=home)
             # Rebase only the transient HOME-dependent installed hashes. The
             # independent golden test above prevents content drift being hidden.
             for entry in manifest['files']:
@@ -186,11 +213,15 @@ class DebianEquivalenceTests(unittest.TestCase):
             before = {path: (path.read_bytes(), path.stat().st_mode & 0o777)
                       for path in content if path.is_file()}
             with patch.dict(os.environ, HOME=str(home)):
-                self.assertIsNone(deploy.install(home, self.roots(home), 'native'))
+                # v1.2 adds the common engine to this v1-format installation;
+                # its separate transaction must also remain reversible.
+                migration = deploy.install(home, self.roots(home), 'native')
+                self.assertIsNotNone(migration)
                 self.assertIsNone(deploy.install(home, self.roots(home), 'native'))
             self.assertEqual({path: (path.read_bytes(), path.stat().st_mode & 0o777)
                               for path in before}, before)
-            self.assertEqual([p.name for p in backup.parent.iterdir()], [manifest['id']])
+            self.assertEqual({p.name for p in backup.parent.iterdir()}, {manifest['id'], migration.name})
+            deploy.restore(migration, home)
             deploy.restore(backup, home)
             for path, (data, mode) in originals.items():
                 self.assertEqual(path.read_bytes(), data)

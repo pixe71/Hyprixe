@@ -1,0 +1,8 @@
+@define-color hx_background @background@;
+@define-color hx_surface @surface@;
+@define-color hx_surface_alt @surface_alt@;
+@define-color hx_foreground @foreground@;
+@define-color hx_foreground_muted @foreground_muted@;
+@define-color hx_accent @accent@;
+@define-color hx_selection @selection@;
+@define-color hx_error @error@;

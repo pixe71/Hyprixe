@@ -36,7 +36,7 @@ def dependencies():
 
 
 def startup(home, roots):
-    env = dict(os.environ, HOME=str(home), XDG_CONFIG_HOME=str(roots['config']),
+    env = dict(os.environ, HOME=str(home), XDG_CACHE_HOME=str(roots.get('cache', home / '.cache')), XDG_CONFIG_HOME=str(roots['config']),
                XDG_DATA_HOME=str(roots['data']), XDG_STATE_HOME=str(roots['state']), TERM='xterm-256color')
     result = subprocess.run([shutil.which('zsh') or '/usr/bin/zsh', '-lic', PROBE], env=env,
                             cwd=home, stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=30)

@@ -5,6 +5,7 @@ import QtQuick.Controls.Basic as C
 
 C.ComboBox {
     id: control
+    property DynamicTheme theme
     implicitHeight: 46
     leftPadding: 14
     rightPadding: 36
@@ -14,14 +15,14 @@ C.ComboBox {
     hoverEnabled: true
     background: Rectangle {
         radius: 12
-        color: "#b01a3448"
+        color: control.theme.tint("surface", 0.6901960784313725, "#b01a3448")
         border.width: control.activeFocus ? 2 : 1
-        border.color: control.activeFocus || control.hovered ? "#b4f9f8" : "#607ed6ff"
+        border.color: control.activeFocus || control.hovered ? control.theme.paint("accent_alt", "#b4f9f8") : control.theme.tint("border", 0.3764705882352941, "#607ed6ff")
     }
     contentItem: Text {
         text: control.displayText
         font: control.font
-        color: "#e6f1f4"
+        color: control.theme.paint("foreground", "#e6f1f4")
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
     }
@@ -29,7 +30,7 @@ C.ComboBox {
         x: control.width - width - 14
         y: (control.height - height) / 2
         text: "⌄"
-        color: "#7ed6ff"
+        color: control.theme.paint("accent", "#7ed6ff")
         font.pixelSize: 19
     }
     delegate: C.ItemDelegate {
@@ -41,13 +42,13 @@ C.ComboBox {
         font: control.font
         contentItem: Text {
             text: entry.text
-            color: "#e6f1f4"
+            color: control.theme.paint("foreground", "#e6f1f4")
             font: control.font
             wrapMode: Text.Wrap
         }
         background: Rectangle {
             radius: 8
-            color: entry.highlighted ? "#315d7a" : "transparent"
+            color: entry.highlighted ? control.theme.paint("surface", "#315d7a") : "transparent"
         }
     }
     popup: C.Popup {
@@ -63,10 +64,10 @@ C.ComboBox {
             C.ScrollIndicator.vertical: C.ScrollIndicator {}
         }
         background: Rectangle {
-            color: "#f0122434"
+            color: control.theme.tint("background", 0.9411764705882353, "#f0122434")
             radius: 12
             border.width: 1
-            border.color: "#887ed6ff"
+            border.color: control.theme.tint("border", 0.5333333333333333, "#887ed6ff")
         }
     }
     C.ToolTip {
@@ -74,7 +75,7 @@ C.ComboBox {
         visible: control.hovered && control.displayText.length > 0
         delay: 800
         text: control.displayText
-        contentItem: Text { text: control.displayText; color: "#e6f1f4"; font: control.font }
-        background: Rectangle { color: "#f0122434"; radius: 8; border.color: "#887ed6ff" }
+        contentItem: Text { text: control.displayText; color: control.theme.paint("foreground", "#e6f1f4"); font: control.font }
+        background: Rectangle { color: control.theme.tint("background", 0.9411764705882353, "#f0122434"); radius: 8; border.color: control.theme.tint("border", 0.5333333333333333, "#887ed6ff") }
     }
 }

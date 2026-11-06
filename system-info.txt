@@ -16,4 +16,4 @@ did not contain a usable Hyprland version (no running instance signature).
 
 Audit environment: Windows host, Debian 13 under WSL2, x86_64.
 No physical Hyprland session was launched or visually validated here.
-See docs/VALIDATION.md for actual commands, outcomes and skipped checks.
+See docs/wiki/Maintenance.md for current verification commands and limits.

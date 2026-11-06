@@ -113,13 +113,32 @@ class LayoutTests(unittest.TestCase):
         self.assertTrue(all(re.fullmatch(ignored, str(i)) is None for i in range(1, 5)))
         self.assertTrue(all(re.fullmatch(ignored, name) for name in ('5', '10', '42', 'notes', 'special:term')))
 
-    def test_every_original_frosted_css_rule_is_preserved(self):
+    def test_original_frosted_css_layout_opacity_and_other_paint_are_preserved(self):
         original = css_rules((ROOT / 'tests/fixtures/waybar-frosted-original.css').read_text())
-        current = css_rules((source_path(ROOT, '.config/hypr/waybar/style/Frosted-Glass.css')).read_text())
+        # Compare every declaration/alpha against the v1 reference, with only
+        # the explicitly refined colour roles below allowed to differ.
+        text = (source_path(ROOT, '.config/hypr/waybar/style/Frosted-Glass.css')).read_text()
+        text = re.sub(r'^@import[^\n]*\n', '', text)
+        palette = json.loads((ROOT / 'common/theme/defaults/frosted-glass.json').read_text())
+        for role, value in sorted(palette.items(), key=lambda item: len(item[0]), reverse=True):
+            text = text.replace('@hx_' + role, value)
+        def rgba(color, alpha):
+            return 'rgba(' + ', '.join(str(int(color[i:i+2], 16)) for i in (0, 2, 4)) + ', ' + alpha + ')'
+        text = re.sub(r'alpha\(#([0-9a-f]{6}), ([0-9.]+)\)', lambda match: rgba(*match.groups()), text)
+        current = css_rules(text)
         for selectors, declarations in original:
             if selectors == {'window#waybar'}:
-                # The only requested change to the historical Frosted CSS.
+                # Existing rounding from the prior layout revision.
                 declarations['border-radius'] = '14px'
+            elif '#mpris' in selectors:
+                # Neutral module fill, keeping the original .32 transparency.
+                declarations['background'] = rgba(palette['surface'][1:], '0.32')
+            elif selectors == {'#workspaces button'}:
+                declarations['color'] = palette['foreground_muted']
+            elif selectors == {'#workspaces button.active'}:
+                declarations['color'] = palette['foreground']
+            elif selectors == {'#workspaces button:hover'}:
+                declarations['color'] = palette['background']
             self.assertTrue(any(selectors <= found and values == declarations for found, values in current), selectors)
 
     def test_source_contract_and_no_duplicate_modules(self):

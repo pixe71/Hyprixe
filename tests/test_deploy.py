@@ -25,6 +25,7 @@ class DeploymentTests(unittest.TestCase):
         self.home = Path(self.temp.name) / 'home with spaces'
         self.home.mkdir()
         self.env = patch.dict(os.environ, {'HOME': str(self.home), 'XDG_CONFIG_HOME': str(self.home / '.config'),
+                                          'XDG_CACHE_HOME': str(self.home / '.cache'),
                                           'XDG_DATA_HOME': str(self.home / '.local/share'),
                                           'XDG_STATE_HOME': str(self.home / '.local/state')})
         self.env.start()
@@ -58,6 +59,51 @@ class DeploymentTests(unittest.TestCase):
         self.assertNotIn('LIBGL', (self.roots['config'] / 'hypr/profile.lua').read_text())
         self.assertTrue((self.roots['config'] / 'hypr/scripts/Wallpaper.sh').stat().st_mode & 0o111)
         self.assertEqual((self.roots['data'] / 'hyprixe/wallpapers/min_forest.jpg').read_bytes(), (source_path(ROOT, 'wallpapers/min_forest.jpg')).read_bytes())
+
+    def test_dynamic_imports_use_explicit_target_roots_despite_foreign_environment(self):
+        imports = {'kitty/kitty.conf': 'kitty.conf', 'hypr/rofi/wallust/colors-rofi.rasi': 'rofi.rasi',
+                   'hypr/waybar/style/Frosted-Glass.css': 'waybar.css', 'wlogout/style.css': 'wlogout.css',
+                   'hypr/hyprlock.conf': 'hyprlock.conf', 'swaync/style.css': 'swaync.css'}
+        caller = self.home.parent / 'unrelated caller'
+        foreign = {'HOME': str(caller), **{'XDG_' + key.upper() + '_HOME': str(caller / key)
+                   for key in ('config', 'data', 'state', 'cache')}}
+        for custom_cache in (False, True):
+            with self.subTest(custom_cache=custom_cache), patch.dict(os.environ, foreign):
+                roots = {name: self.home / (name + ' with spaces') for name in ('config', 'data', 'state')}
+                if custom_cache:
+                    roots['cache'] = self.home / 'custom cache with spaces'
+                content = deploy.payload(roots, 'native', home=self.home)
+                cache = roots.get('cache', self.home / '.cache') / 'hyprixe/theme/current'
+                for relative, fragment in imports.items():
+                    data, _ = content[roots['config'] / relative]
+                    self.assertIn(str(cache / fragment).encode(), data, relative)
+                    self.assertNotIn(str(caller).encode(), data, relative)
+                self.assertTrue(all(path.is_relative_to(self.home) for path in content))
+                self.assertFalse(caller.exists())
+
+    def test_locations_capture_custom_cache_at_the_target_boundary(self):
+        custom = self.home / 'XDG cache with spaces'
+        with patch.dict(os.environ, XDG_CACHE_HOME=str(custom)):
+            home, roots = deploy.locations()
+        self.assertEqual(home, self.home)
+        self.assertEqual(roots['cache'], custom)
+
+    def test_restore_leaves_persistent_theme_state_cache_and_unrelated_xdg_files(self):
+        self.install()
+        from theme_checks import Engine
+        with patch.dict(os.environ, XDG_CACHE_HOME=str(self.home / '.cache')):
+            theme = Engine(self.roots['data'] / 'hyprixe/theme')
+            theme.transact(enabled=False, apply=False, reload=False)
+            saved = theme.state_file.read_bytes()
+            personal = self.home / '.cache/personal'
+            personal.write_text('keep')
+            unrelated = theme.state / 'personal'
+            unrelated.write_text('keep')
+            deploy.restore(self.backups()[0], self.home)
+            self.assertEqual(theme.state_file.read_bytes(), saved)
+            self.assertTrue(theme.current.exists())
+            self.assertEqual(personal.read_text(), 'keep')
+            self.assertEqual(unrelated.read_text(), 'keep')
 
     def test_persistent_workspaces_deploy_for_waybar_and_compositor(self):
         import shutil
@@ -152,7 +198,9 @@ class DeploymentTests(unittest.TestCase):
         old = self.write('alacritty/alacritty.toml', '# personal legacy settings\n')
         kde = self.write('kdeglobals', '[General]\nTerminalApplication=alacritty\nTerminalService=Alacritty.desktop\nUnrelated=keep\n')
         self.install()
-        self.assertEqual(kitty.read_bytes(), (source_path(ROOT, '.config/kitty/kitty.conf')).read_bytes())
+        expected = (source_path(ROOT, '.config/kitty/kitty.conf')).read_text().replace(
+            '@HYPRIXE_THEME@', str(self.home / '.cache/hyprixe/theme/current'))
+        self.assertEqual(kitty.read_text(), expected)
         self.assertIn('TerminalApplication=kitty\n', kde.read_text())
         self.assertIn('TerminalService=kitty.desktop\n', kde.read_text())
         self.assertIn('Unrelated=keep', kde.read_text())
@@ -186,7 +234,7 @@ class DeploymentTests(unittest.TestCase):
         self.roots['data'] = self.home / 'data'
         self.install()
         lock = (self.roots['config'] / 'hypr/hyprlock.conf').read_text()
-        self.assertIn(str(self.home / 'data/hyprixe/wallpapers/min_forest.jpg'), lock)
+        self.assertIn(str(self.home / 'data/hyprixe/current-wallpaper'), lock)
         waybar = self.roots['config'] / 'hypr/waybar/configs/Frosted-Glass'
         self.assertEqual(json.loads(waybar.read_text()),
                          json.loads((source_path(ROOT, '.config/hypr/waybar/configs/Frosted-Glass')).read_text()))

@@ -39,7 +39,8 @@ USER_MAPPINGS = (('common/config', 'config', ''),
                  ('common/local/share', 'data', ''),
                  ('common/local/bin', 'home', '.local/bin'),
                  ('common/shell', 'home', ''),
-                 ('common/wallpapers', 'data', 'hyprixe/wallpapers'))
+                 ('common/wallpapers', 'data', 'hyprixe/wallpapers'),
+                 ('common/theme', 'data', 'hyprixe/theme'))
 
 
 def source_path(root, relative):
@@ -51,7 +52,7 @@ def source_path(root, relative):
 
 
 def configure_imports():
-    paths = [str(ROOT / path) for path in ('scripts', 'common/tools', 'common/compat', BACKEND)]
+    paths = [str(ROOT / path) for path in ('scripts', 'common/tools', 'common/compat', 'common/theme', BACKEND)]
     for path in reversed(paths):
         if path not in sys.path:
             sys.path.insert(0, path)
@@ -92,9 +93,13 @@ def mapped_files(root=ROOT, platform='debian'):
     for prefix, namespace, destination in USER_MAPPINGS:
         directory = Path(root) / prefix
         for path in sorted(directory.rglob('*')):
-            if path.is_file():
+            if path.is_file() and '__pycache__' not in path.parts and path.suffix != '.pyc':
                 yield path, namespace, Path(destination) / path.relative_to(directory)
     integration = Path(root) / 'profiles' / platform / 'config'
     for path in sorted(integration.rglob('*')):
         if path.is_file():
             yield path, 'config', path.relative_to(integration)
+    helpers = Path(root) / 'profiles' / platform / 'local/bin'
+    for path in sorted(helpers.glob('*')):
+        if path.is_file():
+            yield path, 'home', Path('.local/bin') / path.name

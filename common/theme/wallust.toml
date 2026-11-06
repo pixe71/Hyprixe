@@ -1,0 +1,8 @@
+# Wallust 3.5.1 only. This private configuration never reads user hooks/templates.
+backend = "resized"
+color_space = "lab"
+palette = "dark16"
+check_contrast = true
+
+[templates]
+raw = { template = 'raw.json', target = "@RAW_TARGET@", pywal = false }

@@ -39,6 +39,11 @@ source /etc/os-release
 [[ ${ID:-} == debian && ${VERSION_ID:-} == 13 ]] || { echo 'ERROR: This installer targets Debian 13 only.' >&2; exit 1; }
 [[ $EUID -ne 0 ]] || { echo 'ERROR: Run as your desktop user, without sudo. APT and SDDM system files use sudo separately.' >&2; exit 1; }
 trap 'printf "ERROR: installation failed (line %s). No session was started.\n" "$LINENO" >&2' ERR
+if ! $packages && ! $dry_run && ! $waybar_only && ! $dolphin_only; then
+    # Read-only preflight before temporary files, downloads or deployment.
+    command -v python3 >/dev/null || { echo 'ERROR: python3 is required.' >&2; exit 1; }
+    python3 "$repo/profiles/debian/install/wallust.py" --check
+fi
 runtime=$(mktemp -d -t hyprixe-runtime.XXXXXXXX)
 trap 'rm -rf -- "$runtime"' EXIT
 if ! $waybar_only && ! $dry_run && command -v pgrep >/dev/null && pgrep -u "$UID" -x dolphin >/dev/null; then
