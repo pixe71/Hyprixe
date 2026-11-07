@@ -8,4 +8,4 @@ qalc
 pamixer
 ddcutil
 hyprsunset
-# See extras/kooldots/README.md for the separate upstream example library.
+# Historical KoolDots provenance is documented in docs/wiki/Assets.md.
