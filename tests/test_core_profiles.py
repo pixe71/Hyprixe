@@ -12,14 +12,119 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from support import ROOT, source_path, configure_imports, shell_bytes
-from source_layout import detect_profile, mapped_files, profile_metadata
+if __package__:
+    from .support import ROOT, source_path, configure_imports, shell_bytes
+else:
+    from support import ROOT, source_path, configure_imports, shell_bytes
+from source_layout import detect_profile, mapped_files, profile_metadata, shipping_wallpapers, WALLPAPER_MANIFEST
 from profile_checks import check_sources, duplication_errors, registry
 from run_tests import select
 import deploy
 import sddm_theme
 
 FIXTURES = ROOT / 'tests/fixtures'
+
+
+class ShippingWallpaperSourceTests(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory(prefix='hyprixe shipping images ')
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        self.images = self.root / 'common/wallpapers'
+        self.images.mkdir(parents=True)
+        shutil.copyfile(ROOT / 'common/wallpapers/min_forest.jpg', self.images / 'min_forest.jpg')
+        self.write_manifest()
+
+    def write_manifest(self, names=('min_forest.jpg',)):
+        path = self.root / WALLPAPER_MANIFEST
+        path.parent.mkdir(parents=True, exist_ok=True)
+        data = {'format': 1, 'files': [{'file': name, 'sha256': hashlib.sha256(
+            (self.images / name).read_bytes()).hexdigest()} for name in names]}
+        path.write_text(json.dumps(data))
+        return path
+
+    def extra_image(self, name='declared.png'):
+        # A deterministic one-pixel PNG; no large binary fixture is added.
+        path = self.images / name
+        path.write_bytes(base64.b64decode(
+            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a1eUAAAAASUVORK5CYII='))
+        return path
+
+    def test_declared_product_image_maps_to_data_and_manifest_is_not_deployed(self):
+        image = self.extra_image()
+        self.write_manifest(('min_forest.jpg', image.name))
+        entries = list(mapped_files(self.root))
+        self.assertIn((image, 'data', Path('hyprixe/wallpapers/declared.png')), entries)
+        self.assertEqual({source.name for source, _, _ in entries}, {'min_forest.jpg', 'declared.png'})
+
+    def test_test_only_image_is_outside_every_production_mapping(self):
+        image = self.root / 'tests/fixtures/wallpapers/test-only.png'
+        image.parent.mkdir(parents=True)
+        shutil.copyfile(self.images / 'min_forest.jpg', image)
+        self.assertNotIn(image, {source for source, _, _ in mapped_files(self.root)})
+        self.assertEqual([p.name for p in shipping_wallpapers(self.root)], ['min_forest.jpg'])
+
+    def test_accidental_file_in_wallpaper_source_is_rejected_not_silently_shipped(self):
+        for relative in ('accidental.png', 'nested/test-only.png', '.hidden-test.jpg'):
+            with self.subTest(file=relative):
+                path = self.images / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(b'not declared')
+                with self.assertRaisesRegex(ValueError, 'Undeclared wallpaper'):
+                    list(mapped_files(self.root))
+                path.unlink()
+
+    def test_missing_manifest_has_no_recursive_copy_fallback(self):
+        (self.root / WALLPAPER_MANIFEST).unlink()
+        with self.assertRaises(FileNotFoundError):
+            list(mapped_files(self.root))
+
+    def test_declared_image_checksum_is_enforced(self):
+        (self.images / 'min_forest.jpg').write_bytes(b'changed image')
+        with self.assertRaisesRegex(ValueError, 'checksum mismatch'):
+            shipping_wallpapers(self.root)
+
+    def test_missing_declared_image_is_rejected(self):
+        (self.images / 'min_forest.jpg').unlink()
+        with self.assertRaisesRegex(ValueError, 'Missing/unsafe'):
+            shipping_wallpapers(self.root)
+
+    def test_duplicate_manifest_entries_are_rejected(self):
+        self.write_manifest(('min_forest.jpg', 'min_forest.jpg'))
+        with self.assertRaisesRegex(ValueError, 'Duplicate'):
+            shipping_wallpapers(self.root)
+
+    def test_manifest_cannot_escape_the_canonical_image_directory(self):
+        for name in ('../outside.png', '/tmp/outside.png', 'sub/image.png', 'sub\\image.png', 'bad\nimage.png'):
+            with self.subTest(name=name):
+                path = self.root / WALLPAPER_MANIFEST
+                path.write_text(json.dumps({'format': 1, 'files': [{'file': name, 'sha256': '0'*64}]}))
+                with self.assertRaisesRegex(ValueError, 'Invalid shipping wallpaper name'):
+                    shipping_wallpapers(self.root)
+
+    def test_symlinked_declared_image_is_rejected(self):
+        target = self.root / 'outside.jpg'
+        shutil.copyfile(self.images / 'min_forest.jpg', target)
+        (self.images / 'min_forest.jpg').unlink()
+        (self.images / 'min_forest.jpg').symlink_to(target)
+        with self.assertRaisesRegex(ValueError, 'Missing/unsafe'):
+            shipping_wallpapers(self.root)
+
+    def test_manifest_keeps_the_required_default_image(self):
+        image = self.extra_image()
+        self.write_manifest((image.name,))
+        with self.assertRaisesRegex(ValueError, 'must include the default'):
+            shipping_wallpapers(self.root)
+
+    def test_invalid_manifest_schema_is_rejected(self):
+        path = self.root / WALLPAPER_MANIFEST
+        for data in ([], {'format': True, 'files': []}, {'format': 2, 'files': []},
+                     {'format': 1, 'files': []}, {'format': 1, 'files': ['min_forest.jpg']},
+                     {'format': 1, 'files': [{'file': 'min_forest.jpg', 'sha256': 'invalid'}]}):
+            with self.subTest(data=data):
+                path.write_text(json.dumps(data))
+                with self.assertRaises(ValueError):
+                    shipping_wallpapers(self.root)
 
 
 class CoreProfileTests(unittest.TestCase):
@@ -108,6 +213,36 @@ class DebianEquivalenceTests(unittest.TestCase):
                 ('settings with spaces', 'data with spaces', 'state with spaces') if custom else
                 ('.config', '.local/share', '.local/state'))}
 
+    def assert_payload_contract(self, actual, expected, *, custom, scope):
+        # Frozen history stays immutable. Only these reviewed v1.2 bridge
+        # contents may differ; historical destinations and modes must survive.
+        changed = ('hypr/UserConfigs/user_decorations.lua', 'hypr/hyprlock.conf',
+                   'hypr/rofi/themes/Frosted-Glass-Common.rasi',
+                   'hypr/rofi/themes/Frosted-Glass-Launcher.rasi',
+                   'hypr/rofi/themes/Frosted-Glass.rasi', 'hypr/rofi/wallust/colors-rofi.rasi',
+                   'hypr/scripts/Wallpaper.sh', 'hypr/waybar/style/Frosted-Glass.css',
+                   'kitty/kitty.conf', 'wlogout/style.css',
+                   'systemd/user/hyprixe-wallpaper.service')
+        config_prefix = 'settings with spaces/' if custom else '.config/'
+        allowed = {config_prefix + name for name in changed}
+        self.assertFalse(set(expected) - set(actual), 'Missing historical destination')
+        for name, record in expected.items():
+            self.assertEqual(actual[name]['mode'], record['mode'], name)
+        self.assertEqual({k: v for k, v in actual.items() if k in expected and k not in allowed},
+                         {k: v for k, v in expected.items() if k not in allowed})
+        data_prefix = 'data with spaces/' if custom else '.local/share/'
+        wallpapers = {data_prefix + 'hyprixe/wallpapers/' + path.name:
+                      {'sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'mode': 0o644}
+                      for path in shipping_wallpapers(ROOT)} if scope in ('full', 'runtime') else {}
+        for name, record in wallpapers.items():
+            self.assertIn(name, actual, 'Missing declared shipping wallpaper')
+            self.assertEqual(actual[name], record, name)
+        for name in set(actual) - set(expected):
+            self.assertTrue(name in wallpapers or name.startswith(data_prefix + 'hyprixe/theme/') or
+                            name in ('.local/bin/hyprixe-theme', '.local/bin/hyprixe-login-theme-sync',
+                                     config_prefix + 'swaync/style.css', config_prefix + 'hypr/waybar/colors.css'),
+                            'Unexpected runtime destination: ' + name)
+
     def test_all_sixteen_frozen_payloads_have_identical_targets_hashes_and_modes(self):
         fixture = json.loads((FIXTURES / 'debian-v1-payload.json').read_text())
         self.assertEqual(len(fixture['cases']), 16)
@@ -133,27 +268,7 @@ class DebianEquivalenceTests(unittest.TestCase):
                                 pass
                         actual[target.relative_to(home).as_posix()] = {
                             'sha256': hashlib.sha256(data).hexdigest() if data is not None else None, 'mode': mode}
-                    # Keep the v1.1 fixture immutable. v1.2 changes only these
-                    # declared import bridges and adds the common theme engine.
-                    changed = ('hypr/UserConfigs/user_decorations.lua', 'hypr/hyprlock.conf',
-                               'hypr/rofi/themes/Frosted-Glass-Common.rasi',
-                               'hypr/rofi/themes/Frosted-Glass-Launcher.rasi',
-                               'hypr/rofi/themes/Frosted-Glass.rasi', 'hypr/rofi/wallust/colors-rofi.rasi',
-                               'hypr/scripts/Wallpaper.sh', 'hypr/waybar/style/Frosted-Glass.css',
-                               'kitty/kitty.conf', 'wlogout/style.css',
-                               'systemd/user/hyprixe-wallpaper.service')
-                    config_prefix = 'settings with spaces/' if xdg == 'custom' else '.config/'
-                    allowed = {config_prefix + name for name in changed}
-                    self.assertEqual({k: v for k, v in actual.items() if k in expected and k not in allowed},
-                                     {k: v for k, v in expected.items() if k not in allowed})
-                    self.assertFalse(set(expected) - set(actual))
-                    data_prefix = 'data with spaces/' if xdg == 'custom' else '.local/share/'
-                    for name in set(actual) - set(expected):
-                        wallpapers = {data_prefix + 'hyprixe/wallpapers/' + image
-                                      for image in ('wallpaper1.jpg', 'wallpaper2.jpg', 'wallpaper3.png')}
-                        self.assertTrue(name in wallpapers or name.startswith(data_prefix + 'hyprixe/theme/') or
-                                        name in ('.local/bin/hyprixe-theme', '.local/bin/hyprixe-login-theme-sync', config_prefix + 'swaync/style.css',
-                                                 config_prefix + 'hypr/waybar/colors.css'), name)
+                    self.assert_payload_contract(actual, expected, custom=xdg == 'custom', scope=scope)
         sddm = sddm_theme.source_payload()
         changed_sddm = {sddm_theme.THEME_DIR + '/' + name for name in
                         ('Main.qml', 'theme.conf', 'components/GlassPane.qml',
@@ -174,6 +289,53 @@ class DebianEquivalenceTests(unittest.TestCase):
                                    ('.config/hypr/rofi/config.rasi', ('config', Path('hypr/rofi/config.rasi'))),
                                    ('.config/hypr/waybar/style.css', ('config', Path('hypr/waybar/style.css')))):
             self.assertIn((source_path(ROOT, logical), *installed), entries)
+
+    def test_declared_wallpapers_ship_and_test_fixtures_never_enter_payloads(self):
+        fixtures = list((FIXTURES / 'wallpapers').glob('*'))
+        images = [p for p in fixtures if p.suffix.lower() in ('.jpg', '.png')]
+        self.assertTrue(images, 'Keep the manual test image in the test-only scope')
+        fixture_bytes = {p.read_bytes() for p in images}
+        with tempfile.TemporaryDirectory() as folder:
+            home = Path(folder)
+            for custom in (False, True):
+                for profile in ('native', 'vmware'):
+                    for scope in ('full', 'waybar', 'dolphin'):
+                        with self.subTest(custom=custom, profile=profile, scope=scope):
+                            roots = self.roots(home, custom)
+                            payload = deploy.payload(roots, profile, home=home,
+                                                     waybar_only=scope == 'waybar', dolphin_only=scope == 'dolphin')
+                            for source in shipping_wallpapers(ROOT):
+                                target = roots['data'] / 'hyprixe/wallpapers' / source.name
+                                if scope == 'full':
+                                    self.assertEqual(payload[target], (source.read_bytes(), 0o644))
+                                else:
+                                    self.assertNotIn(target, payload)
+                            self.assertTrue(all(data not in fixture_bytes for data, _ in payload.values()))
+                            self.assertNotIn(roots['data'] / 'hyprixe/wallpapers/wallpapers.json', payload)
+
+    def test_frozen_contract_still_rejects_lost_changed_or_unexpected_runtime_files(self):
+        data_prefix = '.local/share/hyprixe/wallpapers/'
+        expected = {'.config/historical.conf': {'sha256': '0'*64, 'mode': 0o644},
+                    '.config/kitty/kitty.conf': {'sha256': '1'*64, 'mode': 0o644}}
+        actual = {**expected, **{data_prefix + p.name:
+                  {'sha256': hashlib.sha256(p.read_bytes()).hexdigest(), 'mode': 0o644}
+                  for p in shipping_wallpapers(ROOT)}}
+        self.assert_payload_contract(actual, expected, custom=False, scope='full')
+        mutations = []
+        missing = dict(actual); missing.pop('.config/historical.conf'); mutations.append(missing)
+        renamed = dict(actual); renamed['.config/renamed.conf'] = renamed.pop('.config/historical.conf'); mutations.append(renamed)
+        mutations.append(dict(actual, **{'.config/historical.conf': {'sha256': '2'*64, 'mode': 0o644}}))
+        # Even reviewed v1.2 content changes may not silently change permissions.
+        mutations.append(dict(actual, **{'.config/kitty/kitty.conf': {'sha256': '1'*64, 'mode': 0o755}}))
+        mutations.append(dict(actual, **{'.config/accidental.conf': {'sha256': '2'*64, 'mode': 0o644}}))
+        mutations.append(dict(actual, **{data_prefix + 'accidental.png': {'sha256': '2'*64, 'mode': 0o644}}))
+        image = data_prefix + shipping_wallpapers(ROOT)[0].name
+        lost = dict(actual); lost.pop(image); mutations.append(lost)
+        mutations.append(dict(actual, **{image: {'sha256': '2'*64, 'mode': 0o644}}))
+        mutations.append(dict(actual, **{image: {'sha256': actual[image]['sha256'], 'mode': 0o755}}))
+        for index, mutated in enumerate(mutations):
+            with self.subTest(mutation=index), self.assertRaises(AssertionError):
+                self.assert_payload_contract(mutated, expected, custom=False, scope='full')
 
     def test_pre_refactor_format_one_backup_restores_original_files_and_modes(self):
         fixture = json.loads((FIXTURES / 'debian-v1-backup.json').read_text())

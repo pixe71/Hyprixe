@@ -19,6 +19,11 @@ original artist or redistribution permission. Those rights remain unresolved;
 do not apply the project's GPL to the artwork or treat screenshots as clearance.
 New/replacement wallpapers need their own source, permission and visual review.
 
+Bundled wallpapers are explicitly declared with SHA-256 hashes in
+`common/assets/wallpapers.json`. An undeclared file in `common/wallpapers/` makes
+deployment fail; manual test images belong in `tests/fixtures/wallpapers/`.
+This build-time list does not change the selected wallpaper or theme state.
+
 ## Kvantum
 
 The Frosted Glass SVG/config pair matches the 2023 Senshi distribution after

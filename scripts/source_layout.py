@@ -3,9 +3,11 @@
 Legacy logical names describe the v1 deployment contract, not duplicate files.
 There is no fallback to the removed root-level configuration tree.
 """
+import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -41,6 +43,48 @@ USER_MAPPINGS = (('common/config', 'config', ''),
                  ('common/shell', 'home', ''),
                  ('common/wallpapers', 'data', 'hyprixe/wallpapers'),
                  ('common/theme', 'data', 'hyprixe/theme'))
+WALLPAPER_MANIFEST = 'common/assets/wallpapers.json'
+
+
+def shipping_wallpapers(root=ROOT):
+    """Return only reviewed shipping images; reject undeclared source files.
+
+    The manifest is build/deployment metadata, never a runtime wallpaper choice.
+    Test images belong under tests/, outside every deployment source prefix.
+    """
+    root = Path(root)
+    directory = root / 'common/wallpapers'
+    manifest = json.loads((root / WALLPAPER_MANIFEST).read_text(encoding='utf-8'))
+    if (not isinstance(manifest, dict) or set(manifest) != {'format', 'files'} or
+            type(manifest['format']) is not int or manifest['format'] != 1 or
+            not isinstance(manifest['files'], list) or not manifest['files']):
+        raise ValueError('Invalid shipping wallpaper manifest')
+    if directory.is_symlink():
+        raise ValueError('Shipping wallpaper directory cannot be a symlink')
+    declared = {}
+    for entry in manifest['files']:
+        if not isinstance(entry, dict) or set(entry) != {'file', 'sha256'}:
+            raise ValueError('Invalid shipping wallpaper entry')
+        name, digest = entry['file'], entry['sha256']
+        if (not isinstance(name, str) or not name or name != Path(name).name or
+                any(c in name for c in '/\\\r\n\0') or '..' in name or
+                Path(name).suffix.lower() not in ('.jpg', '.jpeg', '.png', '.webp') or
+                not isinstance(digest, str) or not re.fullmatch(r'[0-9a-f]{64}', digest)):
+            raise ValueError('Invalid shipping wallpaper name/hash')
+        if name in declared:
+            raise ValueError('Duplicate shipping wallpaper: ' + name)
+        declared[name] = directory / name
+        if declared[name].is_symlink() or not declared[name].is_file():
+            raise ValueError('Missing/unsafe shipping wallpaper: ' + name)
+        if hashlib.sha256(declared[name].read_bytes()).hexdigest() != digest:
+            raise ValueError('Shipping wallpaper checksum mismatch: ' + name)
+    if 'min_forest.jpg' not in declared:
+        raise ValueError('Shipping wallpapers must include the default min_forest.jpg')
+    actual = {p.relative_to(directory).as_posix() for p in directory.rglob('*')
+              if p.is_file() or p.is_symlink()}
+    if actual != set(declared):
+        raise ValueError('Undeclared wallpaper files: ' + ', '.join(sorted(actual - set(declared))))
+    return tuple(declared[name] for name in sorted(declared))
 
 
 def source_path(root, relative):
@@ -92,7 +136,8 @@ def mapped_files(root=ROOT, platform='debian'):
     """Yield canonical source, destination root and destination-relative path."""
     for prefix, namespace, destination in USER_MAPPINGS:
         directory = Path(root) / prefix
-        for path in sorted(directory.rglob('*')):
+        paths = shipping_wallpapers(root) if prefix == 'common/wallpapers' else sorted(directory.rglob('*'))
+        for path in paths:
             if path.is_file() and '__pycache__' not in path.parts and path.suffix != '.pyc':
                 yield path, namespace, Path(destination) / path.relative_to(directory)
     integration = Path(root) / 'profiles' / platform / 'config'
