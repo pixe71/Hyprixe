@@ -5,6 +5,12 @@ The source of detailed attribution is
 Hyprixe's own integration uses GPL-3.0-or-later; third-party assets retain their
 own terms. Keep the notices under `docs/licenses/` with distributed assets.
 
+## KoolDots history
+
+Hyprixe adapted components from KoolDots/LinuxBeginnings and JaKooLit. The unused
+`extras/kooldots/` source tree was removed once `common/` became the canonical
+Core. Historical credits, active-source headers and applicable licenses remain.
+
 ## Wallpaper
 
 `common/wallpapers/min_forest.jpg` is the historical default. The owner's
@@ -12,6 +18,11 @@ Pinterest discovery link and matching Senshi/HyDE copies do not establish the
 original artist or redistribution permission. Those rights remain unresolved;
 do not apply the project's GPL to the artwork or treat screenshots as clearance.
 New/replacement wallpapers need their own source, permission and visual review.
+
+Bundled wallpapers are explicitly declared with SHA-256 hashes in
+`common/assets/wallpapers.json`. An undeclared file in `common/wallpapers/` makes
+deployment fail; manual test images belong in `tests/fixtures/wallpapers/`.
+This build-time list does not change the selected wallpaper or theme state.
 
 ## Kvantum
 
@@ -28,7 +39,8 @@ with `tools/build-dolphin-theme.py` as its generator/source.
 
 These component terms are **GPL-3.0-only**, not a new MIT or automatic
 "or later" grant. Keep `Graphite-GPL-3.0.txt` and `Senshi111-MIT.txt` in
-`docs/licenses/`. Separate archived Catppuccin examples retain their MIT notice.
+`docs/licenses/`. The unused Catppuccin examples were removed with the KoolDots
+archive; their historical source records and MIT notice remain preserved.
 
 ## Fonts and icons
 
@@ -58,6 +70,8 @@ do not fabricate screenshots or claim physical tests from documentation alone.
 Retained data: `docs/asset-inventory.json`, `docs/inventory-original.tsv` and
 `docs/core-profiles-audit.json`. They are dated audit snapshots, not an automatic
 inventory of newly added media. Older long-form reports remain in Git history.
+Some recorded paths, including `extras/kooldots/`, describe files that have since
+been removed; the original inventory entries are intentionally unchanged.
 
 Before a release:
 

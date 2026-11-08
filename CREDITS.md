@@ -9,6 +9,10 @@ modules and scripts. The integrated configuration files and maintenance
 scripts added during this audit are distributed under GPL-3.0-or-later,
 subject to the licenses of third-party components. See `LICENSE` for the text.
 
+Hyprixe historically reused and adapted components from KoolDots/LinuxBeginnings.
+The former `extras/kooldots/` source tree was removed after `common/` became the
+canonical Hyprixe Core. Relevant attribution and applicable licenses are preserved.
+
 The Graphite-derived Frosted Glass and Frosted Glass Dolphin Kvantum pairs
 are specifically distributed under **GPL-3.0-only** (version 3), with the
 compatible Senshi MIT notice retained. The repository's general "or later"
@@ -19,11 +23,11 @@ reassign rights to the wallpaper, icons or illustrations.
 
 | Source | Use / available attribution |
 | --- | --- |
-| [LinuxBeginnings / KoolDots](https://github.com/LinuxBeginnings/Hyprland-Dots) | Base configuration, scripts and Lua modules, optional library |
+| [LinuxBeginnings / KoolDots](https://github.com/LinuxBeginnings/Hyprland-Dots) | Historical base for adapted configuration, scripts and Lua modules in the canonical Hyprixe Core |
 | [JaKooLit](https://github.com/JaKooLit/Hyprland-Dots) | Origin of KoolDots and many scripts/themes |
 | [Senshi111 / hyprland-hyprdots-files](https://github.com/Senshi111/hyprland-hyprdots-files/tree/c81844d99b835c9bb8bdf1ab8c1ac17b6e2cc448) | The 2023 Frosted Glass Kvantum pair matches Hyprixe after line-ending normalization; its Graphite-derived base remains GPLv3. Theme README credits T-Crypt; root MIT notice, Copyright (c) 2023 Bane, is retained in `docs/licenses/Senshi111-MIT.txt` for compatible contributions/distribution. The wallpaper is also a matching copy, but its artwork rights remain unknown; Pinterest is the owner's discovery reference. |
 | [HyDE Frosted Glass](https://github.com/HyDE-Project/hyde-themes/tree/224e1027e451481db526a095242d261d47a68775) | Additional exact copy of min_forest.jpg. This identifies another distributor, not the original artist or an artwork-specific license. |
-| [Catppuccin / Kvantum](https://github.com/catppuccin/kvantum/tree/a87694e0a3c97644dbb34f8835112d17b54ace68) | All four archived Latte/Mocha Blue SVG/config files match this revision after line-ending normalization; config credits elkrien/Arc Dark. MIT, Copyright (c) 2021 Catppuccin; exact notice retained in `docs/licenses/Catppuccin-MIT.txt`. These examples are not deployed. |
+| [Catppuccin / Kvantum](https://github.com/catppuccin/kvantum/tree/a87694e0a3c97644dbb34f8835112d17b54ace68) | The four former Latte/Mocha Blue SVG/config examples matched this revision after line-ending normalization; config credited elkrien/Arc Dark. These unused examples were removed with the KoolDots archive. Their audit record and MIT notice, Copyright (c) 2021 Catppuccin, remain in `docs/asset-inventory.json` and `docs/licenses/Catppuccin-MIT.txt`. |
 | [KDE Dolphin](https://invent.kde.org/system/dolphin), [Baloo Widgets](https://invent.kde.org/libraries/baloo-widgets), [KIO](https://invent.kde.org/frameworks/kio), [Qt](https://doc.qt.io/qt-6/qmainwindow.html) | Native file manager, metadata/previews and Places/Devices model. The inherited Dolphin toolbar and preferences are restored from pre-9259fa5 history. Hyprixe adds only a Dolphin-specific Kvantum paint variant and native KDE color scheme; no generated layout preset remains. |
 | [adi1090x/rofi](https://github.com/adi1090x/rofi) | Rofi style 4 layout, attribution preserved |
 | [sachatrouve1/Hyprladus](https://github.com/sachatrouve1/Hyprladus/blob/main/config/waybar/config.jsonc) | Functional inspiration for tray grouping and the metrics/distro/clock layout. Its JSONC and CPU script were inspected; no CSS, palette, Powerline dividers, machine paths or scripts are copied. |
@@ -38,7 +42,7 @@ reassign rights to the wallpaper, icons or illustrations.
 | [SDDM](https://github.com/sddm/sddm) and [Qt Quick](https://doc.qt.io/qt-6/qtquick-index.html) | Greeter platform and Qt 6 controls/effects. The Hyprixe QML layout, glass components and fallback user icon in `common/sddm/themes/hyprixe-frosted/` were authored for this project under GPL-3.0-or-later, using the existing wallpaper; they are not a downloaded third-party theme |
 | [Tsu Jan / Kvantum](https://github.com/tsujan/Kvantum/tree/380d6c6940c02434f18e528b61ceeb166624b78f) | Pedram Pourang (Tsu Jan), credited for KvAdapta in the inherited config. Engine source explicitly grants GPL-3.0-or-later; this does not imply an or-later grant for Vince's separately published Graphite derivative. No direct copy of the current KvAdapta SVG was identified. |
 | [Vince Liuice / Graphite](https://github.com/vinceliuice/Graphite-kde-theme/tree/3a20a557e824ae4a6b19cc5306e24d5d09aee907) | Confirmed GPLv3 base of both active Frosted Glass files: all 710 SVG geometric records, all 174 distinct path strings and all 1,139 Graphite element IDs retained; 456 unchanged config values. Preserve Vince Liuice/KvAdapta attribution and `docs/licenses/Graphite-GPL-3.0.txt`. The Materia wording in the config describes inspiration, not a separately established source revision. |
-| [SherLock707](https://github.com/SherLock707) | Historical Hyprlock/Hypridle contributions, preserved in the examples |
+| [SherLock707](https://github.com/SherLock707) | Historical Hyprlock/Hypridle contributions in the former KoolDots examples |
 | [JosephArmas](https://github.com/JosephArmas) | Optional Rofi calculator |
 | [deXPota/kitty-themes](https://github.com/dexpota/kitty-themes) | Reference for the removed collection; no Kitty theme collection is installed |
 
@@ -76,4 +80,4 @@ The [screenshot review guidance](docs/wiki/Assets.md#screenshots) separately rec
 The exact pinned [Nerd Fonts symbols notice](docs/licenses/Nerd-Fonts-Symbols-MIT.txt)
 is retained here as well as with the installed font. The bundled Debian glyph
 keeps its own [Unlicense](common/local/share/fonts/hyprixe/LICENSE.txt).
-No image or original attribution was removed or rewritten by this audit.
+Active assets and their attribution are unchanged by the archive cleanup.

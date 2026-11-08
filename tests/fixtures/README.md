@@ -19,3 +19,15 @@ metadata, not alternative desktop configurations or personal user backups.
 the refactored backend: that would discard independent equivalence evidence.
 Future intentional desktop changes require an explicitly reviewed contract
 update rather than silently updating hashes to make a test pass.
+
+## Shipping wallpapers and test images
+
+The current product wallpaper list is declared in `common/assets/wallpapers.json`.
+Deployment validates each name and SHA-256 and rejects undeclared files under
+`common/wallpapers/`; the manifest itself is not installed. Adding an image to
+that directory alone is not a product declaration.
+
+The frozen test still protects historical targets, content and permissions.
+Post-baseline shipping images are checked against the explicit current manifest
+at their exact data destination and mode 0644. Test-only images stay under
+`tests/fixtures/wallpapers/`, outside every production mapping.
