@@ -192,6 +192,47 @@ PAM, GPU blur and login-transition testing. Asset provenance and the remaining r
 [release readiness](docs/wiki/Assets.md#evidence-and-release-checklist). A NixOS port is a future plan,
 not an installation option for this version.
 
+## Roadmap
+
+Hyprixe is actively evolving. The current priority is to keep the Debian experience stable while progressively expanding the project around the **Core + Profiles** architecture.
+
+### ✅ Completed
+
+- [x] Debian 13 support
+- [x] Core + Profiles architecture
+- [x] Native and VMware installation profiles
+- [x] Frosted Glass desktop theme
+- [x] Hyprland + UWSM integration
+- [x] Waybar, Rofi, Wlogout, Hyprlock and SwayNC integration
+- [x] Kitty + Zsh + Powerlevel10k environment
+- [x] Dolphin / Kvantum integration
+- [x] SDDM theme
+- [x] Dynamic Wallpaper Theming with Wallust
+- [x] Dynamic SDDM wallpaper and palette synchronization
+- [x] Persistent wallpaper/theme state
+- [x] Automated verification and regression tests
+- [x] Explicit wallpaper asset validation
+- [x] Repository and historical archive cleanup
+
+### 🚧 Planned
+
+- [ ] Continue improving Dynamic Wallpaper Theming
+- [ ] Improve customization options without breaking the default Hyprixe experience
+- [ ] Expand hardware/profile detection
+- [ ] Improve installation and update workflows
+- [ ] Continue strengthening automated tests and physical-machine validation
+- [ ] Improve documentation and troubleshooting guides
+
+### 🧭 Future
+
+- [ ] NixOS profile
+- [ ] Reuse the same Hyprixe Core across multiple Linux distributions
+- [ ] Additional hardware profiles
+- [ ] Easier configuration and personalization tools
+- [ ] Long-term update and migration tooling
+
+> The roadmap may evolve as Hyprixe develops. Stability and consistency of the existing Debian profile remain the priority before expanding to additional platforms.
+
 ## License
 
 Hyprixe's integrated configuration and maintenance work use
