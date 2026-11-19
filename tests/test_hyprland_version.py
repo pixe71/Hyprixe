@@ -59,7 +59,8 @@ class InstallPolicyTests(unittest.TestCase):
         stream = io.StringIO()
         with contextlib.ExitStack() as stack:
             for name in ('waybar_compat.has_lua_workspace_ipc', 'waybar_compat.has_wlr_taskbar',
-                         'waybar_compat.has_click_drawer', 'rofi_compat.has_wayland_support',
+                         'waybar_compat.has_click_drawer', 'waybar_compat.has_safe_backlight',
+                         'rofi_compat.has_wayland_support',
                          'rofi_launcher.has_launcher_actions', 'rofi_launcher.has_launcher_cover'):
                 stack.enter_context(patch(name, return_value=True))
             for name in ('dolphin_checks.runtime_errors', 'terminal_checks.runtime_errors',

@@ -7,11 +7,22 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
-from waybar_compat import has_click_drawer, has_lua_workspace_ipc, has_wlr_taskbar
+from waybar_compat import has_click_drawer, has_lua_workspace_ipc, has_safe_backlight, has_wlr_taskbar
 
 LEFT = ['group/traygroup', 'hyprland/workspaces', 'wlr/taskbar']
 CENTER = ['custom/temperature', 'memory', 'cpu', 'custom/distro', 'clock#time', 'clock#date', 'idle_inhibitor']
-RIGHT = ['network', 'bluetooth', 'pulseaudio', 'battery', 'custom/power']
+RIGHT = ['network', 'bluetooth', 'pulseaudio', 'backlight', 'battery', 'custom/power']
+
+
+def validate_backlight(config):
+    backlight = config['backlight']
+    if set(backlight) != {'format', 'format-icons', 'tooltip-format', 'scroll-step', 'min-brightness'}:
+        raise ValueError('Use native backlight discovery and scrolling without a device or command override')
+    if backlight['scroll-step'] != 5 or backlight['min-brightness'] != 5:
+        raise ValueError('Native backlight must scroll by 5 points with a 5% minimum')
+    if ('{icon}' not in backlight['format'] or '{percent}%' not in backlight['format'] or
+            '{percent}%' not in backlight['tooltip-format'] or not backlight['format-icons']):
+        raise ValueError('Backlight must display an icon, percentage and tooltip')
 
 
 def validate(config, root):
@@ -29,6 +40,7 @@ def validate(config, root):
         raise ValueError('Only workspaces 1 to 4 should be shown on the bar')
     if any(key in config['battery'] for key in ('bat', 'adapter')):
         raise ValueError('Battery and AC adapter must be discovered automatically')
+    validate_backlight(config)
     if '{capacity}%' not in config['battery']['format'] or 'on-click' in config['custom/distro']:
         raise ValueError('Battery percentage required; Debian logo has no click action')
     for name in ('mpris', 'hyprland/window', 'hyprland/submap'):
@@ -49,7 +61,7 @@ def check_source(report, repo):
     except (OSError, ValueError, KeyError, TypeError) as exc:
         report(False, 'Waybar organization: ' + str(exc))
     else:
-        report(True, 'Waybar layout: native tray drawer, four workspaces, centered Debian, adaptive sensor and automatic battery')
+        report(True, 'Waybar layout: native tray drawer, four workspaces, centered Debian, adaptive sensor and automatic backlight/battery')
 
 
 def check_installed(report):
@@ -66,10 +78,11 @@ def check_installed(report):
     binary = shutil.which('waybar')
     report(has_lua_workspace_ipc(binary) and has_wlr_taskbar(binary) and has_click_drawer(binary),
            'Installed Waybar supports Lua workspace IPC, taskbar and native click drawer')
+    report(has_safe_backlight(binary), 'Installed Waybar supports the backlight scroll floor and silent hardware omission')
     try:
         font = subprocess.run(['fc-match', '-f', '%{family}', 'Hyprixe Debian:charset=f306'],
                               capture_output=True, text=True, timeout=10)
         report(font.returncode == 0 and font.stdout == 'Hyprixe Debian', 'Debian logo glyph resolves with its isolated font family')
     except (OSError, subprocess.TimeoutExpired) as exc:
         report(False, 'Debian logo font: ' + str(exc))
-    print('SKIPPED: tray clicks, idle inhibition, real sensors/battery and visual balance require a live desktop test')
+    print('SKIPPED: tray clicks, idle inhibition, real sensors/backlight/battery and visual balance require a live desktop test')

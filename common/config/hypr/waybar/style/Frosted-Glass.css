@@ -16,7 +16,7 @@ window#waybar {
 }
 #workspaces, #mpris, #tray, #submap, #idle_inhibitor, #clock,
 #window, #pulseaudio, #cpu, #memory, #network, #bluetooth, #custom-power,
-#custom-traylauncher, #custom-temperature, #custom-distro, #battery {
+#custom-traylauncher, #custom-temperature, #custom-distro, #backlight, #battery {
     background: alpha(@hx_surface, 0.32);
     color: @hx_foreground;
     margin: 4px 2px;
@@ -25,7 +25,7 @@ window#waybar {
     border: 1px solid alpha(@hx_foreground, 0.20);
 }
 #cpu, #memory, #network, #bluetooth, #custom-power,
-#custom-traylauncher, #custom-temperature, #custom-distro, #battery {
+#custom-traylauncher, #custom-temperature, #custom-distro, #backlight, #battery {
     background: alpha(@hx_border_secondary, 0.45);
     border-color: alpha(@hx_accent, 0.18);
 }

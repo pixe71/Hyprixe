@@ -18,7 +18,7 @@ configure_imports()
 
 sys.path.insert(0, str(ROOT / 'scripts'))
 import deploy
-from waybar_checks import check_source
+from waybar_checks import check_source, validate_backlight
 
 spec = importlib.util.spec_from_file_location('bar_temperature', source_path(ROOT, '.config/hypr/waybar/scripts/temperature.py'))
 sensor = importlib.util.module_from_spec(spec)
@@ -97,6 +97,28 @@ def css_rules(text):
 
 
 class LayoutTests(unittest.TestCase):
+    def test_backlight_is_native_and_independent_of_battery(self):
+        bar = source_path(ROOT, '.config/hypr/waybar')
+        config = json.loads((bar / 'configs/Frosted-Glass').read_text())
+        modules = config['modules-right']
+        self.assertEqual(modules[modules.index('battery') - 1], 'backlight')
+        self.assertEqual(config['backlight']['scroll-step'], 5)
+        self.assertEqual(config['backlight']['min-brightness'], 5)
+        validate_backlight(config)
+        for override in ('device', 'exec', 'exec-if', 'on-scroll-up', 'on-scroll-down'):
+            with self.subTest(override=override), self.assertRaises(ValueError):
+                validate_backlight({'backlight': {**config['backlight'], override: 'test override'}})
+
+    def test_backlight_reuses_battery_geometry_and_dynamic_paint(self):
+        style = source_path(ROOT, '.config/hypr/waybar/style/Frosted-Glass.css').read_text()
+        self.assertIn('@import "@HYPRIXE_THEME@/waybar.css";', style)
+        rules = css_rules(style.split('\n', 1)[1])
+        battery = [props for selectors, props in rules if '#battery' in selectors]
+        backlight = [props for selectors, props in rules if '#backlight' in selectors]
+        self.assertEqual(backlight, battery)
+        self.assertTrue(any('padding' in props and 'border-radius' in props for props in backlight))
+        self.assertTrue(any('@hx_border_secondary' in props.get('background', '') for props in backlight))
+
     def test_missing_active_asset_aborts_scoped_deployment_before_writing(self):
         with tempfile.TemporaryDirectory() as folder:
             home = Path(folder) / 'home'; home.mkdir()

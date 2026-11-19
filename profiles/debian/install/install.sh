@@ -57,7 +57,7 @@ if $waybar_only; then
         args+=(--dry-run)
     else
         python3 "$repo/common/compat/waybar_compat.py" || {
-            echo 'ERROR: Compatible Waybar with Lua IPC, taskbar and click drawer required; run the full ./install.sh native to prepare it.' >&2
+            echo 'ERROR: Compatible Waybar with Lua IPC, taskbar, click drawer and the backlight patch required; run ./install.sh native to prepare it.' >&2
             exit 1
         }
         command -v fc-cache >/dev/null || { echo 'ERROR: fontconfig (fc-cache) is required.' >&2; exit 1; }

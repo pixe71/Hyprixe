@@ -19,6 +19,7 @@ else:
 from source_layout import detect_profile, mapped_files, profile_metadata, shipping_wallpapers, WALLPAPER_MANIFEST
 from profile_checks import check_sources, duplication_errors, registry
 from run_tests import select
+from waybar_checks import validate_backlight
 import deploy
 import sddm_theme
 
@@ -256,11 +257,20 @@ class DebianEquivalenceTests(unittest.TestCase):
             for name, expected in fixture['cases'].items():
                 xdg, hardware, scope = name.split('/')
                 with self.subTest(case=name), patch.dict(os.environ, HOME=str(home)), patch.object(deploy.shutil, 'which', side_effect=lambda name: '/usr/bin/' + name):
-                    payload = deploy.payload(self.roots(home, xdg == 'custom'), hardware, home=home,
+                    roots = self.roots(home, xdg == 'custom')
+                    payload = deploy.payload(roots, hardware, home=home,
                             runtime=stage if scope == 'runtime' else None,
                             waybar_only=scope == 'waybar', dolphin_only=scope == 'dolphin')
                     actual = {}
                     for target, (data, mode) in payload.items():
+                        if target == roots['config'] / 'hypr/waybar/configs/Frosted-Glass':
+                            # Check the new module separately and compare all remaining
+                            # config to the immutable pre-refactor Waybar fingerprint.
+                            bar = json.loads(data)
+                            validate_backlight(bar)
+                            del bar['backlight']
+                            bar['modules-right'].remove('backlight')
+                            data = (json.dumps(bar, indent=2, ensure_ascii=False) + '\n').encode()
                         if data is not None:
                             try:
                                 data = data.decode().replace(str(home), '@HOME@').encode()

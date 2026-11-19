@@ -9,12 +9,19 @@ changes colours; its stable wallpaper link supplies previews and the lockscreen.
 | --- | --- |
 | Left | Collapsible tray drawer, workspaces 1–4, per-window taskbar |
 | Center | CPU temperature/root-storage fallback, memory, CPU, Debian logo, time/date, idle inhibitor |
-| Right | Network, Bluetooth, audio, battery, power menu |
+| Right | Network, Bluetooth, audio, screen brightness, battery, power menu |
 
 Click **☰** to open the drawer; it contains tray, music, title and submap.
 The eye enables presentation mode through the idle inhibitor. Temperature is
 discovered from CPU sensors, with root-storage usage as fallback. Battery uses
 automatic discovery; missing battery/Bluetooth hardware is normal.
+
+Screen brightness appears before the battery when Linux exposes a backlight.
+Waybar selects the device with the largest brightness scale and shows its
+current percentage. Scroll to adjust it by about five percentage points via
+logind in the active local session. The Waybar compatibility build clamps
+decreases at 5%, rounded up to a hardware step. This applies to Waybar scrolling.
+A normal `./install.sh native` prepares the updated build on first upgrade.
 
 Source: `common/config/hypr/waybar/`. The service explicitly loads
 `configs/Frosted-Glass` and `style.css`. See [Maintenance](Maintenance#component-updates)
