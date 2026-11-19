@@ -1,0 +1,384 @@
+#!/usr/bin/env python3
+"""On-demand GTK brightness control for the Hyprixe Waybar."""
+
+import argparse
+from dataclasses import dataclass
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import stat
+import subprocess
+import sys
+from time import monotonic
+
+
+NAMESPACE = 'hyprixe-brightness-popup'
+MIN_PERCENT = 5
+SESSION_PATH = '/org/freedesktop/login1/session/'
+MISSING_SESSION = {
+    'org.freedesktop.DBus.Error.UnknownObject',
+    'org.freedesktop.login1.NoSuchSession',
+    'org.freedesktop.login1.NoSessionForPID',
+}
+DEFAULT_COLOURS = {
+    'background': '#122434', 'surface_alt': '#345461', 'foreground': '#e6f1f4',
+    'foreground_muted': '#cbe2e8', 'accent': '#7ed6ff', 'border': '#4d7a8a',
+}
+
+
+@dataclass(frozen=True)
+class Backlight:
+    path: Path
+    maximum: int
+
+    @property
+    def name(self):
+        return self.path.name
+
+    def level(self):
+        # Match Waybar's use of the requested level for these drivers.
+        if not self.name.startswith('amdgpu_bl') and self.name != 'apple-panel-bl':
+            try:
+                return int((self.path / 'actual_brightness').read_text())
+            except (OSError, ValueError):
+                pass
+        return int((self.path / 'brightness').read_text())
+
+
+def select_backlight(root=Path('/sys/class/backlight')):
+    devices = []
+    try:
+        entries = list(root.iterdir())
+    except OSError:
+        return None
+    for path in entries:
+        try:
+            maximum = int((path / 'max_brightness').read_text())
+            if maximum > 0:
+                devices.append((path.resolve(strict=True), Backlight(path, maximum)))
+        except (OSError, RuntimeError, ValueError):
+            # A device can disappear while sysfs is being enumerated.
+            continue
+    # libudev enumerates by sysfs path. Waybar keeps the first device on a tie.
+    devices.sort(key=lambda entry: str(entry[0]))
+    best = max(devices, key=lambda entry: entry[1].maximum, default=None)
+    return best[1] if best else None
+
+
+def hardware_value(percent, maximum):
+    minimum = (MIN_PERCENT * maximum + 99) // 100
+    return min(maximum, max(minimum, (percent * maximum + 50) // 100))
+
+
+def display_percent(level, maximum):
+    return min(100, max(0, (level * 100 + maximum // 2) // maximum))
+
+
+class Logind:
+    def __init__(self, connection, gio, glib):
+        self.connection = connection
+        self.gio = gio
+        self.glib = glib
+        self.session = 'auto'
+
+    def set_brightness(self, device, value, done):
+        parameters = self.glib.Variant('(ssu)', ('backlight', device, value))
+
+        def finished(connection, result, session):
+            try:
+                connection.call_finish(result)
+            except self.glib.Error as error:
+                remote_error = self.gio.DBusError.get_remote_error(error)
+                if session == 'auto' and remote_error in MISSING_SESSION:
+                    self.session = 'self'
+                    call(self.session)
+                    return
+                done(error)
+            else:
+                done(None)
+
+        def call(session):
+            self.connection.call(
+                'org.freedesktop.login1', SESSION_PATH + session,
+                'org.freedesktop.login1.Session', 'SetBrightness', parameters,
+                None, self.gio.DBusCallFlags.NONE, 1500, None, finished, session,
+            )
+
+        call(self.session)
+
+
+def runtime_directory(environ):
+    path = Path(environ.get('XDG_RUNTIME_DIR', ''))
+    if not path.is_absolute():
+        raise ValueError('XDG_RUNTIME_DIR doit être un répertoire absolu.')
+    info = path.lstat()
+    if not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid() or info.st_mode & 0o077:
+        raise ValueError('XDG_RUNTIME_DIR doit être un répertoire privé appartenant à cet utilisateur.')
+    return path
+
+
+def application_id(environ):
+    session = '\0'.join(environ.get(key, '') for key in
+                        ('XDG_RUNTIME_DIR', 'WAYLAND_DISPLAY', 'HYPRLAND_INSTANCE_SIGNATURE'))
+    digest = hashlib.sha256(os.fsencode(session)).hexdigest()[:16]
+    return 'org.hyprixe.BrightnessPopup.Session' + digest
+
+
+def monitor_at_pointer(display, environ):
+    # Wayland doesn't expose other clients' global pointer coordinates to GDK.
+    if not environ.get('HYPRLAND_INSTANCE_SIGNATURE'):
+        return None
+    try:
+        result = subprocess.run(['hyprctl', '-j', 'cursorpos'], capture_output=True,
+                                text=True, timeout=0.5, check=True, env=environ)
+        point = json.loads(result.stdout)
+        x, y = float(point['x']), float(point['y'])
+    except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError):
+        return None
+    for index in range(display.get_n_monitors()):
+        monitor = display.get_monitor(index)
+        bounds = monitor.get_geometry()
+        if bounds.x <= x < bounds.x + bounds.width and bounds.y <= y < bounds.y + bounds.height:
+            return monitor
+    return None
+
+
+def popup_colours(environ, home):
+    cache = Path(environ.get('XDG_CACHE_HOME') or home / '.cache')
+    data = Path(environ.get('XDG_DATA_HOME') or home / '.local/share')
+    for path in (cache / 'hyprixe/theme/current/palette.json',
+                 data / 'hyprixe/theme/defaults/frosted-glass.json'):
+        try:
+            palette = json.loads(path.read_text())
+            colours = {role: palette[role] for role in DEFAULT_COLOURS}
+            if all(re.fullmatch(r'#[0-9a-fA-F]{6}', colour) for colour in colours.values()):
+                return colours
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+    return DEFAULT_COLOURS
+
+
+def popup_css(colours):
+    return f'''
+      window {{ background-color: transparent; }}
+      #brightness-panel {{
+        color: {colours['foreground']};
+        background-color: alpha({colours['background']}, 0.88);
+        border: 1px solid alpha({colours['border']}, 0.70);
+        border-radius: 14px;
+        padding: 12px 15px 8px;
+        font-family: "JetBrainsMono Nerd Font", monospace;
+        font-size: 13px;
+      }}
+      #brightness-icon {{ font-family: FontAwesome; color: {colours['accent']}; }}
+      #brightness-percent {{ color: {colours['foreground_muted']}; }}
+      scale {{ padding: 8px 0; }}
+      scale trough, scale highlight {{
+        min-height: 5px;
+        border: none;
+        border-radius: 4px;
+        background-image: none;
+      }}
+      scale trough {{ background-color: {colours['surface_alt']}; }}
+      scale highlight {{ background-color: {colours['accent']}; }}
+      scale slider {{
+        min-width: 16px;
+        min-height: 16px;
+        border-radius: 100%;
+        border: 1px solid {colours['accent']};
+        background-color: {colours['foreground']};
+        background-image: none;
+        box-shadow: none;
+      }}
+    '''.encode()
+
+
+class BrightnessSlider:
+    """Coalesce drag events and resync with sysfs while the window is open."""
+
+    def __init__(self, window, scale, label, device, logind, glib):
+        self.window, self.scale, self.label = window, scale, label
+        self.device, self.logind, self.glib = device, logind, glib
+        self.pending = None
+        self.in_flight = False
+        self.send_timer = 0
+        self.last_write = 0
+        self.last_error = None
+        self.closing = False
+        self.update(device.level())
+        self.handler = scale.connect('value-changed', self.changed)
+        self.poll_timer = glib.timeout_add(350, self.refresh)
+        window.connect('destroy', self.stop)
+
+    def update(self, level):
+        percent = display_percent(level, self.device.maximum)
+        slider_value = max(MIN_PERCENT, percent)
+        if self.scale.get_value() != slider_value:
+            self.scale.set_value(slider_value)
+        text = f'{percent} %'
+        if self.label.get_text() != text:
+            self.label.set_text(text)
+
+    def changed(self, scale):
+        self.pending = hardware_value(round(scale.get_value()), self.device.maximum)
+        self.label.set_text(f'{display_percent(self.pending, self.device.maximum)} %')
+        self.schedule_write()
+
+    def schedule_write(self):
+        if self.pending is not None and not self.send_timer and not self.in_flight:
+            self.send_timer = self.glib.timeout_add(50, self.write)
+
+    def write(self):
+        self.send_timer = 0
+        self.in_flight = True
+        level, self.pending = self.pending, None
+        self.logind.set_brightness(self.device.name, level, self.finished)
+        return False
+
+    def finished(self, error):
+        self.in_flight = False
+        self.last_write = monotonic()
+        if error and str(error) != self.last_error:
+            message(f'Impossible de régler la luminosité : {error}')
+        self.last_error = str(error) if error else None
+        self.schedule_write()
+        if self.closing and self.pending is None:
+            self.window.destroy()
+
+    def refresh(self):
+        if self.closing or self.pending is not None or self.in_flight or monotonic() - self.last_write < 0.2:
+            return True
+        try:
+            level = self.device.level()
+        except (OSError, ValueError):
+            message('Périphérique de rétroéclairage indisponible.')
+            self.close()
+            return False
+        self.scale.handler_block(self.handler)
+        self.update(level)
+        self.scale.handler_unblock(self.handler)
+        return True
+
+    def close(self):
+        # Finish the latest request even if the user closes the window mid-drag.
+        self.closing = True
+        self.window.hide()
+        if self.pending is None and not self.in_flight:
+            self.window.destroy()
+
+    def stop(self, _window):
+        self.glib.source_remove(self.poll_timer)
+        if self.send_timer:
+            self.glib.source_remove(self.send_timer)
+
+
+def create_popup(app, device, logind, Gdk, GLib, Gtk, LayerShell):
+    window = Gtk.ApplicationWindow(application=app, decorated=False, resizable=False)
+    LayerShell.init_for_window(window)
+    LayerShell.set_namespace(window, NAMESPACE)
+    LayerShell.set_layer(window, LayerShell.Layer.OVERLAY)
+    LayerShell.set_keyboard_mode(window, LayerShell.KeyboardMode.EXCLUSIVE)
+    for edge in (LayerShell.Edge.TOP, LayerShell.Edge.RIGHT):
+        LayerShell.set_anchor(window, edge, True)
+        LayerShell.set_margin(window, edge, 10)
+    display = window.get_display()
+    monitor = monitor_at_pointer(display, os.environ)
+    if monitor is not None:
+        LayerShell.set_monitor(window, monitor)
+
+    css = Gtk.CssProvider()
+    css.load_from_data(popup_css(popup_colours(os.environ, Path.home())))
+    Gtk.StyleContext.add_provider_for_screen(window.get_screen(), css, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+    window.connect('destroy', lambda *_: Gtk.StyleContext.remove_provider_for_screen(window.get_screen(), css))
+    panel = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+    panel.set_name('brightness-panel')
+    panel.set_size_request(264, -1)
+    header = Gtk.Box(spacing=9)
+    icon = Gtk.Label(label='\uf185')
+    icon.set_name('brightness-icon')
+    label = Gtk.Label()
+    label.set_name('brightness-percent')
+    header.pack_start(icon, False, False, 0)
+    header.pack_start(Gtk.Label(label='Luminosité'), False, False, 0)
+    header.pack_end(label, False, False, 0)
+    panel.pack_start(header, False, False, 0)
+    scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, MIN_PERCENT, 100, 1)
+    scale.set_draw_value(False)
+    scale.set_round_digits(0)
+    scale.get_accessible().set_name('Luminosité')
+    panel.pack_start(scale, True, True, 0)
+    window.add(panel)
+    try:
+        slider = BrightnessSlider(window, scale, label, device, logind, GLib)
+    except (OSError, ValueError):
+        window.destroy()
+        raise
+    def close(*_):
+        slider.close()
+        return True
+
+    def key_pressed(_, event):
+        return event.keyval == Gdk.KEY_Escape and close()
+
+    window.connect('key-press-event', key_pressed)
+    window.connect('delete-event', close)
+    window.show_all()
+    scale.grab_focus()
+    return slider
+
+
+def message(text):
+    print(f'{NAMESPACE}: {text}', file=sys.stderr)
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description='Ouvrir ou fermer le réglage de luminosité Hyprixe.')
+    parser.add_argument('--toggle', action='store_true', help='ouvrir ou fermer le popup')
+    parser.parse_args(argv)
+    device = select_backlight()
+    if device is None:
+        message('Aucun périphérique de rétroéclairage.')
+        return 0
+    try:
+        runtime_directory(os.environ)
+        import gi
+        gi.require_version('Gdk', '3.0')
+        gi.require_version('Gtk', '3.0')
+        gi.require_version('GtkLayerShell', '0.1')
+        from gi.repository import Gdk, Gio, GLib, Gtk, GtkLayerShell
+    except (OSError, ImportError, ValueError) as error:
+        message(error)
+        return 1
+    if not Gtk.init_check()[0] or not GtkLayerShell.is_supported():
+        message('Une session Wayland avec layer-shell est nécessaire.')
+        return 1
+    app = Gtk.Application(application_id=application_id(os.environ))
+    try:
+        # Require the session bus so activation always uses a single instance.
+        Gio.bus_get_sync(Gio.BusType.SESSION, None)
+        app.register(None)
+    except GLib.Error as error:
+        message(error)
+        return 1
+
+    def activate(application):
+        windows = application.get_windows()
+        if windows:
+            windows[0].brightness_slider.close()
+            return
+        try:
+            logind = Logind(Gio.bus_get_sync(Gio.BusType.SYSTEM, None), Gio, GLib)
+            slider = create_popup(application, device, logind, Gdk, GLib, Gtk, GtkLayerShell)
+            slider.window.brightness_slider = slider
+        except (OSError, ValueError, GLib.Error) as error:
+            message(error)
+            application.quit()
+
+    app.connect('activate', activate)
+    return app.run([sys.argv[0]])
+
+
+if __name__ == '__main__':
+    sys.exit(main())

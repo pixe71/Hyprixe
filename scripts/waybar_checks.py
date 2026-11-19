@@ -12,12 +12,15 @@ from waybar_compat import has_click_drawer, has_lua_workspace_ipc, has_safe_back
 LEFT = ['group/traygroup', 'hyprland/workspaces', 'wlr/taskbar']
 CENTER = ['custom/temperature', 'memory', 'cpu', 'custom/distro', 'clock#time', 'clock#date', 'idle_inhibitor']
 RIGHT = ['network', 'bluetooth', 'pulseaudio', 'backlight', 'battery', 'custom/power']
+POPUP = '.local/bin/hyprixe-brightness-popup'
 
 
 def validate_backlight(config):
     backlight = config['backlight']
-    if set(backlight) != {'format', 'format-icons', 'tooltip-format', 'scroll-step', 'min-brightness'}:
-        raise ValueError('Use native backlight discovery and scrolling without a device or command override')
+    if set(backlight) != {'format', 'format-icons', 'tooltip-format', 'scroll-step', 'min-brightness', 'on-click'}:
+        raise ValueError('Use native backlight discovery and scrolling with the Hyprixe click action')
+    if backlight['on-click'] != f'"$HOME/{POPUP}" --toggle':
+        raise ValueError('Backlight click must toggle the Hyprixe brightness popup')
     if backlight['scroll-step'] != 5 or backlight['min-brightness'] != 5:
         raise ValueError('Native backlight must scroll by 5 points with a 5% minimum')
     if ('{icon}' not in backlight['format'] or '{percent}%' not in backlight['format'] or
@@ -55,6 +58,8 @@ def check_source(report, repo):
         root = source_path(repo, '.config/hypr/waybar')
         config = json.loads((root / 'configs/Frosted-Glass').read_text())
         validate(config, root)
+        if not source_path(repo, POPUP).is_file():
+            raise ValueError('Hyprixe brightness popup helper missing')
         font = source_path(repo, '.local/share/fonts/hyprixe/HyprixeDebian.ttf')
         if not font.is_file() or font.read_bytes()[:4] != b'\x00\x01\x00\x00':
             raise ValueError('Bundled Debian logo font missing/invalid')
@@ -71,10 +76,13 @@ def check_installed(report):
         validate(json.loads((root / 'configs/Frosted-Glass').read_text()), root)
         if not (root / 'style.css').is_file() or not (root / 'style/Frosted-Glass.css').is_file():
             raise ValueError('Active Waybar CSS missing')
+        popup = home / POPUP
+        if not popup.is_file() or not os.access(popup, os.X_OK):
+            raise ValueError('Installed Hyprixe brightness popup helper is missing or is not executable')
     except (OSError, ValueError, KeyError, TypeError) as exc:
         report(False, 'Installed Waybar organization: ' + str(exc))
     else:
-        report(True, 'Installed Waybar configuration, CSS and adaptive helper exist')
+        report(True, 'Installed Waybar configuration, CSS and helpers (temperature, brightness popup)')
     binary = shutil.which('waybar')
     report(has_lua_workspace_ipc(binary) and has_wlr_taskbar(binary) and has_click_drawer(binary),
            'Installed Waybar supports Lua workspace IPC, taskbar and native click drawer')

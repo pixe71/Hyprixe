@@ -37,6 +37,12 @@ try:
     from gi.repository import Gtk
 except (ImportError, ValueError):
     errors.append('Dynamic theming requires python3-pil and python3-gi (GTK 3).')
+try:
+    import gi
+    gi.require_version('GtkLayerShell', '0.1')
+    from gi.repository import GtkLayerShell
+except (ImportError, ValueError):
+    errors.append('The Waybar brightness popup requires gir1.2-gtklayershell-0.1.')
 if missing:
     errors.append('Missing commands: ' + ', '.join(missing))
 if not Path('/usr/share/wayland-sessions/hyprland-uwsm.desktop').is_file():

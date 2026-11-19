@@ -237,8 +237,10 @@ def main():
     else:
         print('SKIPPED: Lua compiler and load test unavailable')
     check_native_config(report, ROOT)
+    python_helpers = {source_path(ROOT, '.local/bin/' + name) for name in
+                      ('hyprixe-session', 'hyprixe-brightness-popup')}
     for p in files:
-        if p.suffix == '.py' or p == source_path(ROOT, '.local/bin/hyprixe-session'):
+        if p.suffix == '.py' or p in python_helpers:
             try: ast.parse(p.read_text(), str(p))
             except SyntaxError as exc: report(False, str(exc))
     report(True, 'Python syntax parsed without generating bytecode')

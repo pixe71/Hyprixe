@@ -4,3 +4,4 @@ hl.window_rule({ name = "picture-in-picture", match = { title = "^([Pp]icture.in
 for _, namespace in ipairs({ "rofi", "waybar", "swaync-control-center", "swaync-notification-window", "logout_dialog" }) do
   hl.layer_rule({ name = "frosted-" .. namespace, match = { namespace = namespace }, blur = true, ignore_alpha = 0 })
 end
+hl.layer_rule({ name = "frosted-brightness-popup", match = { namespace = "^hyprixe-brightness-popup$" }, blur = true, ignore_alpha = 0 })

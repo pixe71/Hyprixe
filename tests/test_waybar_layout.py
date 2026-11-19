@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import re
+import stat
 import subprocess
 import sys
 import tempfile
@@ -104,6 +105,7 @@ class LayoutTests(unittest.TestCase):
         self.assertEqual(modules[modules.index('battery') - 1], 'backlight')
         self.assertEqual(config['backlight']['scroll-step'], 5)
         self.assertEqual(config['backlight']['min-brightness'], 5)
+        self.assertEqual(config['backlight']['on-click'], '"$HOME/.local/bin/hyprixe-brightness-popup" --toggle')
         validate_backlight(config)
         for override in ('device', 'exec', 'exec-if', 'on-scroll-up', 'on-scroll-down'):
             with self.subTest(override=override), self.assertRaises(ValueError):
@@ -190,16 +192,20 @@ class LayoutTests(unittest.TestCase):
             dolphin = roots['config'] / 'dolphinrc'; dolphin.write_text('personal Dolphin')
             old = roots['config'] / 'hypr/waybar/configs/Frosted-Glass'
             old.parent.mkdir(); old.write_text('old bar')
+            helper = home / '.local/bin/hyprixe-brightness-popup'
             with contextlib.redirect_stdout(io.StringIO()):
                 backup = deploy.install(home, roots, 'native', waybar_only=True)
                 self.assertEqual(deploy.read_manifest(backup)['scope'], 'waybar')
                 self.assertIsNone(deploy.install(home, roots, 'native', waybar_only=True))
                 self.assertTrue((roots['data'] / 'fonts/hyprixe/HyprixeDebian.ttf').is_file())
+                self.assertEqual(helper.read_bytes(), source_path(ROOT, '.local/bin/hyprixe-brightness-popup').read_bytes())
+                self.assertEqual(stat.S_IMODE(helper.stat().st_mode), 0o755)
                 deploy.restore(backup, home)
             self.assertEqual(old.read_text(), 'old bar')
             self.assertEqual(personal.read_text(), 'personal')
             self.assertEqual(dolphin.read_text(), 'personal Dolphin')
             self.assertFalse((roots['config'] / 'hypr/profile.lua').exists())
+            self.assertFalse(helper.exists())
 
     def test_scoped_dry_run_and_incompatible_flags_do_not_write(self):
         with tempfile.TemporaryDirectory() as folder:

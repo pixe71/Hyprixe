@@ -238,8 +238,9 @@ class DebianEquivalenceTests(unittest.TestCase):
         for name, record in wallpapers.items():
             self.assertIn(name, actual, 'Missing declared shipping wallpaper')
             self.assertEqual(actual[name], record, name)
+        popup = {'.local/bin/hyprixe-brightness-popup'} if scope in ('full', 'runtime', 'waybar') else set()
         for name in set(actual) - set(expected):
-            self.assertTrue(name in wallpapers or name.startswith(data_prefix + 'hyprixe/theme/') or
+            self.assertTrue(name in popup or name in wallpapers or name.startswith(data_prefix + 'hyprixe/theme/') or
                             name in ('.local/bin/hyprixe-theme', '.local/bin/hyprixe-login-theme-sync',
                                      config_prefix + 'swaync/style.css', config_prefix + 'hypr/waybar/colors.css'),
                             'Unexpected runtime destination: ' + name)
@@ -261,6 +262,11 @@ class DebianEquivalenceTests(unittest.TestCase):
                     payload = deploy.payload(roots, hardware, home=home,
                             runtime=stage if scope == 'runtime' else None,
                             waybar_only=scope == 'waybar', dolphin_only=scope == 'dolphin')
+                    popup = '.local/bin/hyprixe-brightness-popup'
+                    if scope in ('full', 'runtime', 'waybar'):
+                        self.assertEqual(payload.get(home / popup), (source_path(ROOT, popup).read_bytes(), 0o755))
+                    else:
+                        self.assertNotIn(home / popup, payload)
                     actual = {}
                     for target, (data, mode) in payload.items():
                         if target == roots['config'] / 'hypr/waybar/configs/Frosted-Glass':
@@ -271,6 +277,11 @@ class DebianEquivalenceTests(unittest.TestCase):
                             del bar['backlight']
                             bar['modules-right'].remove('backlight')
                             data = (json.dumps(bar, indent=2, ensure_ascii=False) + '\n').encode()
+                        if target == roots['config'] / 'hypr/lua/rules.lua':
+                            popup_rule = (b'hl.layer_rule({ name = "frosted-brightness-popup", match = { '
+                                          b'namespace = "^hyprixe-brightness-popup$" }, blur = true, ignore_alpha = 0 })\n')
+                            self.assertTrue(data.endswith(popup_rule), 'Expected the scoped popup blur rule')
+                            data = data.removesuffix(popup_rule)
                         if data is not None:
                             try:
                                 data = data.decode().replace(str(home), '@HOME@').encode()
