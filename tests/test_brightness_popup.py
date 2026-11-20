@@ -205,8 +205,8 @@ class PopupDismissalTests(unittest.TestCase):
     def setUp(self):
         self.window, self.scale, self.close, self.glib = (Mock() for _ in range(4))
         self.surface = Mock()
-        self.surface.get_width.return_value = 264
-        self.surface.get_height.return_value = 70
+        self.surface.get_width.return_value = 244
+        self.surface.get_height.return_value = 64
         self.window.get_window.return_value = self.surface
         self.gdk = SimpleNamespace(EventMask=SimpleNamespace(ENTER_NOTIFY_MASK=1, LEAVE_NOTIFY_MASK=2),
                                    CrossingMode=SimpleNamespace(NORMAL=0), NotifyType=SimpleNamespace(INFERIOR=2),
@@ -231,7 +231,7 @@ class PopupDismissalTests(unittest.TestCase):
             self.glib.idle_add.call_args.args[0]()
             self.glib.idle_add.reset_mock()
 
-    def test_leave_after_actual_enter_starts_one_five_second_timer(self):
+    def test_leave_after_actual_enter_starts_one_three_second_timer(self):
         # A map event or a bogus outside enter must not start a countdown.
         outside = SimpleNamespace(**{**vars(self.crossing), 'y': -5})
         self.dismiss.pointer_enter(self.window, outside)
@@ -242,7 +242,7 @@ class PopupDismissalTests(unittest.TestCase):
         self.assertTrue(self.dismiss.pointer_has_entered)
         self.leave()
         self.leave()
-        self.glib.timeout_add.assert_called_once_with(5000, self.dismiss.expire)
+        self.glib.timeout_add.assert_called_once_with(3000, self.dismiss.expire)
         self.assertEqual(self.dismiss.close_timer, 21)
         self.close.assert_not_called()
 
@@ -328,7 +328,7 @@ class PopupDismissalTests(unittest.TestCase):
         scale_window.coords_to_parent.side_effect = lambda x, y: (x + 15, y + 44)
         self.dismiss.drag_end(self.scale, SimpleNamespace(button=1, window=scale_window, x=60, y=27))
         self.assertFalse(self.dismiss.drag_active)
-        self.glib.timeout_add.assert_called_once_with(5000, self.dismiss.expire)
+        self.glib.timeout_add.assert_called_once_with(3000, self.dismiss.expire)
 
     def test_release_inside_does_not_start_a_timer(self):
         self.dismiss.drag_start(self.scale, SimpleNamespace(button=1))

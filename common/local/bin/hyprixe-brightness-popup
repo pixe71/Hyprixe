@@ -16,6 +16,8 @@ from time import monotonic
 
 NAMESPACE = 'hyprixe-brightness-popup'
 MIN_PERCENT = 5
+MIN_PANEL_WIDTH = 244
+AUTO_CLOSE_DELAY_MS = 3000
 SESSION_PATH = '/org/freedesktop/login1/session/'
 MISSING_SESSION = {
     'org.freedesktop.DBus.Error.UnknownObject',
@@ -168,7 +170,7 @@ def popup_css(colours):
         background-color: alpha({colours['background']}, 0.88);
         border: 1px solid alpha({colours['border']}, 0.70);
         border-radius: 14px;
-        padding: 12px 15px 8px;
+        padding: 10px 12px 6px;
         font-family: "JetBrainsMono Nerd Font", monospace;
         font-size: 13px;
       }}
@@ -348,7 +350,7 @@ class PopupDismissal:
 
     def schedule_close(self):
         if self.pointer_has_entered and not (self.closed or self.pointer_inside or self.drag_active or self.close_timer):
-            self.close_timer = self.glib.timeout_add(5000, self.expire)
+            self.close_timer = self.glib.timeout_add(AUTO_CLOSE_DELAY_MS, self.expire)
 
     def cancel_timer(self):
         if self.close_timer:
@@ -394,9 +396,9 @@ def create_popup(app, device, logind, Gdk, GLib, Gtk, LayerShell):
     css.load_from_data(popup_css(popup_colours(os.environ, Path.home())))
     Gtk.StyleContext.add_provider_for_screen(window.get_screen(), css, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
     window.connect('destroy', lambda *_: Gtk.StyleContext.remove_provider_for_screen(window.get_screen(), css))
-    panel = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+    panel = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=3)
     panel.set_name('brightness-panel')
-    panel.set_size_request(264, -1)
+    panel.set_size_request(MIN_PANEL_WIDTH, -1)
     header = Gtk.Box(spacing=9)
     icon = Gtk.Label(label='\uf185')
     icon.set_name('brightness-icon')
