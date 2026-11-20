@@ -274,12 +274,142 @@ class BrightnessSlider:
             self.glib.source_remove(self.send_timer)
 
 
+class PopupDismissal:
+    """Track pointer crossings and focus for this layer surface."""
+
+    def __init__(self, window, scale, close, gdk, glib):
+        self.window, self.close_popup, self.gdk, self.glib = window, close, gdk, glib
+        self.pointer_inside = False
+        self.drag_active = False
+        self.focused = False
+        self.closed = False
+        self.focus_idle = 0
+        self.close_timer = 0
+        window.add_events(gdk.EventMask.ENTER_NOTIFY_MASK | gdk.EventMask.LEAVE_NOTIFY_MASK)
+        window.connect('enter-notify-event', self.pointer_enter)
+        window.connect('leave-notify-event', self.pointer_leave)
+        window.connect('focus-in-event', self.focus_in)
+        window.connect('focus-out-event', self.focus_out)
+        window.connect('key-press-event', self.key_pressed)
+        window.connect('delete-event', self.close)
+        window.connect('hide', self.stop)
+        window.connect('destroy', self.stop)
+        scale.connect('button-press-event', self.drag_start)
+        scale.connect('button-release-event', self.drag_end)
+        scale.connect('grab-broken-event', self.grab_broken)
+
+    def is_surface_crossing(self, event):
+        return (not self.closed and event.window == self.window.get_window()
+                and event.mode == self.gdk.CrossingMode.NORMAL
+                and event.detail != self.gdk.NotifyType.INFERIOR)
+
+    def contains_event(self, event):
+        surface, source = self.window.get_window(), event.window
+        if surface is None:
+            return False
+        x, y = event.x, event.y
+        # Gtk.Scale receives release events on its own input-only child window,
+        # including releases beyond the popup under Wayland's implicit grab.
+        while source != surface:
+            if source is None:
+                return False
+            x, y = source.coords_to_parent(x, y)
+            source = source.get_parent()
+        return 0 <= x < surface.get_width() and 0 <= y < surface.get_height()
+
+    def pointer_enter(self, _, event):
+        # Hyprland can initially send enter with coordinates outside a new layer.
+        if self.is_surface_crossing(event) and self.contains_event(event):
+            self.pointer_inside = True
+            self.cancel_timer()
+        return False
+
+    def pointer_leave(self, _, event):
+        if self.is_surface_crossing(event) and self.pointer_inside:
+            self.pointer_inside = False
+            self.schedule_close()
+        return False
+
+    def drag_start(self, _, event):
+        if event.button == self.gdk.BUTTON_PRIMARY and not self.closed:
+            self.drag_active = self.pointer_inside = True
+            self.cancel_timer()
+        return False
+
+    def drag_end(self, _, event):
+        if event.button == self.gdk.BUTTON_PRIMARY and self.drag_active:
+            self.pointer_inside = self.contains_event(event)
+            self.drag_active = False
+            self.schedule_close()
+        return False
+
+    def grab_broken(self, _, event):
+        if self.drag_active and not event.keyboard:
+            self.drag_active = False
+            self.schedule_close()
+        return False
+
+    def focus_in(self, *_):
+        # Some compositors send enter and leave together when mapping a layer.
+        # Arm dismissal only once that batch of focus events has settled.
+        if not (self.closed or self.focused or self.focus_idle):
+            self.focus_idle = self.glib.idle_add(self.arm_focus)
+        return False
+
+    def arm_focus(self):
+        self.focus_idle = 0
+        self.focused = True
+        return False
+
+    def focus_out(self, *_):
+        self.cancel_focus_arm()
+        had_focus, self.focused = self.focused, False
+        if had_focus and not self.drag_active:
+            self.close()
+        return False
+
+    def cancel_focus_arm(self):
+        if self.focus_idle:
+            self.glib.source_remove(self.focus_idle)
+            self.focus_idle = 0
+
+    def schedule_close(self):
+        if not (self.closed or self.pointer_inside or self.drag_active or self.close_timer):
+            self.close_timer = self.glib.timeout_add(5000, self.expire)
+
+    def cancel_timer(self):
+        if self.close_timer:
+            self.glib.source_remove(self.close_timer)
+            self.close_timer = 0
+
+    def expire(self):
+        self.close_timer = 0
+        self.close()
+        return False
+
+    def key_pressed(self, _, event):
+        return event.keyval == self.gdk.KEY_Escape and self.close()
+
+    def stop(self, *_):
+        self.closed = True
+        self.cancel_focus_arm()
+        self.cancel_timer()
+
+    def close(self, *_):
+        if not self.closed:
+            self.stop()
+            self.close_popup()
+        return True
+
+
 def create_popup(app, device, logind, Gdk, GLib, Gtk, LayerShell):
     window = Gtk.ApplicationWindow(application=app, decorated=False, resizable=False)
     LayerShell.init_for_window(window)
     LayerShell.set_namespace(window, NAMESPACE)
     LayerShell.set_layer(window, LayerShell.Layer.OVERLAY)
-    LayerShell.set_keyboard_mode(window, LayerShell.KeyboardMode.EXCLUSIVE)
+    keyboard = LayerShell.KeyboardMode
+    mode = keyboard.ON_DEMAND if LayerShell.get_protocol_version() >= 4 else keyboard.EXCLUSIVE
+    LayerShell.set_keyboard_mode(window, mode)
     for edge in (LayerShell.Edge.TOP, LayerShell.Edge.RIGHT):
         LayerShell.set_anchor(window, edge, True)
         LayerShell.set_margin(window, edge, 10)
@@ -315,18 +445,10 @@ def create_popup(app, device, logind, Gdk, GLib, Gtk, LayerShell):
     except (OSError, ValueError):
         window.destroy()
         raise
-    def close(*_):
-        slider.close()
-        return True
-
-    def key_pressed(_, event):
-        return event.keyval == Gdk.KEY_Escape and close()
-
-    window.connect('key-press-event', key_pressed)
-    window.connect('delete-event', close)
+    dismissal = PopupDismissal(window, scale, slider.close, Gdk, GLib)
     window.show_all()
     scale.grab_focus()
-    return slider
+    return dismissal
 
 
 def message(text):
@@ -366,12 +488,12 @@ def main(argv=None):
     def activate(application):
         windows = application.get_windows()
         if windows:
-            windows[0].brightness_slider.close()
+            windows[0].brightness_dismissal.close()
             return
         try:
             logind = Logind(Gio.bus_get_sync(Gio.BusType.SYSTEM, None), Gio, GLib)
-            slider = create_popup(application, device, logind, Gdk, GLib, Gtk, GtkLayerShell)
-            slider.window.brightness_slider = slider
+            dismissal = create_popup(application, device, logind, Gdk, GLib, Gtk, GtkLayerShell)
+            dismissal.window.brightness_dismissal = dismissal
         except (OSError, ValueError, GLib.Error) as error:
             message(error)
             application.quit()

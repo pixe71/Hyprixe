@@ -199,3 +199,139 @@ class BrightnessPopupTests(unittest.TestCase):
         packages = {line.split('#')[0].strip() for line in path.read_text().splitlines()}
         self.assertLessEqual({'python3-gi', 'gir1.2-gtk-3.0', 'gir1.2-gtklayershell-0.1'}, packages)
         self.assertTrue(HELPER.read_text().startswith('#!/usr/bin/env python3\n'))
+
+
+class PopupDismissalTests(unittest.TestCase):
+    def setUp(self):
+        self.window, self.scale, self.close, self.glib = (Mock() for _ in range(4))
+        self.surface = Mock()
+        self.surface.get_width.return_value = 264
+        self.surface.get_height.return_value = 70
+        self.window.get_window.return_value = self.surface
+        self.gdk = SimpleNamespace(EventMask=SimpleNamespace(ENTER_NOTIFY_MASK=1, LEAVE_NOTIFY_MASK=2),
+                                   CrossingMode=SimpleNamespace(NORMAL=0), NotifyType=SimpleNamespace(INFERIOR=2),
+                                   BUTTON_PRIMARY=1, KEY_Escape=65307)
+        self.glib.timeout_add.side_effect = (21, 22)
+        self.glib.idle_add.return_value = 31
+        self.dismiss = popup.PopupDismissal(self.window, self.scale, self.close, self.gdk, self.glib)
+        self.crossing = SimpleNamespace(window=self.surface, mode=0, detail=0, x=50, y=30)
+
+    def enter(self):
+        self.dismiss.pointer_enter(self.window, self.crossing)
+
+    def leave(self):
+        self.dismiss.pointer_leave(self.window, self.crossing)
+
+    def focus(self):
+        self.dismiss.focus_in()
+        self.glib.idle_add.call_args.args[0]()
+
+    def test_leave_after_actual_enter_starts_one_five_second_timer(self):
+        # A map event or a bogus outside enter must not start a countdown.
+        outside = SimpleNamespace(**{**vars(self.crossing), 'y': -5})
+        self.dismiss.pointer_enter(self.window, outside)
+        self.leave()
+        self.glib.timeout_add.assert_not_called()
+        self.enter()
+        self.leave()
+        self.leave()
+        self.glib.timeout_add.assert_called_once_with(5000, self.dismiss.expire)
+        self.assertEqual(self.dismiss.close_timer, 21)
+        self.close.assert_not_called()
+
+    def test_reentry_cancels_and_next_leave_starts_a_new_timer(self):
+        self.enter()
+        self.leave()
+        self.enter()
+        self.glib.source_remove.assert_called_once_with(21)
+        self.assertEqual(self.dismiss.close_timer, 0)
+        self.leave()
+        self.leave()
+        self.assertEqual(self.dismiss.close_timer, 22)
+        self.assertEqual(self.glib.timeout_add.call_count, 2)
+
+    def test_timer_expiration_closes_once_without_removing_the_running_source(self):
+        self.enter()
+        self.leave()
+        callback = self.glib.timeout_add.call_args.args[1]
+        self.assertFalse(callback())
+        self.assertEqual(self.dismiss.close_timer, 0)
+        self.glib.source_remove.assert_not_called()
+        self.dismiss.close()
+        self.close.assert_called_once_with()
+
+    def test_escape_cancels_the_timer_and_closes(self):
+        self.enter()
+        self.leave()
+        self.assertFalse(self.dismiss.key_pressed(self.window, SimpleNamespace(keyval=0)))
+        self.close.assert_not_called()
+        self.assertTrue(self.dismiss.key_pressed(self.window, SimpleNamespace(keyval=self.gdk.KEY_Escape)))
+        self.glib.source_remove.assert_called_once_with(21)
+        self.close.assert_called_once_with()
+
+    def test_toggle_closes_even_with_a_timer_and_cannot_restart_it(self):
+        self.enter()
+        self.leave()
+        self.dismiss.close()  # Gtk.Application activation uses the same close path.
+        self.enter()
+        self.leave()
+        self.glib.source_remove.assert_called_once_with(21)
+        self.glib.timeout_add.assert_called_once()
+        self.close.assert_called_once_with()
+
+    def test_focus_loss_only_dismisses_after_keyboard_focus_was_received(self):
+        self.dismiss.focus_out()
+        self.close.assert_not_called()
+        self.focus()
+        self.dismiss.focus_out()
+        self.close.assert_called_once_with()
+
+    def test_focus_in_and_out_at_map_do_not_close_before_the_event_batch_settles(self):
+        self.dismiss.focus_in()
+        self.dismiss.focus_out()
+        self.glib.source_remove.assert_called_once_with(31)
+        self.close.assert_not_called()
+
+    def test_focus_loss_with_pending_timer_closes_immediately(self):
+        self.focus()
+        self.enter()
+        self.leave()
+        self.dismiss.focus_out()
+        self.glib.source_remove.assert_called_once_with(21)
+        self.close.assert_called_once_with()
+
+    def test_drag_outside_suspends_dismissal_until_release(self):
+        self.focus()
+        self.dismiss.drag_start(self.scale, SimpleNamespace(button=1))
+        self.leave()
+        self.dismiss.focus_out()
+        self.glib.timeout_add.assert_not_called()
+        self.close.assert_not_called()
+        scale_window = Mock()
+        scale_window.get_parent.return_value = self.surface
+        scale_window.coords_to_parent.side_effect = lambda x, y: (x + 15, y + 44)
+        self.dismiss.drag_end(self.scale, SimpleNamespace(button=1, window=scale_window, x=60, y=27))
+        self.assertFalse(self.dismiss.drag_active)
+        self.glib.timeout_add.assert_called_once_with(5000, self.dismiss.expire)
+
+    def test_release_inside_does_not_start_a_timer(self):
+        self.dismiss.drag_start(self.scale, SimpleNamespace(button=1))
+        self.leave()
+        self.dismiss.drag_end(self.scale, SimpleNamespace(button=1, window=self.surface, x=60, y=55))
+        self.assertTrue(self.dismiss.pointer_inside)
+        self.glib.timeout_add.assert_not_called()
+
+    def test_child_and_synthetic_crossings_do_not_count_as_leaving(self):
+        self.enter()
+        for changes in ({'detail': self.gdk.NotifyType.INFERIOR}, {'window': Mock()}, {'mode': 1}):
+            self.dismiss.pointer_leave(self.window, SimpleNamespace(**{**vars(self.crossing), **changes}))
+        self.assertTrue(self.dismiss.pointer_inside)
+        self.glib.timeout_add.assert_not_called()
+
+    def test_hidden_or_destroyed_window_cancels_pending_timer(self):
+        self.enter()
+        self.leave()
+        self.dismiss.stop()
+        self.dismiss.stop()
+        self.glib.source_remove.assert_called_once_with(21)
+        self.close.assert_not_called()
