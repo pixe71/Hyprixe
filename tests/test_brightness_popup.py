@@ -222,17 +222,24 @@ class PopupDismissalTests(unittest.TestCase):
     def leave(self):
         self.dismiss.pointer_leave(self.window, self.crossing)
 
-    def focus(self):
-        self.dismiss.focus_in()
-        self.glib.idle_add.call_args.args[0]()
+    def emit_focus(self, signal):
+        for name, callback in (call.args for call in self.window.connect.call_args_list):
+            if name == signal:
+                callback(self.window, SimpleNamespace(window=self.surface))
+        # Run an idle handler if the implementation defers focus handling.
+        if self.glib.idle_add.called:
+            self.glib.idle_add.call_args.args[0]()
+            self.glib.idle_add.reset_mock()
 
     def test_leave_after_actual_enter_starts_one_five_second_timer(self):
         # A map event or a bogus outside enter must not start a countdown.
         outside = SimpleNamespace(**{**vars(self.crossing), 'y': -5})
         self.dismiss.pointer_enter(self.window, outside)
         self.leave()
+        self.assertFalse(self.dismiss.pointer_has_entered)
         self.glib.timeout_add.assert_not_called()
         self.enter()
+        self.assertTrue(self.dismiss.pointer_has_entered)
         self.leave()
         self.leave()
         self.glib.timeout_add.assert_called_once_with(5000, self.dismiss.expire)
@@ -279,32 +286,41 @@ class PopupDismissalTests(unittest.TestCase):
         self.glib.timeout_add.assert_called_once()
         self.close.assert_called_once_with()
 
-    def test_focus_loss_only_dismisses_after_keyboard_focus_was_received(self):
-        self.dismiss.focus_out()
+    def test_waybar_to_popup_survives_focus_loss_before_first_pointer_enter(self):
+        self.emit_focus('focus-in-event')
+        self.leave()
+        self.emit_focus('focus-out-event')  # Pointer moved across the gap without a click.
         self.close.assert_not_called()
-        self.focus()
-        self.dismiss.focus_out()
-        self.close.assert_called_once_with()
-
-    def test_focus_in_and_out_at_map_do_not_close_before_the_event_batch_settles(self):
-        self.dismiss.focus_in()
-        self.dismiss.focus_out()
-        self.glib.source_remove.assert_called_once_with(31)
+        self.assertFalse(self.dismiss.pointer_has_entered)
+        self.glib.timeout_add.assert_not_called()
+        self.enter()
+        self.assertTrue(self.dismiss.pointer_has_entered)
+        self.assertTrue(self.dismiss.pointer_inside)
         self.close.assert_not_called()
 
-    def test_focus_loss_with_pending_timer_closes_immediately(self):
-        self.focus()
+    def test_focus_follows_mouse_leave_keeps_the_pending_timer(self):
+        self.emit_focus('focus-in-event')
         self.enter()
         self.leave()
-        self.dismiss.focus_out()
+        self.emit_focus('focus-out-event')
+        self.close.assert_not_called()
+        self.glib.source_remove.assert_not_called()
+        self.assertEqual(self.dismiss.close_timer, 21)
+        self.enter()
         self.glib.source_remove.assert_called_once_with(21)
-        self.close.assert_called_once_with()
+        self.close.assert_not_called()
+
+    def test_focus_changes_inside_popup_do_not_close_or_arm(self):
+        self.emit_focus('focus-in-event')
+        self.enter()
+        self.emit_focus('focus-out-event')
+        self.glib.timeout_add.assert_not_called()
+        self.close.assert_not_called()
 
     def test_drag_outside_suspends_dismissal_until_release(self):
-        self.focus()
         self.dismiss.drag_start(self.scale, SimpleNamespace(button=1))
         self.leave()
-        self.dismiss.focus_out()
+        self.emit_focus('focus-out-event')
         self.glib.timeout_add.assert_not_called()
         self.close.assert_not_called()
         scale_window = Mock()

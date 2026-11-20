@@ -275,21 +275,18 @@ class BrightnessSlider:
 
 
 class PopupDismissal:
-    """Track pointer crossings and focus for this layer surface."""
+    """Track pointer crossings for this layer surface, independently of focus."""
 
     def __init__(self, window, scale, close, gdk, glib):
         self.window, self.close_popup, self.gdk, self.glib = window, close, gdk, glib
+        self.pointer_has_entered = False
         self.pointer_inside = False
         self.drag_active = False
-        self.focused = False
         self.closed = False
-        self.focus_idle = 0
         self.close_timer = 0
         window.add_events(gdk.EventMask.ENTER_NOTIFY_MASK | gdk.EventMask.LEAVE_NOTIFY_MASK)
         window.connect('enter-notify-event', self.pointer_enter)
         window.connect('leave-notify-event', self.pointer_leave)
-        window.connect('focus-in-event', self.focus_in)
-        window.connect('focus-out-event', self.focus_out)
         window.connect('key-press-event', self.key_pressed)
         window.connect('delete-event', self.close)
         window.connect('hide', self.stop)
@@ -320,7 +317,7 @@ class PopupDismissal:
     def pointer_enter(self, _, event):
         # Hyprland can initially send enter with coordinates outside a new layer.
         if self.is_surface_crossing(event) and self.contains_event(event):
-            self.pointer_inside = True
+            self.pointer_has_entered = self.pointer_inside = True
             self.cancel_timer()
         return False
 
@@ -332,7 +329,7 @@ class PopupDismissal:
 
     def drag_start(self, _, event):
         if event.button == self.gdk.BUTTON_PRIMARY and not self.closed:
-            self.drag_active = self.pointer_inside = True
+            self.drag_active = self.pointer_has_entered = self.pointer_inside = True
             self.cancel_timer()
         return False
 
@@ -349,32 +346,8 @@ class PopupDismissal:
             self.schedule_close()
         return False
 
-    def focus_in(self, *_):
-        # Some compositors send enter and leave together when mapping a layer.
-        # Arm dismissal only once that batch of focus events has settled.
-        if not (self.closed or self.focused or self.focus_idle):
-            self.focus_idle = self.glib.idle_add(self.arm_focus)
-        return False
-
-    def arm_focus(self):
-        self.focus_idle = 0
-        self.focused = True
-        return False
-
-    def focus_out(self, *_):
-        self.cancel_focus_arm()
-        had_focus, self.focused = self.focused, False
-        if had_focus and not self.drag_active:
-            self.close()
-        return False
-
-    def cancel_focus_arm(self):
-        if self.focus_idle:
-            self.glib.source_remove(self.focus_idle)
-            self.focus_idle = 0
-
     def schedule_close(self):
-        if not (self.closed or self.pointer_inside or self.drag_active or self.close_timer):
+        if self.pointer_has_entered and not (self.closed or self.pointer_inside or self.drag_active or self.close_timer):
             self.close_timer = self.glib.timeout_add(5000, self.expire)
 
     def cancel_timer(self):
@@ -392,7 +365,6 @@ class PopupDismissal:
 
     def stop(self, *_):
         self.closed = True
-        self.cancel_focus_arm()
         self.cancel_timer()
 
     def close(self, *_):
