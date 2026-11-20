@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import re
+import stat
 import subprocess
 import sys
 import tempfile
@@ -18,7 +19,7 @@ configure_imports()
 
 sys.path.insert(0, str(ROOT / 'scripts'))
 import deploy
-from waybar_checks import check_source
+from waybar_checks import check_source, validate_backlight
 
 spec = importlib.util.spec_from_file_location('bar_temperature', source_path(ROOT, '.config/hypr/waybar/scripts/temperature.py'))
 sensor = importlib.util.module_from_spec(spec)
@@ -97,6 +98,29 @@ def css_rules(text):
 
 
 class LayoutTests(unittest.TestCase):
+    def test_backlight_is_native_and_independent_of_battery(self):
+        bar = source_path(ROOT, '.config/hypr/waybar')
+        config = json.loads((bar / 'configs/Frosted-Glass').read_text())
+        modules = config['modules-right']
+        self.assertEqual(modules[modules.index('battery') - 1], 'backlight')
+        self.assertEqual(config['backlight']['scroll-step'], 5)
+        self.assertEqual(config['backlight']['min-brightness'], 5)
+        self.assertEqual(config['backlight']['on-click'], '"$HOME/.local/bin/hyprixe-brightness-popup" --toggle')
+        validate_backlight(config)
+        for override in ('device', 'exec', 'exec-if', 'on-scroll-up', 'on-scroll-down'):
+            with self.subTest(override=override), self.assertRaises(ValueError):
+                validate_backlight({'backlight': {**config['backlight'], override: 'test override'}})
+
+    def test_backlight_reuses_battery_geometry_and_dynamic_paint(self):
+        style = source_path(ROOT, '.config/hypr/waybar/style/Frosted-Glass.css').read_text()
+        self.assertIn('@import "@HYPRIXE_THEME@/waybar.css";', style)
+        rules = css_rules(style.split('\n', 1)[1])
+        battery = [props for selectors, props in rules if '#battery' in selectors]
+        backlight = [props for selectors, props in rules if '#backlight' in selectors]
+        self.assertEqual(backlight, battery)
+        self.assertTrue(any('padding' in props and 'border-radius' in props for props in backlight))
+        self.assertTrue(any('@hx_border_secondary' in props.get('background', '') for props in backlight))
+
     def test_missing_active_asset_aborts_scoped_deployment_before_writing(self):
         with tempfile.TemporaryDirectory() as folder:
             home = Path(folder) / 'home'; home.mkdir()
@@ -168,16 +192,20 @@ class LayoutTests(unittest.TestCase):
             dolphin = roots['config'] / 'dolphinrc'; dolphin.write_text('personal Dolphin')
             old = roots['config'] / 'hypr/waybar/configs/Frosted-Glass'
             old.parent.mkdir(); old.write_text('old bar')
+            helper = home / '.local/bin/hyprixe-brightness-popup'
             with contextlib.redirect_stdout(io.StringIO()):
                 backup = deploy.install(home, roots, 'native', waybar_only=True)
                 self.assertEqual(deploy.read_manifest(backup)['scope'], 'waybar')
                 self.assertIsNone(deploy.install(home, roots, 'native', waybar_only=True))
                 self.assertTrue((roots['data'] / 'fonts/hyprixe/HyprixeDebian.ttf').is_file())
+                self.assertEqual(helper.read_bytes(), source_path(ROOT, '.local/bin/hyprixe-brightness-popup').read_bytes())
+                self.assertEqual(stat.S_IMODE(helper.stat().st_mode), 0o755)
                 deploy.restore(backup, home)
             self.assertEqual(old.read_text(), 'old bar')
             self.assertEqual(personal.read_text(), 'personal')
             self.assertEqual(dolphin.read_text(), 'personal Dolphin')
             self.assertFalse((roots['config'] / 'hypr/profile.lua').exists())
+            self.assertFalse(helper.exists())
 
     def test_scoped_dry_run_and_incompatible_flags_do_not_write(self):
         with tempfile.TemporaryDirectory() as folder:

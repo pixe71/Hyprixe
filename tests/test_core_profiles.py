@@ -19,6 +19,7 @@ else:
 from source_layout import detect_profile, mapped_files, profile_metadata, shipping_wallpapers, WALLPAPER_MANIFEST
 from profile_checks import check_sources, duplication_errors, registry
 from run_tests import select
+from waybar_checks import validate_backlight
 import deploy
 import sddm_theme
 
@@ -237,8 +238,9 @@ class DebianEquivalenceTests(unittest.TestCase):
         for name, record in wallpapers.items():
             self.assertIn(name, actual, 'Missing declared shipping wallpaper')
             self.assertEqual(actual[name], record, name)
+        popup = {'.local/bin/hyprixe-brightness-popup'} if scope in ('full', 'runtime', 'waybar') else set()
         for name in set(actual) - set(expected):
-            self.assertTrue(name in wallpapers or name.startswith(data_prefix + 'hyprixe/theme/') or
+            self.assertTrue(name in popup or name in wallpapers or name.startswith(data_prefix + 'hyprixe/theme/') or
                             name in ('.local/bin/hyprixe-theme', '.local/bin/hyprixe-login-theme-sync',
                                      config_prefix + 'swaync/style.css', config_prefix + 'hypr/waybar/colors.css'),
                             'Unexpected runtime destination: ' + name)
@@ -256,11 +258,30 @@ class DebianEquivalenceTests(unittest.TestCase):
             for name, expected in fixture['cases'].items():
                 xdg, hardware, scope = name.split('/')
                 with self.subTest(case=name), patch.dict(os.environ, HOME=str(home)), patch.object(deploy.shutil, 'which', side_effect=lambda name: '/usr/bin/' + name):
-                    payload = deploy.payload(self.roots(home, xdg == 'custom'), hardware, home=home,
+                    roots = self.roots(home, xdg == 'custom')
+                    payload = deploy.payload(roots, hardware, home=home,
                             runtime=stage if scope == 'runtime' else None,
                             waybar_only=scope == 'waybar', dolphin_only=scope == 'dolphin')
+                    popup = '.local/bin/hyprixe-brightness-popup'
+                    if scope in ('full', 'runtime', 'waybar'):
+                        self.assertEqual(payload.get(home / popup), (source_path(ROOT, popup).read_bytes(), 0o755))
+                    else:
+                        self.assertNotIn(home / popup, payload)
                     actual = {}
                     for target, (data, mode) in payload.items():
+                        if target == roots['config'] / 'hypr/waybar/configs/Frosted-Glass':
+                            # Check the new module separately and compare all remaining
+                            # config to the immutable pre-refactor Waybar fingerprint.
+                            bar = json.loads(data)
+                            validate_backlight(bar)
+                            del bar['backlight']
+                            bar['modules-right'].remove('backlight')
+                            data = (json.dumps(bar, indent=2, ensure_ascii=False) + '\n').encode()
+                        if target == roots['config'] / 'hypr/lua/rules.lua':
+                            popup_rule = (b'hl.layer_rule({ name = "frosted-brightness-popup", match = { '
+                                          b'namespace = "^hyprixe-brightness-popup$" }, blur = true, ignore_alpha = 0 })\n')
+                            self.assertTrue(data.endswith(popup_rule), 'Expected the scoped popup blur rule')
+                            data = data.removesuffix(popup_rule)
                         if data is not None:
                             try:
                                 data = data.decode().replace(str(home), '@HOME@').encode()

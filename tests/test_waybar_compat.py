@@ -15,6 +15,14 @@ spec.loader.exec_module(compat)
 
 
 class CapabilityTests(unittest.TestCase):
+    def test_stock_backlight_capability_does_not_claim_safe_scroll(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            binary = Path(tmp) / 'waybar'
+            binary.write_bytes(b'min-brightness\0SetBrightness')
+            self.assertFalse(compat.has_safe_backlight(binary))
+            binary.write_bytes(binary.read_bytes() + b'\0hyprixe-backlight1: no backlight device')
+            self.assertTrue(compat.has_safe_backlight(binary))
+
     def test_native_click_drawer_capability(self):
         with tempfile.TemporaryDirectory() as tmp:
             binary = Path(tmp) / 'waybar'
@@ -41,6 +49,33 @@ class CapabilityTests(unittest.TestCase):
             binary.write_bytes(b'wlr/taskbar\0zwlr_foreign_toplevel_manager_v1')
             self.assertTrue(compat.has_wlr_taskbar(binary))
             self.assertFalse(compat.has_wlr_taskbar(Path(tmp) / 'missing'))
+
+
+@unittest.skipUnless(shutil.which('g++'), 'C++ compiler required to exercise native scroll arithmetic')
+class BacklightTargetTests(unittest.TestCase):
+    def test_floor_bounds_and_coarse_hardware(self):
+        source = '''#include "waybar-backlight.hpp"
+using hyprixe::backlightTarget;
+int main() {
+  if (backlightTarget(65, 100, true, 5, 5) != 70 ||
+      backlightTarget(65, 100, false, 5, 5) != 60 ||
+      backlightTarget(6, 100, false, 5, 5) != 5 ||
+      backlightTarget(5, 100, false, 5, 5) != 5 ||
+      backlightTarget(8, 101, false, 5, 5) != 6 ||
+      backlightTarget(98, 100, true, 5, 5) != 100) return 1;
+  if (backlightTarget(1, 10, false, 5, 5) != 1 ||
+      backlightTarget(2, 7, false, 5, 5) != 1 ||
+      backlightTarget(1, 7, true, 5, 5) != 2 ||
+      backlightTarget(0, 100, false, 5, 5) != 0 ||
+      backlightTarget(0, 100, true, 5, 5) != 5 ||
+      backlightTarget(0, 0, true, 5, 5) != 0) return 2;
+}
+'''
+        with tempfile.TemporaryDirectory() as folder:
+            binary = Path(folder) / 'backlight-target'
+            subprocess.run(['g++', '-std=c++20', '-x', 'c++', '-I', str(ROOT / 'common/compat'),
+                            '-o', str(binary), '-'], input=source, text=True, check=True)
+            subprocess.run([str(binary)], check=True)
 
 
 @unittest.skipUnless(shutil.which('g++') and shutil.which('lua'), 'C++ compiler and Lua required for IPC compatibility tests')

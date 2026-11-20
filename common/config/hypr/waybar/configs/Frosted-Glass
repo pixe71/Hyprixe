@@ -23,6 +23,7 @@
     "network",
     "bluetooth",
     "pulseaudio",
+    "backlight",
     "battery",
     "custom/power"
   ],
@@ -175,6 +176,14 @@
     "actions": {
       "on-click": "mode"
     }
+  },
+  "backlight": {
+    "format": "{icon} {percent}%",
+    "format-icons": [""],
+    "tooltip-format": "Luminosité : {percent}%",
+    "scroll-step": 5.0,
+    "min-brightness": 5.0,
+    "on-click": "\"$HOME/.local/bin/hyprixe-brightness-popup\" --toggle"
   },
   "battery": {
     "interval": 30,

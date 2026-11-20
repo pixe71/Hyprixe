@@ -9,7 +9,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
-from waybar_compat import has_lua_workspace_ipc, has_wlr_taskbar, has_click_drawer
+from waybar_compat import has_lua_workspace_ipc, has_wlr_taskbar, has_click_drawer, has_safe_backlight
 from rofi_compat import has_wayland_support
 from rofi_launcher import has_launcher_actions, has_launcher_cover
 from dolphin_checks import runtime_errors as dolphin_runtime_errors
@@ -37,6 +37,12 @@ try:
     from gi.repository import Gtk
 except (ImportError, ValueError):
     errors.append('Dynamic theming requires python3-pil and python3-gi (GTK 3).')
+try:
+    import gi
+    gi.require_version('GtkLayerShell', '0.1')
+    from gi.repository import GtkLayerShell
+except (ImportError, ValueError):
+    errors.append('The Waybar brightness popup requires gir1.2-gtklayershell-0.1.')
 if missing:
     errors.append('Missing commands: ' + ', '.join(missing))
 if not Path('/usr/share/wayland-sessions/hyprland-uwsm.desktop').is_file():
@@ -49,6 +55,8 @@ if shutil.which('waybar') and not has_wlr_taskbar():
     errors.append('Waybar lacks wlr/taskbar support; run ./install.sh to prepare the compatible build.')
 if shutil.which('waybar') and not has_click_drawer():
     errors.append('Waybar lacks native click drawer support; run ./install.sh to prepare the compatible build.')
+if shutil.which('waybar') and not has_safe_backlight():
+    errors.append('Waybar lacks the backlight compatibility patch; run ./install.sh native without --no-packages to prepare it.')
 if shutil.which('Hyprland'):
     result = subprocess.run(['Hyprland', '--version'], capture_output=True, text=True)
     version = assess(result.stdout + result.stderr, result.returncode)

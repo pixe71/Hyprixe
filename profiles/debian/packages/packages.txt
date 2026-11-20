@@ -53,3 +53,5 @@ ca-certificates
 python3-pil
 python3-gi
 gir1.2-gtk-3.0
+# Waybar brightness popup layer surface.
+gir1.2-gtklayershell-0.1

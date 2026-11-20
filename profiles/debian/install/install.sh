@@ -57,7 +57,11 @@ if $waybar_only; then
         args+=(--dry-run)
     else
         python3 "$repo/common/compat/waybar_compat.py" || {
-            echo 'ERROR: Compatible Waybar with Lua IPC, taskbar and click drawer required; run the full ./install.sh native to prepare it.' >&2
+            echo 'ERROR: Compatible Waybar with Lua IPC, taskbar, click drawer and the backlight patch required; run ./install.sh native to prepare it.' >&2
+            exit 1
+        }
+        python3 -c 'import gi; gi.require_version("Gtk", "3.0"); gi.require_version("GtkLayerShell", "0.1"); from gi.repository import Gtk, GtkLayerShell' || {
+            echo 'ERROR: The brightness popup requires python3-gi, gir1.2-gtk-3.0 and gir1.2-gtklayershell-0.1; run ./install.sh native to install them.' >&2
             exit 1
         }
         command -v fc-cache >/dev/null || { echo 'ERROR: fontconfig (fc-cache) is required.' >&2; exit 1; }

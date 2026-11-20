@@ -131,6 +131,8 @@ def payload(roots, profile, runtime=None, dolphin_only=False, waybar_only=False,
         for name in ('HyprixeDebian.ttf', 'LICENSE.txt', 'README.md'):
             source = source_path(REPO, '.local/share/fonts/hyprixe') / name
             result[roots['data'] / 'fonts/hyprixe' / name] = (source.read_bytes(), 0o644)
+        helper = '.local/bin/hyprixe-brightness-popup'
+        result[home / helper] = (source_path(REPO, helper).read_bytes(), 0o755)
         return result
     if dolphin_only:
         return dolphin_config.payload(REPO, roots, merge_ini)
