@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -135,7 +136,7 @@ class CoreProfileTests(unittest.TestCase):
         self.assertTrue(all(ok for ok, _ in results), results)
         self.assertEqual(profiles['debian']['status'], 'supported')
         self.assertEqual(profiles['nixos']['status'], 'planned')
-        self.assertEqual(sorted(p.name for p in (ROOT / 'profiles/nixos').iterdir()), ['README.md', 'profile.json'])
+        self.assertNotIn('backend', profiles['nixos'])
         for old in ('.config', '.local', 'wallpapers', 'sddm', '.zshrc', '.p10k.zsh', 'profiles/vmware'):
             self.assertFalse((ROOT / old).exists(), old)
         # Git does not track empty directories left by a local move.
@@ -312,12 +313,12 @@ class DebianEquivalenceTests(unittest.TestCase):
             self.assertIn((source_path(ROOT, logical), *installed), entries)
 
     def test_declared_wallpapers_ship_and_test_fixtures_never_enter_payloads(self):
-        fixtures = list((FIXTURES / 'wallpapers').glob('*'))
-        images = [p for p in fixtures if p.suffix.lower() in ('.jpg', '.png')]
-        self.assertTrue(images, 'Keep the manual test image in the test-only scope')
-        fixture_bytes = {p.read_bytes() for p in images}
         with tempfile.TemporaryDirectory() as folder:
             home = Path(folder)
+            generated = home / 'fixtures'
+            subprocess.run([sys.executable, str(FIXTURES / 'wallpapers/generate.py'), str(generated)], check=True)
+            self.assertEqual({p.name for p in generated.iterdir()}, {'photo-a.jpg', 'photo-b.png'})
+            fixture_bytes = {p.read_bytes() for p in generated.iterdir()}
             for custom in (False, True):
                 for profile in ('native', 'vmware'):
                     for scope in ('full', 'waybar', 'dolphin'):

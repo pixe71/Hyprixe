@@ -46,36 +46,47 @@ reassign rights to the wallpaper, icons or illustrations.
 | [JosephArmas](https://github.com/JosephArmas) | Optional Rofi calculator |
 | [deXPota/kitty-themes](https://github.com/dexpota/kitty-themes) | Reference for the removed collection; no Kitty theme collection is installed |
 
-## Wallpaper
+## NixOS package adaptations
 
-- File: [wallpapers/min_forest.jpg](common/wallpapers/min_forest.jpg)
-- Source: [Pinterest](https://fr.pinterest.com/pin/730427633330946825/), reported by the project owner.
-- Original author: unknown.
-- License: unknown.
-- Note: this wallpaper was found via Pinterest. The original author and
-  redistribution license could not be independently verified.
+| Source | Use / upstream notice |
+| --- | --- |
+| [Waybar 0.16.0](https://github.com/Alexays/Waybar/tree/0.16.0) | Upstream source pinned by Nix. The [backlight patch](profiles/nixos/packages/waybar-backlight.patch) adjusts the lower brightness bound and logging for missing devices. [MIT notice](docs/licenses/Waybar-0.16.0-MIT.txt). |
+| [Rofi 2.0.0](https://github.com/davatorium/rofi/tree/2.0.0) | Nixpkgs source with Hyprixe's shared launcher adaptation and a worker cleanup fix. [MIT/X11 notice](docs/licenses/Rofi-2.0.0-MIT.txt). |
+| [Wallust 3.5.1](https://crates.io/crates/wallust/3.5.1) | Checksummed Cargo release and vendored dependencies. The build patch reports the release version for the shared theme engine. [MIT notice](docs/licenses/Wallust-3.5.1-MIT.txt). |
 
-The Pinterest link is recorded as the owner's discovery reference, not as
-proof of authorship or permission. Its contents and relationship to the
-matching Senshi/HyDE copies were not independently verified.
+## Default wallpaper
 
-## Publication blockers and complete asset inventory
+- File: [`common/wallpapers/min_forest.jpg`](common/wallpapers/min_forest.jpg)
+- SHA-256: `9bfb1f796f738ee40a6f072d1cfb5045fb4d46da7af5059de10f405ca284ce30`
+- Original author and redistribution terms: unverified.
 
-The Senshi repository and matching revision are now established. The original
-artist and redistribution rights for `common/wallpapers/min_forest.jpg` are still
-unknown. Its copies in SDDM and its depiction in screenshots are not separately
-cleared. The Kvantum component is now cleared: the actual files establish
-Graphite derivation, and its GPLv3 license, source and attributions are retained.
-See the [Kvantum findings](docs/wiki/Assets.md#kvantum)
-and [exact upstream GPL text](docs/licenses/Graphite-GPL-3.0.txt).
+The owner's [Pinterest discovery link](https://fr.pinterest.com/pin/730427633330946825/)
+could not be inspected. The files at the pinned Senshi and HyDE revisions
+and in the [sahil-958 collection](https://sahil-958.github.io/walls/hyprdots/Frosted-Glass/min_forest.jpg)
+all have the same SHA-256 as the local JPEG. They establish distribution
+history. No source located in this review identifies the original artist or
+provides an artwork-specific grant that can be relied on for redistribution.
 
-The wallpaper remains an explicit blocker for a public release of the current asset set.
-Do not infer an original artist from the theme contributor name, apply the
-project GPL to unrelated artwork, or discard required upstream notices.
-See the [asset summary](docs/wiki/Assets.md) and
-[SHA256 inventory](docs/asset-inventory.json) for the dated image/font and
-Kvantum pair, source URLs, author evidence, modifications and status.
-The [screenshot review guidance](docs/wiki/Assets.md#screenshots) separately records privacy.
+## Test artwork and captures
+
+The two former VM images had verifiable Git history and no verified
+redistribution terms. Their replacements are original graphics drawn by the
+[fixture generator](tests/fixtures/wallpapers/generate.py). The source and
+its graphics are offered under GPL-3.0-or-later. Git history and the status
+of the images shown in documentation are recorded in the
+[fixture README](tests/fixtures/wallpapers/README.md) and
+[asset inventory](docs/asset-inventory.json).
+
+## Publication blockers and asset inventory
+
+The default wallpaper and documentation captures depicting it remain
+blocked pending a verified grant or an approved replacement. Review the
+affected captures for visible identifiers before distribution.
+The [asset inventory](docs/asset-inventory.json) records current hashes,
+evidence and uses alongside the separate historical audit. The
+[asset guide](docs/wiki/Assets.md) records redistribution conditions and
+possible wallpaper replacements. Keep the upstream notices and source for
+the Graphite-derived Kvantum assets.
 
 The exact pinned [Nerd Fonts symbols notice](docs/licenses/Nerd-Fonts-Symbols-MIT.txt)
 is retained here as well as with the installed font. The bundled Debian glyph

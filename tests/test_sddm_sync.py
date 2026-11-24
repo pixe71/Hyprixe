@@ -4,12 +4,14 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import pwd
 import socket
 import stat
 import subprocess
 import sys
 import tempfile
 import threading
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -78,6 +80,71 @@ class SddmSyncTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Unsafe'):
             self.publish()
 
+    def test_reject_limits_and_unreadable_palette_without_replacing_snapshot(self):
+        from PIL import Image
+        current = self.publish()
+        previous = current.resolve()
+        unreadable = dict(self.palette, foreground=self.palette['background'])
+        with self.assertRaisesRegex(ValueError, 'Unreadable'):
+            self.receiver.receive(dict(self.request, palette=unreadable), self.fd, os.getuid())
+
+        with (self.root / 'large-image').open('w+b') as oversized:
+            oversized.truncate(sync.MAX_IMAGE + 1)
+            with self.assertRaisesRegex(ValueError, 'bounded regular file'):
+                self.receiver.receive(self.request, oversized.fileno(), os.getuid())
+        image = self.root / 'large-dimensions.png'
+        Image.new('1', (6001, 6000)).save(image)
+        with image.open('rb') as stream, self.assertRaisesRegex(ValueError, '36 megapixels'):
+            request = dict(self.request, image_hash=hashlib.sha256(image.read_bytes()).hexdigest())
+            self.receiver.receive(request, stream.fileno(), os.getuid())
+
+        read_end, write_end = os.pipe()
+        self.addCleanup(os.close, read_end)
+        self.addCleanup(os.close, write_end)
+        with self.assertRaisesRegex(ValueError, 'bounded regular file'):
+            self.receiver.receive(self.request, read_end, os.getuid())
+        self.assertEqual(current.resolve(), previous)
+
+    def test_image_modified_during_transfer_preserves_previous_snapshot(self):
+        current = self.publish()
+        previous = current.resolve()
+        pread = os.pread
+
+        def read_and_modify(fd, size, offset):
+            contents = pread(fd, size, offset)
+            with self.image.open('ab') as stream:
+                stream.write(b'changed')
+            return contents
+
+        with patch('sddm_sync.os.pread', side_effect=read_and_modify), self.assertRaisesRegex(ValueError, 'changed during'):
+            self.publish()
+        self.assertEqual(current.resolve(), previous)
+
+    def test_source_replaced_during_transfer_preserves_previous_snapshot(self):
+        current = self.publish()
+        previous = current.resolve()
+        replacement = self.root / 'replacement.png'
+        replacement.write_bytes(self.image.read_bytes())
+        pread = os.pread
+        fstat = os.fstat
+        ctime = fstat(self.fd).st_ctime_ns
+
+        def read_and_replace(fd, size, offset):
+            contents = pread(fd, size, offset)
+            os.replace(replacement, self.image)
+            return contents
+
+        def stat_with_unchanged_ctime(fd):
+            info = fstat(fd)
+            return SimpleNamespace(st_mode=info.st_mode, st_uid=info.st_uid, st_size=info.st_size,
+                                   st_mtime_ns=info.st_mtime_ns, st_ctime_ns=ctime, st_nlink=info.st_nlink)
+
+        with (patch('sddm_sync.os.pread', side_effect=read_and_replace),
+              patch('sddm_sync.os.fstat', side_effect=stat_with_unchanged_ctime),
+              self.assertRaisesRegex(ValueError, 'changed during')):
+            self.publish()
+        self.assertEqual(current.resolve(), previous)
+
     def test_client_rejects_missing_symlink_and_nonowned_sources_before_socket(self):
         palette = self.root / 'palette.json'
         palette.write_text(json.dumps(self.palette))
@@ -89,6 +156,14 @@ class SddmSyncTests(unittest.TestCase):
             sync.client(link, palette)
         with patch('sddm_sync.os.getuid', return_value=os.getuid() + 1), self.assertRaises(ValueError):
             sync.client(self.image, palette)
+
+    def test_client_refuses_bytes_changed_since_palette_validation(self):
+        palette = self.root / 'palette.json'
+        palette.write_text(json.dumps(self.palette))
+        with patch.dict(os.environ, HYPRIXE_LOGIN_IMAGE_HASH='0' * 64), patch('sddm_sync.socket.socket') as connect:
+            with self.assertRaisesRegex(ValueError, 'changed since the desktop'):
+                sync.client(self.image, palette)
+        connect.assert_not_called()
 
     def test_interrupted_snapshot_leaves_previous_complete_generation(self):
         current = self.publish()
@@ -207,3 +282,25 @@ class SddmSyncTests(unittest.TestCase):
             policy.write_text('{"format":1,"uids":[0]}')
             with self.assertRaises(ValueError):
                 sync.allowed_users()
+            policy.write_text('{"format":1,"uids":[1000]}')
+            os.chown(policy, 65534, 65534)
+            with self.assertRaises(ValueError):
+                sync.allowed_users()
+            policy.unlink()
+            with self.assertRaises(FileNotFoundError):
+                sync.allowed_users()
+            policy.symlink_to(self.image)
+            with self.assertRaises(OSError):
+                sync.allowed_users()
+
+    @unittest.skipUnless(os.geteuid() == 0, 'root-owned authorization contract')
+    def test_named_policy_resolves_nss_and_refuses_missing_or_root_accounts(self):
+        policy = self.root / 'authorized.json'
+        account = next(user for user in pwd.getpwall() if user.pw_uid > 0)
+        with patch('sddm_sync.USERS', policy):
+            policy.write_text(json.dumps({'format': 2, 'users': [account.pw_name]}))
+            self.assertEqual(sync.allowed_users(), {account.pw_uid})
+            for name in ('root', '../not-an-account', 'hyprixe-nonexistent-test-user'):
+                policy.write_text(json.dumps({'format': 2, 'users': [name]}))
+                with self.subTest(name=name), self.assertRaises(ValueError):
+                    sync.allowed_users()

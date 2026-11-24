@@ -1,6 +1,6 @@
 {
   "review_date": "2026-10-30",
-  "scope": "Current image/font assets and their Kvantum configs. Provenance and license decisions are in assets-provenance.md; hashes alone do not establish rights.",
+  "scope": "Image/font assets and their Kvantum configs at the audit date. See CREDITS.md and docs/wiki/Assets.md for provenance and license decisions. Hashes alone do not establish rights.",
   "files": [
     {
       "path": "common/config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.kvconfig",
@@ -186,5 +186,301 @@
       "local_file": "docs/licenses/Graphite-GPL-3.0.txt"
     },
     "limits": "The exact historical download/fork route is not known; content derivation, applicable GPL family, source availability and retained notices are established. Wallpaper rights are separate."
+  },
+  "current_graphics": {
+    "review_date": "2026-11-24",
+    "scope": "Current graphics and the packaged Debian glyph. Shared licensing evidence and conditions apply to each file in its group. The older top-level files array remains a historical snapshot.",
+    "groups": [
+      {
+        "name": "Bundled default wallpaper",
+        "origin": "In Hyprixe since f96dfb4. Byte-identical distribution copies located in Senshi, HyDE and the sahil-958 collection.",
+        "author": null,
+        "license": null,
+        "redistribution": "blocked: original artist and grant unverified",
+        "attribution": "Preserve discovery and distribution evidence. Obtain and record the author grant and any conditions before distribution.",
+        "evidence": [
+          "https://fr.pinterest.com/pin/730427633330946825/",
+          "https://raw.githubusercontent.com/Senshi111/hyprland-hyprdots-files/c81844d99b835c9bb8bdf1ab8c1ac17b6e2cc448/Theme/Configs/.config/swww/Frosted-Glass/min_forest.jpg",
+          "https://raw.githubusercontent.com/HyDE-Project/hyde-themes/224e1027e451481db526a095242d261d47a68775/Configs/.config/hyde/themes/Frosted%20Glass/wallpapers/min_forest.jpg",
+          "https://sahil-958.github.io/walls/hyprdots/Frosted-Glass/min_forest.jpg"
+        ],
+        "files": [
+          {
+            "path": "common/wallpapers/min_forest.jpg",
+            "bytes": 148096,
+            "sha256": "9bfb1f796f738ee40a6f072d1cfb5045fb4d46da7af5059de10f405ca284ce30",
+            "use": "Debian and NixOS bundled wallpaper, awww, dynamic theme calibration and fallback, Rofi, Hyprlock, SDDM and deployment tests",
+            "format": "3840x2160 JPEG"
+          }
+        ]
+      },
+      {
+        "name": "Hyprixe icons",
+        "origin": "Original in-tree SVG geometry, as documented in tree and in CREDITS. The SVGs contain no embedded raster art or external references.",
+        "author": "Hyprixe contributors. Individual artist names are not recorded in the SVGs.",
+        "license": "GPL-3.0-or-later",
+        "redistribution": "verified under the project license",
+        "attribution": "Keep project attribution, editable SVGs and GPL notice.",
+        "evidence": [
+          "CREDITS.md",
+          "LICENSE"
+        ],
+        "files": [
+          {
+            "path": "common/config/wlogout/icons/lock.svg",
+            "bytes": 286,
+            "sha256": "c7c0fe4d10e0079f0099d1df5b6d50ec9be2ab3a120aec77aa52c2c6101b41c9",
+            "use": "Wlogout lock button on Debian and NixOS"
+          },
+          {
+            "path": "common/config/wlogout/icons/logout.svg",
+            "bytes": 264,
+            "sha256": "a3af82c8ce1ce1322ec61e69cd1f5a40af122f49376eef08279f90cca7979be1",
+            "use": "Wlogout logout button on Debian and NixOS"
+          },
+          {
+            "path": "common/config/wlogout/icons/reboot.svg",
+            "bytes": 232,
+            "sha256": "8041d6b029c6c3b4b6851639fae8e7301da7d6f863f863f3a9e501bef5fd7140",
+            "use": "Wlogout reboot button on Debian and NixOS"
+          },
+          {
+            "path": "common/config/wlogout/icons/shutdown.svg",
+            "bytes": 231,
+            "sha256": "f3df0f5d0f6be31f8df295b40b76107c051c85d819dd4749b676dda698b9095d",
+            "use": "Wlogout shutdown button on Debian and NixOS"
+          },
+          {
+            "path": "common/sddm/themes/hyprixe-frosted/assets/user.svg",
+            "bytes": 215,
+            "sha256": "0eb3fafaa1dfcc3dc455817587d77a1ca169cfec9c8e78442fbce8371df40643",
+            "use": "SDDM fallback account icon on Debian and NixOS"
+          }
+        ]
+      },
+      {
+        "name": "Kvantum images",
+        "origin": "Graphite light geometry via the Senshi Frosted Glass distribution. The Dolphin SVG is a Hyprixe paint derivative.",
+        "author": "Vince Liuice (Graphite), with KvAdapta and T-Crypt credits preserved",
+        "license": "GPL-3.0-only",
+        "redistribution": "verified under GPLv3 with the compatible Senshi MIT notice retained",
+        "attribution": "Retain the upstream attribution, GPL text, Senshi MIT notice, corresponding source and Hyprixe generator.",
+        "evidence": [
+          "CREDITS.md",
+          "docs/licenses/Graphite-GPL-3.0.txt",
+          "docs/licenses/Senshi111-MIT.txt",
+          "tools/build-dolphin-theme.py"
+        ],
+        "files": [
+          {
+            "path": "common/config/Kvantum/Frosted-Glass/Frosted-Glass.svg",
+            "bytes": 194875,
+            "sha256": "5ee9ced1d2b6fb8bfe05977adec97047b7b919bcd83540d30f450a1fb188d7f8",
+            "use": "Fallback Kvantum paint"
+          },
+          {
+            "path": "common/config/Kvantum/Frosted-Glass-Dolphin/Frosted-Glass-Dolphin.svg",
+            "bytes": 188248,
+            "sha256": "52bd4b8b5ef523093b28f0768c4f8b3af245bb295178375324c0052ae90385f8",
+            "use": "Dolphin-specific Qt/Kvantum paint"
+          }
+        ]
+      },
+      {
+        "name": "Debian glyph font",
+        "origin": "Subset of font-logos 1.4.0, one glyph. Packaged font is named Hyprixe Debian.",
+        "author": "font-logos contributors, source by lukas-w",
+        "license": "Unlicense",
+        "redistribution": "verified for the font software. Debian trademark conditions are separate.",
+        "attribution": "Keep the font source record and Unlicense. Use the mark to identify Debian.",
+        "evidence": [
+          "common/local/share/fonts/hyprixe/LICENSE.txt",
+          "https://github.com/lukas-w/font-logos"
+        ],
+        "files": [
+          {
+            "path": "common/local/share/fonts/hyprixe/HyprixeDebian.ttf",
+            "bytes": 1768,
+            "sha256": "28214849a64be2e1dba1782bcddf45f1d29560760effec387338a0218b557ffe",
+            "use": "Debian distribution emblem in Waybar"
+          }
+        ]
+      },
+      {
+        "name": "Default wallpaper documentation captures",
+        "origin": "Hyprixe Debian desktop captures in 879f27d. Each depicts the historical wallpaper, including in blur or preview.",
+        "author": "Hyprixe for the captures. Wallpaper artist unknown.",
+        "license": null,
+        "redistribution": "blocked: depicted wallpaper rights unverified",
+        "attribution": "Replace or clear depicted art and review visible identifiers. No PNG metadata was detected by Pillow.",
+        "evidence": [
+          "README.md",
+          "docs/wiki/Assets.md#screenshots"
+        ],
+        "files": [
+          {
+            "path": "docs/screenshots/screenshot1.png",
+            "bytes": 498333,
+            "sha256": "58e7baba83f300d13f977ae0221f96bef7540d33e451400b03b8cf7498375c74",
+            "use": "README default preview: desktop",
+            "privacy": "visible account, hostname and local network details",
+            "format": "1366x768 PNG"
+          },
+          {
+            "path": "docs/screenshots/screenshot2.png",
+            "bytes": 327738,
+            "sha256": "8379deca457539bd3bc5802f5ea57bc0da83a19dde8d05b06d1e2150c51f9f23",
+            "use": "README default preview: Rofi launcher",
+            "privacy": "no visible personal identifiers found",
+            "format": "1366x768 PNG"
+          },
+          {
+            "path": "docs/screenshots/screenshot3.png",
+            "bytes": 632054,
+            "sha256": "f7e28129229a1d7f790a7c5c8bf1c6c4131a980260ee0c7298909c0564d499a9",
+            "use": "README default preview: Wlogout",
+            "privacy": "no visible personal identifiers found",
+            "format": "1366x768 PNG"
+          }
+        ]
+      },
+      {
+        "name": "Dynamic wallpaper documentation captures",
+        "origin": "Real NixOS 26.05 KVM session test captures, recorded with generated amber and jade fixtures.",
+        "author": "Hyprixe",
+        "license": "GPL-3.0-or-later for the project capture and original test artwork. Existing third-party component terms remain applicable.",
+        "redistribution": "no inherited artwork or real personal identifiers found in these captures",
+        "attribution": "Retain the fixture and project attribution. Caption the captures as NixOS VM results.",
+        "evidence": [
+          "profiles/nixos/tests/session-vm.nix",
+          "tests/fixtures/wallpapers/README.md"
+        ],
+        "files": [
+          {
+            "path": "docs/screenshots/screenshot4.png",
+            "bytes": 476987,
+            "sha256": "b6724930476313ff047102928440823a68291ab9c0b0519239de42b81a6529cf",
+            "use": "README dynamic preview: amber desktop",
+            "source_capture": "hyprixe-desktop-a.png",
+            "format": "1280x800 PNG"
+          },
+          {
+            "path": "docs/screenshots/screenshot5.png",
+            "bytes": 422246,
+            "sha256": "9004ac15aa2080ad7f1559dcc36e577a324f47bc2719e92cfda2982afc5a4679",
+            "use": "README dynamic preview: amber Rofi",
+            "source_capture": "hyprixe-theme-a.png",
+            "format": "1280x800 PNG"
+          },
+          {
+            "path": "docs/screenshots/screenshot6.png",
+            "bytes": 800869,
+            "sha256": "dda9e0d058a7b7c4bc86002eb506e406ba57892a807649741087cbed3238b33f",
+            "use": "README dynamic preview: amber Hyprlock",
+            "source_capture": "hyprlock-a.png",
+            "format": "1280x800 PNG"
+          },
+          {
+            "path": "docs/screenshots/screenshot7.png",
+            "bytes": 477638,
+            "sha256": "b0b41f3346ebfea04e0c4fa5c60bd83837140b39557c7f01fa0b1605fb3620a6",
+            "use": "README dynamic preview: jade desktop",
+            "source_capture": "hyprixe-desktop-b.png",
+            "format": "1280x800 PNG"
+          },
+          {
+            "path": "docs/screenshots/screenshot8.png",
+            "bytes": 395226,
+            "sha256": "f8f10d87de4e0b24d6ee023fd97e2bcc4fd7a5ca882746c022a13173085d0c63",
+            "use": "README dynamic preview: jade Rofi",
+            "source_capture": "hyprixe-theme-b.png",
+            "format": "1280x800 PNG"
+          },
+          {
+            "path": "docs/screenshots/screenshot9.png",
+            "bytes": 784530,
+            "sha256": "942771b4c77e59ea1dbfb22f89e3d8a9802a41e2d066236315585954f02f6134",
+            "use": "README dynamic preview: jade Hyprlock",
+            "source_capture": "hyprlock-b.png",
+            "format": "1280x800 PNG"
+          }
+        ]
+      }
+    ],
+    "generated_vm_images": {
+      "source": {
+        "path": "tests/fixtures/wallpapers/generate.py",
+        "bytes": 1716,
+        "sha256": "66a9fdeae8332e63281df7291e63e3ccc4a3543229c0f676ce70570e29a0743e",
+        "use": "Deterministic NixOS VM test wallpaper generator. Also exercised by the Debian payload exclusion test."
+      },
+      "author": "Hyprixe",
+      "license": "GPL-3.0-or-later",
+      "redistribution": "original project artwork",
+      "attribution": "Keep generator and GPL notice.",
+      "consumer": "NixOS VM test closure only. The production manifest excludes these images.",
+      "outputs": [
+        {
+          "name": "photo-a.jpg",
+          "format": "960x540 JPEG",
+          "sha256": "0127bb4156083cc97106d5131b7a5578d5fdbecc198b8ee15df22b0c53246be0"
+        },
+        {
+          "name": "photo-b.png",
+          "format": "800x600 PNG",
+          "sha256": "59a3312940dfaeade42e02c395c92149e362be96c4bae30768b46c38185c8858"
+        }
+      ]
+    },
+    "replaced_historical_resources": [
+      {
+        "path": "tests/fixtures/wallpapers/wallpaper_for_test.jpg",
+        "sha256": "87ba06cc0614fa328c47b57249132df5836ade365dfdc7d4525aec6693a08019",
+        "origin": "wallpaper2.jpg in 4d1a77d, renamed in 879f27d. No credited artist or redistribution grant found.",
+        "redistribution": "unverified for these historical bytes"
+      },
+      {
+        "path": "tests/fixtures/wallpapers/rally_car.png",
+        "sha256": "486f83884dc5172a9e9dc959f9b0925135bbce6aaac7923ace45db25a2e9f6eb",
+        "origin": "wallpaper3.png in 4d1a77d, renamed in 879f27d. XMP identifies a Canva export. The underlying photo, photographer and grant remain unverified.",
+        "redistribution": "unverified for these historical bytes"
+      },
+      {
+        "path": "docs/screenshots/screenshot4.png",
+        "sha256": "aea71a0d9b41e2a512fbeb7622933fe86cdaaf68c2ec78c0de6ddf8e88a4b739",
+        "origin": "Former Debian capture in 879f27d showing the unverified illustrated sunset fixture.",
+        "redistribution": "unverified for these historical bytes"
+      },
+      {
+        "path": "docs/screenshots/screenshot5.png",
+        "sha256": "ce5300f65692bdfa297424ee6a0056fb6059b2dd12b18dcac41bcc10f48dbc00",
+        "origin": "Former Debian capture in 879f27d showing the unverified illustrated sunset fixture.",
+        "redistribution": "unverified for these historical bytes"
+      },
+      {
+        "path": "docs/screenshots/screenshot6.png",
+        "sha256": "e56b262d22d810db03ed76b7e0c3d025f6b13c5890f5d6cbe5b21f681d82d5ce",
+        "origin": "Former Debian capture in 879f27d showing the unverified illustrated sunset fixture.",
+        "redistribution": "unverified for these historical bytes"
+      },
+      {
+        "path": "docs/screenshots/screenshot7.png",
+        "sha256": "212cf03338ef8a4d15bf64cf92e6b34c5a3e3e002a4338a1ca429bd4e4e30d49",
+        "origin": "Former Debian capture in 879f27d showing the unverified rally photo fixture.",
+        "redistribution": "unverified for these historical bytes"
+      },
+      {
+        "path": "docs/screenshots/screenshot8.png",
+        "sha256": "2f86dda033ccf663428dbac92e20834b12d3e40f92d34d89d371210aacd32b76",
+        "origin": "Former Debian capture in 879f27d showing the unverified rally photo fixture.",
+        "redistribution": "unverified for these historical bytes"
+      },
+      {
+        "path": "docs/screenshots/screenshot9.png",
+        "sha256": "c8284d599bb7b9f11dc93cfb5159b2d37df114cd26c34026c5979c11a0a22fbd",
+        "origin": "Former Debian capture in 879f27d showing the unverified rally photo fixture.",
+        "redistribution": "unverified for these historical bytes"
+      }
+    ]
   }
 }

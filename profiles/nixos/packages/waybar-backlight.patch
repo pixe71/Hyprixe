@@ -1,0 +1,46 @@
+diff --git a/include/util/backlight_brightness.hpp b/include/util/backlight_brightness.hpp
+--- a/include/util/backlight_brightness.hpp
++++ b/include/util/backlight_brightness.hpp
+@@ -20,16 +20,15 @@ void scroll_brightness(int current, int maximum, bool increase, double step, dou
+     ++delta;
+   }
+-  if (increase) {
+-    // Equality with the cache does not imply equality with the hardware.
+-    write(current + std::min(delta, maximum - current));
+-    return;
+-  }
+-
+   minimum = std::clamp(minimum, 0.0, 100.0);
+   int lower = static_cast<int>(minimum * maximum / 100.0);
+   if (lower * 100.0 / maximum < minimum) {
+     ++lower;
+   }
++  if (increase) {
++    // Equality with the cache does not imply equality with the hardware.
++    write(std::max(lower, current + std::min(delta, maximum - current)));
++    return;
++  }
+   if (current > lower) {
+     write(current - std::min(delta, current - lower));
+   }
+diff --git a/src/bar.cpp b/src/bar.cpp
+--- a/src/bar.cpp
++++ b/src/bar.cpp
+@@ -794,5 +794,10 @@
+         });
+       } catch (const std::exception& e) {
+-        spdlog::warn("module {}: {}", name.asString(), e.what());
++        if (name.asString() == "backlight" &&
++            std::string_view(e.what()) == "Disabling module \"backlight\", No backlight found") {
++          spdlog::debug("No backlight device");
++        } else {
++          spdlog::warn("module {}: {}", name.asString(), e.what());
++        }
+       }
+     }
+diff --git a/test/utils/backlight_brightness.cpp b/test/utils/backlight_brightness.cpp
+--- a/test/utils/backlight_brightness.cpp
++++ b/test/utils/backlight_brightness.cpp
+@@ -30 +30 @@
+-  REQUIRE(scroll_writes(0, 38787, true, 1, 2.5) == std::vector{388});
++  REQUIRE(scroll_writes(0, 38787, true, 1, 2.5) == std::vector{970});

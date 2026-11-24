@@ -5,6 +5,7 @@ import json
 import multiprocessing
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -45,6 +46,23 @@ def acquire_lock(resources, started, acquired):
 
 
 class PaletteTests(unittest.TestCase):
+    def test_signal_detection_accepts_native_handler_and_signalfd(self):
+        signum = engine.signal.SIGUSR1
+        mask = f'{1 << (signum - 1):016x}'
+        with tempfile.TemporaryDirectory() as folder:
+            process = Path(folder)
+            fdinfo = process / 'fdinfo'
+            fdinfo.mkdir()
+            status = process / 'status'
+            status.write_text(f'SigCgt:\t{mask}\n')
+            with patch('engine.Path', return_value=process):
+                self.assertTrue(engine.handles_signal(1000, signum))
+                status.write_text('SigCgt:\t0000000000000000\n')
+                self.assertFalse(engine.handles_signal(1000, signum))
+                (fdinfo / '6').write_text(f'flags:\t02004002\nsigmask:\t{mask}\n')
+                self.assertTrue(engine.handles_signal(1000, signum))
+                self.assertFalse(engine.handles_signal(1000, engine.signal.SIGUSR2))
+
     def test_six_synthetic_palettes_are_dark_semantic_and_readable(self):
         base = engine.defaults(RESOURCES)
         for name, color in SWATCHES.items():
@@ -113,6 +131,70 @@ class TransactionTests(unittest.TestCase):
         validator = engine.validate_outputs
         self.validate = patch('engine.validate_outputs', side_effect=lambda directory, native=True: validator(directory, native=False)).start()
         self.addCleanup(patch.stopall)
+
+    def test_managed_default_survives_switch_and_rollback_without_store_path_in_state(self):
+        # Simulate Nix generations with separate immutable assets sharing
+        # the content of the packaged default.
+        generation_a = self.root / 'generation-a.jpg'
+        generation_b = self.root / 'generation-b.jpg'
+        for path in (generation_a, generation_b):
+            shutil.copyfile(self.reference, path)
+            path.chmod(0o444)
+        updated_resources = self.root / 'resources-b'
+        shutil.copytree(self.resources, updated_resources)
+        wallust_config = updated_resources / 'wallust.toml'
+        wallust_config.write_text(wallust_config.read_text() + '\n# Another packaged revision\n')
+        self.reference.unlink()
+        keys = []
+        for path, resources in ((generation_a, self.resources), (generation_b, updated_resources),
+                                (generation_a, self.resources)):
+            self.reference.unlink(missing_ok=True)
+            self.reference.symlink_to(path)
+            self.engine.bundled_wallpaper = path
+            self.engine.resources = resources
+            keys.append(self.engine.transact(restore=True, apply=False)['key'])
+            self.assertEqual(self.engine.load_state()['wallpaper'], str(self.reference))
+            self.assertEqual(self.engine.current_wallpaper.resolve(), path)
+            self.assertEqual(self.engine.cache_status(self.engine.load_state()), 'valid')
+        self.assertFalse(self.engine.load_state()['enabled'])
+        self.assertNotEqual(keys[0], keys[1])
+        self.assertEqual(keys[0], keys[2])
+
+    def test_collected_bundled_path_migrates_only_with_matching_digest(self):
+        bundled = self.root / 'bundle.jpg'
+        self.reference.rename(bundled)
+        self.reference.symlink_to(bundled)
+        self.engine.bundled_wallpaper = bundled
+        stale = '/nix/store/' + '0' * 32 + '-hyprixe-min_forest.jpg'
+        state = {'format': 2, 'enabled': False, 'wallpaper': stale, 'wallpaper_hash': 'f' * 64}
+        with self.engine.locked():
+            self.engine.save_state(state)
+        self.engine.transact(restore=True, apply=False)
+        self.assertEqual(self.engine.load_state(), state)
+        self.assertEqual(self.engine.current_wallpaper.resolve(), bundled)
+        with self.engine.locked():
+            self.engine.save_state(dict(state, wallpaper_hash=engine.sha(bundled)))
+        self.engine.transact(restore=True, apply=False)
+        self.assertEqual(self.engine.load_state(), dict(state, wallpaper=str(self.reference),
+                         wallpaper_hash=engine.sha(bundled)))
+
+    def test_managed_theme_refuses_store_and_symlinked_cache_entries(self):
+        with patch.dict(os.environ, XDG_CACHE_HOME='/nix/store/example'):
+            with self.assertRaisesRegex(ValueError, 'outside the Nix store'):
+                engine.Engine(self.resources)
+        self.engine.ensure_cache()
+        for name in ('.owner', 'generations'):
+            with self.subTest(name=name):
+                entry = self.engine.cache / name
+                saved = entry.with_name('saved')
+                entry.rename(saved)
+                entry.symlink_to(saved)
+                try:
+                    with self.assertRaisesRegex(ValueError, 'unowned theme cache'):
+                        self.engine.ensure_cache()
+                finally:
+                    entry.unlink()
+                    saved.rename(entry)
 
     def generate(self, wallpaper=None, **kwargs):
         if self.engine.load_state() is None:
@@ -356,6 +438,23 @@ class TransactionTests(unittest.TestCase):
                  patch.dict(os.environ, HYPRLAND_INSTANCE_SIGNATURE='mock-session'):
                 with self.assertRaisesRegex(ValueError, 'Config error at line 12'):
                     engine.Engine.reload(self.engine)
+
+    def test_reload_swaync_with_native_and_wrapped_process_names(self):
+        for name, reload_expected in (('swaync', True), ('.swaync-wrapped', True), ('swaync-client', False)):
+            with self.subTest(name=name):
+                def query(arguments, **kwargs):
+                    if arguments[0] == 'pgrep':
+                        self.assertEqual(arguments[1:4], ['-u', str(os.getuid()), '-x'])
+                        match = re.fullmatch(arguments[4], name)
+                        return subprocess.CompletedProcess(arguments, 0 if match else 1, '', '')
+                    self.assertEqual(arguments, ['swaync-client', '--reload-css'])
+                    return subprocess.CompletedProcess(arguments, 0, '', '')
+
+                available = lambda command: command if command in ('pgrep', 'swaync-client') else None
+                with patch('engine.run', side_effect=query) as run, patch('engine.shutil.which', side_effect=available):
+                    self.assertEqual(engine.Engine.reload(self.engine), [])
+                calls = [call.args[0] for call in run.call_args_list]
+                self.assertEqual(['swaync-client', '--reload-css'] in calls, reload_expected)
 
     def test_failed_disable_leaves_a_state_mismatch_which_refresh_repairs(self):
         self.generate(enabled=True)

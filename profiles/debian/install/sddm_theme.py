@@ -72,7 +72,7 @@ def source_payload(repo=REPO):
         result[THEME_DIR + '/' + name] = path.read_bytes()
     result[THEME_DIR + '/theme.conf'] = result[THEME_DIR + '/theme.conf'].replace(b'dynamicPalette=', ('dynamicPalette=' + SYNC_PALETTE).encode())
     result[THEME_DIR + '/min_forest.jpg'] = (source_path(repo, 'wallpapers/min_forest.jpg')).read_bytes()
-    result[SYNC_FILES[0]] = (repo / 'profiles/debian/install/sddm_sync.py').read_bytes()
+    result[SYNC_FILES[0]] = source_path(repo, 'sddm/sddm_sync.py').read_bytes()
     for name in SYNC_FILES[1:]:
         result[name] = (repo / 'profiles/debian/systemd' / Path(name).name).read_bytes()
     return result

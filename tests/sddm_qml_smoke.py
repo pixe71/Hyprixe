@@ -125,6 +125,8 @@ def check_initial_snapshots(theme, folder, users, sessions, proxy):
         require(dynamic.property('valid') == (case == 'valid'), case + ': incorrect initial palette activation')
         require(root.property('color').name() == (palette['background'] if case == 'valid' else '#122434'),
                 case + ': initial paint must agree with the wallpaper decision')
+        require(root.findChild(QObject, 'clock').property('styleColor').name() == root.property('color').name(),
+                case + ': clock outline must preserve the validated foreground/background contrast')
         new_warnings = warnings[warning_start:]
         require(all('first-' + case in message for message in new_warnings),
                 case + ': unexpected Qt warnings: ' + '\n'.join(new_warnings))

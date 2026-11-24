@@ -92,9 +92,12 @@ Rectangle {
                     font.letterSpacing: 6
                 }
                 Text {
+                    objectName: "clock"
                     Layout.alignment: root.wide ? Qt.AlignLeft : Qt.AlignHCenter
                     text: Qt.formatTime(root.now, "HH:mm")
                     color: dynamicTheme.paint("foreground", "#e6f1f4")
+                    style: Text.Outline
+                    styleColor: dynamicTheme.paint("background", "#122434")
                     font.family: root.themeFont
                     font.pixelSize: root.wide ? Math.min(112, root.height * 0.105) : 42
                     font.weight: Font.Light

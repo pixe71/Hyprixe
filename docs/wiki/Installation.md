@@ -23,8 +23,8 @@ command -v sddm sddm-greeter-qt6
 Close Dolphin and finish file transfers. Run as your desktop user, **not root**:
 
 ```bash
-git clone https://github.com/pixe71/hyprixe-debian.git
-cd hyprixe-debian
+git clone https://github.com/pixe71/Hyprixe.git
+cd Hyprixe
 ./install.sh native
 ```
 

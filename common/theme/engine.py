@@ -282,6 +282,24 @@ def run(command, **kwargs):
     return subprocess.run(command, capture_output=True, text=True, timeout=45, **kwargs)
 
 
+def handles_signal(pid, signum):
+    process = Path(f'/proc/{pid}')
+    mask = 1 << (signum - 1)
+    status = (process / 'status').read_text()
+    caught = re.search(r'^SigCgt:\s*([0-9a-f]+)', status, re.M)
+    if caught and int(caught[1], 16) & mask:
+        return True
+    # Newer Kitty consumes blocked signals with a Linux signalfd.
+    for descriptor in (process / 'fdinfo').iterdir():
+        try:
+            signals = re.search(r'^sigmask:\s*([0-9a-f]+)', descriptor.read_text(), re.M)
+        except OSError:
+            continue
+        if signals and int(signals[1], 16) & mask:
+            return True
+    return False
+
+
 def validate_outputs(directory, native=True):
     """Constrained colour-only grammar plus available native parsers.
 
@@ -378,11 +396,16 @@ class Engine:
         self.current_wallpaper = self.data / 'current-wallpaper'
         self.current = self.cache / 'current'
         self.state_file = self.state / 'theme.json'
+        self.default_path = self.data / 'wallpapers/min_forest.jpg'
+        bundled = os.environ.get('HYPRIXE_BUNDLED_WALLPAPER')
+        self.bundled_wallpaper = Path(bundled) if bundled else None
         self.base = defaults(self.resources)
         # Refuse source-tree runtime state, including XDG overrides into a checkout.
         for path in (self.cache, self.state, self.data):
             if not path.is_absolute() or '..' in path.parts:
                 raise ValueError('XDG paths must be absolute and canonical')
+            if path.is_relative_to('/nix/store'):
+                raise ValueError('Runtime state must stay outside the Nix store')
             if any((p / '.git').exists() for p in (path.resolve(), *path.resolve().parents)):
                 raise ValueError('Runtime state must stay outside the Git checkout')
             for parent in (path, *path.parents):
@@ -401,12 +424,16 @@ class Engine:
             yield
 
     def ensure_cache(self):
-        if self.cache.exists() and not (self.cache / '.owner').is_file():
+        owner = self.cache / '.owner'
+        generations = self.cache / 'generations'
+        if self.cache.exists() and (owner.is_symlink() or not owner.is_file() or owner.read_text() != OWNER):
             raise ValueError('Refusing an unowned theme cache: ' + str(self.cache))
+        if generations.is_symlink() or (self.current.exists() and not self.current.is_symlink()):
+            raise ValueError('Refusing unowned theme cache entries: ' + str(self.cache))
         self.cache.mkdir(parents=True, mode=0o700, exist_ok=True)
-        if not (self.cache / '.owner').exists():
-            atomic(self.cache / '.owner', OWNER)
-        (self.cache / 'generations').mkdir(exist_ok=True)
+        if not owner.exists():
+            atomic(owner, OWNER)
+        generations.mkdir(exist_ok=True)
 
     @staticmethod
     def validate_state(saved):
@@ -532,6 +559,8 @@ class Engine:
     def read(self, path=None):
         path = path or self.current
         try:
+            if (self.cache / 'generations').is_symlink():
+                return None
             resolved = path.resolve(strict=True)
             if resolved.parent != self.cache / 'generations' or resolved.is_symlink():
                 return None
@@ -564,7 +593,19 @@ class Engine:
         saved = self.load_state() if saved is None else saved
         if saved and saved['wallpaper']:
             return Path(saved['wallpaper'])
-        return self.data / 'wallpapers/min_forest.jpg'
+        return self.default_path
+
+    def default_image(self):
+        path = image_valid(self.default_path)
+        if self.bundled_wallpaper is not None and path != self.bundled_wallpaper:
+            raise ValueError('Bundled wallpaper link does not point to the active package')
+        return path
+
+    @staticmethod
+    def old_bundled_path(path):
+        return path.parent == Path('/nix/store') and re.fullmatch(
+            r'[0-9a-z]{32}-hyprixe-min_forest\.jpg', path.name
+        ) is not None
 
     def extract(self, wallpaper, directory):
         if self.version() != WALLUST_VERSION:
@@ -616,9 +657,11 @@ class Engine:
         finally:
             temporary.unlink(missing_ok=True)
 
-    def sync_login_theme(self, wallpaper):
+    def sync_login_theme(self, wallpaper, digest):
         # Profiles may provide this optional integration. The portable engine
         # knows neither system destinations nor privileged mechanisms.
+        if os.environ.get('HYPRIXE_LOGIN_THEME_SYNC') == '0':
+            return
         helper = shutil.which('hyprixe-login-theme-sync')
         if not helper:
             installed = Path.home() / '.local/bin/hyprixe-login-theme-sync'
@@ -626,7 +669,8 @@ class Engine:
                 helper = str(installed)
         if helper:
             try:
-                result = run([helper, str(wallpaper), str(self.current / 'palette.json')])
+                result = run([helper, str(wallpaper), str(self.current / 'palette.json')],
+                             env=dict(os.environ, HYPRIXE_LOGIN_IMAGE_HASH=digest))
                 if result.returncode:
                     raise ValueError((result.stderr or result.stdout).strip())
             except (OSError, ValueError, subprocess.SubprocessError) as exc:
@@ -649,18 +693,17 @@ class Engine:
         for name, signum in (('waybar', signal.SIGUSR2), ('kitty', signal.SIGUSR1)):
             if not shutil.which('pgrep'):
                 continue
-            result = run(['pgrep', '-u', str(os.getuid()), '-x', name])
+            # Nix wrappers exec a hidden binary whose Linux comm can differ.
+            result = run(['pgrep', '-u', str(os.getuid()), '-x', rf'{name}|\.{name}-wrapped'])
             for value in result.stdout.split():
                 try:
                     pid = int(value)
-                    status = Path(f'/proc/{pid}/status').read_text()
-                    caught = int(re.search(r'^SigCgt:\s*([0-9a-f]+)', status, re.M)[1], 16)
-                    if caught & (1 << (signum - 1)):
+                    if handles_signal(pid, signum):
                         os.kill(pid, signum)
                 except (OSError, ValueError, TypeError):
                     warnings.append(name + ': reload unavailable')
         if shutil.which('swaync-client') and shutil.which('pgrep'):
-            if run(['pgrep', '-u', str(os.getuid()), '-x', 'swaync']).returncode == 0:
+            if run(['pgrep', '-u', str(os.getuid()), '-x', r'swaync|\.swaync-wrapped']).returncode == 0:
                 result = run(['swaync-client', '--reload-css'])
                 if result.returncode:
                     warnings.append('SwayNC: CSS reload failed')
@@ -699,19 +742,26 @@ class Engine:
                         wallpaper = image_valid(images[0])
                     except (OSError, ValueError):
                         pass
-            path = self.data / 'wallpapers/min_forest.jpg' if use_default else wallpaper or self.wallpaper(saved)
+            requested = self.default_path if use_default else wallpaper or self.wallpaper(saved)
+            # A v2 file may still name a collected Nix generation. Migrate
+            # only the known bundled filename with the active asset's digest.
+            if (self.bundled_wallpaper is not None and wallpaper is None
+                    and self.old_bundled_path(requested)
+                    and saved['wallpaper_hash'] == sha(self.default_image())):
+                requested = self.default_path
             fallback_wallpaper = False
             try:
-                path = image_valid(path)
+                path = self.default_image() if requested == self.default_path else image_valid(requested)
             except (OSError, ValueError) as exc:
                 if wallpaper is not None:
                     raise ValueError('Invalid wallpaper; previous theme preserved: ' + str(exc)) from exc
-                path = image_valid(self.data / 'wallpapers/min_forest.jpg')
+                path = self.default_image()
                 fallback_wallpaper = True
                 print('WARNING: Selected wallpaper unavailable; using Frosted Glass wallpaper and preserving its saved path/preference.', file=sys.stderr)
             digest = sha(path)
             self.guard_wallpaper_link()
-            selected = saved if fallback_wallpaper and saved['wallpaper'] else dict(saved, wallpaper=str(path), wallpaper_hash=digest)
+            persistent_path = self.default_path if path == self.bundled_wallpaper else path
+            selected = saved if fallback_wallpaper and saved['wallpaper'] else dict(saved, wallpaper=str(persistent_path), wallpaper_hash=digest)
             self.ensure_cache()
             fingerprint = self.fingerprint()
             # default now selects the calibrated bundled image. Its generated
@@ -722,7 +772,7 @@ class Engine:
                 if apply and (restore or reapply):
                     self.apply_image(path)
                 persist(selected)
-                self.sync_login_theme(path)
+                self.sync_login_theme(path, digest)
                 return old
             with tempfile.TemporaryDirectory(prefix='.build-', dir=self.cache / 'generations') as temporary:
                 stage = Path(temporary)
@@ -792,7 +842,7 @@ class Engine:
                             try:
                                 old_link = image_valid(old['wallpaper'])
                             except (OSError, ValueError):
-                                old_link = image_valid(self.data / 'wallpapers/min_forest.jpg')
+                                old_link = self.default_image()
                         if old_link and old_link.is_file():
                             self.link_wallpaper(old_link)
                         else:
@@ -800,7 +850,7 @@ class Engine:
                     if previous:
                         self.publish(previous)
                         if changed_image:
-                            self.apply_image(Path(old['wallpaper']))
+                            self.apply_image(old_link if old_link and old_link.is_file() else self.default_image())
                         if reload:
                             self.reload()
                     elif changed_image:
@@ -817,7 +867,7 @@ class Engine:
                         self.link_wallpaper(path)
                         self.publish(emergency)
                     raise
-                self.sync_login_theme(path)
+                self.sync_login_theme(path, digest)
                 return meta
 
 
@@ -847,6 +897,7 @@ def main(argv=None):
                 palette = ('dynamic' if meta['source'].startswith('wallust') else 'default') if meta else 'unavailable'
                 print('palette: ' + palette)
                 if meta:
+                    print('active wallpaper: ' + meta['wallpaper'])
                     print('palette source: ' + meta['source'])
                     print('last generation: ' + meta['created'])
                 print('Wallust version: ' + str(engine.version() or 'absent'))

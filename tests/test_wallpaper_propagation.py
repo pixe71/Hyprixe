@@ -128,7 +128,7 @@ class WallpaperPropagationTests(unittest.TestCase):
     def test_profile_hook_gets_real_image_and_current_palette_only_after_success(self):
         with patch.object(self.engine, 'sync_login_theme') as sync:
             self.generate()
-            sync.assert_called_once_with(self.image)
+            sync.assert_called_once_with(self.image, engine.sha(self.image))
             self.reload.side_effect = [ValueError('failed'), []]
             sync.reset_mock()
             with self.assertRaises(ValueError):
